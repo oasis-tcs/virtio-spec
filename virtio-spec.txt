@@ -217,17 +217,25 @@ is not a significant issue.
 
 2.1.4.2 Message Framing
 -----------------------
+The original intent of the specification was that message framing (the
+particular layout of descriptors) be independent of the contents of
+the buffers. For example, a network transmit buffer consists of a 12
+byte header followed by the network packet. This could be most simply
+placed in the descriptor table as a 12 byte output descriptor followed
+by a 1514 byte output descriptor, but it could also consist of a
+single 1526 byte output descriptor in the case where the header and
+packet are adjacent, or even three or more descriptors (possibly with
+loss of efficiency in that case).
 
-The descriptors used for a buffer should not effect the semantics 
-of the message, except for the total length of the buffer. For 
-example, a network buffer consists of a 10 byte header followed 
-by the network packet. Whether this is presented in the ring 
-descriptor chain as (say) a 10 byte buffer and a 1514 byte 
-buffer, or a single 1524 byte buffer, or even three buffers, 
-should have no effect.
-
-In particular, no implementation should use the descriptor 
-boundaries to determine the size of any header in a request.[10]
+Regrettably, initial driver implementations used simple layouts, and
+devices came to rely on it, despite this specification wording[10]. It
+is thus recommended that drivers be conservative in their assumptions,
+unless the VIRTIO_F_ANY_LAYOUT feature is accepted. In addition, some
+implementations may have large-but-reasonable restrictions on total
+descriptor size (such as based on IOV_MAX in the host OS). This has
+not been a problem in practice: little sympathy will be given to
+drivers which create unreasonably-sized descriptors such as by
+dividing a network packet into 1500 single-byte descriptors!
 
 2.1.4.3 The Virtqueue Descriptor Table
 --------------------------------------
@@ -2462,7 +2470,7 @@ contents of the event field. The following events are defined:
 2.6 Reserved Feature Bits
 =========================
 
-Currently there are three device-independent feature bits defined:
+Currently there are four device-independent feature bits defined:
 
   VIRTIO_F_NOTIFY_ON_EMPTY (24) Negotiating this feature 
   indicates that the driver wants an interrupt if the device runs 
@@ -2474,6 +2482,9 @@ Currently there are three device-independent feature bits defined:
   packets a finite time after they are transmitted. It can avoid 
   using a timer if the device interrupts it when all the packets 
   are transmitted.
+
+  VIRTIO_F_ANY_LAYOUT (27) This feature indicates that the device accepts arbitrary
+  descriptor layouts, as described in Section FIXME.
 
   VIRTIO_F_RING_INDIRECT_DESC (28) Negotiating this feature indicates
   that the driver can use descriptors with the VRING_DESC_F_INDIRECT
@@ -2551,6 +2562,9 @@ Currently there are three device-independent feature bits defined:
 
 /* Support for avail_idx and used_idx fields */
 #define VIRTIO_RING_F_EVENT_IDX        29
+
+/* Arbitrary descriptor layouts. */
+#define VIRTIO_F_ANY_LAYOUT            27
 
 /* Virtio ring descriptors: 16 bytes.
  * These can chain together via "next". */
@@ -2762,9 +2776,11 @@ of this expected condition is necessary.
 
 [9] https://lists.linux-foundation.org/mailman/listinfo/virtualization
 
-[10] The current qemu device implementations mistakenly insist that 
-the first descriptor cover the header in these cases exactly, so 
-a cautious driver should arrange it so.
+[10] It was previously asserted that framing should be independent of message
+contents, yet invariably drivers layed out messages in reliable ways and
+devices assumed it.
+In addition, the specifications for virtio_blk and virtio_scsi require
+intuiting field lengths from frame boundaries.
 
 [11] Even if it does mean documenting design or implementation 
 mistakes!
