@@ -1132,6 +1132,9 @@ features.
 
   VIRTIO_NET_F_GUEST_CSUM (1) Guest handles packets with partial checksum
 
+  VIRTIO_NET_F_CTRL_GUEST_OFFLOADS (2) Control channel offloads
+	reconfiguration support.
+
   VIRTIO_NET_F_MAC (5) Device has given MAC address.
 
   VIRTIO_NET_F_GSO (6) (Deprecated) device handles packets with 
@@ -1472,6 +1475,38 @@ Processing this notification involves:
 
 2. Sending VIRTIO_NET_CTRL_ANNOUNCE_ACK command through control 
   vq. 
+
+2.5.1.5.3.4 Offloads State Configuration
+
+If the VIRTIO_NET_F_CTRL_GUEST_OFFLOADS feature is negotiated, the driver can
+send control commands for dynamic offloads state configuration.
+
+2.5.1.5.4.3.1 Setting Offloads State
+
+	u64 offloads;
+
+	#define VIRTIO_NET_F_GUEST_CSUM       1
+	#define VIRTIO_NET_F_GUEST_TSO4       7
+	#define VIRTIO_NET_F_GUEST_TSO6       8
+	#define VIRTIO_NET_F_GUEST_ECN        9
+	#define VIRTIO_NET_F_GUEST_UFO        10
+
+	#define VIRTIO_NET_CTRL_GUEST_OFFLOADS       5
+	 #define VIRTIO_NET_CTRL_GUEST_OFFLOADS_SET   0
+
+The class VIRTIO_NET_CTRL_GUEST_OFFLOADS has one command:
+VIRTIO_NET_CTRL_GUEST_OFFLOADS_SET applies the new offloads configuration.
+
+u64 value passed as command data is a bitmask, bits set define
+offloads to be enabled, bits cleared - offloads to be disabled.
+
+There is a corresponding device feature for each offload. Upon feature
+negotiation corresponding offload gets enabled to preserve backward
+compartibility.
+
+Corresponding feature must be negotiated at startup in order to allow dynamic
+change of specific offload state.
+
 
 2.5.2 Block Device
 ==================
