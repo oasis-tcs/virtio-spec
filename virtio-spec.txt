@@ -295,10 +295,10 @@ is ignored.
 2.1.4.4 The Virtqueue Available Ring
 ------------------------------------
 
-The available ring refers to what descriptors we are offering the
-device: it refers to the head of a descriptor chain. The “flags” field
+The available ring refers to what descriptor chains we are offering the
+device: each entry refers to the head of a descriptor chain. The “flags” field
 is currently 0 or 1: 1 indicating that we do not need an interrupt
-when the device consumes a descriptor from the available
+when the device consumes a descriptor chain from the available
 ring. Alternatively, the guest can ask the device to delay interrupts
 until an entry with an index specified by the “used_event” field is
 written in the used ring (equivalently, until the idx field in the
@@ -493,7 +493,7 @@ above. A naive implementation would do the following:
 
 	avail->ring[avail->idx % qsz] = head;
 
-However, in general we can add many descriptors before we update 
+However, in general we can add many descriptor chains before we update 
 the “idx” field (at which point they become visible to the 
 device), so we keep a counter of how many we've added:
 
@@ -503,7 +503,7 @@ device), so we keep a counter of how many we've added:
 ----------------------------------
 
 Once the index field of the virtqueue is updated, the device will 
-be able to access the descriptor entries we've created and the 
+be able to access the descriptor chains we've created and the 
 memory they refer to. This is why a memory barrier is generally 
 used before the index update, to ensure it sees the most up-to-date 
 copy.
@@ -1090,7 +1090,7 @@ Discovering what devices are available and their type is bus-dependent.
 +------------+--------------------+
 | 11         |   rproc serial     |
 +------------+--------------------+
-| 12         |   CAIF             |
+| 12         |   virtio CAIF      |
 +------------+--------------------+
 
 2.5.1 Network Device
