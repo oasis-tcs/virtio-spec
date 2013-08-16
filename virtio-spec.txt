@@ -2460,7 +2460,7 @@ contents of the event field. The following events are defined:
 2.6 Reserved Feature Bits
 =========================
 
-Currently there are five device-independent feature bits defined:
+Currently there are three device-independent feature bits defined:
 
   VIRTIO_F_NOTIFY_ON_EMPTY (24) Negotiating this feature 
   indicates that the driver wants an interrupt if the device runs 
