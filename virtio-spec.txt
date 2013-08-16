@@ -1088,6 +1088,8 @@ Discovering what devices are available and their type is bus-dependent.
 +------------+--------------------+
 | 10         |   mac80211 wlan    |
 +------------+--------------------+
+| 11         |   rproc serial     |
++------------+--------------------+
 
 2.5.1 Network Device
 ====================
