@@ -916,7 +916,7 @@ configuration space. The following list presents their layout:
 
 • 0x038 | W | QueueNum 
  Virtual queue size.
- Queue size is a number of elements in the queue, therefore size 
+ Queue size is the number of elements in the queue, therefore size 
   of the descriptor table and both available and used rings.
  Writing to this register notifies the Host what size of the 
   queue the Guest will use. This applies to the queue selected by 
@@ -981,7 +981,7 @@ Reading from this register returns a bit mask of interrupts
   and is accessed with byte alignment. Its meaning and size 
   depends on the device and the driver. 
 
-Virtual queue size is a number of elements in the queue, 
+Virtual queue size is the number of elements in the queue, 
 therefore size of the descriptor table and both available and 
 used rings.
 
