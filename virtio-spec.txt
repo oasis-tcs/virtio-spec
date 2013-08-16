@@ -1872,7 +1872,7 @@ configuration change interrupt.
     it has previously given to the balloon, as described above. 
     This descriptor is added to the deflateq.
 
-  (b) If the VIRTIO_BALLOON_F_MUST_TELL_HOST feature is set, the 
+  (b) If the VIRTIO_BALLOON_F_MUST_TELL_HOST feature is negotiated, the 
     guest may not use these requested pages until that descriptor 
     in the deflateq has been used by the device.
 
