@@ -1090,6 +1090,8 @@ Discovering what devices are available and their type is bus-dependent.
 +------------+--------------------+
 | 11         |   rproc serial     |
 +------------+--------------------+
+| 12         |   CAIF             |
++------------+--------------------+
 
 2.5.1 Network Device
 ====================
