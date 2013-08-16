@@ -179,11 +179,12 @@ required for the virtqueue according to the following formula:
 	static inline unsigned vring_size(unsigned int qsz)
 	{
 	     return ALIGN(sizeof(struct vring_desc)*qsz + sizeof(u16)*(2 + qsz))
-	          + ALIGN(sizeof(struct vring_used_elem)*qsz);
+	          + ALIGN(sizeof(u16)*2 + sizeof(struct vring_used_elem)*qsz);
 	}
 
-This currently wastes some space with padding, but also allows 
-future extensions.  The virtqueue layout structure looks like this:
+This currently wastes some space with padding, but also allows future
+extensions such as the VIRTIO_RING_F_EVENT_IDX extension.  The
+virtqueue layout structure looks like this:
 
 	struct vring {
 		// The actual descriptors (16 bytes each)
@@ -314,7 +315,7 @@ entry (modulo the queue size). This starts at 0, and increases.
 		u16 flags;
 		u16 idx;
 		u16 ring[ /* Queue Size */ ];
-		u16 used_event;
+		u16 used_event;	/* Only if VIRTIO_RING_F_EVENT_IDX */
 	}; 
 
 2.1.4.5 The Virtqueue Used Ring
@@ -353,7 +354,7 @@ the buffer to ensure no data leakage occurs.
 		u16 flags;
 		u16 idx;
 		struct vring_used_elem ring[ /* Queue Size */];
-		u16 avail_event;
+		u16 avail_event; /* Only if VIRTIO_RING_F_EVENT_IDX */
 	};
 
 2.1.4.6 Helpers for Operating Virtqueues
