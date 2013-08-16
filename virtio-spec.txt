@@ -1237,7 +1237,7 @@ case, the packet itself is preceeded by a header:
 		u16 csum_start;
 		u16 csum_offset;
 	/* Only if VIRTIO_NET_F_MRG_RXBUF: */
-		u16 num_buffers
+		u16 num_buffers;
 	};
 
 The controlq is used to control device features such as 
