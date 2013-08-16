@@ -2502,6 +2502,10 @@ Currently there are four device-independent feature bits defined:
   ignore the avail_event field; the flags field is used
 
 
+In addition, bit 30 is used by qemu's implementation to check for experimental
+early versions of virtio which did not perform correct feature negotiation,
+and should not be used.
+
 2.7 virtio_ring.h
 =================
 
