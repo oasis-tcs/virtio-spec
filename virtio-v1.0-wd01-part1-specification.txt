@@ -72,10 +72,10 @@ Driver
 
 
 
-2 The Virtio Standard
+2. The Virtio Standard
 =========================
 
-2.1 Basic Facilities of a Virtio Device
+2.1. Basic Facilities of a Virtio Device
 =======================================
 
 A virtio device is discovered and identified by a bus-specific method
@@ -87,7 +87,7 @@ o Feature bits
 o Configuration space
 o One or more virtqueues
 
-2.1.1 Device Status Field
+2.1.1. Device Status Field
 -------------------------
 
 The Device Status field is updated by the guest to indicate its 
@@ -114,7 +114,7 @@ This field is 0 upon reset, otherwise at least one bit should be set:
   even a fatal error during device operation. The device must be 
   reset before attempting to re-initialize.
 
-2.1.2 Feature Bits
+2.1.2. Feature Bits
 ------------------
 
 Each virtio device lists all the features it understands.  During
@@ -145,7 +145,7 @@ In particular, new fields in the device configuration space are
 indicated by offering a feature bit, so the guest can check 
 before accessing that part of the configuration space.
 
-2.1.3 Configuration Space
+2.1.3. Configuration Space
 -------------------------
 
 Configuration space is generally used for rarely-changing or
@@ -154,7 +154,7 @@ initialization-time parameters.
 Note that this space is generally the guest's native endian, 
 rather than PCI's little-endian.
 
-2.1.4 Virtqueues
+2.1.4. Virtqueues
 ----------------
 
 The mechanism for bulk data transport on virtio devices is
@@ -206,7 +206,7 @@ writes the descriptor index into the available ring.  It then
 notifies the device. When the device has finished a buffer, it 
 writes the descriptor into the used ring, and sends an interrupt.
 
-2.1.4.1 A Note on Virtqueue Endianness
+2.1.4.1. A Note on Virtqueue Endianness
 --------------------------------------
 
 Note that the endian of fields and in the virtqueue is the native
@@ -215,7 +215,7 @@ for simpler guest code, and it is assumed that the host already has to
 be deeply aware of the guest endian so such an “endian-aware” device
 is not a significant issue.
 
-2.1.4.2 Message Framing
+2.1.4.2. Message Framing
 -----------------------
 The original intent of the specification was that message framing (the
 particular layout of descriptors) be independent of the contents of
@@ -237,7 +237,7 @@ not been a problem in practice: little sympathy will be given to
 drivers which create unreasonably-sized descriptors such as by
 dividing a network packet into 1500 single-byte descriptors!
 
-2.1.4.3 The Virtqueue Descriptor Table
+2.1.4.3. The Virtqueue Descriptor Table
 --------------------------------------
 
 The descriptor table refers to the buffers the guest is using for 
@@ -269,7 +269,7 @@ No descriptor chain may be more than 2^32 bytes long in total.
 The number of descriptors in the table is defined by the queue size
 for this virtqueue.
 
-2.1.4.3.1 Indirect Descriptors
+2.1.4.3.1. Indirect Descriptors
 ------------------------------
 
 Some devices benefit by concurrently dispatching a large number 
@@ -300,7 +300,7 @@ table can include both read-only and write-only descriptors;
 write-only flag (flags&VRING_DESC_F_WRITE) in the descriptor that refers to it 
 is ignored.
 
-2.1.4.4 The Virtqueue Available Ring
+2.1.4.4. The Virtqueue Available Ring
 ------------------------------------
 
 The available ring refers to what descriptor chains we are offering the
@@ -326,7 +326,7 @@ entry (modulo the queue size). This starts at 0, and increases.
 		u16 used_event;	/* Only if VIRTIO_RING_F_EVENT_IDX */
 	}; 
 
-2.1.4.5 The Virtqueue Used Ring
+2.1.4.5. The Virtqueue Used Ring
 -------------------------------
 
 The used ring is where the device returns buffers once it is done 
@@ -365,7 +365,7 @@ the buffer to ensure no data leakage occurs.
 		u16 avail_event; /* Only if VIRTIO_RING_F_EVENT_IDX */
 	};
 
-2.1.4.6 Helpers for Operating Virtqueues
+2.1.4.6. Helpers for Operating Virtqueues
 ----------------------------------------
 
 The Linux Kernel Source code contains the definitions above and 
@@ -375,7 +375,7 @@ and Red Hat under the (3-clause) BSD license so that it can be
 freely used by all other projects, and is reproduced (with slight 
 variation to remove Linux assumptions) in *XREF*.
 
-2.2 General Initialization And Device Operation
+2.2. General Initialization And Device Operation
 ===============================================
 
 We start with an overview of device initialization, then expand on the
@@ -383,7 +383,7 @@ details of the device and how each step is preformed.  This section
 should be read along with the bus-specific section which describes
 how to communicate with the specific device.
 
-2.2.1 Device Initialization
+2.2.1. Device Initialization
 ---------------------------
 
 1. Reset the device. This is not required on initial start up.
@@ -409,7 +409,7 @@ If any of these steps go irrecoverably wrong, the guest should
 set the FAILED status bit to indicate that it has given up on the 
 device (it can reset the device later to restart if desired).
 
-2.2.2 Device Operation
+2.2.2. Device Operation
 ----------------------
 
 There are two parts to device operation: supplying new buffers to 
@@ -421,7 +421,7 @@ frees them after they are used. Similarly, incoming (write-only)
 buffers are added to the receive virtqueue, and processed after 
 they are used.
 
-2.2.2.1 Supplying Buffers to The Device
+2.2.2.1. Supplying Buffers to The Device
 ---------------------------------------
 
 Actual transfer of buffers from the guest OS to the device 
@@ -463,7 +463,7 @@ distinguish between a full and empty buffer.
 
 Here is a description of each stage in more detail.
 
-2.2.2.1.1 Placing Buffers Into The Descriptor Table
+2.2.2.1.1. Placing Buffers Into The Descriptor Table
 ---------------------------------------------------
 
 A buffer consists of zero or more read-only physically-contiguous 
@@ -493,7 +493,7 @@ In practice, the d.next fields are usually used to chain free
 descriptors, and a separate count kept to check there are enough 
 free descriptors before beginning the mappings.
 
-2.2.2.1.2 Updating The Available Ring
+2.2.2.1.2. Updating The Available Ring
 -------------------------------------
 
 The head of the buffer we mapped is the first d in the algorithm 
@@ -507,7 +507,7 @@ device), so we keep a counter of how many we've added:
 
 	avail->ring[(avail->idx + added++) % qsz] = head;
 
-2.2.2.1.3 Updating The Index Field
+2.2.2.1.3. Updating The Index Field
 ----------------------------------
 
 Once the index field of the virtqueue is updated, the device will 
@@ -521,7 +521,7 @@ The index field always increments, and we let it wrap naturally at
 
 	avail->idx += added;
 
-2.2.2.1.4 Notifying The Device
+2.2.2.1.4. Notifying The Device
 ------------------------------
 
 The actual method of device notification is bus-specific, but generally
@@ -546,7 +546,7 @@ notification:
 
 	(u16)(new_idx - avail_event - 1) < (u16)(new_idx - old_idx)
 
-2.2.2.2 Receiving Used Buffers From The Device
+2.2.2.2. Receiving Used Buffers From The Device
 ----------------------------------------------
 
 Once the device has used a buffer (read from or written to it, or 
@@ -598,7 +598,7 @@ suppressed by the device:
 		vq->last_seen_used++;
 	}
 
-2.2.2.3 Notification of Device Configuration Changes
+2.2.2.3. Notification of Device Configuration Changes
 ----------------------------------------------------
 
 For devices where the configuration information can be changed, an
@@ -606,18 +606,18 @@ interrupt is delivered when a configuration change occurs.
 
 
 
-2.4 Virtio Transport Options
+2.4. Virtio Transport Options
 ============================
 
 Virtio can use various different busses, thus the standard is split
 into virtio general and bus-specific sections.
 
-2.4.1 Virtio Over PCI Bus
+2.4.1. Virtio Over PCI Bus
 -------------------------
 
 Virtio devices are commonly implemented as PCI devices.
 
-2.4.1.1 PCI Device Discovery
+2.4.1.1. PCI Device Discovery
 ----------------------------
 
 Any PCI device with Vendor ID 0x1AF4, and Device ID 0x1000 through
@@ -629,7 +629,7 @@ supported by the device. The Subsystem Vendor ID should reflect
 the PCI Vendor ID of the environment (it's currently only used 
 for informational purposes by the guest).
 
-2.4.1.2 PCI Device Layout
+2.4.1.2. PCI Device Layout
 -------------------------
 
 To configure the device, we use the first I/O region of the PCI 
@@ -647,7 +647,7 @@ Note that this is possible because while the virtio header is PCI
 the native endian of the guest (where such distinction is 
 applicable).
 
-2.4.1.2.1 PCI Device Virtio Header
+2.4.1.2.1. PCI Device Virtio Header
 ----------------------------------
 
 The virtio header looks as follows:
@@ -689,16 +689,16 @@ device-specific headers:
 |            ||                    |
 +------------++--------------------+
 
-2.4.1.3 PCI-specific Initialization And Device Operation
+2.4.1.3. PCI-specific Initialization And Device Operation
 --------------------------------------------------------
 
 The page size for a virtqueue on a PCI virtio device is defined as
 4096 bytes.
 
-2.4.1.3.1 Device Initialization
+2.4.1.3.1. Device Initialization
 -------------------------------
 
-2.4.1.3.1.1 Queue Vector Configuration
+2.4.1.3.1.1. Queue Vector Configuration
 --------------------------------------
 
 When MSI-X capability is present and enabled in the device 
@@ -732,7 +732,7 @@ success, the previously written value is returned, and on
 failure, NO_VECTOR is returned. If a mapping failure is detected, 
 the driver can retry mapping with fewervectors, or disable MSI-X.
 
-2.4.1.3.1.2 Virtqueue Configuration
+2.4.1.3.1.2. Virtqueue Configuration
 -----------------------------------
 
 As a device can have zero or more virtqueues for bulk data 
@@ -760,14 +760,14 @@ This is done as follows, for each virtqueue a device has:
   Queue Vector field: on success, previously written value is 
   returned; on failure, NO_VECTOR value is returned.
 
-2.4.1.3.2 Notifying The Device
+2.4.1.3.2. Notifying The Device
 ------------------------------
 
 Device notification occurs by writing the 16-bit virtqueue index 
 of this virtqueue to the Queue Notify field of the virtio header 
 in the first I/O region of the PCI device.
 
-2.4.1.3.3 Receiving Used Buffers From The Device
+2.4.1.3.3. Receiving Used Buffers From The Device
 
 If an interrupt is necessary:
 
@@ -800,7 +800,7 @@ The guest interrupt handler should:
   device, to see if any progress has been made by the device 
   which requires servicing.
 
-2.4.1.3.4 Notification of Device Configuration Changes
+2.4.1.3.4. Notification of Device Configuration Changes
 ------------------------------------------------------
 
 Some virtio PCI devices can change the device configuration 
@@ -820,7 +820,7 @@ space. In this case:
   entry number to use. If Configuration Vector field value is 
   NO_VECTOR, no interrupt message is requested for this event.
 
-2.4.2 Virtio Over MMIO
+2.4.2. Virtio Over MMIO
 ----------------------
 
 Virtual environments without PCI support (a common situation in 
@@ -833,7 +833,7 @@ initialization, queues configuration and buffer transfers are
 nearly identical. Existing differences are described in the 
 following sections.
 
-2.4.2.1 MMIO Device Discovery
+2.4.2.1. MMIO Device Discovery
 -----------------------------
 
 Unlike PCI, MMIO provides no generic device discovery.  For systems using
@@ -845,7 +845,7 @@ a device-tree such as Linux's dtc or Open Firmware, the suggested format is:
 		interrupts = <42>;
 	}
 
-2.4.2.2 MMIO Device Layout
+2.4.2.2. MMIO Device Layout
 --------------------------
 
 MMIO virtio devices provides a set of memory mapped control 
@@ -998,17 +998,17 @@ the Guest. Writing to registers described as “R” and reading from
 registers described as “W” is not permitted and can cause 
 undefined behavior.
 
-2.4.2.3 MMIO-specific Initialization And Device Operation
+2.4.2.3. MMIO-specific Initialization And Device Operation
 ---------------------------------------------------------
 
-2.4.2.3.1 Device Initialization
+2.4.2.3.1. Device Initialization
 -------------------------------
 
 Unlike the fixed page size for PCI, the virtqueue page size is defined
 by the GuestPageSize field, as written by the guest.  This must be
 done before the virtqueues are configured.
 
-2.4.2.3.1.1 Virtqueue Configuration
+2.4.2.3.1.1. Virtqueue Configuration
 -----------------------------------
 
 1. Select the queue writing its index (first queue is 0) to the 
@@ -1035,13 +1035,13 @@ done before the virtqueues are configured.
 7. Write the physical number of the first page of the queue to 
   the QueuePFN register. 
 
-2.4.2.3.2 Notifying The Device
+2.4.2.3.2. Notifying The Device
 ------------------------------
 
 The device is notified about new buffers available in a queue by
 writing the queue index to register QueueNum.
 
-2.4.2.3.3 Receiving Used Buffers From The Device
+2.4.2.3.3. Receiving Used Buffers From The Device
 ------------------------------------------------
 
 The memory mapped virtio device is using single, dedicated 
@@ -1054,13 +1054,13 @@ interrupt is handled, the driver must acknowledge it by writing
 a bit mask corresponding to the serviced interrupt to the 
 InterruptACK register.
 
-2.4.2.4.4 Notification of Device Configuration Changes
+2.4.2.4.4. Notification of Device Configuration Changes
 ------------------------------------------------------
 
 This is indicated by bit 1 in the InterruptStatus register, as
 documented in the register description.
 
-2.5 Device Types
+2.5. Device Types
 ================
 
 On top of the queues, config space and feature negotiation facilities
@@ -1101,7 +1101,7 @@ Discovering what devices are available and their type is bus-dependent.
 | 12         |   virtio CAIF      |
 +------------+--------------------+
 
-2.5.1 Network Device
+2.5.1. Network Device
 ====================
 
 The virtio network device is a virtual ethernet card, and is the 
@@ -1113,19 +1113,19 @@ packets are enqueued into another for transmission in that order.
 A third command queue is used to control advanced filtering 
 features.
 
-2.5.1.1 Device ID
+2.5.1.1. Device ID
 -----------------
 
  1
 
-2.5.1.2 Virtqueues
+2.5.1.2. Virtqueues
 ------------------
 
  0:receiveq. 1:transmitq. 2:controlq
 
  Virtqueue 2 only exists if VIRTIO_NET_F_CTRL_VQ set.
 
-2.5.1.3 Feature bits 
+2.5.1.3. Feature bits 
 --------------------
 
   VIRTIO_NET_F_CSUM (0) Device handles packets with partial checksum
@@ -1185,7 +1185,7 @@ features.
 		u16 status;
 	};
 
-2.5.1.4 Device Initialization
+2.5.1.4. Device Initialization
 -----------------------------
 
 1. The initialization routine should identify the receive and 
@@ -1229,7 +1229,7 @@ features.
   equivalents of the features described above. See “Receiving 
   Packets” below.
 
-2.5.1.5 Device Operation
+2.5.1.5. Device Operation
 ------------------------
 
 Packets are transmitted by placing them in the transmitq, and 
@@ -1256,7 +1256,7 @@ case, the packet itself is preceeded by a header:
 The controlq is used to control device features such as 
 filtering.
 
-2.5.1.5.1 Packet Transmission
+2.5.1.5.1. Packet Transmission
 -----------------------------
 
 Transmitting a single packet is simple, but varies depending on 
@@ -1302,7 +1302,7 @@ the different features the driver negotiated.
   transmitq, and the device is notified of the new entry (see 2.4.1.4
   Notifying The Device).[20]
 
-2.5.1.5.1.1 Packet Transmission Interrupt
+2.5.1.5.1.1. Packet Transmission Interrupt
 -----------------------------------------
 
 Often a driver will suppress transmission interrupts using the
@@ -1316,7 +1316,7 @@ The normal behavior in this interrupt handler is to retrieve and
 new descriptors from the used ring and free the corresponding 
 headers and packets.
 
-2.5.1.5.2 Setting Up Receive Buffers
+2.5.1.5.2. Setting Up Receive Buffers
 
 It is generally a good idea to keep the receive virtqueue as 
 fully populated as possible: if it runs out, network performance 
@@ -1326,13 +1326,13 @@ If the VIRTIO_NET_F_GUEST_TSO4, VIRTIO_NET_F_GUEST_TSO6 or
 VIRTIO_NET_F_GUEST_UFO features are used, the Guest will need to 
 accept packets of up to 65550 bytes long (the maximum size of a 
 TCP or UDP packet, plus the 14 byte ethernet header), otherwise 
-1514 bytes. So unless VIRTIO_NET_F_MRG_RXBUF is negotiated, every 
+1514. bytes. So unless VIRTIO_NET_F_MRG_RXBUF is negotiated, every 
 buffer in the receive queue needs to be at least this length [20a]
 
 If VIRTIO_NET_F_MRG_RXBUF is negotiated, each buffer must be at 
 least the size of the struct virtio_net_hdr.
 
-2.5.1.5.2.1 Packet Receive Interrupt
+2.5.1.5.2.1. Packet Receive Interrupt
 ------------------------------------
 
 When a packet is copied into a buffer in the receiveq, the 
@@ -1367,7 +1367,7 @@ Processing packet involves:
   VIRTIO_NET_HDR_GSO_NONE, and the “gso_size” field indicates the 
   desired MSS (see Packet Transmission point 2).
 
-2.5.1.5.3 Control Virtqueue
+2.5.1.5.3. Control Virtqueue
 ---------------------------
 
 The driver uses the control virtqueue (if VIRTIO_NET_F_VTRL_VQ is 
@@ -1393,7 +1393,7 @@ driver, and the device sets the ack byte. There is little it can
 do except issue a diagnostic if the ack byte is not 
 VIRTIO_NET_OK.
 
-2.5.1.5.3.1 Packet Receive Filtering
+2.5.1.5.3.1. Packet Receive Filtering
 ------------------------------------
 
 If the VIRTIO_NET_F_CTRL_RX feature is negotiated, the driver can 
@@ -1415,7 +1415,7 @@ VIRTIO_NET_CTRL_RX_ALLMULTI turns all-multicast receive on and
 off. The command-specific-data is one byte containing 0 (off) or 
 1 (on).
 
-2.5.1.5.3.2 Setting MAC Address Filtering
+2.5.1.5.3.2. Setting MAC Address Filtering
 -----------------------------------------
 
 	struct virtio_net_ctrl_mac {
@@ -1433,7 +1433,7 @@ command-specific-data is two variable length tables of 6-byte MAC
 addresses. The first table contains unicast addresses, and the second
 contains multicast addresses.
 
-2.5.1.5.3.3 VLAN Filtering
+2.5.1.5.3.3. VLAN Filtering
 --------------------------
 
 If the driver negotiates the VIRTION_NET_F_CTRL_VLAN feature, it 
@@ -1446,7 +1446,7 @@ can control a VLAN filter table in the device.
 Both the VIRTIO_NET_CTRL_VLAN_ADD and VIRTIO_NET_CTRL_VLAN_DEL 
 command take a 16-bit VLAN id as the command-specific-data.
 
-2.5.1.5.3.4 Gratuitous Packet Sending
+2.5.1.5.3.4. Gratuitous Packet Sending
 -------------------------------------
 
 If the driver negotiates the VIRTIO_NET_F_GUEST_ANNOUNCE (depends 
@@ -1476,12 +1476,14 @@ Processing this notification involves:
 2. Sending VIRTIO_NET_CTRL_ANNOUNCE_ACK command through control 
   vq. 
 
-2.5.1.5.3.4 Offloads State Configuration
+2.5.1.5.3.4. Offloads State Configuration
+-------------------------------------
 
 If the VIRTIO_NET_F_CTRL_GUEST_OFFLOADS feature is negotiated, the driver can
 send control commands for dynamic offloads state configuration.
 
-2.5.1.5.4.3.1 Setting Offloads State
+2.5.1.5.4.3.1. Setting Offloads State
+-------------------------------------
 
 	u64 offloads;
 
@@ -1508,7 +1510,7 @@ Corresponding feature must be negotiated at startup in order to allow dynamic
 change of specific offload state.
 
 
-2.5.2 Block Device
+2.5.2. Block Device
 ==================
 
 The virtio block device is a simple virtual block device (ie. 
@@ -1516,15 +1518,15 @@ disk). Read and write requests (and other exotic requests) are
 placed in the queue, and serviced (probably out of order) by the 
 device except where noted.
 
-2.5.2.1 Device ID
+2.5.2.1. Device ID
 -----------------
   2
 
-2.5.2.2 Virtqueues
+2.5.2.2. Virtqueues
 ------------------
   0:requestq
 
-2.5.2.3 Feature bits
+2.5.2.3. Feature bits
 --------------------
 
   VIRTIO_BLK_F_BARRIER (0) Host supports request barriers.
@@ -1563,7 +1565,7 @@ device except where noted.
 		u32 blk_size;
 	};
 
-2.5.2.4 Device Initialization
+2.5.2.4. Device Initialization
 -----------------------------
 
 1. The device size should be read from the “capacity” 
@@ -1579,7 +1581,7 @@ device except where noted.
 3. If the VIRTIO_BLK_F_RO feature is set by the device, any write 
   requests will fail.
 
-2.5.2.5 Device Operation
+2.5.2.5. Device Operation
 ------------------------
 
 The driver queues requests to the virtqueue, and they are used by 
@@ -1682,7 +1684,7 @@ and the status field is a separate read-only buffer of size 1
 byte, by itself.
 
 
-2.5.3 Console Device
+2.5.3. Console Device
 ====================
 
 The virtio console device is a simple device for data input and 
@@ -1698,12 +1700,12 @@ successfully added, port open/close, etc.. For data IO, one or
 more empty buffers are placed in the receive queue for incoming 
 data and outgoing characters are placed in the transmit queue.
 
-2.5.3.1 Device ID
+2.5.3.1. Device ID
 -----------------
 
   3
 
-2.5.3.2 Virtqueues
+2.5.3.2. Virtqueues
 ------------------
 
    0:receiveq(port0). 1:transmitq(port0), 2:control receiveq, 3:control transmitq, 4:receiveq(port1), 5:transmitq(port1), 
@@ -1711,7 +1713,7 @@ data and outgoing characters are placed in the transmit queue.
 
   Ports 2 onwards only exist if VIRTIO_CONSOLE_F_MULTIPORT is set.
 
-2.5.3.3 Feature bits
+2.5.3.3. Feature bits
 --------------------
 
   VIRTIO_CONSOLE_F_SIZE (0) Configuration cols and rows fields 
@@ -1721,7 +1723,7 @@ data and outgoing characters are placed in the transmit queue.
     ports; configuration fields nr_ports and max_nr_ports are 
     valid and control virtqueues will be used.
 
-2.5.3.4 Device configuration layout
+2.5.3.4. Device configuration layout
 -----------------------------------
 
   The size of the console is supplied 
@@ -1736,7 +1738,7 @@ data and outgoing characters are placed in the transmit queue.
 		u32 max_nr_ports;
 	};
 
-2.5.3.5 Device Initialization
+2.5.3.5. Device Initialization
 -----------------------------
 
 1. If the VIRTIO_CONSOLE_F_SIZE feature is negotiated, the driver 
@@ -1758,7 +1760,7 @@ data and outgoing characters are placed in the transmit queue.
 3. The receiveq for each port is populated with one or more 
   receive buffers.
 
-2.5.3.6 Device Operation
+2.5.3.6. Device Operation
 ------------------------
 
 1. For output, a buffer containing the characters is placed in 
@@ -1803,41 +1805,41 @@ data and outgoing characters are placed in the transmit queue.
 	#define VIRTIO_CONSOLE_PORT_OPEN        6
 	#define VIRTIO_CONSOLE_PORT_NAME        7
 
-2.5.4 Entropy Device
+2.5.4. Entropy Device
 ====================
 
 The virtio entropy device supplies high-quality randomness for 
 guest use.
 
-2.5.4.1 Device ID
+2.5.4.1. Device ID
 -----------------
   4
 
-2.5.4.2 Virtqueues
+2.5.4.2. Virtqueues
 ------------------
   0:requestq.
 
-2.5.4.3 Feature bits
+2.5.4.3. Feature bits
 --------------------
   None currently defined
 
-2.5.4.4 Device configuration layout
+2.5.4.4. Device configuration layout
 -----------------------------------
   None currently defined.
 
-2.5.4.5 Device Initialization
+2.5.4.5. Device Initialization
 -----------------------------
 
 1. The virtqueue is initialized
 
-2.5.4.6 Device Operation
+2.5.4.6. Device Operation
 ------------------------
 
 When the driver requires random bytes, it places the descriptor 
 of one or more buffers in the queue. It will be completely filled 
 by random data by the device.
 
-2.5.5 Memory Balloon Device
+2.5.5. Memory Balloon Device
 ===========================
 
 The virtio memory balloon device is a primitive device for 
@@ -1848,17 +1850,17 @@ changes in allowance of underlying physical memory. If the
 feature is negotiated, the device can also be used to communicate 
 guest memory statistics to the host.
 
-2.5.5.1 Device ID
+2.5.5.1. Device ID
 -----------------
   5
 
-2.5.5.2 Virtqueues
+2.5.5.2. Virtqueues
 ------------------
   0:inflateq. 1:deflateq. 2:statsq.
 
   Virtqueue 2 only exists if VIRTIO_BALLON_F_STATS_VQ set.
 
-2.5.5.3 Feature bits
+2.5.5.3. Feature bits
 --------------------
   VIRTIO_BALLOON_F_MUST_TELL_HOST (0) Host must be told before 
     pages from the balloon are used.
@@ -1866,7 +1868,7 @@ guest memory statistics to the host.
   VIRTIO_BALLOON_F_STATS_VQ (1) A virtqueue for reporting guest 
     memory statistics is present.
 
-2.5.5.4 Device configuration layout
+2.5.5.4. Device configuration layout
 -----------------------------------
   Both fields of this configuration 
   are always available. Note that they are little endian, despite 
@@ -1877,7 +1879,7 @@ guest memory statistics to the host.
 		u32 actual;
 	};
 
-2.5.5.5 Device Initialization
+2.5.5.5. Device Initialization
 -----------------------------
 
 1. The inflate and deflate virtqueues are identified.
@@ -1891,7 +1893,7 @@ guest memory statistics to the host.
 
 Device operation begins immediately.
 
-2.5.5.6 Device Operation
+2.5.5.6. Device Operation
 ------------------------
 
 Memory Ballooning The device is driven by the receipt of a 
@@ -1927,7 +1929,7 @@ configuration change interrupt.
   deflation, the “actual” field of the configuration should be 
   updated to reflect the new number of pages in the balloon.[29]
 
-2.5.5.6.1 Memory Statistics
+2.5.5.6.1. Memory Statistics
 ---------------------------
 
 The stats virtqueue is atypical because communication is driven 
@@ -1967,7 +1969,7 @@ as follows:
 		u64 val;
 	} __attribute__((packed));
 
-2.5.5.6.2 Memory Statistics Tags
+2.5.5.6.2. Memory Statistics Tags
 --------------------------------
 
   VIRTIO_BALLOON_S_SWAP_IN The amount of memory that has been 
@@ -1989,7 +1991,7 @@ as follows:
   (in bytes).
 
 
-2.5.6 SCSI Host Device
+2.5.6. SCSI Host Device
 ======================
 
 The virtio SCSI host device groups together one or more virtual 
@@ -2011,15 +2013,15 @@ medium. In the transport protocol, the virtio driver acts as the
 initiator, while the virtio SCSI host provides one or more 
 targets that receive and process the requests. 
 
-2.5.6.1 Device ID
+2.5.6.1. Device ID
 -----------------
   8
 
-2.5.6.2 Virtqueues
+2.5.6.2. Virtqueues
 ------------------
    0:controlq; 1:eventq; 2..n:request queues.
 
-2.5.6.3 Feature bits
+2.5.6.3. Feature bits
 --------------------
 
   VIRTIO_SCSI_F_INOUT (0) A single request can include both 
@@ -2028,7 +2030,7 @@ targets that receive and process the requests.
   VIRTIO_SCSI_F_HOTPLUG (1) The host should enable 
     hot-plug/hot-unplug of new LUNs and targets on the SCSI bus.
 
-2.5.6.4 Device configuration layout
+2.5.6.4. Device configuration layout
 -----------------------------------
 
   All fields of this configuration are always available. sense_size
@@ -2083,7 +2085,7 @@ targets that receive and process the requests.
     as hints to constrain scanning the logical units on the 
     host.h
 
-2.5.6.5 Device Initialization
+2.5.6.5. Device Initialization
 -----------------------------
 
 The initialization routine should first of all discover the 
@@ -2096,13 +2098,13 @@ The driver can immediately issue requests (for example, INQUIRY
 or REPORT LUNS) or task management functions (for example, I_T 
 RESET). 
 
-2.5.6.6 Device Operation
+2.5.6.6. Device Operation
 ------------------------
 
 Device operation consists of operating request queues, the control
 queue and the event queue.
 
-2.5.6.6.1 Device Operation: Request Queues
+2.5.6.6.1. Device Operation: Request Queues
 ------------------------------------------
 
 The driver queues requests to an arbitrary request queue, and 
@@ -2225,7 +2227,7 @@ following:
   request will be immediately returned with a response equal to 
   VIRTIO_SCSI_S_FAILURE. 
 
-2.5.6.6.2 Device Operation: controlq
+2.5.6.6.2. Device Operation: controlq
 ------------------------------------
 
 The controlq is used for other SCSI transport operations. 
@@ -2357,7 +2359,7 @@ The following commands are defined:
 
   No command-specific values are defined for the response byte.
 
-2.5.6.6.3 Device Operation: eventq
+2.5.6.6.3. Device Operation: eventq
 ----------------------------------
 
 The eventq is used by the device to report information on logical 
@@ -2502,7 +2504,7 @@ contents of the event field. The following events are defined:
   asynchronous events manually using SCSI commands.
 
 
-2.6 Reserved Feature Bits
+2.6. Reserved Feature Bits
 =========================
 
 Currently there are four device-independent feature bits defined:
@@ -2541,7 +2543,7 @@ In addition, bit 30 is used by qemu's implementation to check for experimental
 early versions of virtio which did not perform correct feature negotiation,
 and should not be used.
 
-2.7 virtio_ring.h
+2.7. virtio_ring.h
 =================
 
 #ifndef VIRTIO_RING_H
@@ -2711,13 +2713,13 @@ static inline uint16_t *vring_avail_event(struct vring *vr)
 
 
 
-2.10 Creating New Device Types
+2.10. Creating New Device Types
 ==============================
 
 Various considerations are necessary when creating a new device 
 type.
  
-2.10.1 How Many Virtqueues?
+2.10.1. How Many Virtqueues?
 ---------------------------
 
 It is possible that a very simple device will operate entirely 
@@ -2728,7 +2730,7 @@ need two queues: one which the driver fills with buffers to
 receive input, and one which the driver places buffers to 
 transmit output.
 
-2.10.2 What Configuration Space Layout?
+2.10.2. What Configuration Space Layout?
 ---------------------------------------
 
 Configuration space should only be used for initialization-time
@@ -2738,7 +2740,7 @@ information (the network device does this for filtering,
 otherwise the table in the config space could potentially be very 
 large).
 
-2.10.3 What Device Number?
+2.10.3. What Device Number?
 --------------------------
 
 Currently device numbers are assigned quite freely: a simple 
@@ -2747,7 +2749,7 @@ virtualization mailing list[9] will be sufficient to secure a unique one.
 
 Meanwhile for experimental drivers, use 65535 and work backwards.
 
-2.10.4 How many MSI-X vectors?  (for PCI)
+2.10.4. How many MSI-X vectors?  (for PCI)
 -----------------------------------------
 
 Using the optional MSI-X capability devices can speed up 
@@ -2766,7 +2768,7 @@ space. Drivers can control this by mapping events to as small
 number of vectors as possible, or disabling MSI-X capability 
 altogether.
 
-2.10.5 Device Improvements
+2.10.5. Device Improvements
 --------------------------
 
 Any change to configuration space, or new virtqueues, or 
