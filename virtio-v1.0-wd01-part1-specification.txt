@@ -134,7 +134,7 @@ Feature bits are allocated as follows:
 
   0 to 23: Feature bits for the specific device type
 
-  24 to 32: Feature bits reserved for extensions to the queue and 
+  24 to 31: Feature bits reserved for extensions to the queue and 
   feature negotiation mechanisms
 
 For example, feature bit 0 for a network device (i.e. Subsystem 
