@@ -274,7 +274,7 @@ for this virtqueue.
 
 Some devices benefit by concurrently dispatching a large number 
 of large requests. The VIRTIO_RING_F_INDIRECT_DESC feature can be 
-used to allow this (see FIXME: Reserved Feature Bits). To increase 
+used to allow this (see "2.6. Reserved Feature Bits"). To increase 
 ring capacity it is possible to store a table of indirect 
 descriptors anywhere in memory, and insert a descriptor in main 
 virtqueue (with flags&VRING_DESC_F_INDIRECT on) that refers to memory buffer 
@@ -312,7 +312,7 @@ until an entry with an index specified by the “used_event” field is
 written in the used ring (equivalently, until the idx field in the
 used ring will reach the value used_event + 1). The method employed by
 the device is controlled by the VIRTIO_RING_F_EVENT_IDX feature bit
-(see FIXME: Reserved Feature Bits). This interrupt suppression is
+(see "2.6. Reserved Feature Bits"). This interrupt suppression is
 merely an optimization; it may not suppress interrupts entirely.
 
 The “idx” field indicates where we would put the next descriptor 
@@ -338,8 +338,8 @@ with an index specified by the “avail_event” is written in the
 available ring (equivalently, until the idx field in the 
 available ring will reach the value avail_event + 1). The method 
 employed by the device is controlled by the guest through the 
-VIRTIO_RING_F_EVENT_IDX feature bit (see FIXME: Reserved
-Feature Bits).[7]
+VIRTIO_RING_F_EVENT_IDX feature bit (see "2.6. Reserved
+Feature Bits").[7]
 
 Each entry in the ring is a pair: the head entry of the 
 descriptor chain describing the buffer (this matches an entry 
@@ -747,7 +747,7 @@ This is done as follows, for each virtqueue a device has:
 
 2. Read the virtqueue size from the Queue Size field, which is 
   always a power of 2. This controls how big the virtqueue is 
-  (see 2.1.4. Virtqueues). If this field is 0, the virtqueue does not exist. 
+  (see "2.1.4. Virtqueues"). If this field is 0, the virtqueue does not exist. 
 
 3. Allocate and zero virtqueue in contiguous physical memory, on 
   a 4096 byte alignment. Write the physical address, divided by 
@@ -1299,15 +1299,15 @@ the different features the driver negotiated.
   the num_buffers field is set to zero.
 
 4. The header and packet are added as one output buffer to the
-  transmitq, and the device is notified of the new entry (see 2.4.1.4.
-  Notifying The Device).[20]
+  transmitq, and the device is notified of the new entry (see "2.4.1.4.
+  Notifying The Device").[20]
 
 2.5.1.5.1.1. Packet Transmission Interrupt
 -----------------------------------------
 
 Often a driver will suppress transmission interrupts using the
-VRING_AVAIL_F_NO_INTERRUPT flag (see 2.4.2. Receiving Used Buffers From
-The Device) and check for used packets in the transmit path of following 
+VRING_AVAIL_F_NO_INTERRUPT flag (see "2.4.2. Receiving Used Buffers From
+The Device") and check for used packets in the transmit path of following
 packets. However, it will still receive interrupts if the 
 VIRTIO_F_NOTIFY_ON_EMPTY feature is negotiated, indicating that 
 the transmission queue is completely emptied.
@@ -2521,11 +2521,11 @@ Currently there are four device-independent feature bits defined:
   are transmitted.
 
   VIRTIO_F_ANY_LAYOUT (27) This feature indicates that the device accepts arbitrary
-  descriptor layouts, as described in Section FIXME.
+  descriptor layouts, as described in Section "2.1.4.2. Message Framing".
 
   VIRTIO_F_RING_INDIRECT_DESC (28) Negotiating this feature indicates
   that the driver can use descriptors with the VRING_DESC_F_INDIRECT
-  flag set, as described in 2.3.3. Indirect Descriptors.
+  flag set, as described in "2.3.3. Indirect Descriptors".
 
   VIRTIO_F_RING_EVENT_IDX(29) This feature enables the used_event 
   and the avail_event fields. If set, it indicates that the 
