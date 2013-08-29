@@ -1328,7 +1328,7 @@ VIRTIO_NET_F_GUEST_UFO features are used, the Guest will need to
 accept packets of up to 65550 bytes long (the maximum size of a
 TCP or UDP packet, plus the 14 byte ethernet header), otherwise
 1514. bytes. So unless VIRTIO_NET_F_MRG_RXBUF is negotiated, every
-buffer in the receive queue needs to be at least this length [20a]
+buffer in the receive queue needs to be at least this length [99]
 
 If VIRTIO_NET_F_MRG_RXBUF is negotiated, each buffer must be at
 least the size of the struct virtio_net_hdr.
@@ -1477,7 +1477,7 @@ Processing this notification involves:
 2. Sending VIRTIO_NET_CTRL_ANNOUNCE_ACK command through control
   vq.
 
-2.5.1.5.3.4. Offloads State Configuration
+2.5.1.5.3.5. Offloads State Configuration
 -------------------------------------
 
 If the VIRTIO_NET_F_CTRL_GUEST_OFFLOADS feature is negotiated, the driver can
@@ -2864,7 +2864,7 @@ specifically in the protocol.
 [20] Note that the header will be two bytes longer for the
 VIRTIO_NET_F_MRG_RXBUF case.
 
-[20a] Obviously each one can be split across multiple descriptor
+[99] Obviously each one can be split across multiple descriptor
 elements.
 
 [21] Since there are no guarentees, it can use a hash filter or
