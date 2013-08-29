@@ -767,7 +767,8 @@ Device notification occurs by writing the 16-bit virtqueue index
 of this virtqueue to the Queue Notify field of the virtio header 
 in the first I/O region of the PCI device.
 
-2.4.1.3.3. Receiving Used Buffers From The Device
+2.4.1.3.3. Virtqueue Interrupts From The Device
+----------------------------------------------
 
 If an interrupt is necessary:
 
