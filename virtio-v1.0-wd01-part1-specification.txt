@@ -747,7 +747,7 @@ This is done as follows, for each virtqueue a device has:
 
 2. Read the virtqueue size from the Queue Size field, which is 
   always a power of 2. This controls how big the virtqueue is 
-  (see 2.1.4 Virtqueues). If this field is 0, the virtqueue does not exist. 
+  (see 2.1.4. Virtqueues). If this field is 0, the virtqueue does not exist. 
 
 3. Allocate and zero virtqueue in contiguous physical memory, on 
   a 4096 byte alignment. Write the physical address, divided by 
@@ -1299,14 +1299,14 @@ the different features the driver negotiated.
   the num_buffers field is set to zero.
 
 4. The header and packet are added as one output buffer to the
-  transmitq, and the device is notified of the new entry (see 2.4.1.4
+  transmitq, and the device is notified of the new entry (see 2.4.1.4.
   Notifying The Device).[20]
 
 2.5.1.5.1.1. Packet Transmission Interrupt
 -----------------------------------------
 
 Often a driver will suppress transmission interrupts using the
-VRING_AVAIL_F_NO_INTERRUPT flag (see 2.4.2 Receiving Used Buffers From
+VRING_AVAIL_F_NO_INTERRUPT flag (see 2.4.2. Receiving Used Buffers From
 The Device) and check for used packets in the transmit path of following 
 packets. However, it will still receive interrupts if the 
 VIRTIO_F_NOTIFY_ON_EMPTY feature is negotiated, indicating that 
@@ -2525,7 +2525,7 @@ Currently there are four device-independent feature bits defined:
 
   VIRTIO_F_RING_INDIRECT_DESC (28) Negotiating this feature indicates
   that the driver can use descriptors with the VRING_DESC_F_INDIRECT
-  flag set, as described in 2.3.3 Indirect Descriptors.
+  flag set, as described in 2.3.3. Indirect Descriptors.
 
   VIRTIO_F_RING_EVENT_IDX(29) This feature enables the used_event 
   and the avail_event fields. If set, it indicates that the 
