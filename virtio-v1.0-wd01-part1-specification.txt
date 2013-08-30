@@ -78,9 +78,10 @@ Driver
 2.1. Basic Facilities of a Virtio Device
 =======================================
 
-A virtio device is discovered and identified by a bus-specific method
-(see the bus specific sections *XREF*).  Each device consists of the following
-parts:
+A virtio device is discovered and identified by a bus-specific
+method (see the bus specific sections: "2.3.1. Virtio Over PCI
+Bus" and "2.3.2. Virtio Over MMIO").  Each device consists of the
+following parts:
 
 o Device Status field
 o Feature bits
@@ -2526,7 +2527,7 @@ Currently there are four device-independent feature bits defined:
 
   VIRTIO_F_RING_INDIRECT_DESC (28) Negotiating this feature indicates
   that the driver can use descriptors with the VRING_DESC_F_INDIRECT
-  flag set, as described in "2.3.3. Indirect Descriptors".
+  flag set, as described in "2.1.4.3.1. Indirect Descriptors".
 
   VIRTIO_F_RING_EVENT_IDX(29) This feature enables the used_event
   and the avail_event fields. If set, it indicates that the
