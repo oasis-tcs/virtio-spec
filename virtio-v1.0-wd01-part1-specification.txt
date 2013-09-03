@@ -2389,7 +2389,8 @@ following format:
 	struct virtio_scsi_event {
 		// Write-only part
 		u32 event;
-		...
+		u8  lun[8];
+		i32 reason;
 	}
 
 If bit 31 is set in the event field, the device failed to report
@@ -2398,7 +2399,7 @@ poll the logical units for unit attention conditions, and/or do
 whatever form of bus scan is appropriate for the guest operating
 system.
 
-Other data that the device writes to the buffer depends on the
+The meaning of the reason field depends on the
 contents of the event field. The following events are defined:
 
   No event
@@ -2420,13 +2421,6 @@ contents of the event field. The following events are defined:
 
   Transport reset
 	#define VIRTIO_SCSI_T_TRANSPORT_RESET  1
-
-	struct virtio_scsi_event_reset {
-		// Write-only part
-		u32 event;
-		u8  lun[8];
-		u32 reason;
-	}
 
 	#define VIRTIO_SCSI_EVT_RESET_HARD         0
 	#define VIRTIO_SCSI_EVT_RESET_RESCAN       1
@@ -2485,13 +2479,6 @@ contents of the event field. The following events are defined:
 
   Asynchronous notification
 	#define VIRTIO_SCSI_T_ASYNC_NOTIFY     2
-
-	struct virtio_scsi_event_an {
-		// Write-only part
-		u32 event;
-		u8  lun[8];
-		u32 reason;
-	}
 
   By sending this event, the device signals that an asynchronous
   event was fired from a physical interface.
