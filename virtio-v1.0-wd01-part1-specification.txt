@@ -2032,6 +2032,9 @@ targets that receive and process the requests.
   VIRTIO_SCSI_F_HOTPLUG (1) The host should enable
     hot-plug/hot-unplug of new LUNs and targets on the SCSI bus.
 
+  VIRTIO_SCSI_F_CHANGE (2) The host will report changes to LUN
+    parameters via a VIRTIO_SCSI_T_PARAM_CHANGE event.
+
 2.4.6.4. Device configuration layout
 -----------------------------------
 
@@ -2492,6 +2495,24 @@ contents of the event field. The following events are defined:
   When dropped events are reported, the driver should poll for
   asynchronous events manually using SCSI commands.
 
+  LUN parameter change
+	#define VIRTIO_SCSI_T_PARAM_CHANGE  3
+
+  By sending this event, the device signals that the configuration parameters
+  (for example the capacity) of a logical unit have changed.
+  The event field is set to VIRTIO_SCSI_T_PARAM_CHANGE.
+  The lun field addresses a logical unit in the SCSI host.
+
+  The same event is also reported as a unit attention condition.
+  The reason field contains the additional sense code and additional sense code qualifier,
+  respectively in bits 0..7 and 8..15.
+  For example, a change in capacity will be reported as asc 0x2a, ascq 0x09
+  (CAPACITY DATA HAS CHANGED).
+
+  For MMC devices (inquiry type 5) there would be some overlap between this
+  event and the asynchronous notification event.
+  For simplicity, as of this version of the specification the host must
+  never report this event for MMC devices.
 
 2.5. Reserved Feature Bits
 =========================
