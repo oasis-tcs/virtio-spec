@@ -995,8 +995,9 @@ Virtual queue size is the number of elements in the queue,
 therefore size of the descriptor table and both available and
 used rings.
 
-The endianness of the registers follows the native endianness of
-the Guest. Writing to registers described as “R” and reading from
+All register values are organized as Little Endian.
+
+Writing to registers described as “R” and reading from
 registers described as “W” is not permitted and can cause
 undefined behavior.
 
