@@ -1129,6 +1129,8 @@ Discovering what devices are available and their type is bus-dependent.
 | Device ID  |   Virtio Device    |
 +------------+--------------------+
 +------------+--------------------+
+| 0          | reserved (invalid) |
++------------+--------------------+
 | 1          |   network card     |
 +------------+--------------------+
 | 2          |   block device     |
