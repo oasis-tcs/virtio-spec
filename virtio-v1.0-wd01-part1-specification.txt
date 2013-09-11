@@ -135,8 +135,10 @@ Feature bits are allocated as follows:
 
   0 to 23: Feature bits for the specific device type
 
-  24 to 31: Feature bits reserved for extensions to the queue and
+  24 to 32: Feature bits reserved for extensions to the queue and
   feature negotiation mechanisms
+
+  33 and above: Feature bits resered for future extensions.
 
 For example, feature bit 0 for a network device (i.e. Subsystem
 Device ID 1) indicates that the device supports checksumming of
@@ -145,6 +147,54 @@ packets.
 In particular, new fields in the device configuration space are
 indicated by offering a feature bit, so the guest can check
 before accessing that part of the configuration space.
+
+2.1.2.1 Legacy Interface: A Note on transitions from earlier drafts
+--------------------------------------
+
+Earlier drafts of this specification (up to 0.9.X) defined a similar, but
+different interface between the hypervisor and the guest.
+Since these are widely deployed, this specification
+accomodates optional features to simplify transition
+from these earlier draft interfaces. Specifically:
+
+Legacy Interface
+	is an interface specified by an earlier draft of this specification
+        (up to 0.9.X)
+Legacy Device
+	is a device implemented before this specification was released,
+        and implementing a legacy interface on the host side
+Legacy Driver
+	is a driver implemented before this specification was released,
+        and implementing a legacy interface on the guest side
+
+Legacy devices and legacy drivers are not compliant with this
+specification.
+
+To simplify transition from these earlier draft interfaces,
+it is possible to implement:
+
+Transitional Device
+	a device supporting both drivers conforming to this
+        specification, and allowing legacy drivers.
+
+Transitional Driver
+	a driver supporting both devices conforming to this
+	specification, and legacy devices.
+
+Transitional devices and transitional drivers can be compliant with
+this specification (ie. when not operating in legacy mode).
+
+Devices or drivers with no legacy compatibility are referred to as
+non-transitional devices and drivers, respectively.
+
+Transitional Drivers can detect Legacy Devices by detecting that
+the feature bit VIRTIO_F_VERSION_1 is not offered.
+Transitional devices can detect Legacy drivers by detecting that
+VIRTIO_F_VERSION_1 has not been acknowledged by the driver.
+
+To make them easier to locate, specification sections documenting
+these transitional features are explicitly marked with 'Legacy
+Interface' in the section title.
 
 2.1.3. Configuration Space
 -------------------------
@@ -2518,7 +2568,7 @@ contents of the event field. The following events are defined:
 2.5. Reserved Feature Bits
 =========================
 
-Currently there are four device-independent feature bits defined:
+Currently there are five device-independent feature bits defined:
 
   VIRTIO_F_NOTIFY_ON_EMPTY (24) Negotiating this feature
   indicates that the driver wants an interrupt if the device runs
@@ -2549,6 +2599,9 @@ Currently there are four device-independent feature bits defined:
   driver should ignore the used_event field; the device should
   ignore the avail_event field; the flags field is used
 
+  VIRTIO_F_VERSION_1(32) This feature must be offered by any device
+  compliant with this specification, and acknowledged by all device
+  drivers.
 
 In addition, bit 30 is used by qemu's implementation to check for experimental
 early versions of virtio which did not perform correct feature negotiation,
