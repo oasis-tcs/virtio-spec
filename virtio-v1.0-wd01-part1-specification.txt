@@ -191,6 +191,7 @@ Transitional Drivers can detect Legacy Devices by detecting that
 the feature bit VIRTIO_F_VERSION_1 is not offered.
 Transitional devices can detect Legacy drivers by detecting that
 VIRTIO_F_VERSION_1 has not been acknowledged by the driver.
+In this case device is used through the legacy interface.
 
 To make them easier to locate, specification sections documenting
 these transitional features are explicitly marked with 'Legacy
