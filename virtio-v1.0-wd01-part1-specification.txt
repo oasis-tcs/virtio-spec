@@ -1202,9 +1202,6 @@ features.
 
   VIRTIO_NET_F_MAC (5) Device has given MAC address.
 
-  VIRTIO_NET_F_GSO (6) (Deprecated) device handles packets with
-    any GSO type.[12]
-
   VIRTIO_NET_F_GUEST_TSO4 (7) Guest can receive TSOv4.
 
   VIRTIO_NET_F_GUEST_TSO6 (8) Guest can receive TSOv6.
@@ -1249,6 +1246,15 @@ features.
 		u8 mac[6];
 		u16 status;
 	};
+
+2.4.1.3.1. Legacy Interface: Feature bits
+--------------------
+VIRTIO_NET_F_GSO (6) Device handles packets with any GSO type.
+
+This was supposed to indicate segmentation offload support, but
+upon further investigation it became clear that multiple bits
+were required.
+
 
 2.4.1.4. Device Initialization
 -----------------------------
@@ -2902,11 +2908,6 @@ of this expected condition is necessary.
 
 [11] Even if it does mean documenting design or implementation
 mistakes!
-
-
-[12] It was supposed to indicate segmentation offload support, but
-upon further investigation it became clear that multiple bits
-were required.
 
 [13] ie. VIRTIO_NET_F_HOST_TSO* and VIRTIO_NET_F_HOST_UFO are
 dependent on VIRTIO_NET_F_CSUM; a dvice which offers the offload
