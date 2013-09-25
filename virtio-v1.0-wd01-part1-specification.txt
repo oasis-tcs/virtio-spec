@@ -269,25 +269,34 @@ is not a significant issue.
 
 2.1.4.2. Message Framing
 -----------------------
-The original intent of the specification was that message framing (the
-particular layout of descriptors) be independent of the contents of
-the buffers. For example, a network transmit buffer consists of a 12
-byte header followed by the network packet. This could be most simply
-placed in the descriptor table as a 12 byte output descriptor followed
-by a 1514 byte output descriptor, but it could also consist of a
-single 1526 byte output descriptor in the case where the header and
-packet are adjacent, or even three or more descriptors (possibly with
-loss of efficiency in that case).
+The message framing (the particular layout of descriptors) is
+independent of the contents of the buffers. For example, a network
+transmit buffer consists of a 12 byte header followed by the network
+packet. This could be most simply placed in the descriptor table as a
+12 byte output descriptor followed by a 1514 byte output descriptor,
+but it could also consist of a single 1526 byte output descriptor in
+the case where the header and packet are adjacent, or even three or
+more descriptors (possibly with loss of efficiency in that case).
+
+Note that, some implementations may have large-but-reasonable
+restrictions on total descriptor size (such as based on IOV_MAX in the
+host OS). This has not been a problem in practice: little sympathy
+will be given to drivers which create unreasonably-sized descriptors
+such as by dividing a network packet into 1500 single-byte
+descriptors!
+
+2.1.4.2.1. Legacy Interface: Message Framing
+-----------------------
 
 Regrettably, initial driver implementations used simple layouts, and
-devices came to rely on it, despite this specification wording[10]. It
-is thus recommended that drivers be conservative in their assumptions,
-unless the VIRTIO_F_ANY_LAYOUT feature is accepted. In addition, some
-implementations may have large-but-reasonable restrictions on total
-descriptor size (such as based on IOV_MAX in the host OS). This has
-not been a problem in practice: little sympathy will be given to
-drivers which create unreasonably-sized descriptors such as by
-dividing a network packet into 1500 single-byte descriptors!
+devices came to rely on it, despite this specification wording.  In
+addition, the specification for virtio_blk SCSI commands required
+intuiting field lengths from frame boundaries (see "2.4.2.5.1 Legacy
+Interface: Device Operation")
+
+It is thus recommended that when using legacy interfaces, transitional
+drivers be conservative in their assumptions, unless the
+VIRTIO_F_ANY_LAYOUT feature is accepted.
 
 2.1.4.3. The Virtqueue Descriptor Table
 --------------------------------------
@@ -1730,6 +1739,9 @@ error or VIRTIO_BLK_S_UNSUPP for a request unsupported by host:
 	#define VIRTIO_BLK_S_IOERR     1
 	#define VIRTIO_BLK_S_UNSUPP    2
 
+2.4.2.5.1 Legacy Interface: Device Operation
+------------------------
+
 Historically, devices assumed that the fields type, ioprio and
 sector reside in a single, separate read-only buffer; the fields
 errors, data_len, sense_len and residual reside in a single,
@@ -2584,9 +2596,6 @@ Currently there are five device-independent feature bits defined:
   using a timer if the device interrupts it when all the packets
   are transmitted.
 
-  VIRTIO_F_ANY_LAYOUT (27) This feature indicates that the device accepts arbitrary
-  descriptor layouts, as described in Section "2.1.4.2. Message Framing".
-
   VIRTIO_F_RING_INDIRECT_DESC (28) Negotiating this feature indicates
   that the driver can use descriptors with the VRING_DESC_F_INDIRECT
   flag set, as described in "2.1.4.3.1. Indirect Descriptors".
@@ -2609,6 +2618,16 @@ Currently there are five device-independent feature bits defined:
 In addition, bit 30 is used by qemu's implementation to check for experimental
 early versions of virtio which did not perform correct feature negotiation,
 and should not be used.
+
+2.5.1 Legacy Interface: Reserved Feature Bits
+--------------------------------------------
+
+Legacy or transitional devices may offer the following:
+
+VIRTIO_F_ANY_LAYOUT (27) This feature indicates that the device
+  accepts arbitrary descriptor layouts, as described in Section
+  "2.1.4.2.1. Legacy Interface: Message Framing".
+
 
 2.6. virtio_ring.h
 =================
@@ -2883,12 +2902,6 @@ trying to keep the receive buffer ring full, and no notification
 of this expected condition is necessary.
 
 [9] https://lists.linux-foundation.org/mailman/listinfo/virtualization
-
-[10] It was previously asserted that framing should be independent of message
-contents, yet invariably drivers layed out messages in reliable ways and
-devices assumed it.
-In addition, the specifications for virtio_blk and virtio_scsi require
-intuiting field lengths from frame boundaries.
 
 [11] Even if it does mean documenting design or implementation
 mistakes!
