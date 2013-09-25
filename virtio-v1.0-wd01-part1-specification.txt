@@ -1165,6 +1165,7 @@ virtio:
 #define CCW_CMD_SET_VQ 0x13
 #define CCW_CMD_VDEV_RESET 0x33
 #define CCW_CMD_SET_IND 0x43
+#define CCW_CMD_SET_CONF_IND 0x53
 #define CCW_CMD_READ_FEAT 0x12
 #define CCW_CMD_WRITE_FEAT 0x11
 #define CCW_CMD_READ_CONF 0x22
@@ -1262,6 +1263,11 @@ To communicate the location of the indicator bits for host->guest
 notification, the guest uses the CCW_CMD_SET_IND command which
 sends the guest address of the indicators in a 64 bit value.
 
+For the indicator bits used in the configuration change
+host->guest notification, the CCW_CMD_SET_CONF_IND command is
+used analogously.
+
+
 2.3.3.3. Device Operation
 -------------------------
 
@@ -1272,6 +1278,10 @@ For notifying the guest of virtqueue buffers, the host sets the
 corresponding bit in the guest-provided indicators. If an
 interrupt is not already pending for the subchannel, the host
 generates an unsolicited I/O interrupt.
+
+If the host wants to notify the guest about configuration
+changes, it sets bit 0 in the configuration indicators and
+generates an unsolicited I/O interrupt, if needed.
 
 2.3.3.3.2. Guest->Host Notification
 -----------------------------------
