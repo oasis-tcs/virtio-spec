@@ -1292,7 +1292,29 @@ For notifying the host of virtqueue buffers, the guest
 unfortunately can't use a channel command (the asynchronous
 characteristics of channel I/O interact badly with the host block
 I/O backend). Instead, it uses a diagnose 0x500 call with subcode
-3 specifying the queue.
+3 specifying the queue, as follows:
+
++------+-------------------+--------------+
+| GPR  |   Input Value     | Output Value |
++------+-------------------+--------------+
++------+-------------------+--------------+
+|  1   |       0x3         |              |
++------+-------------------+--------------+
+|  2   |  Subchannel ID    | Host Cookie  |
++------+-------------------+--------------+
+|  3   | Virtqueue number  |              |
++------+-------------------+--------------+
+|  4   |   Host Cookie     |              |
++------+-------------------+--------------+
+
+Host cookie is an optional per-virtqueue 64 bit value that can be
+used by the hypervisor to speed up the notification execution.
+For each notification, the output value is returned in GPR2 and
+should be passed in GPR4 for the next notification:
+
+        info->cookie = do_notify(schid,
+                                 virtqueue_get_queue_index(vq),
+                                 info->cookie);
 
 2.3.3.3.3. Early printk for Virtio Consoles
 -------------------------------------------
