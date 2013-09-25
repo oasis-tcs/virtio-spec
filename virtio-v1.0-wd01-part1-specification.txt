@@ -1660,7 +1660,7 @@ the device (not necessarily in order). Each request is of form:
 
 	struct virtio_blk_req {
 		u32 type;
-		u32 ioprio;
+		u32 reserved;
 		u64 sector;
 		char data[][512];
 		u8 status;
@@ -1674,10 +1674,6 @@ VIRTIO_BLK_T_FLUSH_OUT[23]).
 	#define VIRTIO_BLK_T_OUT          1
 	#define VIRTIO_BLK_T_FLUSH        4
 	#define VIRTIO_BLK_T_FLUSH_OUT    5
-
-The ioprio field is a hint about the relative priorities of
-requests to the device: higher numbers indicate more important
-requests.
 
 The sector number indicates the offset (multiplied by 512) where
 the read or write is to occur. This field is unused and set to 0
@@ -1693,6 +1689,10 @@ error or VIRTIO_BLK_S_UNSUPP for a request unsupported by host:
 
 2.4.2.5.1 Legacy Interface: Device Operation
 ------------------------
+The 'reserved' field was previously called ioprio.  The ioprio field
+is a hint about the relative priorities of requests to the device:
+higher numbers indicate more important requests.
+
 If the device has VIRTIO_BLK_F_SCSI feature, it can also support
 scsi packet command requests, each of these requests is of form:
 
