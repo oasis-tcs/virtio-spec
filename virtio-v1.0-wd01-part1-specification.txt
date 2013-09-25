@@ -1123,6 +1123,178 @@ InterruptACK register.
 This is indicated by bit 1 in the InterruptStatus register, as
 documented in the register description.
 
+2.3.3. Virtio over channel I/O
+------------------------------
+
+S/390 based virtual machines support neither PCI nor MMIO, so a
+different transport is needed there.
+
+The old s390-virtio mechanism used a special page mapped above
+the guest's memory and several diagnose calls (hypercalls); it
+does have some drawbacks, however, like a rather limited number
+of devices and very restricted hotplug support. Moreover, device
+discovery and operation differ from other environments on the
+S/390 platform.
+
+virtio-ccw uses the standard channel I/O based mechanism used for
+the majority of devices on S/390. A virtual channel device with a
+special control unit type acts as proxy to the virtio device
+(similar to the way virtio-pci uses a PCI device) and
+configuration and operation of the virtio device is accomplished
+(mostly) via channel commands. This means virtio devices are
+discoverable via standard operating system algorithms, and adding
+virtio support is mainly a question of supporting a new control
+unit type.
+
+2.3.3.1. Basic Concepts
+-----------------------
+
+As a proxy device, virtio-ccw uses a channel-attached I/O control
+unit with a special control unit type (0x3832) and a control unit
+model corresponding to the attached virtio device's subsystem
+device ID, accessed via a virtual I/O subchannel and a virtual
+channel path of type 0x32. This proxy device is discoverable via
+normal channel subsystem device discovery (usually a STORE
+SUBCHANNEL loop) and answers to the basic channel commands, most
+importantly SENSE ID.
+
+In addition to the basic channel commands, virtio-ccw defines a
+set of channel commands related to configuration and operation of
+virtio:
+
+#define CCW_CMD_SET_VQ 0x13
+#define CCW_CMD_VDEV_RESET 0x33
+#define CCW_CMD_SET_IND 0x43
+#define CCW_CMD_READ_FEAT 0x12
+#define CCW_CMD_WRITE_FEAT 0x11
+#define CCW_CMD_READ_CONF 0x22
+#define CCW_CMD_WRITE_CONF 0x21
+#define CCW_CMD_WRITE_STATUS 0x31
+#define CCW_CMD_READ_VQ_CONF 0x32
+
+2.3.3.2. Device Initialization
+------------------------------
+
+virtio-ccw uses several channel commands to set up a device.
+
+2.3.3.2.1. Configuring a Virtqueue
+----------------------------------
+
+CCW_CMD_READ_VQ_CONF is issued by the guest to obtain information
+about a queue. It uses the following structure for communicating:
+
+struct vq_config_block {
+	__u16 index;
+	__u16 max_num;
+} __attribute__ ((packed));
+
+The requested number of buffers for queue index is returned in
+max_num.
+
+Afterwards, CCW_CMD_SET_VQ is issued by the guest to inform the
+host about the location used for its queue. The transmitted
+structure is
+
+struct vq_info_block {
+	__u64 queue;
+	__u32 align;
+	__u16 index;
+	__u16 num;
+} __attribute__ ((packed));
+
+queue contains the guest address for queue index. The actual
+number of allocated buffers is transmitted in num and their
+alignment in align.
+
+2.3.3.2.2. Communicating Status Information
+-------------------------------------------
+
+The guest can change the status of a device via the
+CCW_CMD_WRITE_STATUS command, which transmits an 8 bit status
+value.
+
+2.3.3.2.3. Handling Device Features
+-----------------------------------
+
+Feature bits are arranged in an array of 32 bit values, making
+for a total of 8192 feature bits.
+
+The CCW commands dealing with features use the following
+communication block:
+
+struct virtio_feature_desc {
+	__u32 features;
+	__u8 index;
+} __attribute__ ((packed));
+
+features are the 32 bits of features currently accessed, while
+index describes which of the feature bit values is to be
+accessed.
+
+The guest may obtain the host's device feature set via the
+CCW_CMD_READ_FEAT command. The host stores the features at index
+to features.
+
+For communicating its device features to the host, the guest may
+use the CCW_CMD_WRITE_FEAT command, denoting a features/index
+combination.
+
+2.3.3.2.4. Device Configuration
+-------------------------------
+
+The device's configuration space is located in host memory. It is
+the same size as the standard PCI configuration space.
+
+To obtain information from the configuration space, the guest may
+use CCW_CMD_READ_CONF, specifying the guest memory for the host
+to write to.
+
+For changing configuration information, the guest may use
+CCW_CMD_WRITE_CONF, specifying the guest memory for the host to
+read from.
+
+In both cases, the complete configuration space is transmitted.
+
+2.3.3.2.5. Setting Up Indicators
+--------------------------------
+
+To communicate the location of the indicator bits for host->guest
+notification, the guest uses the CCW_CMD_SET_IND command which
+sends the guest address of the indicators in a 64 bit value.
+
+2.3.3.3. Device Operation
+-------------------------
+
+2.3.3.3.1. Host->Guest Notification
+-----------------------------------
+
+For notifying the guest of virtqueue buffers, the host sets the
+corresponding bit in the guest-provided indicators. If an
+interrupt is not already pending for the subchannel, the host
+generates an unsolicited I/O interrupt.
+
+2.3.3.3.2. Guest->Host Notification
+-----------------------------------
+
+For notifying the host of virtqueue buffers, the guest
+unfortunately can't use a channel command (the asynchronous
+characteristics of channel I/O interact badly with the host block
+I/O backend). Instead, it uses a diagnose 0x500 call with subcode
+3 specifying the queue.
+
+2.3.3.3.3. Early printk for Virtio Consoles
+-------------------------------------------
+
+For the early printk mechanism, diagnose 0x500 with subcode 0 is
+used.
+
+2.3.3.3.4. Resetting Devices
+----------------------------
+
+In order to reset a device, a guest may send the
+CCW_CMD_VDEV_RESET command.
+
+
 2.4. Device Types
 ================
 
