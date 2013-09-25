@@ -1613,8 +1613,6 @@ device except where noted.
 
   VIRTIO_BLK_F_BLK_SIZE (6) Block size of disk is in “blk_size”.
 
-  VIRTIO_BLK_F_SCSI (7) Device supports scsi packet commands.
-
   VIRTIO_BLK_F_FLUSH (9) Cache flush command support.
 
   Device configuration layout The capacity of the device
@@ -1634,7 +1632,11 @@ device except where noted.
 		u32 blk_size;
 	};
 
-2.4.2.3. Device Initialization
+2.4.2.3.1 Legacy Interface: Feature bits
+--------------------
+  VIRTIO_BLK_F_SCSI (7) Device supports scsi packet commands.
+
+2.4.2.4. Device Initialization
 -----------------------------
 
 1. The device size should be read from the “capacity”
@@ -1664,6 +1666,41 @@ the device (not necessarily in order). Each request is of form:
 		u8 status;
 	};
 
+The type of the request is either a read (VIRTIO_BLK_T_IN), a write
+(VIRTIO_BLK_T_OUT), or a flush (VIRTIO_BLK_T_FLUSH or
+VIRTIO_BLK_T_FLUSH_OUT[23]). If the device has VIRTIO_BLK_F_BARRIER
+feature the high bit (VIRTIO_BLK_T_BARRIER) indicates that this
+request acts as a barrier and that all preceeding requests must be
+complete before this one, and all following requests must not be
+started until this is complete. Note that a barrier does not flush
+caches in the underlying backend device in host, and thus does not
+serve as data consistency guarantee. Driver must use FLUSH request to
+flush the host cache.
+
+	#define VIRTIO_BLK_T_IN           0
+	#define VIRTIO_BLK_T_OUT          1
+	#define VIRTIO_BLK_T_FLUSH        4
+	#define VIRTIO_BLK_T_FLUSH_OUT    5
+	#define VIRTIO_BLK_T_BARRIER	 0x80000000
+
+The ioprio field is a hint about the relative priorities of
+requests to the device: higher numbers indicate more important
+requests.
+
+The sector number indicates the offset (multiplied by 512) where
+the read or write is to occur. This field is unused and set to 0
+for scsi packet commands and for flush commands.
+
+The final status byte is written by the device: either
+VIRTIO_BLK_S_OK for success, VIRTIO_BLK_S_IOERR for host or guest
+error or VIRTIO_BLK_S_UNSUPP for a request unsupported by host:
+
+	#define VIRTIO_BLK_S_OK        0
+	#define VIRTIO_BLK_S_IOERR     1
+	#define VIRTIO_BLK_S_UNSUPP    2
+
+2.4.2.5.1 Legacy Interface: Device Operation
+------------------------
 If the device has VIRTIO_BLK_F_SCSI feature, it can also support
 scsi packet command requests, each of these requests is of form:
 
@@ -1682,33 +1719,12 @@ scsi packet command requests, each of these requests is of form:
 		u8 status;
 	};
 
-The type of the request is either a read (VIRTIO_BLK_T_IN), a write
-(VIRTIO_BLK_T_OUT), a scsi packet command (VIRTIO_BLK_T_SCSI_CMD or
-VIRTIO_BLK_T_SCSI_CMD_OUT[22]) or a flush (VIRTIO_BLK_T_FLUSH or
-VIRTIO_BLK_T_FLUSH_OUT[23]). If the device has VIRTIO_BLK_F_BARRIER
-feature the high bit (VIRTIO_BLK_T_BARRIER) indicates that this
-request acts as a barrier and that all preceeding requests must be
-complete before this one, and all following requests must not be
-started until this is complete. Note that a barrier does not flush
-caches in the underlying backend device in host, and thus does not
-serve as data consistency guarantee. Driver must use FLUSH request to
-flush the host cache.
+A request type can also be a scsi packet command (VIRTIO_BLK_T_SCSI_CMD or
+VIRTIO_BLK_T_SCSI_CMD_OUT).  The two types are equivalent, the device
+does not distinguish between them:
 
-	#define VIRTIO_BLK_T_IN           0
-	#define VIRTIO_BLK_T_OUT          1
 	#define VIRTIO_BLK_T_SCSI_CMD     2
 	#define VIRTIO_BLK_T_SCSI_CMD_OUT 3
-	#define VIRTIO_BLK_T_FLUSH        4
-	#define VIRTIO_BLK_T_FLUSH_OUT    5
-	#define VIRTIO_BLK_T_BARRIER	 0x80000000
-
-The ioprio field is a hint about the relative priorities of
-requests to the device: higher numbers indicate more important
-requests.
-
-The sector number indicates the offset (multiplied by 512) where
-the read or write is to occur. This field is unused and set to 0
-for scsi packet commands and for flush commands.
 
 The cmd field is only present for scsi packet command requests,
 and indicates the command to perform. This field must reside in a
@@ -1734,17 +1750,6 @@ the sense buffer.
 The residual field is only present for scsi packet command
 requests and indicates the residual size, calculated as data
 length - number of bytes actually transferred.
-
-The final status byte is written by the device: either
-VIRTIO_BLK_S_OK for success, VIRTIO_BLK_S_IOERR for host or guest
-error or VIRTIO_BLK_S_UNSUPP for a request unsupported by host:
-
-	#define VIRTIO_BLK_S_OK        0
-	#define VIRTIO_BLK_S_IOERR     1
-	#define VIRTIO_BLK_S_UNSUPP    2
-
-2.4.2.5.1 Legacy Interface: Device Operation
-------------------------
 
 Historically, devices assumed that the fields type, ioprio and
 sector reside in a single, separate read-only buffer; the fields
@@ -2947,9 +2952,6 @@ elements.
 [21] Since there are no guarentees, it can use a hash filter or
 silently switch to allmulti or promiscuous mode if it is given too
 many addresses.
-
-[22] The SCSI_CMD and SCSI_CMD_OUT types are equivalent, the device
-does not distinguish between them.
 
 [23] The FLUSH and FLUSH_OUT types are equivalent, the device does not
 distinguish between them
