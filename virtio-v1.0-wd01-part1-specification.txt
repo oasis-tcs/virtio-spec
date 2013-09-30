@@ -216,6 +216,55 @@ transmit and one for receive.  Each queue has a 16-bit queue size
 parameter, which sets the number of entries and implies the total size
 of the queue.
 
+Each virtqueue consists of three parts:
+
+	Descriptor Table
+	Available Ring
+	Used Ring
+
+where each part is physically-contiguous in guest memory,
+and has different alignment requirements.
+
+The memory aligment and size requirements, in bytes, of each part of the
+virtqueue are summarized in the following table:
+
++------------+-----------------------------------------+
+| Virtqueue Part    | Alignment | Size                 |
++------------+-----------------------------------------+
++------------+-----------------------------------------+
+| Descriptor Table  | 16        | 16 * (Queue Size)    |
++------------+-----------------------------------------+
+| Available Ring    | 2         | 6 + 2 * (Queue Size) |
++------------+-----------------------------------------+
+| Used Ring         | 4         | 6 + 4 * (Queue Size) |
++------------+-----------------------------------------+
+
+The Alignment column gives the miminum alignment: for each part
+of the virtqueue, the physical address of the first byte of it
+must be a multiple of the specified alignment value.
+
+The Size column gives the total number of bytes required for each
+part of the virtqueue.
+
+Queue Size corresponds to the maximum number of buffers in the
+virtqueue.  For example, if Queue Size is 4 then at most 4 buffers
+can be queued at any given time.  Queue Size value is always a
+power of 2.  The maximum Queue Size value is 32768.  This value
+is specified in a bus-specific way.
+
+When the driver wants to send a buffer to the device, it fills in
+a slot in the descriptor table (or chains several together), and
+writes the descriptor index into the available ring.  It then
+notifies the device. When the device has finished a buffer, it
+writes the descriptor into the used ring, and sends an interrupt.
+
+
+2.1.4.1. Legacy Interfaces: A Note on Virtqueue Layout
+--------------------------------------
+
+For Legacy Interfaces, several additional
+restrictions are placed on the virtqueue layout:
+
 Each virtqueue occupies two or more physically-contiguous pages
 (usually defined as 4096 bytes, but depending on the transport)
 and consists of three parts:
@@ -234,9 +283,8 @@ required for the virtqueue according to the following formula:
 	          + ALIGN(sizeof(u16)*3 + sizeof(struct vring_used_elem)*qsz);
 	}
 
-This currently wastes some space with padding, but also allows future
-extensions such as the VIRTIO_RING_F_EVENT_IDX extension.  The
-virtqueue layout structure looks like this:
+This wastes some space with padding.
+The legacy virtqueue layout structure therefore looks like this:
 
 	struct vring {
 		// The actual descriptors (16 bytes each)
