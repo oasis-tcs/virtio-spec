@@ -693,9 +693,145 @@ for informational purposes by the guest).
 2.3.1.2. PCI Device Layout
 -------------------------
 
-To configure the device, we use the first I/O region of the PCI
-device. This contains a virtio header followed by a
-device-specific region.
+To configure the device,
+use I/O and/or memory regions and/or PCI configuration space of the PCI device.
+These contain the virtio header registers, the notification register, the
+ISR status register and device specific registers, as specified by Virtio
++ Structure PCI Capabilities
+
+There may be different widths of accesses to the I/O region; the
+“natural” access method for each field must be
+used (i.e. 32-bit accesses for 32-bit fields, etc).
+
+PCI Device Configuration Layout includes the common configuration,
+ISR, notification and device specific configuration
+structures.
+
+Unless explicitly specified otherwise, all multi-byte fields are little-endian.
+
+2.3.1.2.1. Common configuration structure layout
+-------------------------
+Common configuration structure layout is documented below:
+
+struct virtio_pci_common_cfg {
+	/* About the whole device. */
+	__le32 device_feature_select;	/* read-write */
+	__le32 device_feature;		/* read-only */
+	__le32 guest_feature_select;	/* read-write */
+	__le32 guest_feature;		/* read-write */
+	__le16 msix_config;		/* read-write */
+	__le16 num_queues;		/* read-only */
+	__u8 device_status;		/* read-write */
+	__u8 unused1;
+
+	/* About a specific virtqueue. */
+	__le16 queue_select;		/* read-write */
+	__le16 queue_size;		/* read-write, power of 2, or 0. */
+	__le16 queue_msix_vector;	/* read-write */
+	__le16 queue_enable;		/* read-write */
+	__le16 queue_notify_off;	/* read-only */
+	__le64 queue_desc;		/* read-write */
+	__le64 queue_avail;		/* read-write */
+	__le64 queue_used;		/* read-write */
+};
+
+device_feature_select
+
+	Selects which Feature Bits does device_feature field refer to.
+	Value 0x0 selects Feature Bits 0 to 31
+	Value 0x1 selects Feature Bits 32 to 63
+	All other values cause reads from device_feature to return 0.
+
+device_feature
+
+	Used by Device to report Feature Bits to Driver.
+	Device Feature Bits selected by device_feature_select.
+
+guest_feature_select
+
+	Selects which Feature Bits does guest_feature field refer to.
+	Value 0x0 selects Feature Bits 0 to 31
+	Value 0x1 selects Feature Bits 32 to 63
+	All other values cause writes to guest_feature to be ignored,
+	and reads to return 0.
+
+guest_feature
+
+	Used by Driver to acknowledge Feature Bits to Device.
+	Guest Feature Bits selected by guest_feature_select.
+
+msix_config
+
+	Configuration Vector for MSI-X.
+
+num_queues
+
+	Specifies the maximum number of virtqueues supported by device.
+
+device_status
+
+	Device Status field. Writing 0 into this field resets the
+	device.
+
+queue_select
+
+	Queue Select. Selects which virtqueue do other fields refer to.
+
+queue_size
+
+	Queue Size.  On reset, specifies the maximum queue size supported by
+	the hypervisor. This can be modified by driver to reduce memory requirements.
+	Set to 0 if this virtqueue is unused.
+
+queue_msix_vector
+
+	Queue Vector for MSI-X.
+
+queue_enable
+
+	Used to selectively prevent host from executing requests from this virtqueue.
+	1 - enabled; 0 - disabled
+
+queue_notify_off
+
+	Used to calculate the offset from start of Notification structure at
+	which this virtqueue is located.
+	Note: this is *not* an offset in bytes. See notify_off_multiplier below.
+
+queue_desc
+
+	Physical address of Descriptor Table.
+
+queue_avail
+
+	Physical address of Available Ring.
+
+queue_used
+
+	Physical address of Used Ring.
+
+2.3.1.2.2. ISR status structure layout
+-------------------------
+ISR status structure includes a single 8-bite ISR status field
+
+2.3.1.2.3. Notification structure layout
+-------------------------
+Notification structure is always a multiple of 2 bytes in size.
+It includes 2-byte Queue Notify fields for each virtqueue of
+the device. Note that multiple virtqueues can use the same
+Queue Notify field, if necessary.
+
+2.3.1.2.4. Device specific structure
+-------------------------
+
+Device specific structure is optional.
+
+2.3.1.2.5. Legacy Interfaces: A Note on PCI Device Layout
+-------------------------
+
+Transitional devices should present part of configuration
+registers in a legacy configuration structure in BAR0 in the first I/O
+region of the PCI device, as documented below.
 
 There may be different widths of accesses to the I/O region; the
 “natural” access method for each field in the virtio header must be
@@ -708,10 +844,7 @@ Note that this is possible because while the virtio header is PCI
 the native endian of the guest (where such distinction is
 applicable).
 
-2.3.1.2.1. PCI Device Virtio Header
-----------------------------------
-
-The virtio header looks as follows:
+When used through the legacy interface, the virtio header looks as follows:
 
 +------------++---------------------+---------------------+----------+--------+---------+---------+---------+--------+
 | Bits       || 32                  | 32                  | 32       | 16     | 16      | 16      | 8       | 8      |
@@ -750,25 +883,167 @@ device-specific headers:
 |            ||                    |
 +------------++--------------------+
 
+Note that only Feature Bits 0 to 31 are accessible through the
+Legacy Interface. When used through the Legacy Interface,
+Transitional Devices must assume that Feature Bits 32 to 63
+are not acknowledged by Driver.
+
 2.3.1.3. PCI-specific Initialization And Device Operation
 --------------------------------------------------------
 
-The page size for a virtqueue on a PCI virtio device is defined as
-4096 bytes.
-
 2.3.1.3.1. Device Initialization
 -------------------------------
+
+This documents PCI-specific steps executed during Device Initialization.
+As the first step, driver must detect device configuration layout
+to locate configuration fields in memory,I/O or configuration space of the
+device.
+
+100.100.1.3.1.1. Virtio Device Configuration Layout Detection
+-------------------------------
+
+As a prerequisite to device initialization, driver executes a
+PCI capability list scan, detecting virtio configuration layout using Virtio
+Structure PCI capabilities.
+
+Virtio Device Configuration Layout includes virtio configuration header, Notification
+and ISR Status and device configuration structures.
+Each structure can be mapped by a Base Address register (BAR) belonging to
+the function, located beginning at 10h in Configuration Space,
+or accessed though PCI configuration space.
+
+Actual location of each structure is specified using vendor-specific PCI capability located
+on capability list in PCI configuration space of the device.
+This virtio structure capability uses little-endian format; all bits are
+read-only:
+
+struct virtio_pci_cap {
+	__u8 cap_vndr;	/* Generic PCI field: PCI_CAP_ID_VNDR */
+	__u8 cap_next;	/* Generic PCI field: next ptr. */
+	__u8 cap_len;	/* Generic PCI field: capability length */
+	__u8 cfg_type;	/* Identifies the structure. */
+	__u8 bar;	/* Where to find it. */
+	__u8 padding[3];/* Pad to full dword. */
+	__le32 offset;	/* Offset within bar. */
+	__le32 length;	/* Length of the structure, in bytes. */
+};
+
+This structure can optionally followed by extra data, depending on
+other fields, as documented below.
+
+The fields are interpreted as follows:
+
+cap_vndr
+	0x09; Identifies a vendor-specific capability.
+
+cap_next
+	Link to next capability in the capability list in the configuration space.
+
+cap_len
+	Length of the capability structure, including the whole of
+	struct virtio_pci_cap, and extra data if any.
+	This length might include padding, or fields unused by the driver.
+
+cfg_type
+	identifies the structure, according to the following table.
+
+	/* Common configuration */
+	#define VIRTIO_PCI_CAP_COMMON_CFG	1
+	/* Notifications */
+	#define VIRTIO_PCI_CAP_NOTIFY_CFG	2
+	/* ISR Status */
+	#define VIRTIO_PCI_CAP_ISR_CFG		3
+	/* Device specific configuration */
+	#define VIRTIO_PCI_CAP_DEVICE_CFG	4
+
+	Any other value - reserved for future use. Drivers must
+	ignore any vendor-specific capability structure which has
+	a reserved cfg_type value.
+
+	More than one capability can identify the same structure - this makes it
+	possible for the device to expose multiple interfaces to drivers.  The order of
+	the capabilities in the capability list specifies the order of preference
+	suggested by the device; drivers should use the first interface that they can
+	support.  For example, on some hypervisors, notifications using IO accesses are
+	faster than memory accesses. In this case, hypervisor can expose two
+	capabilities with cfg_type set to VIRTIO_PCI_CAP_NOTIFY_CFG:
+	the first one addressing an I/O BAR, the second one addressing a memory BAR.
+	Driver will use the I/O BAR if I/O resources are available, and fall back on
+	memory BAR when I/O resources are unavailable.
+
+bar
+	values 0x0 to 0x5 specify a Base Address register (BAR) belonging to
+	the function located beginning at 10h in Configuration Space
+	and used to map the structure into Memory or I/O Space.
+	The BAR is permitted to be either 32-bit or 64-bit, it can map Memory Space
+	or I/O Space.
+
+	Any other value - reserved for future use. Drivers must
+	ignore any vendor-specific capability structure which has
+	a reserved bar value.
+
+offset
+	indicates where the structure begins relative to the base address associated
+	with the BAR.
+
+length
+	indicates the length of the structure.
+	This size might include padding, or fields unused by the driver.
+	Drivers are also recommended to only map part of configuration structure
+	large enough for device operation.
+	For example, a future device might present a large structure size of several
+	MBytes.
+	As current devices never utilize structures larger than 4KBytes in size,
+	driver can limit the mapped structure size to e.g.
+	4KBytes to allow forward compatibility with such devices without loss of
+	functionality and without wasting resources.
+
+
+If cfg_type is VIRTIO_PCI_CAP_NOTIFY_CFG this structure is immediately followed
+by additional fields:
+
+struct virtio_pci_notify_cap {
+	struct virtio_pci_cap cap;
+	__le32 notify_off_multiplier;	/* Multiplier for queue_notify_off. */
+};
+
+notify_off_multiplier
+
+	Virtqueue offset multiplier, in bytes. Must be even and either a power of two, or 0.
+	Value 0x1 is reserved.
+	For a given virtqueue, the address to use for notifications is calculated as follows:
+
+	queue_notify_off * notify_off_multiplier + offset
+
+	If notify_off_multiplier is 0, all virtqueues use the same address in
+	the Notifications structure!
+
+
+100.100.1.3.1.1. Legacy Interface: A Note on Device Layout Detection
+-------------------------------
+
+Legacy drivers skipped  Device Layout Detection step, assuming legacy
+configuration space in BAR0 in I/O space unconditionally.
+
+Legacy devices did not have the Virtio PCI Capability in their
+capability list.
+
+Therefore:
+
+Transitional devices should expose the Legacy Interface in I/O
+space in BAR0.
+
+Transitional drivers should look for the Virtio PCI
+Capabilities on the capability list.
+If there are not present, driver should assume a legacy device.
 
 2.3.1.3.1.1. Queue Vector Configuration
 --------------------------------------
 
 When MSI-X capability is present and enabled in the device
-(through standard PCI configuration space) 4 bytes at byte offset
-20 are used to map configuration change and queue interrupts to
-MSI-X vectors. In this case, the ISR Status field is unused, and
-device specific configuration starts at byte offset 24 in virtio
-header structure. When MSI-X capability is not enabled, device
-specific configuration starts at byte offset 20 in virtio header.
+(through standard PCI configuration space) Configuration/Queue
+MSI-X Vector registers are used to map configuration change and queue
+interrupts to MSI-X vectors. In this case, the ISR Status is unused.
 
 Writing a valid MSI-X Table entry number, 0 to 0x7FF, to one of
 Configuration/Queue Vector registers, maps interrupts triggered
@@ -810,23 +1085,30 @@ This is done as follows, for each virtqueue a device has:
   always a power of 2. This controls how big the virtqueue is
   (see "2.1.4. Virtqueues"). If this field is 0, the virtqueue does not exist.
 
-3. Allocate and zero virtqueue in contiguous physical memory, on
-  a 4096 byte alignment. Write the physical address, divided by
-  4096 to the Queue Address field.[6]
+3. Optionally, select a smaller virtqueue size and write it in the Queue Size
+   field.
 
-4. Optionally, if MSI-X capability is present and enabled on the
+4. Allocate and zero Descriptor Table, Available and Used rings for the
+   virtqueue in contiguous physical memory.
+
+5. Optionally, if MSI-X capability is present and enabled on the
   device, select a vector to use to request interrupts triggered
   by virtqueue events. Write the MSI-X Table entry number
   corresponding to this vector in Queue Vector field. Read the
   Queue Vector field: on success, previously written value is
   returned; on failure, NO_VECTOR value is returned.
 
+100.100.1.3.1.4.1. Legacy Interface: A Note on Virtqueue Configuration
+-----------------------------------
+When using the legacy interface, the page size for a virtqueue on a PCI virtio
+device is defined as 4096 bytes.  Driver writes the physical address, divided
+by 4096 to the Queue Address field [6].
+
 2.3.1.3.2. Notifying The Device
 ------------------------------
 
 Device notification occurs by writing the 16-bit virtqueue index
-of this virtqueue to the Queue Notify field of the virtio header
-in the first I/O region of the PCI device.
+of this virtqueue to the Queue Notify field.
 
 2.3.1.3.3. Virtqueue Interrupts From The Device
 ----------------------------------------------
@@ -3105,7 +3387,10 @@ the non-PCI implementations (currently lguest and S/390).
 This is only allowed if the driver does not use any features
 which would alter this early use of the device.
 
-[5] ie. once you enable MSI-X on the device, the other fields move.
+[5] When MSI-X capability is enabled, device specific configuration starts at
+byte offset 24 in virtio header structure. When MSI-X capability is not
+enabled, device specific configuration starts at byte offset 20 in virtio
+header.  ie. once you enable MSI-X on the device, the other fields move.
 If you turn it off again, they move back!
 
 [6] The 4096 is based on the x86 page size, but it's also large
