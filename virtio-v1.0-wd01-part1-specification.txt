@@ -752,8 +752,9 @@ guest_feature_select
 	Selects which Feature Bits does guest_feature field refer to.
 	Value 0x0 selects Feature Bits 0 to 31
 	Value 0x1 selects Feature Bits 32 to 63
-	All other values cause writes to guest_feature to be ignored,
-	and reads to return 0.
+	When set to any other value, reads from guest_feature
+	return 0, writing 0 into guest_feature has no effect, and
+	writing any other value into guest_feature is an error.
 
 guest_feature
 
