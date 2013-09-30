@@ -858,7 +858,7 @@ When used through the legacy interface, the virtio header looks as follows:
 
 
 If MSI-X is enabled for the device, two additional fields
-immediately follow this header:[5]
+immediately follow this header:
 
 
 +------------++----------------+--------+
@@ -870,6 +870,12 @@ immediately follow this header:[5]
 | Purpose    || Configuration  | Queue  |
 | (MSI-X)    || Vector         | Vector |
 +------------++----------------+--------+
+
+Note: When MSI-X capability is enabled, device specific configuration starts at
+byte offset 24 in virtio header structure. When MSI-X capability is not
+enabled, device specific configuration starts at byte offset 20 in virtio
+header.  ie. once you enable MSI-X on the device, the other fields move.
+If you turn it off again, they move back!
 
 Immediately following these general headers, there may be
 device-specific headers:
@@ -3387,12 +3393,6 @@ the non-PCI implementations (currently lguest and S/390).
 [4] Historically, drivers have used the device before steps 5 and 6.
 This is only allowed if the driver does not use any features
 which would alter this early use of the device.
-
-[5] When MSI-X capability is enabled, device specific configuration starts at
-byte offset 24 in virtio header structure. When MSI-X capability is not
-enabled, device specific configuration starts at byte offset 20 in virtio
-header.  ie. once you enable MSI-X on the device, the other fields move.
-If you turn it off again, they move back!
 
 [6] The 4096 is based on the x86 page size, but it's also large
 enough to ensure that the separate parts of the virtqueue are on
