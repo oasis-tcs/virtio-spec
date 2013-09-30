@@ -682,13 +682,17 @@ Virtio devices are commonly implemented as PCI devices.
 ----------------------------
 
 Any PCI device with Vendor ID 0x1AF4, and Device ID 0x1000 through
-0x103F inclusive is a virtio device[3]. The device must also have a
-Revision ID of 0 to match this specification.
+0x103F inclusive is a virtio device[3].
 
 The Subsystem Device ID indicates which virtio device is
 supported by the device. The Subsystem Vendor ID should reflect
 the PCI Vendor ID of the environment (it's currently only used
 for informational purposes by the guest).
+
+2.3.1.1.1 Legacy Interfaces: A Note on PCI Device Discovery
+-------------------------
+Transitional devices must also have a Revision ID of 0 to match
+this specification.
 
 2.3.1.2. PCI Device Layout
 -------------------------
