@@ -3464,8 +3464,7 @@ feature bit. This establishes clarity[11] and avoids future expansion problems.
 Clusters of functionality which are always implemented together
 can use a single bit, but if one feature makes sense without the
 others they should not be gratuitously grouped together to
-conserve feature bits. We can always extend the spec when the
-first person needs more than 24 feature bits for their device.
+conserve feature bits.
 
 
 FOOTNOTES:
