@@ -1396,6 +1396,27 @@ Writing to registers described as “R” and reading from
 registers described as “W” is not permitted and can cause
 undefined behavior.
 
+100.3.2.2.1.  Virtqueue Layout
+------------------------------
+
+The virtqueue is physically contiguous, with padded added to make the
+used ring meet the QueueAlign value:
+
++-------------------+-----------------------------------+-----------+
+| Descriptor Table  |   Available Ring     (padding)    | Used Ring |
++-------------------+-----------------------------------+-----------+
+
+The calculation for total size is as follows:
+
+	#define ALIGN(x) (((x) + QueueAlign) & ~QueueAlign)
+	static inline unsigned vring_size(unsigned int QueueNum)
+	{
+	     return ALIGN(sizeof(struct vring_desc)*QueueNum
+			  + sizeof(u16)*(3 + QueueNum))
+	          + ALIGN(sizeof(u16)*3 + sizeof(struct vring_used_elem)*QueueNum);
+	}
+
+
 2.3.2.3. MMIO-specific Initialization And Device Operation
 ---------------------------------------------------------
 
@@ -1541,6 +1562,26 @@ struct vq_info_block {
 queue contains the guest address for queue index. The actual
 number of allocated buffers is transmitted in num and their
 alignment in align.
+
+100.3.3.2.1.  Virtqueue Layout
+------------------------------
+
+The virtqueue is physically contiguous, with padded added to make the
+used ring meet the align value:
+
++-------------------+-----------------------------------+-----------+
+| Descriptor Table  |   Available Ring     (padding)    | Used Ring |
++-------------------+-----------------------------------+-----------+
+
+The calculation for total size is as follows:
+
+	#define ALIGN(x) (((x) + align) & ~align)
+	static inline unsigned vring_size(unsigned int num)
+	{
+	     return ALIGN(sizeof(struct vring_desc)*num
+			  + sizeof(u16)*(3 + num))
+	          + ALIGN(sizeof(u16)*3 + sizeof(struct vring_used_elem)*num);
+	}
 
 2.3.3.2.2. Communicating Status Information
 -------------------------------------------
