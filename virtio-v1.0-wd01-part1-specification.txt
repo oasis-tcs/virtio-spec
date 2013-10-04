@@ -1837,7 +1837,7 @@ VIRTIO_NET_S_LINK_UP and VIRTIO_NET_S_ANNOUNCE.
 
 	struct virtio_net_config {
 		u8 mac[6];
-		le16 status;
+		u16 status;
 	};
 
 2.4.1.4. Device Initialization
