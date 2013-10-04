@@ -1815,21 +1815,6 @@ features.
   VIRTIO_NET_F_GUEST_ANNOUNCE(21) Guest can send gratuitous
     packets.
 
-  Device configuration layout Two configuration fields are
-  currently defined. The mac address field always exists (though
-  is only valid if VIRTIO_NET_F_MAC is set), and the status field
-  only exists if VIRTIO_NET_F_STATUS is set. Two read-only bits
-  are currently defined for the status field:
-  VIRTIO_NET_S_LINK_UP and VIRTIO_NET_S_ANNOUNCE.
-
-	#define VIRTIO_NET_S_LINK_UP	1
-	#define VIRTIO_NET_S_ANNOUNCE	2
-
-	struct virtio_net_config {
-		u8 mac[6];
-		u16 status;
-	};
-
 2.4.1.3.1. Legacy Interface: Feature bits
 --------------------
 VIRTIO_NET_F_GSO (6) Device handles packets with any GSO type.
@@ -1838,6 +1823,22 @@ This was supposed to indicate segmentation offload support, but
 upon further investigation it became clear that multiple bits
 were required.
 
+100.4.1.4. Device configuration layout
+---------------------
+
+Two configuration fields are currently defined. The mac address field
+always exists (though is only valid if VIRTIO_NET_F_MAC is set), and
+the status field only exists if VIRTIO_NET_F_STATUS is set. Two
+read-only bits are currently defined for the status field:
+VIRTIO_NET_S_LINK_UP and VIRTIO_NET_S_ANNOUNCE.
+
+	#define VIRTIO_NET_S_LINK_UP	1
+	#define VIRTIO_NET_S_ANNOUNCE	2
+
+	struct virtio_net_config {
+		u8 mac[6];
+		le16 status;
+	};
 
 2.4.1.4. Device Initialization
 -----------------------------
@@ -2196,10 +2197,18 @@ device except where noted.
 
   VIRTIO_BLK_F_FLUSH (9) Cache flush command support.
 
-  Device configuration layout The capacity of the device
-  (expressed in 512-byte sectors) is always present. The
-  availability of the others all depend on various feature bits
-  as indicated above.
+2.4.2.3.1 Legacy Interface: Feature bits
+--------------------
+  VIRTIO_BLK_F_BARRIER (0) Host supports request barriers.
+
+  VIRTIO_BLK_F_SCSI (7) Device supports scsi packet commands.
+
+100.2.4.2.5. Device configuration layout
+--------------------
+
+The capacity of the device (expressed in 512-byte sectors) is always
+present. The availability of the others all depend on various feature
+bits as indicated above.
 
 	struct virtio_blk_config {
 		u64 capacity;
@@ -2213,11 +2222,6 @@ device except where noted.
 		u32 blk_size;
 	};
 
-2.4.2.3.1 Legacy Interface: Feature bits
---------------------
-  VIRTIO_BLK_F_BARRIER (0) Host supports request barriers.
-
-  VIRTIO_BLK_F_SCSI (7) Device supports scsi packet commands.
 
 2.4.2.4. Device Initialization
 -----------------------------
