@@ -882,7 +882,8 @@ region of the PCI device, as documented below.
 
 There may be different widths of accesses to the I/O region; the
 “natural” access method for each field in the virtio header must be
-used (i.e. 32-bit accesses for 32-bit fields, etc), but the
+used (i.e. 32-bit accesses for 32-bit fields, etc), but 
+when accessed through the legacy interface the
 device-specific region can be accessed using any width accesses, and
 should obtain the same results.
 
