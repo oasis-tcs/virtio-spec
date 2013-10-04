@@ -300,12 +300,6 @@ The legacy virtqueue layout structure therefore looks like this:
 		struct vring_used used;
 	};
 
-When the driver wants to send a buffer to the device, it fills in
-a slot in the descriptor table (or chains several together), and
-writes the descriptor index into the available ring.  It then
-notifies the device. When the device has finished a buffer, it
-writes the descriptor into the used ring, and sends an interrupt.
-
 2.1.4.1. A Note on Virtqueue Endianness
 --------------------------------------
 
