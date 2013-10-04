@@ -78,10 +78,10 @@ Driver
 2.1. Basic Facilities of a Virtio Device
 =======================================
 
-A virtio device is discovered and identified by a bus-specific
-method (see the bus specific sections: "2.3.1. Virtio Over PCI
-Bus" and "2.3.2. Virtio Over MMIO").  Each device consists of the
-following parts:
+A virtio device is discovered and identified by a bus-specific method
+(see the bus specific sections: "2.3.1. Virtio Over PCI Bus",
+"2.3.2. Virtio Over MMIO" and "2.3.3. Virtio over channel I/O").  Each
+device consists of the following parts:
 
 o Device Status field
 o Feature bits
