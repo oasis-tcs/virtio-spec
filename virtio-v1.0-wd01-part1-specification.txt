@@ -154,7 +154,7 @@ before accessing that part of the configuration space.
 Earlier drafts of this specification (up to 0.9.X) defined a similar, but
 different interface between the hypervisor and the guest.
 Since these are widely deployed, this specification
-accomodates optional features to simplify transition
+accommodates optional features to simplify transition
 from these earlier draft interfaces. Specifically:
 
 Legacy Interface
