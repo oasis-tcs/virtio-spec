@@ -138,7 +138,7 @@ Feature bits are allocated as follows:
   24 to 32: Feature bits reserved for extensions to the queue and
   feature negotiation mechanisms
 
-  33 and above: Feature bits resered for future extensions.
+  33 and above: Feature bits reserved for future extensions.
 
 For example, feature bit 0 for a network device (i.e. Subsystem
 Device ID 1) indicates that the device supports checksumming of
