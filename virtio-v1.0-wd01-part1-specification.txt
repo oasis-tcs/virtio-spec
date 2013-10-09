@@ -1222,8 +1222,8 @@ space. In this case:
 ----------------------
 
 Virtual environments without PCI support (a common situation in
-embedded devices models) might use simple memory mapped device (“
-virtio-mmio”) instead of the PCI device.
+embedded devices models) might use simple memory mapped device
+("virtio-mmio") instead of the PCI device.
 
 The memory mapped virtio device behaviour is based on the PCI
 device specification. Therefore most of operations like device
@@ -1234,8 +1234,8 @@ following sections.
 2.3.2.1. MMIO Device Discovery
 -----------------------------
 
-Unlike PCI, MMIO provides no generic device discovery.  For systems using
-a device-tree such as Linux's dtc or Open Firmware, the suggested format is:
+Unlike PCI, MMIO provides no generic device discovery. For
+systems using Flattened Device Trees the suggested format is:
 
 	virtio_block@1e000 {
 		compatible = "virtio,mmio";
@@ -1250,140 +1250,140 @@ MMIO virtio devices provides a set of memory mapped control
 registers, all 32 bits wide, followed by device-specific
 configuration space. The following list presents their layout:
 
-• Offset from the device base address | Direction | Name
- Description
+* Offset from the device base address | Direction | Name
+  Description
 
-• 0x000 | R | MagicValue
- “virt” string.
+* 0x000 | R | MagicValue
+  "virt" string.
 
-• 0x004 | R | Version
- Device version number. Currently must be 1.
+* 0x004 | R | Version
+  Device version number. Currently must be 1.
 
-• 0x008 | R | DeviceID
- Virtio Subsystem Device ID (ie. 1 for network card).
+* 0x008 | R | DeviceID
+  Virtio Subsystem Device ID (ie. 1 for network card).
 
-• 0x00c | R | VendorID
- Virtio Subsystem Vendor ID.
+* 0x00c | R | VendorID
+  Virtio Subsystem Vendor ID.
 
-• 0x010 | R | HostFeatures
- Flags representing features the device supports.
- Reading from this register returns 32 consecutive flag bits,
+* 0x010 | R | HostFeatures
+  Flags representing features the device supports.
+  Reading from this register returns 32 consecutive flag bits,
   first bit depending on the last value written to
-  HostFeaturesSel register. Access to this register returns bits HostFeaturesSel*32
+  HostFeaturesSel register. Access to this register returns
+  bits HostFeaturesSel*32 to (HostFeaturesSel*32)+31, eg.
+  feature bits 0 to 31 if HostFeaturesSel is set to 0 and
+  features bits 32 to 63 if HostFeaturesSel is set to 1.
+  Also see "2.1.2. Feature Bits".
 
-   to (HostFeaturesSel*32)+31, eg. feature bits 0 to 31 if
-  HostFeaturesSel is set to 0 and features bits 32 to 63 if
-  HostFeaturesSel is set to 1. Also see "2.1.2. Feature Bits".
-
-• 0x014 | W | HostFeaturesSel
- Device (Host) features word selection.
- Writing to this register selects a set of 32 device feature bits
+* 0x014 | W | HostFeaturesSel
+  Device (Host) features word selection.
+  Writing to this register selects a set of 32 device feature bits
   accessible by reading from HostFeatures register. Device driver
   must write a value to the HostFeaturesSel register before
   reading from the HostFeatures register.
 
-• 0x020 | W | GuestFeatures
- Flags representing device features understood and activated by
+* 0x020 | W | GuestFeatures
+  Flags representing device features understood and activated by
   the driver.
- Writing to this register sets 32 consecutive flag bits, first
+  Writing to this register sets 32 consecutive flag bits, first
   bit depending on the last value written to GuestFeaturesSel
   register. Access to this register sets bits GuestFeaturesSel*32
   to (GuestFeaturesSel*32)+31, eg. feature bits 0 to 31 if
   GuestFeaturesSel is set to 0 and features bits 32 to 63 if
   GuestFeaturesSel is set to 1. Also see "2.1.2. Feature Bits".
 
-• 0x024 | W | GuestFeaturesSel
- Activated (Guest) features word selection.
- Writing to this register selects a set of 32 activated feature
+* 0x024 | W | GuestFeaturesSel
+  Activated (Guest) features word selection.
+  Writing to this register selects a set of 32 activated feature
   bits accessible by writing to the GuestFeatures register.
   Device driver must write a value to the GuestFeaturesSel
   register before writing to the GuestFeatures register.
 
-• 0x028 | W | GuestPageSize
- Guest page size.
- Device driver must write the guest page size in bytes to the
+* 0x028 | W | GuestPageSize
+  Guest page size.
+  Device driver must write the guest page size in bytes to the
   register during initialization, before any queues are used.
   This value must be a power of 2 and is used by the Host to
   calculate Guest address of the first queue page (see QueuePFN).
 
-• 0x030 | W | QueueSel
- Virtual queue index (first queue is 0).
- Writing to this register selects the virtual queue that the
+* 0x030 | W | QueueSel
+  Virtual queue index (first queue is 0).
+  Writing to this register selects the virtual queue that the
   following operations on QueueNum, QueueAlign and QueuePFN apply
   to.
 
-• 0x034 | R | QueueNumMax
- Maximum virtual queue size.
- Reading from the register returns the maximum size of the queue
+* 0x034 | R | QueueNumMax
+  Maximum virtual queue size.
+  Reading from the register returns the maximum size of the queue
   the Host is ready to process or zero (0x0) if the queue is not
   available. This applies to the queue selected by writing to
   QueueSel and is allowed only when QueuePFN is set to zero
   (0x0), so when the queue is not actively used.
 
-• 0x038 | W | QueueNum
- Virtual queue size.
- Queue size is the number of elements in the queue, therefore size
+* 0x038 | W | QueueNum
+  Virtual queue size.
+  Queue size is the number of elements in the queue, therefore size
   of the descriptor table and both available and used rings.
- Writing to this register notifies the Host what size of the
+  Writing to this register notifies the Host what size of the
   queue the Guest will use. This applies to the queue selected by
   writing to QueueSel.
 
-• 0x03c | W | QueueAlign
- Used Ring alignment in the virtual queue.
- Writing to this register notifies the Host about alignment
+* 0x03c | W | QueueAlign
+  Used Ring alignment in the virtual queue.
+  Writing to this register notifies the Host about alignment
   boundary of the Used Ring in bytes. This value must be a power
   of 2 and applies to the queue selected by writing to QueueSel.
 
-• 0x040 | RW | QueuePFN
- Guest physical page number of the virtual queue.
- Writing to this register notifies the host about location of the
+* 0x040 | RW | QueuePFN
+  Guest physical page number of the virtual queue.
+  Writing to this register notifies the host about location of the
   virtual queue in the Guest's physical address space. This value
   is the index number of a page starting with the queue
   Descriptor Table. Value zero (0x0) means physical address zero
   (0x00000000) and is illegal. When the Guest stops using the
   queue it must write zero (0x0) to this register.
- Reading from this register returns the currently used page
+  Reading from this register returns the currently used page
   number of the queue, therefore a value other than zero (0x0)
   means that the queue is in use.
- Both read and write accesses apply to the queue selected by
+  Both read and write accesses apply to the queue selected by
   writing to QueueSel.
 
-• 0x050 | W | QueueNotify
- Queue notifier.
- Writing a queue index to this register notifies the Host that
+* 0x050 | W | QueueNotify
+  Queue notifier.
+  Writing a queue index to this register notifies the Host that
   there are new buffers to process in the queue.
 
-• 0x60 | R | InterruptStatus
-Interrupt status.
-Reading from this register returns a bit mask of interrupts
+* 0x60 | R | InterruptStatus
+  Interrupt status.
+  Reading from this register returns a bit mask of interrupts
   asserted by the device. An interrupt is asserted if the
   corresponding bit is set, ie. equals one (1).
 
   – Bit 0 | Used Ring Update
-	This interrupt is asserted when the Host has updated the Used
+    This interrupt is asserted when the Host has updated the Used
     Ring in at least one of the active virtual queues.
 
   – Bit 1 | Configuration change
-	This interrupt is asserted when configuration of the device has
+    This interrupt is asserted when configuration of the device has
     changed.
 
-• 0x064 | W | InterruptACK
- Interrupt acknowledge.
- Writing to this register notifies the Host that the Guest
-  finished handling interrupts. Set bits in the value clear the
-  corresponding bits of the InterruptStatus register.
+* 0x064 | W | InterruptACK
+  Interrupt acknowledge.
+  Writing to this register notifies the Host that the Guest
+  finished handling interrupts. Set bits in the value clear
+  the corresponding bits of the InterruptStatus register.
 
-• 0x070 | RW | Status
- Device status.
- Reading from this register returns the current device status
+* 0x070 | RW | Status
+  Device status.
+  Reading from this register returns the current device status
   flags.
- Writing non-zero values to this register sets the status flags,
+  Writing non-zero values to this register sets the status flags,
   indicating the Guest progress. Writing zero (0x0) to this
   register triggers a device reset.
- Also see "2.2.1. Device Initialization".
+  Also see "2.2.1. Device Initialization".
 
-• 0x100+ | RW | Config
- Device-specific configuration space starts at an offset 0x100
+* 0x100+ | RW | Config
+  Device-specific configuration space starts at an offset 0x100
   and is accessed with byte alignment. Its meaning and size
   depends on the device and the driver.
 
@@ -1397,7 +1397,7 @@ Writing to registers described as “R” and reading from
 registers described as “W” is not permitted and can cause
 undefined behavior.
 
-100.3.2.2.1.  Virtqueue Layout
+2.3.2.2.1.  Virtqueue Layout
 ------------------------------
 
 The virtqueue is physically contiguous, with padded added to make the
@@ -1428,7 +1428,7 @@ Unlike the fixed page size for PCI, the virtqueue page size is defined
 by the GuestPageSize field, as written by the guest.  This must be
 done before the virtqueues are configured.
 
-2.3.2.3.1.1. Virtqueue Configuration
+2.3.2.3.2. Virtqueue Configuration
 -----------------------------------
 
 1. Select the queue writing its index (first queue is 0) to the
@@ -1455,13 +1455,13 @@ done before the virtqueues are configured.
 7. Write the physical number of the first page of the queue to
   the QueuePFN register.
 
-2.3.2.3.2. Notifying The Device
+2.3.2.3.3. Notifying The Device
 ------------------------------
 
 The device is notified about new buffers available in a queue by
 writing the queue index to register QueueNum.
 
-2.3.2.3.3. Receiving Used Buffers From The Device
+2.3.2.3.4. Receiving Used Buffers From The Device
 ------------------------------------------------
 
 The memory mapped virtio device is using single, dedicated
@@ -1474,7 +1474,7 @@ interrupt is handled, the driver must acknowledge it by writing
 a bit mask corresponding to the serviced interrupt to the
 InterruptACK register.
 
-2.3.2.4.4. Notification of Device Configuration Changes
+2.3.2.3.5. Notification of Device Configuration Changes
 ------------------------------------------------------
 
 This is indicated by bit 1 in the InterruptStatus register, as
