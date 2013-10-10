@@ -106,6 +106,9 @@ This field is 0 upon reset, otherwise at least one bit should be set:
   may be a significant (or infinite) delay before setting this
   bit.
 
+  FEATURES_OK (8) Indicates that the driver has acknowledged all the
+  features it understands, and feature negotiation is complete.
+
   DRIVER_OK (4) Indicates that the driver is set up and ready to
   drive the device.
 
@@ -495,22 +498,48 @@ how to communicate with the specific device.
 
 3. The DRIVER status bit is set: we know how to drive the device.
 
-4. Device-specific setup, including reading the device feature
-  bits, discovery of virtqueues for the device, optional per-bus
-  setup, and reading and possibly writing the device's virtio
-  configuration space.
+4. Device feature bits are read, and the the subset of feature bits
+   understood by the OS and driver is written to the device.
 
-5. The subset of device feature bits understood by the driver is
-   written to the device.
+5. The FEATURES_OK status bit is set.
 
-6. The DRIVER_OK status bit is set.
+6. The status byte is re-read to ensure the FEATURES_OK bit is still
+   set: otherwise, the device does not support our subset of features
+   and the device is unusable.
 
-7. The device can now be used (ie. buffers added to the
-   virtqueues)[4]
+7. Device-specific setup, including discovery of virtqueues for the
+   device, optional per-bus setup, reading and possibly writing the
+   device's virtio configuration space, and population of virtqueues.
+
+8. The DRIVER_OK status bit is set.  At this point the device is
+   "live".
 
 If any of these steps go irrecoverably wrong, the guest should
 set the FAILED status bit to indicate that it has given up on the
 device (it can reset the device later to restart if desired).
+
+The device must not consume buffers before DRIVER_OK, and the driver
+must not notify the device before it sets DRIVER_OK.
+
+Devices should support all valid combinations of features, but we know
+that implementations may well make assuptions that they will only be
+used by fully-optimized drivers.  The resetting of the FEATURES_OK flag
+provides a semi-graceful failure mode for this case.
+
+2.2.1.1. Legacy Interface: Device Initialization
+---------------------------
+Legacy devices do not support the FEATURES_OK status bit, and thus did
+not have a graceful way for the device to indicate unsupported feature
+combinations.  It also did not provide a clear mechanism to end
+feature negotiation, which meant that devices finalized features on
+first-use, and no features could be introduced which radically changed
+the initial operation of the device.
+
+Legacy device implementations often used the device before setting the
+DRIVER_OK bit.
+
+The result was the steps 5 and 6 were omitted, and steps 7 and 8
+were conflated.
 
 2.2.2. Device Operation
 ----------------------
@@ -3480,10 +3509,6 @@ from the specific virtio drivers: these drivers are shared with
 the non-PCI implementations (currently lguest and S/390).
 
 [3] The actual value within this range is ignored
-
-[4] Historically, drivers have used the device before steps 5 and 6.
-This is only allowed if the driver does not use any features
-which would alter this early use of the device.
 
 [6] The 4096 is based on the x86 page size, but it's also large
 enough to ensure that the separate parts of the virtqueue are on
