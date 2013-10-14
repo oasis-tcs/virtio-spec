@@ -398,8 +398,8 @@ which is a variable, so this code won't compile):
 The first indirect descriptor is located at start of the indirect
 descriptor table (index 0), additional indirect descriptors are
 chained by next field. An indirect descriptor without next field
-(with flags&VRING_DESC_F_NEXT off) signals the end of the indirect descriptor
-table, and transfers control back to the main virtqueue. An
+(with flags&VRING_DESC_F_NEXT off) signals the end of the descriptor.
+An
 indirect descriptor can not refer to another indirect descriptor
 table (flags&VRING_DESC_F_INDIRECT must be off). A single indirect descriptor
 table can include both read-only and write-only descriptors;
