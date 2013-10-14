@@ -2251,9 +2251,13 @@ bits as indicated above.
 		} geometry;
 		u32 blk_size;
 		struct virtio_blk_topology {
+			// # of logical blocks per physical block (log2)
 			u8 physical_block_exp;
+			// offset of first aligned logical block
 			u8 alignment_offset;
+			// suggested minimum I/O size in blocks
 			u16 min_io_size;
+			// optimal (suggested maximum) I/O size in blocks
 			u32 opt_io_size;
 		} topology;
 		u8 reserved;
