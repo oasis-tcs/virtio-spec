@@ -2224,8 +2224,6 @@ device except where noted.
 
   VIRTIO_BLK_F_BLK_SIZE (6) Block size of disk is in “blk_size”.
 
-  VIRTIO_BLK_F_FLUSH (9) Cache flush command support.
-
   VIRTIO_BLK_F_TOPOLOGY (10) Device exports information on optimal I/O
     alignment.
 
@@ -2258,8 +2256,18 @@ bits as indicated above.
 			u16 min_io_size;
 			u32 opt_io_size;
 		} topology;
+		u8 reserved;
 	};
 
+
+  VIRTIO_BLK_F_FLUSH (9) Cache flush command support.
+
+  VIRTIO_BLK_F_CONFIG_WCE (11) Device can toggle its cache between writeback
+    and writethrough modes.
+
+VIRTIO_BLK_F_FLUSH was also called VIRTIO_BLK_F_WCE: Legacy drivers
+should only negotiate this feature if they are capable of sending
+VIRTIO_BLK_T_FLUSH commands.
 
 2.4.2.4. Device Initialization
 -----------------------------
@@ -2281,6 +2289,21 @@ bits as indicated above.
   topology struct can be read to determine the physical block size and optimal
   I/O lengths for the driver to use. This also does not affect the units
   in the protocol, only performance.
+
+2.4.2.4.1. Legacy Interface: Device Initialization
+-----------------------------
+
+The reserved field used to be called writeback.  If the
+VIRTIO_BLK_F_CONFIG_WCE feature is offered, the cache mode should be
+read from the writeback field of the configuration if available; the
+driver can also write to the field in order to toggle the cache
+between writethrough (0) and writeback (1) mode.  If the feature is
+not available, the driver can instead look at the result of
+negotiating VIRTIO_BLK_F_FLUSH: the cache will be in writeback mode
+after reset if and only if VIRTIO_BLK_F_FLUSH is negotiated.
+
+Some older legacy devices did not operate in writethrough mode even
+after a guest announced lack of support for VIRTIO_BLK_F_FLUSH.
 
 2.4.2.5. Device Operation
 ------------------------
@@ -2317,11 +2340,25 @@ error or VIRTIO_BLK_S_UNSUPP for a request unsupported by host:
 	#define VIRTIO_BLK_S_IOERR     1
 	#define VIRTIO_BLK_S_UNSUPP    2
 
+Any writes completed before the submission of the flush command should
+be committed to non-volatile storage by the device.
+
 2.4.2.5.1 Legacy Interface: Device Operation
 ------------------------
 The 'reserved' field was previously called ioprio.  The ioprio field
 is a hint about the relative priorities of requests to the device:
 higher numbers indicate more important requests.
+
+	#define VIRTIO_BLK_T_BARRIER	 0x80000000
+
+If the device has VIRTIO_BLK_F_BARRIER
+feature the high bit (VIRTIO_BLK_T_BARRIER) indicates that this
+request acts as a barrier and that all preceeding requests must be
+complete before this one, and all following requests must not be
+started until this is complete. Note that a barrier does not flush
+caches in the underlying backend device in host, and thus does not
+serve as data consistency guarantee. Driver must use FLUSH request to
+flush the host cache.
 
 If the device has VIRTIO_BLK_F_SCSI feature, it can also support
 scsi packet command requests, each of these requests is of form:
@@ -2381,19 +2418,6 @@ write-only buffer of size 96 bytes, by itself; the fields errors,
 data_len, sense_len and residual in a single write-only buffer;
 and the status field is a separate read-only buffer of size 1
 byte, by itself.
-
-2.4.2.5.1. Legacy Interface: Device Operation
-------------------------
-	#define VIRTIO_BLK_T_BARRIER	 0x80000000
-
-If the device has VIRTIO_BLK_F_BARRIER
-feature the high bit (VIRTIO_BLK_T_BARRIER) indicates that this
-request acts as a barrier and that all preceeding requests must be
-complete before this one, and all following requests must not be
-started until this is complete. Note that a barrier does not flush
-caches in the underlying backend device in host, and thus does not
-serve as data consistency guarantee. Driver must use FLUSH request to
-flush the host cache.
 
 
 2.4.3. Console Device
