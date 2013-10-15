@@ -1248,7 +1248,7 @@ space. In this case:
   NO_VECTOR, no interrupt message is requested for this event.
 
 2.3.2. Virtio Over MMIO
-----------------------
+-----------------------
 
 Virtual environments without PCI support (a common situation in
 embedded devices models) might use simple memory mapped device
@@ -1261,7 +1261,7 @@ nearly identical. Existing differences are described in the
 following sections.
 
 2.3.2.1. MMIO Device Discovery
------------------------------
+------------------------------
 
 Unlike PCI, MMIO provides no generic device discovery. For
 systems using Flattened Device Trees the suggested format is:
@@ -1273,7 +1273,7 @@ systems using Flattened Device Trees the suggested format is:
 	}
 
 2.3.2.2. MMIO Device Layout
---------------------------
+---------------------------
 
 MMIO virtio devices provides a set of memory mapped control
 registers, all 32 bits wide, followed by device-specific
@@ -1422,12 +1422,12 @@ used rings.
 
 All register values are organized as Little Endian.
 
-Writing to registers described as “R” and reading from
-registers described as “W” is not permitted and can cause
+Writing to registers described as "R" and reading from
+registers described as "W" is not permitted and can cause
 undefined behavior.
 
 2.3.2.2.1.  Virtqueue Layout
-------------------------------
+----------------------------
 
 The virtqueue is physically contiguous, with padded added to make the
 used ring meet the QueueAlign value:
@@ -1448,50 +1448,50 @@ The calculation for total size is as follows:
 
 
 2.3.2.3. MMIO-specific Initialization And Device Operation
----------------------------------------------------------
+----------------------------------------------------------
 
 2.3.2.3.1. Device Initialization
--------------------------------
+--------------------------------
 
 Unlike the fixed page size for PCI, the virtqueue page size is defined
 by the GuestPageSize field, as written by the guest.  This must be
 done before the virtqueues are configured.
 
 2.3.2.3.2. Virtqueue Configuration
------------------------------------
+----------------------------------
 
 1. Select the queue writing its index (first queue is 0) to the
-  QueueSel register.
+   QueueSel register.
 
 2. Check if the queue is not already in use: read QueuePFN
-  register, returned value should be zero (0x0).
+   register, returned value should be zero (0x0).
 
 3. Read maximum queue size (number of elements) from the
-  QueueNumMax register. If the returned value is zero (0x0) the
-  queue is not available.
+   QueueNumMax register. If the returned value is zero (0x0) the
+   queue is not available.
 
 4. Allocate and zero the queue pages in contiguous virtual
-  memory, aligning the Used Ring to an optimal boundary (usually
-  page size). Size of the allocated queue may be smaller than or
-  equal to the maximum size returned by the Host.
+   memory, aligning the Used Ring to an optimal boundary (usually
+   page size). Size of the allocated queue may be smaller than or
+   equal to the maximum size returned by the Host.
 
 5. Notify the Host about the queue size by writing the size to
-  QueueNum register.
+   QueueNum register.
 
 6. Notify the Host about the used alignment by writing its value
-  in bytes to QueueAlign register.
+   in bytes to QueueAlign register.
 
 7. Write the physical number of the first page of the queue to
-  the QueuePFN register.
+   the QueuePFN register.
 
 2.3.2.3.3. Notifying The Device
-------------------------------
+-------------------------------
 
 The device is notified about new buffers available in a queue by
 writing the queue index to register QueueNum.
 
 2.3.2.3.4. Receiving Used Buffers From The Device
-------------------------------------------------
+-------------------------------------------------
 
 The memory mapped virtio device is using single, dedicated
 interrupt signal, which is raised when at least one of the
@@ -1504,7 +1504,7 @@ a bit mask corresponding to the serviced interrupt to the
 InterruptACK register.
 
 2.3.2.3.5. Notification of Device Configuration Changes
-------------------------------------------------------
+-------------------------------------------------------
 
 This is indicated by bit 1 in the InterruptStatus register, as
 documented in the register description.
