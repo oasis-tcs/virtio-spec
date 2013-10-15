@@ -1544,6 +1544,28 @@ normal channel subsystem device discovery (usually a STORE
 SUBCHANNEL loop) and answers to the basic channel commands, most
 importantly SENSE ID.
 
+For a virtio-ccw proxy device, SENSE ID will return the following
+information:
+
+------------------------------------------------------
+| Bytes | Contents                                   |
+|-------|--------------------------------------------|
+| 0     | reserved              | 0xff               |
+|-------|-----------------------|--------------------|
+| 1-2   | control unit type     | 0x3832             |
+|-------|-----------------------|--------------------|
+| 3     | control unit model    | <virtio device id> |
+|-------|-----------------------|--------------------|
+| 4-5   | device type           | zeroes (unset)     |
+|-------|-----------------------|--------------------|
+| 6     | device model          | zeroes (unset)     |
+|-------|-----------------------|--------------------|
+| 7-255 | extended SenseId data | zeroes (unset)     |
+------------------------------------------------------
+
+A driver for virtio-ccw devices MUST check for a control unit
+type of 0x3832 and MUST ignore the device type and model.
+
 In addition to the basic channel commands, virtio-ccw defines a
 set of channel commands related to configuration and operation of
 virtio:
