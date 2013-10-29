@@ -1431,6 +1431,13 @@ configuration space. The following list presents their layout:
   only when QueueReady is set to zero (0x0), so when the queue
   is not in use.
 
+* 0x0fc | R | ConfigGeneration
+  Configuration atomicity value.
+  Changes every time the configuration noticeably changes. This
+  means the device may only change the value after a configuration
+  read operation, but it must change if there is any risk of a
+  device seeing an inconsistent configuration state.
+
 * 0x100+ | RW | Config
   Device-specific configuration space starts at an offset 0x100
   and is accessed with byte alignment. Its meaning and size
