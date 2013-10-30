@@ -1709,6 +1709,7 @@ virtio:
 #define CCW_CMD_VDEV_RESET 0x33
 #define CCW_CMD_SET_IND 0x43
 #define CCW_CMD_SET_CONF_IND 0x53
+#define CCW_CMD_SET_IND_ADAPTER 0x73
 #define CCW_CMD_READ_FEAT 0x12
 #define CCW_CMD_WRITE_FEAT 0x11
 #define CCW_CMD_READ_CONF 0x22
@@ -1842,21 +1843,101 @@ In both cases, the complete configuration space is transmitted.
 2.3.3.2.5. Setting Up Indicators
 --------------------------------
 
+In order to set up the indicator bits for host->guest notification,
+the driver uses different channel commands depending on whether it
+wishes to use traditional I/O interrupts tied to a subchannel or
+adapter I/O interrupts. For any given device, the two mechanisms
+are mutually exclusive.
+
+For the configuration change indicators, the same mechanism is used
+in both cases.
+
+2.3.3.2.5.1. Setting Up Classic Queue Indicators
+------------------------------------------------
+
+Indicators for notification via classic I/O interrupts are contained
+in a 64 bit value per virtio-ccw proxy device.
+
 To communicate the location of the indicator bits for host->guest
 notification, the guest uses the CCW_CMD_SET_IND command,
 pointing to a location containing the guest address of the
 indicators in a 64 bit value.
 
-For the indicator bits used in the configuration change
-host->guest notification, the CCW_CMD_SET_CONF_IND command is
-used analogously.
+If the driver has already set up two-staged queue indicators via the
+CCW_CMD_SET_IND_ADAPTER command, the device MUST post a unit check
+with command reject to any subsequent CCW_CMD_SET_IND command.
 
+2.3.3.2.5.2. Setting Up Configuration Change Indicators
+-------------------------------------------------------
+
+Indicators for configuration change host->guest notification are
+contained in a 64 bit value per virtio-ccw proxy device.
+
+To communicate the location of the indicator bits used in the
+configuration change host->guest notification, the driver issues the
+CCW_CMD_SET_CONF_IND command, pointing to a location containing the
+guest address of the indicators in a 64 bit value.
+
+2.3.3.2.5.3. Setting Up Two-Stage Queue Indicators
+--------------------------------------------------
+
+Indicators for notification via adapter I/O interrupts consist of
+two stages:
+- a summary indicator byte covering the virtqueues for one or more
+  virtio-ccw proxy devices
+- a set of contigous indicator bits for the virtqueues for a
+  virtio-ccw proxy device
+
+To communicate the location of the summary and queue indicator bits,
+the driver uses the CCW_CMD_SET_IND_ADAPTER command with the following
+payload:
+
+struct virtio_thinint_area {
+       __u64 summary_indicator;
+       __u64 indicator;
+       __u64 bit_nr;
+       __u8 isc;
+} __attribute__ ((packed));
+
+summary_indicator contains the guest address of the 8 bit summary
+indicator.
+indicator contains the guest address of an area wherin the indicators
+for the devices are contained, starting at bit_nr, one bit per
+virtqueue of the device. Bit numbers start at the left.
+isc contains the I/O interruption subclass to be used for the adapter
+I/O interrupt. It may be different from the isc used by the proxy
+virtio-ccw device's subchannel.
+
+If the driver has already set up classic queue indicators via the
+CCW_CMD_SET_IND command, the device MUST post a unit check with
+command reject to any subsequent CCW_CMD_SET_IND_ADAPTER command.
+
+2.3.3.2.5.4. Legacy Interfaces: A Note on Setting Up Indicators
+---------------------------------------------------------------
+
+Legacy devices will only support classic queue indicators; they will
+reject CCW_CMD_SET_IND_ADAPTER as they don't know that command.
 
 2.3.3.3. Device Operation
 -------------------------
 
 2.3.3.3.1. Host->Guest Notification
 -----------------------------------
+
+There are two modes of operation regarding host->guest notifcation,
+classic I/O interrupts and adapter I/O interrupts. The mode to be
+used is determined by the driver by using CCW_CMD_SET_IND respectively
+CCW_CMD_SET_IND_ADAPTER to set up queue indicators.
+
+For configuration changes, the driver will always use classic I/O
+interrupts.
+
+2.3.3.3.1.1. Notification via Classic I/O Interrupts
+----------------------------------------------------
+
+If the driver used the CCW_CMD_SET_IND command to set up queue
+indicators, the device will use classic I/O interrupts for
+host->guest notification about virtqueue activity.
 
 For notifying the guest of virtqueue buffers, the host sets the
 corresponding bit in the guest-provided indicators. If an
@@ -1865,7 +1946,30 @@ generates an unsolicited I/O interrupt.
 
 If the host wants to notify the guest about configuration
 changes, it sets bit 0 in the configuration indicators and
-generates an unsolicited I/O interrupt, if needed.
+generates an unsolicited I/O interrupt, if needed. This also
+applies if adapter I/O interrupts are used for queue notifications.
+
+2.3.3.3.1.2. Notification via Adapter I/O Interrupts
+----------------------------------------------------
+
+If the driver used the CCW_CMD_SET_IND_ADAPTER command to set up
+queue indicators, the device will use adapter I/O interrupts for
+host->guest notification about virtqueue activity.
+
+For notifying the guest of virtqueue buffers, the host sets the
+bit in the guest-provided indicator area at the corresponding offset.
+The guest-provided summary indicator is also set. An adapter I/O
+interrupt for the corresponding interruption subclass is generated.
+The device SHOULD only generate an adapter I/O interrupt if the
+summary indicator had not been set prior to notification. The driver
+MUST clear the summary indicator after receiving an adapter I/O
+interrupt before it processes the queue indicators.
+
+2.3.3.3.1.3. Legacy Interfaces: A Note on Host->Guest Notification
+------------------------------------------------------------------
+
+As legacy devices and drivers support only classic queue indicators,
+host->guest notification will always be done via classic I/O interrupts.
 
 2.3.3.3.2. Guest->Host Notification
 -----------------------------------
