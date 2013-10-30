@@ -67,6 +67,10 @@ Driver
 
 [RFC 2119] S. Bradner, Key words for use in RFCs to Indicate Requirement Levels, http://www.ietf.org/rfc/rfc2119.txt IETF (Internet Engineering Task Force) RFC 2119, March 1997.
 
+[S390 PoP] z/Architecture Principles of Operation, IBM Publication SA22-7832
+
+[S390 Common I/O] ESA/390 Common I/O-Device and Self-Description, IBM Publication SA22-7204
+
 1.3. Non-Normative References
 =========================
 
@@ -1716,6 +1720,23 @@ virtio:
 #define CCW_CMD_WRITE_CONF 0x21
 #define CCW_CMD_WRITE_STATUS 0x31
 #define CCW_CMD_READ_VQ_CONF 0x32
+
+The virtio-ccw device acts like a normal channel device, as specified
+in [S390 PoP] and [S390 Common I/O]. In particular:
+
+- A device must post a unit check with command reject for any command
+  it does not support.
+
+- If a driver did not suppress length checks for a channel command,
+  the device must present a subchannel status as detailed in the
+  architecture when the actual length did not match the expected length.
+
+- If a driver did suppress length checks for a channel command, the
+  device must present a check condition if the transmitted data does
+  not contain enough data to process the command. If the driver submitted
+  a buffer that was too long, the device should accept the command.
+  The driver should attempt to provide the correct length even if it
+  suppresses length checks.
 
 2.3.3.2. Device Initialization
 ------------------------------
