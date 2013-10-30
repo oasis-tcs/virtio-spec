@@ -1715,13 +1715,85 @@ virtio:
 #define CCW_CMD_WRITE_CONF 0x21
 #define CCW_CMD_WRITE_STATUS 0x31
 #define CCW_CMD_READ_VQ_CONF 0x32
+#define CCW_CMD_SET_VIRTIO_REV 0x83
 
 2.3.3.2. Device Initialization
 ------------------------------
 
 virtio-ccw uses several channel commands to set up a device.
 
-2.3.3.2.1. Configuring a Virtqueue
+2.3.3.2.1. Setting the Virtio Revision
+--------------------------------------
+
+CCW_CMD_SET_VIRTIO_REV is issued by the driver to set the revision of
+the virtio-ccw transport it intends to drive the device with. It uses the
+following communication structure:
+
+struct virtio_rev_info {
+       __u16 revision;
+       __u16 length;
+       __u8 data[];
+};
+
+revision contains the desired revision id, length the length of the
+data portion and data revision-dependent additional desired options.
+
+The following values are supported:
+
+------------------------------------------------------------------
+| revision | length | data      | remarks                        |
+|----------|--------|-----------|--------------------------------|
+| 0        | 0      | <empty>   | legacy interface; transitional |
+|          |        |           | devices only                   |
+|----------|--------|-----------|--------------------------------|
+| 1        | 0      | <empty>   | Virtio 1.0                     |
+|----------|--------|-----------|--------------------------------|
+| 2-n      |        |           | reserved for later revisions   |
+------------------------------------------------------------------
+
+Note that a change in the virtio standard does not neccessarily
+correspond to a change in the virtio-ccw revision.
+
+A device must post a unit check with command reject for any revision
+it does not support. For any invalid combination of revision, length
+and data, it must post a unit check with command reject as well. A
+non-transitional device must reject revision id 0.
+
+A driver should start with trying to set the highest revision it
+supports and continue with lower revisions if it gets a command reject.
+
+A driver must not issue any other virtio-ccw specific channel commands
+other than CCW_CMD_VDEV_RESET prior to setting the revision.
+
+A device must answer with command reject to any virtio-ccw specific
+channel command that is not contained in the revision selected by the
+driver.
+
+After a revision has been successfully selected by the driver, it
+must not attempt to select a different revision. A device must answer
+to any such attempt with a command reject.
+
+A virtio reset via CCW_CMD_VDEV_RESET resets the selected revision.
+After a reset, the device must react to commands as if no revision had
+been selected before.
+
+2.3.3.2.1.1. Legacy Interfaces: A Note on Setting the Virtio Revision
+---------------------------------------------------------------------
+
+A legacy device will not support the CCW_CMD_SET_VIRTIO_REV and answer
+with a command reject. A non-transitional driver must stop trying to
+operate this device in that case. A transitional driver must operate
+the device as if it had been able to set revision 0.
+
+A legacy driver will not issue the CCW_CMD_SET_VIRTIO_REV prior to
+issueing other virtio-ccw specific channel commands. A non-transitional
+device therefore must answer any such attempts with a command reject.
+A transitional device must assume in this case that the driver is a
+legacy driver and continue as if the driver selected revision 0. This
+implies that the device must reject any command not valid for revision
+0, including a subsequent CCW_CMD_SET_VIRTIO_REV.
+
+2.3.3.2.2. Configuring a Virtqueue
 ----------------------------------
 
 CCW_CMD_READ_VQ_CONF is issued by the guest to obtain information
@@ -1750,7 +1822,7 @@ queue contains the guest address for queue index. The actual
 number of allocated buffers is transmitted in num and their
 alignment in align.
 
-100.3.3.2.1.  Virtqueue Layout
+100.3.3.2.2.  Virtqueue Layout
 ------------------------------
 
 The virtqueue is physically contiguous, with padded added to make the
@@ -1770,14 +1842,14 @@ The calculation for total size is as follows:
 	          + ALIGN(sizeof(u16)*3 + sizeof(struct vring_used_elem)*num);
 	}
 
-2.3.3.2.2. Communicating Status Information
+2.3.3.2.3. Communicating Status Information
 -------------------------------------------
 
 The guest can change the status of a device via the
 CCW_CMD_WRITE_STATUS command, which transmits an 8 bit status
 value.
 
-2.3.3.2.3. Handling Device Features
+2.3.3.2.4. Handling Device Features
 -----------------------------------
 
 Feature bits are arranged in an array of 32 bit values, making
@@ -1804,7 +1876,7 @@ For communicating its device features to the host, the guest may
 use the CCW_CMD_WRITE_FEAT command, denoting a features/index
 combination.
 
-2.3.3.2.4. Device Configuration
+2.3.3.2.5. Device Configuration
 -------------------------------
 
 The device's configuration space is located in host memory. It is
@@ -1820,7 +1892,7 @@ read from.
 
 In both cases, the complete configuration space is transmitted.
 
-2.3.3.2.5. Setting Up Indicators
+2.3.3.2.6. Setting Up Indicators
 --------------------------------
 
 To communicate the location of the indicator bits for host->guest
