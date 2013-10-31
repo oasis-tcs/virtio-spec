@@ -208,10 +208,35 @@ Interface' in the section title.
 -------------------------
 
 Configuration space is generally used for rarely-changing or
-initialization-time parameters.
+initialization-time parameters.  Drivers must not assume reads from
+fields greater than 32 bits wide are atomic, nor or reads from
+multiple fields.
+
+Each transport provides a generation count for the configuration
+space, which must change whenever there is a possibility that two
+accesses to the configuration space can see different versions of that
+space.
+
+Thus drivers should read configuration space fields like so:
+
+	u32 before, after;
+	do {
+		before = get_config_generation(device);
+		// read config entry/entries.
+		after = get_config_generation(device);
+	} while (after != before);
 
 Note that this space is generally the guest's native endian,
 rather than PCI's little-endian.
+
+2.1.3.1.  Legacy Interface: Configuration Space
+-------------------------
+
+Legacy devices did not have a configuration generation field, thus are
+susceptible to race conditions if configuration is updated.  This
+effects the block capacity and network mac fields; best practice is to
+read these fields multiple times until two reads generate a consistent
+result.
 
 2.1.4. Virtqueues
 ----------------
@@ -801,7 +826,7 @@ struct virtio_pci_common_cfg {
 	__le16 msix_config;		/* read-write */
 	__le16 num_queues;		/* read-only */
 	__u8 device_status;		/* read-write */
-	__u8 unused1;
+	__u8 config_generation;		/* read-only */
 
 	/* About a specific virtqueue. */
 	__le16 queue_select;		/* read-write */
@@ -852,6 +877,14 @@ device_status
 
 	Device Status field. Writing 0 into this field resets the
 	device.
+
+config_generation
+
+	Configuration atomicity value.  Changes every time the
+	configuration noticeably changes.  This means the device may
+	only change the value after a configuration read operation,
+	but it must change if there is any risk of a device seeing an
+	inconsistent configuration state.
 
 queue_select
 
@@ -974,6 +1007,9 @@ Note that only Feature Bits 0 to 31 are accessible through the
 Legacy Interface. When used through the Legacy Interface,
 Transitional Devices must assume that Feature Bits 32 to 63
 are not acknowledged by Driver.
+
+As legacy devices had no configuration generation field, see "2.1.3.1.
+Legacy Interface: Configuration Space" for workarounds.
 
 2.3.1.3. PCI-specific Initialization And Device Operation
 --------------------------------------------------------
@@ -1859,7 +1895,9 @@ For changing configuration information, the guest may use
 CCW_CMD_WRITE_CONF, specifying the guest memory for the host to
 read from.
 
-In both cases, the complete configuration space is transmitted.
+In both cases, the complete configuration space is transmitted.  This
+allows the guest to compare the new configuration space with the old
+version, and keep a generation count internally whenever it changes.
 
 2.3.3.2.5. Setting Up Indicators
 --------------------------------
@@ -3792,11 +3830,14 @@ transmit output.
 ---------------------------------------
 
 Configuration space should only be used for initialization-time
-parameters.  It is a limited resource with no synchronization, so for
-most uses it is better to use a virtqueue to update configuration
-information (the network device does this for filtering,
+parameters.  It is a limited resource with no synchronization between
+writable fields, so for most uses it is better to use a virtqueue to update
+configuration information (the network device does this for filtering,
 otherwise the table in the config space could potentially be very
 large).
+
+Devices must not assume that configuration fields over 32 bits wide
+are atomically writable.
 
 2.7.3. What Device Number?
 --------------------------
