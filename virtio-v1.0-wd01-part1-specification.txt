@@ -2221,6 +2221,12 @@ VIRTIO_NET_S_LINK_UP and VIRTIO_NET_S_ANNOUNCE.
 		le16 status;
 	};
 
+100.4.1.4.1. Legacy Interface: Device configuration layout
+--------------------
+For legacy devices, the status field in struct virtio_net_config is the
+native endian of the guest rather than (necessarily) little-endian.
+
+
 2.4.1.4. Device Initialization
 -----------------------------
 
@@ -2291,6 +2297,11 @@ case, the packet itself is preceeded by a header:
 
 The controlq is used to control device features such as
 filtering.
+
+100.4.1.5.1 Legacy Interface: Device Operation
+------------------------
+For legacy devices, the fields in struct virtio_net_hdr are the
+native endian of the guest rather than (necessarily) little-endian.
 
 2.4.1.5.1. Packet Transmission
 -----------------------------
@@ -2467,6 +2478,11 @@ command-specific-data is two variable length tables of 6-byte MAC
 addresses. The first table contains unicast addresses, and the second
 contains multicast addresses.
 
+2.4.1.5.2.2.1.  Legacy Interface: Setting MAC Address Filtering
+-----------------------------------------
+For legacy devices, the entries field in struct virtio_net_ctrl_mac is the
+native endian of the guest rather than (necessarily) little-endian.
+
 2.4.1.5.3.3. VLAN Filtering
 --------------------------
 
@@ -2478,7 +2494,12 @@ can control a VLAN filter table in the device.
 	 #define VIRTIO_NET_CTRL_VLAN_DEL             1
 
 Both the VIRTIO_NET_CTRL_VLAN_ADD and VIRTIO_NET_CTRL_VLAN_DEL
-command take a 16-bit VLAN id as the command-specific-data.
+command take a little-endian 16-bit VLAN id as the command-specific-data.
+
+2.4.1.5.3.3.1.  Legacy Interface: VLAN Filtering
+-----------------------------------------
+For legacy devices, the VLAN id is in the
+native endian of the guest rather than (necessarily) little-endian.
 
 2.4.1.5.3.4. Gratuitous Packet Sending
 -------------------------------------
@@ -2542,6 +2563,12 @@ compartibility.
 
 Corresponding feature must be negotiated at startup in order to allow dynamic
 change of specific offload state.
+
+
+2.4.1.5.4.3.1.1. Legacy Interface: Setting Offloads State
+-------------------------------------
+For legacy devices, the offloads field is the
+native endian of the guest rather than (necessarily) little-endian.
 
 
 2.4.2. Block Device
@@ -2625,6 +2652,12 @@ bits as indicated above.
 	};
 
 
+100.2.4.2.5.1. Legacy Interface: Device configuration layout
+--------------------
+For legacy devices, the fields in struct virtio_blk_config are the
+native endian of the guest rather than (necessarily) little-endian.
+
+
 2.4.2.4. Device Initialization
 -----------------------------
 
@@ -2701,6 +2734,9 @@ be committed to non-volatile storage by the device.
 
 2.4.2.5.1 Legacy Interface: Device Operation
 ------------------------
+For legacy devices, the fields in struct virtio_blk_req are the
+native endian of the guest rather than (necessarily) little-endian.
+
 The 'reserved' field was previously called ioprio.  The ioprio field
 is a hint about the relative priorities of requests to the device:
 higher numbers indicate more important requests.
@@ -2719,6 +2755,7 @@ flush the host cache.
 If the device has VIRTIO_BLK_F_SCSI feature, it can also support
 scsi packet command requests, each of these requests is of form:
 
+	/* All fields are in guest's native endian. */
 	struct virtio_scsi_pc_req {
 		u32 type;
 		u32 ioprio;
@@ -2830,6 +2867,11 @@ data and outgoing characters are placed in the transmit queue.
 		le32 max_nr_ports;
 	};
 
+2.4.3.4.1. Legacy Interface: Device configuration layout
+-----------------------------------
+For legacy devices, the fields in struct virtio_console_config are the
+native endian of the guest rather than (necessarily) little-endian.
+
 2.4.3.5. Device Initialization
 -----------------------------
 
@@ -2896,6 +2938,12 @@ data and outgoing characters are placed in the transmit queue.
 	#define VIRTIO_CONSOLE_RESIZE           5
 	#define VIRTIO_CONSOLE_PORT_OPEN        6
 	#define VIRTIO_CONSOLE_PORT_NAME        7
+
+2.4.3.6.1. Legacy Interface: Device Operation
+------------------------
+For legacy devices, the fields in struct virtio_console_control are the
+native endian of the guest rather than (necessarily) little-endian.
+
 
 2.4.4. Entropy Device
 ====================
@@ -3049,8 +3097,7 @@ as follows:
   subsequent request) and consumes the statistics.
 
   Memory Statistics Format Each statistic consists of a 16 bit
-  tag and a 64 bit value. Both quantities are represented in the
-  native endian of the guest. All statistics are optional and the
+  tag and a 64 bit value. All statistics are optional and the
   driver may choose which ones to supply. To guarantee backwards
   compatibility, unsupported statistics should be omitted.
 
@@ -3064,6 +3111,12 @@ as follows:
 		le16 tag;
 		le64 val;
 	} __attribute__((packed));
+
+2.4.5.6.1. Legacy Interface: Memory Statistics
+---------------------------
+For legacy devices, the fields in struct virtio_balloon_stat are the
+native endian of the guest rather than (necessarily) little-endian.
+
 
 2.4.5.6.2. Memory Statistics Tags
 --------------------------------
@@ -3183,6 +3236,11 @@ targets that receive and process the requests.
   max_channel, max_target and max_lun can be used by the driver
     as hints to constrain scanning the logical units on the
     host.h
+
+2.4.6.4.1.  Legacy Interface: Device configuration layout
+-----------------------------------
+For legacy devices, the fields in struct virtio_scsi_config are the
+native endian of the guest rather than (necessarily) little-endian.
 
 2.4.6.5. Device Initialization
 -----------------------------
@@ -3326,6 +3384,11 @@ following:
   request will be immediately returned with a response equal to
   VIRTIO_SCSI_S_FAILURE.
 
+2.4.6.6.1. Legacy Interface: Device Operation: Request Queues
+------------------------------------------
+For legacy devices, the fields in struct virtio_scsi_req_cmd are the
+native endian of the guest rather than (necessarily) little-endian.
+
 2.4.6.6.2. Device Operation: controlq
 ------------------------------------
 
@@ -3457,6 +3520,15 @@ The following commands are defined:
   event_actual and response fields are written by the device.
 
   No command-specific values are defined for the response byte.
+
+2.4.6.6.2.1. Legacy Interface: Device Operation: controlq
+------------------------------------------
+
+For legacy devices, the fields in struct virtio_scsi_ctrl, struct
+virtio_scsi_ctrl_tmf, struct virtio_scsi_ctrl_an and struct
+virtio_scsi_ctrl_an are the native endian of the guest rather than
+(necessarily) little-endian.
+
 
 2.4.6.6.3. Device Operation: eventq
 ----------------------------------
@@ -3607,6 +3679,11 @@ contents of the event field. The following events are defined:
   event and the asynchronous notification event.
   For simplicity, as of this version of the specification the host must
   never report this event for MMC devices.
+
+2.4.6.6.3.1. Legacy Interface: Device Operation: eventq
+----------------------------------
+For legacy devices, the fields in struct virtio_scsi_event are the
+native endian of the guest rather than (necessarily) little-endian.
 
 2.5. Reserved Feature Bits
 =========================
