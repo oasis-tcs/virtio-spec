@@ -1720,6 +1720,10 @@ discoverable via standard operating system algorithms, and adding
 virtio support is mainly a question of supporting a new control
 unit type.
 
+As the S/390 is a big endian machine, these channel commands are
+big-endian: this is made clear by use of the types be16, be32 and
+be64.
+
 2.3.3.1. Basic Concepts
 -----------------------
 
@@ -1799,8 +1803,8 @@ CCW_CMD_READ_VQ_CONF is issued by the guest to obtain information
 about a queue. It uses the following structure for communicating:
 
 struct vq_config_block {
-	__u16 index;
-	__u16 max_num;
+	be16 index;
+	be16 max_num;
 } __attribute__ ((packed));
 
 The requested number of buffers for queue index is returned in
@@ -1811,12 +1815,12 @@ host about the location used for its queue. The transmitted
 structure is
 
 struct vq_info_block {
-	__u64 desc;
-	__u32 res0;
-	__u16 index;
-	__u16 num;
-	__u64 avail;
-	__u64 used;
+	be64 desc;
+	be32 res0;
+	be16 index;
+	be16 num;
+	be64 avail;
+	be64 used;
 } __attribute__ ((packed));
 
 desc, avail and used contain the guest addresses for the descriptor table,
@@ -1831,10 +1835,10 @@ For a legacy driver or for a driver that selected revision 0,
 CCW_CMD_SET_VQ uses the following communication block:
 
 struct vq_info_block_legacy {
-	__u64 queue;
-	__u32 align;
-	__u16 index;
-	__u16 num;
+	be64 queue;
+	be32 align;
+	be16 index;
+	be16 num;
 } __attribute__ ((packed));
 
 queue contains the guest address for queue index, num the number of buffers
@@ -1878,8 +1882,8 @@ The CCW commands dealing with features use the following
 communication block:
 
 struct virtio_feature_desc {
-	__u32 features;
-	__u8 index;
+	be32 features;
+	u8 index;
 } __attribute__ ((packed));
 
 features are the 32 bits of features currently accessed, while
@@ -1965,10 +1969,10 @@ the driver uses the CCW_CMD_SET_IND_ADAPTER command with the following
 payload:
 
 struct virtio_thinint_area {
-       __u64 summary_indicator;
-       __u64 indicator;
-       __u64 bit_nr;
-       __u8 isc;
+       be64 summary_indicator;
+       be64 indicator;
+       be64 bit_nr;
+       u8 isc;
 } __attribute__ ((packed));
 
 summary_indicator contains the guest address of the 8 bit summary
