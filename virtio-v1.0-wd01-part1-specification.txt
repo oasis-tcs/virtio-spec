@@ -92,6 +92,8 @@ o Feature bits
 o Configuration space
 o One or more virtqueues
 
+Unless explicitly specified otherwise, all multi-byte fields are little-endian.
+
 2.1.1. Device Status Field
 -------------------------
 
@@ -226,7 +228,13 @@ Thus drivers should read configuration space fields like so:
 		after = get_config_generation(device);
 	} while (after != before);
 
-Note that this space is generally the guest's native endian,
+Note that configuration space generally uses the little-endian format
+for multi-byte fields.
+
+100.100.4.1. Legacy Interface: A Note on Configuration Space endian-ness
+--------------------------------------
+
+Note that for legacy interfaces, configuration space is generally the guest's native endian,
 rather than PCI's little-endian.
 
 2.1.3.1.  Legacy Interface: Configuration Space
@@ -954,8 +962,8 @@ device-specific region can be accessed using any width accesses, and
 should obtain the same results.
 
 Note that this is possible because while the virtio header is PCI
-(i.e. little) endian, the device-specific region is encoded in
-the native endian of the guest (where such distinction is
+(i.e. little) endian, when using the legacy interface the device-specific
+region is encoded in the native endian of the guest (where such distinction is
 applicable).
 
 When used through the legacy interface, the virtio header looks as follows:
