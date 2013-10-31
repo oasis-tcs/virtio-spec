@@ -340,14 +340,12 @@ The legacy virtqueue layout structure therefore looks like this:
 		struct vring_used used;
 	};
 
-2.1.4.1. A Note on Virtqueue Endianness
+2.1.4.1. Legacy Interfaces: A Note on Virtqueue Endianness
 --------------------------------------
 
 Note that the endian of fields and in the virtqueue is the native
-endian of the guest, not little-endian as PCI normally is. This makes
-for simpler guest code, and it is assumed that the host already has to
-be deeply aware of the guest endian so such an “endian-aware” device
-is not a significant issue.
+endian of the guest, not little-endian as PCI normally is.
+It is assumed that the host is already aware of the guest endian.
 
 2.1.4.2. Message Framing
 -----------------------
