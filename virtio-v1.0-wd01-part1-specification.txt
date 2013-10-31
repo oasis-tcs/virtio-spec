@@ -832,24 +832,24 @@ Common configuration structure layout is documented below:
 
 struct virtio_pci_common_cfg {
 	/* About the whole device. */
-	__le32 device_feature_select;	/* read-write */
-	__le32 device_feature;		/* read-only */
-	__le32 guest_feature_select;	/* read-write */
-	__le32 guest_feature;		/* read-write */
-	__le16 msix_config;		/* read-write */
-	__le16 num_queues;		/* read-only */
-	__u8 device_status;		/* read-write */
-	__u8 config_generation;		/* read-only */
+	le32 device_feature_select;	/* read-write */
+	le32 device_feature;		/* read-only */
+	le32 guest_feature_select;	/* read-write */
+	le32 guest_feature;		/* read-write */
+	le16 msix_config;		/* read-write */
+	le16 num_queues;		/* read-only */
+	u8 device_status;		/* read-write */
+	u8 config_generation;		/* read-only */
 
 	/* About a specific virtqueue. */
-	__le16 queue_select;		/* read-write */
-	__le16 queue_size;		/* read-write, power of 2, or 0. */
-	__le16 queue_msix_vector;	/* read-write */
-	__le16 queue_enable;		/* read-write */
-	__le16 queue_notify_off;	/* read-only */
-	__le64 queue_desc;		/* read-write */
-	__le64 queue_avail;		/* read-write */
-	__le64 queue_used;		/* read-write */
+	le16 queue_select;		/* read-write */
+	le16 queue_size;		/* read-write, power of 2, or 0. */
+	le16 queue_msix_vector;		/* read-write */
+	le16 queue_enable;		/* read-write */
+	le16 queue_notify_off;		/* read-only */
+	le64 queue_desc;		/* read-write */
+	le64 queue_avail;		/* read-write */
+	le64 queue_used;		/* read-write */
 };
 
 device_feature_select
@@ -1054,14 +1054,14 @@ This virtio structure capability uses little-endian format; all bits are
 read-only:
 
 struct virtio_pci_cap {
-	__u8 cap_vndr;	/* Generic PCI field: PCI_CAP_ID_VNDR */
-	__u8 cap_next;	/* Generic PCI field: next ptr. */
-	__u8 cap_len;	/* Generic PCI field: capability length */
-	__u8 cfg_type;	/* Identifies the structure. */
-	__u8 bar;	/* Where to find it. */
-	__u8 padding[3];/* Pad to full dword. */
-	__le32 offset;	/* Offset within bar. */
-	__le32 length;	/* Length of the structure, in bytes. */
+	u8 cap_vndr;	/* Generic PCI field: PCI_CAP_ID_VNDR */
+	u8 cap_next;	/* Generic PCI field: next ptr. */
+	u8 cap_len;	/* Generic PCI field: capability length */
+	u8 cfg_type;	/* Identifies the structure. */
+	u8 bar;		/* Where to find it. */
+	u8 padding[3];	/* Pad to full dword. */
+	le32 offset;	/* Offset within bar. */
+	le32 length;	/* Length of the structure, in bytes. */
 };
 
 This structure can optionally followed by extra data, depending on
@@ -1140,7 +1140,7 @@ by additional fields:
 
 struct virtio_pci_notify_cap {
 	struct virtio_pci_cap cap;
-	__le32 notify_off_multiplier;	/* Multiplier for queue_notify_off. */
+	le32 notify_off_multiplier;	/* Multiplier for queue_notify_off. */
 };
 
 notify_off_multiplier
