@@ -2578,6 +2578,15 @@ device except where noted.
 
   VIRTIO_BLK_F_SCSI (7) Device supports scsi packet commands.
 
+  VIRTIO_BLK_F_FLUSH (9) Cache flush command support.
+
+  VIRTIO_BLK_F_CONFIG_WCE (11) Device can toggle its cache between writeback
+    and writethrough modes.
+
+VIRTIO_BLK_F_FLUSH was also called VIRTIO_BLK_F_WCE: Legacy drivers
+should only negotiate this feature if they are capable of sending
+VIRTIO_BLK_T_FLUSH commands.
+
 100.2.4.2.5. Device configuration layout
 --------------------
 
@@ -2608,15 +2617,6 @@ bits as indicated above.
 		u8 reserved;
 	};
 
-
-  VIRTIO_BLK_F_FLUSH (9) Cache flush command support.
-
-  VIRTIO_BLK_F_CONFIG_WCE (11) Device can toggle its cache between writeback
-    and writethrough modes.
-
-VIRTIO_BLK_F_FLUSH was also called VIRTIO_BLK_F_WCE: Legacy drivers
-should only negotiate this feature if they are capable of sending
-VIRTIO_BLK_T_FLUSH commands.
 
 2.4.2.4. Device Initialization
 -----------------------------
