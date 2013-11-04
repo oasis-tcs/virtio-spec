@@ -1720,9 +1720,9 @@ discoverable via standard operating system algorithms, and adding
 virtio support is mainly a question of supporting a new control
 unit type.
 
-As the S/390 is a big endian machine, these channel commands are
-big-endian: this is made clear by use of the types be16, be32 and
-be64.
+As the S/390 is a big endian machine, the data structures transmitted
+via channel commands are big-endian: this is made clear by use of
+the types be16, be32 and be64.
 
 2.3.3.1. Basic Concepts
 -----------------------
