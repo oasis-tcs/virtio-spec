@@ -1915,11 +1915,13 @@ version, and keep a generation count internally whenever it changes.
 In order to set up the indicator bits for host->guest notification,
 the driver uses different channel commands depending on whether it
 wishes to use traditional I/O interrupts tied to a subchannel or
-adapter I/O interrupts. For any given device, the two mechanisms
-are mutually exclusive.
+adapter I/O interrupts for virtqueue notifications. For any given
+device, the two mechanisms are mutually exclusive.
 
-For the configuration change indicators, the same mechanism is used
-in both cases.
+For the configuration change indicators, only a mechanism using
+traditional I/O interrupts is provided, regardless of whether
+traditional or adapter I/O interrupts are used for virtqueue
+notifications.
 
 2.3.3.2.5.1. Setting Up Classic Queue Indicators
 ------------------------------------------------
