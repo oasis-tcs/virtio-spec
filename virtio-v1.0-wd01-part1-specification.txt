@@ -938,7 +938,7 @@ queue_used
 
 2.3.1.2.2. ISR status structure layout
 -------------------------
-ISR status structure includes a single 8-bite ISR status field
+ISR status structure includes a single 8-bit ISR status field.
 
 2.3.1.2.3. Notification structure layout
 -------------------------
