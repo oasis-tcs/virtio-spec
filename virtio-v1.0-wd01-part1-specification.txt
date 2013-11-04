@@ -1703,13 +1703,6 @@ Notification mechanisms did not change.
 S/390 based virtual machines support neither PCI nor MMIO, so a
 different transport is needed there.
 
-The old s390-virtio mechanism used a special page mapped above
-the guest's memory and several diagnose calls (hypercalls); it
-does have some drawbacks, however, like a rather limited number
-of devices and very restricted hotplug support. Moreover, device
-discovery and operation differ from other environments on the
-S/390 platform.
-
 virtio-ccw uses the standard channel I/O based mechanism used for
 the majority of devices on S/390. A virtual channel device with a
 special control unit type acts as proxy to the virtio device
