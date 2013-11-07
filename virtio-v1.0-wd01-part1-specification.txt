@@ -533,7 +533,7 @@ how to communicate with the specific device.
 2.2.1. Device Initialization
 ---------------------------
 
-1. Reset the device. This is not required on initial start up.
+1. Reset the device.
 
 2. The ACKNOWLEDGE status bit is set: we have noticed the device.
 
