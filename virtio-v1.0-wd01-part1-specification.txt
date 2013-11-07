@@ -602,10 +602,6 @@ operates as follows:
 
 1. Place the buffer(s) into free descriptor(s).
 
-  (a) If there are no free descriptors, the guest may choose to
-    notify the device even if notifications are suppressed (to
-    reduce latency).[8]
-
 2. Place the id of the buffer in the next ring entry of the
   available ring.
 
@@ -4066,11 +4062,6 @@ separate cache lines.
 
 [7] These fields are kept here because this is the only part of the
 virtqueue written by the device
-
-[8] The Linux drivers do this only for read-only buffers: for
-write-only buffers, it is assumed that the driver is merely
-trying to keep the receive buffer ring full, and no notification
-of this expected condition is necessary.
 
 [9] https://lists.linux-foundation.org/mailman/listinfo/virtualization
 
