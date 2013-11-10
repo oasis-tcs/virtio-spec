@@ -232,6 +232,21 @@ Thus drivers should read configuration space fields like so:
 Note that configuration space generally uses the little-endian format
 for multi-byte fields.
 
+Note that future versions of this specification will likely
+extend the configuration space for devices by adding extra fields
+at the tail end of some structures in configuration space.
+
+To allow forward compatibility with such extensions, drivers must
+not limit structure size and configuration space size.  Instead,
+drivers should only check that configuration space is *large enough* to
+contain the fields required for device operation.
+
+For example, if the specification states that configuration
+space 'includes a single 8-bit field' drivers should understand this to mean that
+the configuration space can also include an arbitrary amount of
+tail padding, and accept any configuration space size equal to or
+greater than the specified 8-bit size.
+
 100.100.4.1. Legacy Interface: A Note on Configuration Space endian-ness
 --------------------------------------
 
@@ -1070,6 +1085,20 @@ struct virtio_pci_cap {
 
 This structure can optionally followed by extra data, depending on
 other fields, as documented below.
+
+Note that future versions of this specification will likely
+extend devices by adding extra fields at the tail end of some structures.
+
+To allow forward compatibility with such extensions, drivers must
+not limit structure size.  Instead, drivers should only
+check that structures are *large enough* to contain the fields
+required for device operation.
+
+For example, if the specification states 'structure includes a
+single 8-bit field' drivers should understand this to mean that
+the structure can also include an arbitrary amount of tail padding,
+and accept any structure size equal to or greater than the
+specified 8-bit size.
 
 The fields are interpreted as follows:
 
