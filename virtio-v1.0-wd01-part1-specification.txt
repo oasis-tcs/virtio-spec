@@ -1124,6 +1124,8 @@ cfg_type
 	#define VIRTIO_PCI_CAP_ISR_CFG		3
 	/* Device specific configuration */
 	#define VIRTIO_PCI_CAP_DEVICE_CFG	4
+	/* PCI configuration access */
+	#define VIRTIO_PCI_CAP_PCI_CFG		5
 
 	Any other value - reserved for future use. Drivers must
 	ignore any vendor-specific capability structure which has
@@ -1187,6 +1189,30 @@ notify_off_multiplier
 	If notify_off_multiplier is 0, all virtqueues use the same address in
 	the Notifications structure!
 
+If cfg_type is VIRTIO_PCI_CAP_PCI_CFG the fields bar, offset and length are RW
+and this structure is immediately followed by an additional field:
+
+struct virtio_pci_cfg_cap {
+	__u8 pci_cfg_data[4];	/* Data for BAR access. */
+};
+
+pci_cfg_data
+
+	This RW field allows an indirect access to any BAR on the
+	device using PCI configuration accesses.
+
+	The BAR to access is selected using the bar field.
+	The length of the access is specified by the length
+	field, which can be set to 1, 2 and 4.
+	The offset within the BAR is specified by the offset
+	field, which must be aligned to length bytes.
+
+	After this field is written by driver, the first length
+	bytes in pci_cfg_data are written at the selected
+	offset in the selected BAR.
+
+	When this field is read by driver, length bytes at the
+	selected offset in the selected BAR are read into pci_cfg_data.
 
 100.100.1.3.1.1. Legacy Interface: A Note on Device Layout Detection
 -------------------------------
