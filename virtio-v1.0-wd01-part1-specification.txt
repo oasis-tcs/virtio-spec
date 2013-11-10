@@ -798,10 +798,18 @@ supported by the device. The Subsystem Vendor ID should reflect
 the PCI Vendor ID of the environment (it's currently only used
 for informational purposes by the guest).
 
+All Drivers must match devices with any Revision ID, this
+is to allow devices to be versioned without breaking drivers.
+
 2.3.1.1.1 Legacy Interfaces: A Note on PCI Device Discovery
 -------------------------
-Transitional devices must also have a Revision ID of 0 to match
-this specification.
+Transitional devices must have a Revision ID of 0 to match
+legacy drivers.
+
+Non-transitional devices must have a Revision ID of 1 or higher.
+
+Both transitional and non-transitional drivers must match
+any Revision ID value.
 
 2.3.1.2. PCI Device Layout
 -------------------------
