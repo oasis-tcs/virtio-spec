@@ -1525,8 +1525,10 @@ configuration space. The following list presents their layout:
   flags.
   Writing non-zero values to this register sets the status flags,
   indicating the Guest progress. Writing zero (0x0) to this
-  register triggers a device reset.
-  Also see "2.2.1. Device Initialization".
+  register triggers a device reset, including clearing all
+  bits in the InterruptStatus register and ready bits in the
+  QueueReady register for all queues in the device.
+  See also p. 2.3.2.3.1. "Device Initialization".
 
 * 0x080 | W | QueueDescLow
   0x084 | W | QueueDescHigh
@@ -1589,6 +1591,9 @@ checking values from the MagicValue and the Version registers.
 If both values are valid, it must read the DeviceID register
 and if its value is zero (0x0) must abort initialization and
 must not access any other register.
+
+Further initialization must follow the procedure described in
+p. 2.2.1. "Device Initialization".
 
 2.3.2.3.2. Virtqueue Configuration
 ----------------------------------
@@ -1732,6 +1737,14 @@ nor behaviour:
 * 0x064 | W | InterruptACK
 
 * 0x070 | RW | Status
+  Device status.
+  Reading from this register returns the current device status
+  flags.
+  Writing non-zero values to this register sets the status flags,
+  indicating the Guest progress. Writing zero (0x0) to this
+  register triggers a device reset. This should include
+  setting QueuePFN to zero (0x0) for all queues in the device.
+  Also see "2.2.1. Device Initialization".
 
 * 0x100+ | RW | Config
 
