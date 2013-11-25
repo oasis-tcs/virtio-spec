@@ -356,7 +356,7 @@ The legacy virtqueue layout structure therefore looks like this:
 		struct vring_used used;
 	};
 
-2.1.4.1. Legacy Interfaces: A Note on Virtqueue Endianness
+2.1.4.100. Legacy Interfaces: A Note on Virtqueue Endianness
 --------------------------------------
 
 Note that the endian of fields and in the virtqueue is the native
@@ -1214,7 +1214,7 @@ pci_cfg_data
 	When this field is read by driver, length bytes at the
 	selected offset in the selected BAR are read into pci_cfg_data.
 
-100.100.1.3.1.1. Legacy Interface: A Note on Device Layout Detection
+100.100.1.3.1.1.1. Legacy Interface: A Note on Device Layout Detection
 -------------------------------
 
 Legacy drivers skipped  Device Layout Detection step, assuming legacy
@@ -2597,7 +2597,7 @@ driver, and the device sets the ack byte. There is little it can
 do except issue a diagnostic if the ack byte is not
 VIRTIO_NET_OK.
 
-2.4.1.5.2.1. Packet Receive Filtering
+2.4.1.5.3.1. Packet Receive Filtering
 ------------------------------------
 
 If the VIRTIO_NET_F_CTRL_RX feature is negotiated, the driver can
@@ -2619,7 +2619,7 @@ VIRTIO_NET_CTRL_RX_ALLMULTI turns all-multicast receive on and
 off. The command-specific-data is one byte containing 0 (off) or
 1 (on).
 
-2.4.1.5.2.2. Setting MAC Address Filtering
+2.4.1.5.3.2. Setting MAC Address Filtering
 -----------------------------------------
 
 	struct virtio_net_ctrl_mac {
@@ -2637,7 +2637,7 @@ command-specific-data is two variable length tables of 6-byte MAC
 addresses. The first table contains unicast addresses, and the second
 contains multicast addresses.
 
-2.4.1.5.2.2.1.  Legacy Interface: Setting MAC Address Filtering
+2.4.1.5.3.2.1.  Legacy Interface: Setting MAC Address Filtering
 -----------------------------------------
 For legacy devices, the entries field in struct virtio_net_ctrl_mac is the
 native endian of the guest rather than (necessarily) little-endian.
@@ -3271,7 +3271,7 @@ as follows:
 		le64 val;
 	} __attribute__((packed));
 
-2.4.5.6.1. Legacy Interface: Memory Statistics
+2.4.5.6.1.1 Legacy Interface: Memory Statistics
 ---------------------------
 For legacy devices, the fields in struct virtio_balloon_stat are the
 native endian of the guest rather than (necessarily) little-endian.
@@ -3543,7 +3543,7 @@ following:
   request will be immediately returned with a response equal to
   VIRTIO_SCSI_S_FAILURE.
 
-2.4.6.6.1. Legacy Interface: Device Operation: Request Queues
+2.4.6.6.1.1. Legacy Interface: Device Operation: Request Queues
 ------------------------------------------
 For legacy devices, the fields in struct virtio_scsi_req_cmd are the
 native endian of the guest rather than (necessarily) little-endian.
