@@ -2,7 +2,7 @@
 
 A virtio device is discovered and identified by a bus-specific method
 (see the bus specific sections: \ref{sec:Virtio Transport Options / Virtio Over PCI Bus}~\nameref{sec:Virtio Transport Options / Virtio Over PCI Bus},
-\ref{sec:Virtio Transport Options / Virtio Over MMIO}~\nameref{sec:Virtio Transport Options / Virtio Over MMIO} and \ref{sec:Virtio Transport Options / Virtio Over MMIO}~\nameref{sec:Virtio Transport Options / Virtio Over MMIO}).  Each
+\ref{sec:Virtio Transport Options / Virtio Over MMIO}~\nameref{sec:Virtio Transport Options / Virtio Over MMIO} and \ref{sec:Virtio Transport Options / Virtio Over Channel I/O}~\nameref{sec:Virtio Transport Options / Virtio Over Channel I/O}).  Each
 device consists of the following parts:
 
 o Device Status field
@@ -1705,7 +1705,7 @@ The virtual queue is configured as follows:
 
 Notification mechanisms did not change.
 
-\section{Virtio over channel I/O}\label{sec:Virtio Transport Options / Virtio over channel I/O}
+\section{Virtio Over Channel I/O}\label{sec:Virtio Transport Options / Virtio Over Channel I/O}
 
 S/390 based virtual machines support neither PCI nor MMIO, so a
 different transport is needed there.
