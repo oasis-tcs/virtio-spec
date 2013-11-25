@@ -158,7 +158,7 @@ In particular, new fields in the device configuration space are
 indicated by offering a feature bit, so the guest can check
 before accessing that part of the configuration space.
 
-2.1.2.1 Legacy Interface: A Note on transitions from earlier drafts
+2.1.2.1. Legacy Interface: A Note on transitions from earlier drafts
 --------------------------------------
 
 Earlier drafts of this specification (up to 0.9.X) defined a similar, but
@@ -387,7 +387,7 @@ descriptors!
 Regrettably, initial driver implementations used simple layouts, and
 devices came to rely on it, despite this specification wording.  In
 addition, the specification for virtio_blk SCSI commands required
-intuiting field lengths from frame boundaries (see "2.4.2.5.1 Legacy
+intuiting field lengths from frame boundaries (see "2.4.2.5.1. Legacy
 Interface: Device Operation")
 
 It is thus recommended that when using legacy interfaces, transitional
@@ -816,7 +816,7 @@ for informational purposes by the guest).
 All Drivers must match devices with any Revision ID, this
 is to allow devices to be versioned without breaking drivers.
 
-2.3.1.1.1 Legacy Interfaces: A Note on PCI Device Discovery
+2.3.1.1.1. Legacy Interfaces: A Note on PCI Device Discovery
 -------------------------
 Transitional devices must have a Revision ID of 0 to match
 legacy drivers.
@@ -2457,7 +2457,7 @@ case, the packet itself is preceeded by a header:
 The controlq is used to control device features such as
 filtering.
 
-100.4.1.5.1 Legacy Interface: Device Operation
+100.4.1.5.1. Legacy Interface: Device Operation
 ------------------------
 For legacy devices, the fields in struct virtio_net_hdr are the
 native endian of the guest rather than (necessarily) little-endian.
@@ -2765,7 +2765,7 @@ device except where noted.
   VIRTIO_BLK_F_TOPOLOGY (10) Device exports information on optimal I/O
     alignment.
 
-2.4.2.3.1 Legacy Interface: Feature bits
+2.4.2.3.1. Legacy Interface: Feature bits
 --------------------
   VIRTIO_BLK_F_BARRIER (0) Host supports request barriers.
 
@@ -2891,7 +2891,7 @@ error or VIRTIO_BLK_S_UNSUPP for a request unsupported by host:
 Any writes completed before the submission of the flush command should
 be committed to non-volatile storage by the device.
 
-2.4.2.5.1 Legacy Interface: Device Operation
+2.4.2.5.1. Legacy Interface: Device Operation
 ------------------------
 For legacy devices, the fields in struct virtio_blk_req are the
 native endian of the guest rather than (necessarily) little-endian.
@@ -3271,7 +3271,7 @@ as follows:
 		le64 val;
 	} __attribute__((packed));
 
-2.4.5.6.1.1 Legacy Interface: Memory Statistics
+2.4.5.6.1.1. Legacy Interface: Memory Statistics
 ---------------------------
 For legacy devices, the fields in struct virtio_balloon_stat are the
 native endian of the guest rather than (necessarily) little-endian.
@@ -3872,7 +3872,7 @@ In addition, bit 30 is used by qemu's implementation to check for experimental
 early versions of virtio which did not perform correct feature negotiation,
 and should not be used.
 
-2.5.1 Legacy Interface: Reserved Feature Bits
+2.5.1. Legacy Interface: Reserved Feature Bits
 --------------------------------------------
 
 Legacy or transitional devices may offer the following:
