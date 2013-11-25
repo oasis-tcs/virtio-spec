@@ -4,6 +4,7 @@ SPECDOC=virtio-v1.0-csd01-html
 
 PATH=.:${PATH} htlatex $SPECDOC.tex "virtiohtml,info,charset=utf-8" " -cunihtf -utf8"
 
+rm $SPECDOC.aux
 mv $SPECDOC.html $SPECDOC.tmp1
 
 sed 's/~~/"/g' $SPECDOC.tmp1 >$SPECDOC.tmp2
