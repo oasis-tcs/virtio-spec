@@ -1,0 +1,181 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% HTML specfic commands
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\virtiographics}[3]
+{
+\HCode{<div><img src="images/#1.png" alt="#3"/></div>}
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% VIRTIO title sections
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\oasistitle}[1]
+{
+\begin{spacing}{2}
+\HCode{<div style="color: \#552681; font-size: 24pt;">}
+\textbf{#1}
+\HCode{</div>}
+\end{spacing}
+}
+
+\newcommand{\oasisstagelabel}[1]
+{
+\begin{spacing}{2}
+\HCode{<div style="color: \#552681; font-size: 18pt;">}
+\textbf{#1}
+\HCode{</div>}
+\end{spacing}
+}
+
+\newcommand{\oasisdate}[1]
+{
+\begin{spacing}{2}
+\HCode{<div style="color: \#552681;  font-size: 18pt;">}
+\textbf{#1}
+\HCode{</div>}
+\end{spacing}
+}
+
+\newcommand{\oasisnoticelabel}[1]
+{
+\begin{spacing}{2}
+\HCode{<div style="color: \#552681;  font-size: 18pt;">}
+\textbf{#1}
+\HCode{</div>}
+\end{spacing}
+}
+
+\newcommand{\oasisspecificationuris}[1]
+{
+\HCode{<div style="color: \#552681; font-size: 12pt;">}
+\textbf{#1}
+\HCode{</div>}
+}
+
+\newenvironment{oasistitlesection}[1]
+{
+\HCode{<div style="color: \#552681;  font-size: 10pt;">}
+\textbf{#1:}
+\HCode{</div>}
+\HCode{<div style="margin-left: 20px;">}
+}
+{
+\HCode{</div>}
+}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% VIRTIO type attributes
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% new environment: VIRTIO type attribute
+\newenvironment{virtioattribute}[2]
+{
+\HCode{<div style="width: 200px; float: left;">}\texttt{\textbf{#1}}\HCode{</div>}
+\HCode{<span>}#2\HCode{</span>}\\
+\begin{tabular}{p{20px}p{200px}}
+&}
+{\\
+\end{tabular}\\
+\vspace{0.05in}
+}
+
+% new command: VIRTIO type attribute value
+\newcommand{\virtioattributevalue}[2]
+{
+\texttt{\textbf{#1}}\\
+\indent
+Value: #2\\
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% VIRTIO properties
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% new environment: VIRTIO propery
+\newenvironment{virtioproperty}[2]
+{
+\vspace{0.05in}
+\begin{tabular}{p{20px}p{200px}p{200px}}
+\multicolumn{2}{p{20px}}{\textbf{\texttt{#1}}} & #2\vspace{0.05in}\\
+}
+{
+\end{tabular}\\
+\vspace{0.05in}\\
+}
+
+% new command: VIRTIO property detail
+\newcommand{\virtiopropertydetail}[2]{& #1: & #2\\}
+
+% new command: VIRTIO property comment
+\newcommand{\virtiopropertycomment}[1]{\\&\multicolumn{2}{p{20px}}{#1}\\}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% VIRTIO allowable actions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% new environment: VIRTIO allowable action
+\newenvironment{virtioallowableaction}[1]
+{
+\textbf{#1}
+\vspace{0.05in}\\
+\begin{tabular}{p{0.1in}p{1in}p{4.8in}}
+}
+{
+\end{tabular}\\
+\vspace{0.05in}\\
+}
+
+% new command: VIRTIO allowable action detail
+\newcommand{\virtioallowableactiondetail}[2]{& #1: & #2\\}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% VIRTIO version properties
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% new environment: VIRTIO version property
+\newenvironment{virtioversionproperty}[2]
+{
+\begin{tabular}{p{3in}l}
+\texttt{\textbf{#1}} & #2\\
+\end{tabular}\\\
+\begin{tabular}{p{0.3in}p{5.7in}}
+&}
+{\\
+\end{tabular}\\
+\vspace{0.05in}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% VIRTIO general description
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% new environment: VIRTIO description
+\newenvironment{virtiodescription}[1]
+{
+\begin{tabular}{p{20px}p{600px}}
+\multicolumn{2}{l}{\textbf{#1:}}\\
+&\setlength{\topsep}{0in}\setlength{\parsep}{0in}\setlength{\partopsep}{0in}   }
+{\\
+\end{tabular}\\
+\vspace{0.05in}
+}
+
+
+\newenvironment{virtioexample}[1]
+{
+\HCode{<div style="padding: 5px; background-color: \#E6E6E6;">}
+\textbf{Example:}\\
+Request: \texttt{#1-request.log}\\
+Response: \texttt{#1-response.log}
+\HCode{</div>}
+\vspace{0.2in}
+}
+

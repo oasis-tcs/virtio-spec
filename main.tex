@@ -1,0 +1,49 @@
+% section numbers 5 levels deep
+\setcounter{secnumdepth}{5}
+
+\begin{document}
+\pagestyle{fancy}
+
+% start text
+\setcounter{page}{1}
+
+%%% define header and footer
+\virtioheaderfooter
+
+%%% define header an footer for chapter title pages
+\fancypagestyle{plain}{\fancyhf{}\virtioheaderfooter}
+
+% title page
+\input{title.tex} 
+
+% ToC
+\setcounter{page}{4}
+\setcounter{tocdepth}{4}
+\renewcommand{\contentsname}{Table of Contents}
+\addtocontents{toc}{\protect\virtioheaderfooter}
+\tableofcontents
+\newpage
+
+%%% line numbers?
+%\linenumbers
+
+% introduction
+\input{introduction.tex} 
+
+% Conformance
+\input{conformance.tex}
+
+% appendix
+\appendix
+\def\@chapapp{\appendixname}
+
+% acknowledgements
+\input{acknowledgements.tex} 
+
+%appendix stub
+\input{appendix-stub.tex}
+
+% draft change log
+\input{changelog.tex} 
+
+\end{document} 

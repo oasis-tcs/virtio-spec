@@ -1,0 +1,56 @@
+%!TEX encoding = UTF-8 Unicode
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% VIRTIO 1.0 Specification Draft
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[10pt,titlepage]{report}
+
+\usepackage{parskip}
+\usepackage{setspace}
+\usepackage[english]{babel}
+\usepackage{ae,aecompl} 
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{framed}
+\usepackage{hyperref}
+\usepackage{lineno} 
+\usepackage{listings}
+\usepackage{courier}
+\usepackage{fancyvrb}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{rotating}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{todonotes}
+\usepackage{titlesec}
+\usepackage{mdwlist}
+\usepackage{url}
+\usepackage{xifthen}
+
+\usepackage[utf8x]{inputenc}
+
+\urlstyle{rm}
+
+% commands
+\input{specvars.tex}
+\input{commands.tex}
+\input{commands-html.tex}
+\input{listings.tex}
+
+% new command: header and footer
+\newcommand{\virtioheaderfooter}{}
+
+% headers setup
+\titleformat{\chapter}[block]{\titlerule\normalfont\huge\bfseries}{\thechapter}{0pt}{}
+\titleformat{\section}{\normalfont\Large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\large\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalfont\normalsize\bfseries}{\thesubsubsection}{1em}{}
+\titleformat{\paragraph}[hang]{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titleformat{\subparagraph}[hang]{\normalfont\normalsize\bfseries}{\thesubparagraph}{1em}{}
+
+
+
+% main document
+\input{main.tex}

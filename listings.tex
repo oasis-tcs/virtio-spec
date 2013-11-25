@@ -1,0 +1,30 @@
+% listings setup
+\definecolor{LISTING_background}{RGB}{245,245,245}
+\lstset{
+	basicstyle=\footnotesize\ttfamily,
+	extendedchars=true,
+	backgroundcolor=\color{LISTING_background},
+	showspaces=false, 
+	showstringspaces=false,
+	showtabs=false, 
+	frame=single, 
+	tabsize=2,  
+	breaklines=true, 
+	breakatwhitespace=true,
+	postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookrightarrow\space}}
+}
+
+\definecolor{XML_string}{RGB}{0,0,0}
+\definecolor{XML_identifier}{RGB}{0,0,128}
+\definecolor{XML_keyword}{RGB}{200,0,0}
+\lstdefinelanguage{XML}
+{
+	morestring=[b]",
+	morestring=[s]{>}{<},
+	morecomment=[s]{<?}{?>},
+	stringstyle=\color{XML_string},
+	identifierstyle=\color{XML_identifier},
+	keywordstyle=\color{XML_keyword},
+	morekeywords={virtio}
+}
+

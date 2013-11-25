@@ -1,0 +1,198 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% PDF specfic commands
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\virtiographics}[3]
+{
+\begin{figure}[htb]
+\centering
+\includegraphics[#2]{images/#1.pdf}
+\caption{#3}
+\end{figure}
+\FloatBarrier
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% VIRTIO title sections
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\oasistitle}[1]
+{
+\begin{spacing}{1.5}
+\fontspec[Color=552681]{Arial}
+\fontsize{24}{24}
+\textbf{\noindent#1}
+\end{spacing}
+}
+
+\newcommand{\oasisstagelabel}[1]
+{
+\begin{spacing}{1.1}
+\fontspec[Color=552681]{Arial}
+\fontsize{18}{18}
+\textbf{\noindent#1}
+\end{spacing}
+}
+
+\newcommand{\oasisdate}[1]
+{
+\begin{spacing}{1.1}
+\fontspec[Color=552681]{Arial}
+\fontsize{18}{18}
+\textbf{\noindent#1}
+\end{spacing}
+}
+
+\newcommand{\oasisnoticelabel}[1]
+{
+\begin{spacing}{1.5}
+\fontspec[Color=552681]{Arial}
+\fontsize{18}{18}
+\textbf{\noindent#1}
+\end{spacing}
+}
+
+\newcommand{\oasisspecificationuris}[1]
+{
+{
+\fontspec[Color=552681]{Arial}
+\fontsize{12}{12}
+\textbf{\noindent#1}
+}
+}
+
+\newenvironment{oasistitlesection}[1]
+{
+\begin{tabular}{p{0.4in}p{5.8in}}
+\multicolumn{2}{l}{\fontspec[Color=552681]{Arial}\fontsize{10}{10}\textbf{#1:}}\\[-0.05in]
+&\setlength{\topsep}{0in}\setlength{\parsep}{0in}\setlength{\partopsep}{0in}   }
+{
+\end{tabular}
+\vspace{-0.11in}
+}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% VIRTIO type attributes
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% new environment: VIRTIO type attribute
+\newenvironment{virtioattribute}[2]
+{
+\vspace{0.05in}
+\begin{tabular}{p{2in}l}
+\texttt{\textbf{#1}} & #2\\
+\end{tabular}\\\
+\begin{tabular}{p{0.3in}p{5.7in}}
+&}
+{\\
+\end{tabular}\\
+\vspace{0.05in}
+}
+
+% new command: VIRTIO type attribute value
+\newcommand{\virtioattributevalue}[2]
+{
+\vspace{0.05in}
+\noindent
+\texttt{\textbf{#1}}\\
+\indent
+Value: #2
+\vspace{0.05in}
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% VIRTIO properties
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% new environment: VIRTIO propery
+\newenvironment{virtioproperty}[2]
+{
+\vspace{0.05in}
+\begin{tabular}{p{0.1in}p{2.3in}p{3.5in}}
+\multicolumn{2}{p{1.8in}}{\textbf{\texttt{#1}}} & #2\vspace{0.05in}\\
+}
+{
+\end{tabular}\\
+\vspace{0.05in}\\
+}
+
+% new command: VIRTIO property detail
+\newcommand{\virtiopropertydetail}[2]{& #1: & #2\\}
+
+% new command: VIRTIO property comment
+\newcommand{\virtiopropertycomment}[1]{\\&\multicolumn{2}{p{5.7in}}{#1}\\}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% VIRTIO allowable actions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% new environment: VIRTIO allowable action
+\newenvironment{virtioallowableaction}[1]
+{
+\vspace{0.05in}
+\noindent
+\textbf{#1}
+\vspace{0.05in}\\
+\begin{tabular}{p{0.1in}p{1in}p{4.8in}}
+}
+{
+\end{tabular}\\
+\vspace{0.05in}\\
+}
+
+% new command: VIRTIO allowable action detail
+\newcommand{\virtioallowableactiondetail}[2]{& #1: & #2\\}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% VIRTIO version properties
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% new environment: VIRTIO version property
+\newenvironment{virtioversionproperty}[2]
+{
+\vspace{0.05in}
+\begin{tabular}{p{3in}l}
+\texttt{\textbf{#1}} & #2\\
+\end{tabular}\\\
+\begin{tabular}{p{0.3in}p{5.7in}}
+&}
+{\\
+\end{tabular}\\
+\vspace{0.05in}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% VIRTIO general description
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% new environment: VIRTIO description
+\newenvironment{virtiodescription}[1]
+{
+\vspace{0.05in}
+\noindent
+\begin{tabular}{p{0.1in}p{5.9in}}
+\multicolumn{2}{l}{\textbf{#1:}}\\
+&\setlength{\topsep}{0in}\setlength{\parsep}{0in}\setlength{\partopsep}{0in}   }
+{\\
+\end{tabular}\\
+\vspace{0.05in}
+}
+
+
+\newenvironment{virtioexample}[1]
+{
+\vspace{0.2in}
+\begin{shaded}
+\textbf{Example:}\\
+Request: \texttt{#1-request.log}\\
+Response: \texttt{#1-response.log}
+\end{shaded}
+\vspace{0.2in}
+}
+
