@@ -168,13 +168,13 @@ accommodates optional features to simplify transition
 from these earlier draft interfaces. Specifically:
 
 Legacy Interface
-	is an interface specified by an earlier draft of this specification
+        is an interface specified by an earlier draft of this specification
         (up to 0.9.X)
 Legacy Device
-	is a device implemented before this specification was released,
+        is a device implemented before this specification was released,
         and implementing a legacy interface on the host side
 Legacy Driver
-	is a driver implemented before this specification was released,
+        is a driver implemented before this specification was released,
         and implementing a legacy interface on the guest side
 
 Legacy devices and legacy drivers are not compliant with this
@@ -184,12 +184,12 @@ To simplify transition from these earlier draft interfaces,
 it is possible to implement:
 
 Transitional Device
-	a device supporting both drivers conforming to this
+        a device supporting both drivers conforming to this
         specification, and allowing legacy drivers.
 
 Transitional Driver
-	a driver supporting both devices conforming to this
-	specification, and legacy devices.
+        a driver supporting both devices conforming to this
+        specification, and legacy devices.
 
 Transitional devices and transitional drivers can be compliant with
 this specification (ie. when not operating in legacy mode).
@@ -274,9 +274,11 @@ of the queue.
 
 Each virtqueue consists of three parts:
 
-	Descriptor Table
-	Available Ring
-	Used Ring
+        Descriptor Table
+
+        Available Ring
+
+        Used Ring
 
 where each part is physically-contiguous in guest memory,
 and has different alignment requirements.
@@ -849,111 +851,111 @@ Unless explicitly specified otherwise, all multi-byte fields are little-endian.
 -------------------------
 Common configuration structure layout is documented below:
 
-struct virtio_pci_common_cfg {
-	/* About the whole device. */
-	le32 device_feature_select;	/* read-write */
-	le32 device_feature;		/* read-only */
-	le32 guest_feature_select;	/* read-write */
-	le32 guest_feature;		/* read-write */
-	le16 msix_config;		/* read-write */
-	le16 num_queues;		/* read-only */
-	u8 device_status;		/* read-write */
-	u8 config_generation;		/* read-only */
+	struct virtio_pci_common_cfg {
+		/* About the whole device. */
+		le32 device_feature_select;	/* read-write */
+		le32 device_feature;		/* read-only */
+		le32 guest_feature_select;	/* read-write */
+		le32 guest_feature;		/* read-write */
+		le16 msix_config;		/* read-write */
+		le16 num_queues;		/* read-only */
+		u8 device_status;		/* read-write */
+		u8 config_generation;		/* read-only */
 
-	/* About a specific virtqueue. */
-	le16 queue_select;		/* read-write */
-	le16 queue_size;		/* read-write, power of 2, or 0. */
-	le16 queue_msix_vector;		/* read-write */
-	le16 queue_enable;		/* read-write */
-	le16 queue_notify_off;		/* read-only */
-	le64 queue_desc;		/* read-write */
-	le64 queue_avail;		/* read-write */
-	le64 queue_used;		/* read-write */
-};
+		/* About a specific virtqueue. */
+		le16 queue_select;		/* read-write */
+		le16 queue_size;		/* read-write, power of 2, or 0. */
+		le16 queue_msix_vector;		/* read-write */
+		le16 queue_enable;		/* read-write */
+		le16 queue_notify_off;		/* read-only */
+		le64 queue_desc;		/* read-write */
+		le64 queue_avail;		/* read-write */
+		le64 queue_used;		/* read-write */
+	};
 
 device_feature_select
 
-	Selects which Feature Bits does device_feature field refer to.
-	Value 0x0 selects Feature Bits 0 to 31
-	Value 0x1 selects Feature Bits 32 to 63
-	All other values cause reads from device_feature to return 0.
+        Selects which Feature Bits does device_feature field refer to.
+        Value 0x0 selects Feature Bits 0 to 31
+        Value 0x1 selects Feature Bits 32 to 63
+        All other values cause reads from device_feature to return 0.
 
 device_feature
 
-	Used by Device to report Feature Bits to Driver.
-	Device Feature Bits selected by device_feature_select.
+        Used by Device to report Feature Bits to Driver.
+        Device Feature Bits selected by device_feature_select.
 
 guest_feature_select
 
-	Selects which Feature Bits does guest_feature field refer to.
-	Value 0x0 selects Feature Bits 0 to 31
-	Value 0x1 selects Feature Bits 32 to 63
-	When set to any other value, reads from guest_feature
-	return 0, writing 0 into guest_feature has no effect, and
-	writing any other value into guest_feature is an error.
+        Selects which Feature Bits does guest_feature field refer to.
+        Value 0x0 selects Feature Bits 0 to 31
+        Value 0x1 selects Feature Bits 32 to 63
+        When set to any other value, reads from guest_feature
+        return 0, writing 0 into guest_feature has no effect, and
+        writing any other value into guest_feature is an error.
 
 guest_feature
 
-	Used by Driver to acknowledge Feature Bits to Device.
-	Guest Feature Bits selected by guest_feature_select.
+        Used by Driver to acknowledge Feature Bits to Device.
+        Guest Feature Bits selected by guest_feature_select.
 
 msix_config
 
-	Configuration Vector for MSI-X.
+        Configuration Vector for MSI-X.
 
 num_queues
 
-	Specifies the maximum number of virtqueues supported by device.
+        Specifies the maximum number of virtqueues supported by device.
 
 device_status
 
-	Device Status field. Writing 0 into this field resets the
-	device.
+        Device Status field. Writing 0 into this field resets the
+        device.
 
 config_generation
 
-	Configuration atomicity value.  Changes every time the
-	configuration noticeably changes.  This means the device may
-	only change the value after a configuration read operation,
-	but it must change if there is any risk of a device seeing an
-	inconsistent configuration state.
+        Configuration atomicity value.  Changes every time the
+        configuration noticeably changes.  This means the device may
+        only change the value after a configuration read operation,
+        but it must change if there is any risk of a device seeing an
+        inconsistent configuration state.
 
 queue_select
 
-	Queue Select. Selects which virtqueue do other fields refer to.
+        Queue Select. Selects which virtqueue do other fields refer to.
 
 queue_size
 
-	Queue Size.  On reset, specifies the maximum queue size supported by
-	the hypervisor. This can be modified by driver to reduce memory requirements.
-	Set to 0 if this virtqueue is unused.
+        Queue Size.  On reset, specifies the maximum queue size supported by
+        the hypervisor. This can be modified by driver to reduce memory requirements.
+        Set to 0 if this virtqueue is unused.
 
 queue_msix_vector
 
-	Queue Vector for MSI-X.
+        Queue Vector for MSI-X.
 
 queue_enable
 
-	Used to selectively prevent host from executing requests from this virtqueue.
-	1 - enabled; 0 - disabled
+        Used to selectively prevent host from executing requests from this virtqueue.
+        1 - enabled; 0 - disabled
 
 queue_notify_off
 
-	Used to calculate the offset from start of Notification structure at
-	which this virtqueue is located.
-	Note: this is *not* an offset in bytes. See notify_off_multiplier below.
+        Used to calculate the offset from start of Notification structure at
+        which this virtqueue is located.
+        Note: this is *not* an offset in bytes. See notify_off_multiplier below.
 
 queue_desc
 
-	Physical address of Descriptor Table.
+        Physical address of Descriptor Table.
 
 queue_avail
 
-	Physical address of Available Ring.
+        Physical address of Available Ring.
 
 queue_used
 
-	Physical address of Used Ring.
+        Physical address of Used Ring.
 
 2.3.1.2.2. ISR status structure layout
 -------------------------
@@ -1103,18 +1105,18 @@ specified 8-bit size.
 The fields are interpreted as follows:
 
 cap_vndr
-	0x09; Identifies a vendor-specific capability.
+        0x09; Identifies a vendor-specific capability.
 
 cap_next
-	Link to next capability in the capability list in the configuration space.
+        Link to next capability in the capability list in the configuration space.
 
 cap_len
-	Length of the capability structure, including the whole of
-	struct virtio_pci_cap, and extra data if any.
-	This length might include padding, or fields unused by the driver.
+        Length of the capability structure, including the whole of
+        struct virtio_pci_cap, and extra data if any.
+        This length might include padding, or fields unused by the driver.
 
 cfg_type
-	identifies the structure, according to the following table.
+        identifies the structure, according to the following table.
 
 	/* Common configuration */
 	#define VIRTIO_PCI_CAP_COMMON_CFG	1
@@ -1127,92 +1129,92 @@ cfg_type
 	/* PCI configuration access */
 	#define VIRTIO_PCI_CAP_PCI_CFG		5
 
-	Any other value - reserved for future use. Drivers must
-	ignore any vendor-specific capability structure which has
-	a reserved cfg_type value.
+        Any other value - reserved for future use. Drivers must
+        ignore any vendor-specific capability structure which has
+        a reserved cfg_type value.
 
-	More than one capability can identify the same structure - this makes it
-	possible for the device to expose multiple interfaces to drivers.  The order of
-	the capabilities in the capability list specifies the order of preference
-	suggested by the device; drivers should use the first interface that they can
-	support.  For example, on some hypervisors, notifications using IO accesses are
-	faster than memory accesses. In this case, hypervisor can expose two
-	capabilities with cfg_type set to VIRTIO_PCI_CAP_NOTIFY_CFG:
-	the first one addressing an I/O BAR, the second one addressing a memory BAR.
-	Driver will use the I/O BAR if I/O resources are available, and fall back on
-	memory BAR when I/O resources are unavailable.
+        More than one capability can identify the same structure - this makes it
+        possible for the device to expose multiple interfaces to drivers.  The order of
+        the capabilities in the capability list specifies the order of preference
+        suggested by the device; drivers should use the first interface that they can
+        support.  For example, on some hypervisors, notifications using IO accesses are
+        faster than memory accesses. In this case, hypervisor can expose two
+        capabilities with cfg_type set to VIRTIO_PCI_CAP_NOTIFY_CFG:
+        the first one addressing an I/O BAR, the second one addressing a memory BAR.
+        Driver will use the I/O BAR if I/O resources are available, and fall back on
+        memory BAR when I/O resources are unavailable.
 
 bar
-	values 0x0 to 0x5 specify a Base Address register (BAR) belonging to
-	the function located beginning at 10h in Configuration Space
-	and used to map the structure into Memory or I/O Space.
-	The BAR is permitted to be either 32-bit or 64-bit, it can map Memory Space
-	or I/O Space.
+        values 0x0 to 0x5 specify a Base Address register (BAR) belonging to
+        the function located beginning at 10h in Configuration Space
+        and used to map the structure into Memory or I/O Space.
+        The BAR is permitted to be either 32-bit or 64-bit, it can map Memory Space
+        or I/O Space.
 
-	Any other value - reserved for future use. Drivers must
-	ignore any vendor-specific capability structure which has
-	a reserved bar value.
+        Any other value - reserved for future use. Drivers must
+        ignore any vendor-specific capability structure which has
+        a reserved bar value.
 
 offset
-	indicates where the structure begins relative to the base address associated
-	with the BAR.
+        indicates where the structure begins relative to the base address associated
+        with the BAR.
 
 length
-	indicates the length of the structure.
-	This size might include padding, or fields unused by the driver.
-	Drivers are also recommended to only map part of configuration structure
-	large enough for device operation.
-	For example, a future device might present a large structure size of several
-	MBytes.
-	As current devices never utilize structures larger than 4KBytes in size,
-	driver can limit the mapped structure size to e.g.
-	4KBytes to allow forward compatibility with such devices without loss of
-	functionality and without wasting resources.
+        indicates the length of the structure.
+        This size might include padding, or fields unused by the driver.
+        Drivers are also recommended to only map part of configuration structure
+        large enough for device operation.
+        For example, a future device might present a large structure size of several
+        MBytes.
+        As current devices never utilize structures larger than 4KBytes in size,
+        driver can limit the mapped structure size to e.g.
+        4KBytes to allow forward compatibility with such devices without loss of
+        functionality and without wasting resources.
 
 
 If cfg_type is VIRTIO_PCI_CAP_NOTIFY_CFG this structure is immediately followed
 by additional fields:
 
-struct virtio_pci_notify_cap {
-	struct virtio_pci_cap cap;
-	le32 notify_off_multiplier;	/* Multiplier for queue_notify_off. */
-};
+	struct virtio_pci_notify_cap {
+		struct virtio_pci_cap cap;
+		le32 notify_off_multiplier;	/* Multiplier for queue_notify_off. */
+	};
 
 notify_off_multiplier
 
-	Virtqueue offset multiplier, in bytes. Must be even and either a power of two, or 0.
-	Value 0x1 is reserved.
-	For a given virtqueue, the address to use for notifications is calculated as follows:
+        Virtqueue offset multiplier, in bytes. Must be even and either a power of two, or 0.
+        Value 0x1 is reserved.
+        For a given virtqueue, the address to use for notifications is calculated as follows:
 
-	queue_notify_off * notify_off_multiplier + offset
+        queue_notify_off * notify_off_multiplier + offset
 
-	If notify_off_multiplier is 0, all virtqueues use the same address in
-	the Notifications structure!
+        If notify_off_multiplier is 0, all virtqueues use the same address in
+        the Notifications structure!
 
 If cfg_type is VIRTIO_PCI_CAP_PCI_CFG the fields bar, offset and length are RW
 and this structure is immediately followed by an additional field:
 
-struct virtio_pci_cfg_cap {
-	__u8 pci_cfg_data[4];	/* Data for BAR access. */
-};
+	struct virtio_pci_cfg_cap {
+		__u8 pci_cfg_data[4];	/* Data for BAR access. */
+	};
 
 pci_cfg_data
 
-	This RW field allows an indirect access to any BAR on the
-	device using PCI configuration accesses.
+        This RW field allows an indirect access to any BAR on the
+        device using PCI configuration accesses.
 
-	The BAR to access is selected using the bar field.
-	The length of the access is specified by the length
-	field, which can be set to 1, 2 and 4.
-	The offset within the BAR is specified by the offset
-	field, which must be aligned to length bytes.
+        The BAR to access is selected using the bar field.
+        The length of the access is specified by the length
+        field, which can be set to 1, 2 and 4.
+        The offset within the BAR is specified by the offset
+        field, which must be aligned to length bytes.
 
-	After this field is written by driver, the first length
-	bytes in pci_cfg_data are written at the selected
-	offset in the selected BAR.
+        After this field is written by driver, the first length
+        bytes in pci_cfg_data are written at the selected
+        offset in the selected BAR.
 
-	When this field is read by driver, length bytes at the
-	selected offset in the selected BAR are read into pci_cfg_data.
+        When this field is read by driver, length bytes at the
+        selected offset in the selected BAR are read into pci_cfg_data.
 
 100.100.1.3.1.1.1. Legacy Interface: A Note on Device Layout Detection
 -------------------------------
@@ -1955,10 +1957,10 @@ implies that the device must reject any command not valid for revision
 CCW_CMD_READ_VQ_CONF is issued by the guest to obtain information
 about a queue. It uses the following structure for communicating:
 
-struct vq_config_block {
-	be16 index;
-	be16 max_num;
-} __attribute__ ((packed));
+	struct vq_config_block {
+		be16 index;
+		be16 max_num;
+	} __attribute__ ((packed));
 
 The requested number of buffers for queue index is returned in
 max_num.
@@ -1967,14 +1969,14 @@ Afterwards, CCW_CMD_SET_VQ is issued by the guest to inform the
 host about the location used for its queue. The transmitted
 structure is
 
-struct vq_info_block {
-	be64 desc;
-	be32 res0;
-	be16 index;
-	be16 num;
-	be64 avail;
-	be64 used;
-} __attribute__ ((packed));
+	struct vq_info_block {
+		be64 desc;
+		be32 res0;
+		be16 index;
+		be16 num;
+		be64 avail;
+		be64 used;
+	} __attribute__ ((packed));
 
 desc, avail and used contain the guest addresses for the descriptor table,
 available ring and used ring for queue index, respectively. The actual
@@ -1987,12 +1989,12 @@ res0 is reserved and must be ignored by the device.
 For a legacy driver or for a driver that selected revision 0,
 CCW_CMD_SET_VQ uses the following communication block:
 
-struct vq_info_block_legacy {
-	be64 queue;
-	be32 align;
-	be16 index;
-	be16 num;
-} __attribute__ ((packed));
+	struct vq_info_block_legacy {
+		be64 queue;
+		be32 align;
+		be16 index;
+		be16 num;
+	} __attribute__ ((packed));
 
 queue contains the guest address for queue index, num the number of buffers
 and align the alignment.
@@ -2034,10 +2036,10 @@ little-endian byte order.
 The CCW commands dealing with features use the following
 communication block:
 
-struct virtio_feature_desc {
-	be32 features;
-	u8 index;
-} __attribute__ ((packed));
+	struct virtio_feature_desc {
+		be32 features;
+		u8 index;
+	} __attribute__ ((packed));
 
 features are the 32 bits of features currently accessed, while
 index describes which of the feature bit values is to be
@@ -2321,7 +2323,7 @@ features.
   VIRTIO_NET_F_GUEST_CSUM (1) Guest handles packets with partial checksum
 
   VIRTIO_NET_F_CTRL_GUEST_OFFLOADS (2) Control channel offloads
-	reconfiguration support.
+        reconfiguration support.
 
   VIRTIO_NET_F_MAC (5) Device has given MAC address.
 
@@ -2923,7 +2925,7 @@ scsi packet command requests, each of these requests is of form:
 		u64 sector;
 		char cmd[];
 		char data[][512];
-#define SCSI_SENSE_BUFFERSIZE   96
+	#define SCSI_SENSE_BUFFERSIZE   96
 		u8 sense[SCSI_SENSE_BUFFERSIZE];
 		u32 errors;
 		u32 data_len;
