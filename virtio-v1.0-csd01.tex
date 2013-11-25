@@ -33,9 +33,6 @@
 \usepackage{xifthen}
 \usepackage[no-math]{fontspec}
 \usepackage{xltxtra}
-\usepackage{tocloft}
-\renewcommand{\cftdot}{\normalfont.}
-\renewcommand{\cftchapdotsep}{4.5}
 \usepackage{etoolbox}
 \setmainfont[Mapping=tex-text]{Arial}
 \setromanfont{Arial}
@@ -73,10 +70,13 @@
 \titleformat{\paragraph}[hang]{\color{oasis1}\normalfont\normalsize\bfseries}{\color{oasis1}\theparagraph}{1em}{#1}
 \titleformat{\subparagraph}[hang]{\color{oasis1}\normalfont\normalsize\bfseries}{\color{oasis1}\thesubparagraph}{1em}{#1}
 
-% hyperref toc hack - do not include the chapter/section number in the link
+% toc hacks
 \makeatletter
+% hyperref package: do not include the chapter/section number in the link
 \def\process@contentsline#1#2{#1{#2}\hyper@linkstart{link}{\Hy@tocdestname}}
 \patchcmd{\contentsline}{\hyper@linkstart{link}{\Hy@tocdestname}{#2}}{\process@contentsline#2}{}{}
+% report style: add dotted lines between chapter names and page numbers
+\patchcmd{\l@chapter}{\hfil}{\leaders\hbox{\normalfont$\m@th\mkern \@dotsep mu\hbox{.}\mkern \@dotsep mu$}\hfill}{}{}
 \makeatother
 
 % main document
