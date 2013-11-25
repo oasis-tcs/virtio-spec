@@ -387,8 +387,8 @@ descriptors!
 Regrettably, initial driver implementations used simple layouts, and
 devices came to rely on it, despite this specification wording.  In
 addition, the specification for virtio_blk SCSI commands required
-intuiting field lengths from frame boundaries (see "2.4.2.5.1. Legacy
-Interface: Device Operation")
+intuiting field lengths from frame boundaries (see
+ "2.4.2.5.1. Legacy Interface: Device Operation")
 
 It is thus recommended that when using legacy interfaces, transitional
 drivers be conservative in their assumptions, unless the
@@ -500,8 +500,8 @@ with an index specified by the “avail_event” is written in the
 available ring (equivalently, until the idx field in the
 available ring will reach the value avail_event + 1). The method
 employed by the device is controlled by the guest through the
-VIRTIO_RING_F_EVENT_IDX feature bit (see "2.6. Reserved
-Feature Bits").[7]
+VIRTIO_RING_F_EVENT_IDX feature bit (
+see "2.6. Reserved Feature Bits").[7]
 
 Each entry in the ring is a pair: the head entry of the
 descriptor chain describing the buffer (this matches an entry
@@ -1040,8 +1040,8 @@ Legacy Interface. When used through the Legacy Interface,
 Transitional Devices must assume that Feature Bits 32 to 63
 are not acknowledged by Driver.
 
-As legacy devices had no configuration generation field, see "2.1.3.1.
-Legacy Interface: Configuration Space" for workarounds.
+As legacy devices had no configuration generation field,
+see "2.1.3.1. Legacy Interface: Configuration Space" for workarounds.
 
 2.3.1.3. PCI-specific Initialization And Device Operation
 --------------------------------------------------------
@@ -2505,15 +2505,16 @@ the different features the driver negotiated.
   the num_buffers field is set to zero.
 
 4. The header and packet are added as one output buffer to the
-  transmitq, and the device is notified of the new entry (see "2.4.1.4.
-  Notifying The Device").[19]
+  transmitq, and the device is notified of the new entry
+  (see "2.4.1.4. Notifying The Device").[19]
 
 2.4.1.5.1.1. Packet Transmission Interrupt
 -----------------------------------------
 
 Often a driver will suppress transmission interrupts using the
-VRING_AVAIL_F_NO_INTERRUPT flag (see "2.4.2. Receiving Used Buffers From
-The Device") and check for used packets in the transmit path of following
+VRING_AVAIL_F_NO_INTERRUPT flag
+ (see "2.4.2. Receiving Used Buffers From The Device")
+and check for used packets in the transmit path of following
 packets.
 
 The normal behavior in this interrupt handler is to retrieve and
