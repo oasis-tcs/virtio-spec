@@ -1074,16 +1074,16 @@ on capability list in PCI configuration space of the device.
 This virtio structure capability uses little-endian format; all bits are
 read-only:
 
-struct virtio_pci_cap {
-	u8 cap_vndr;	/* Generic PCI field: PCI_CAP_ID_VNDR */
-	u8 cap_next;	/* Generic PCI field: next ptr. */
-	u8 cap_len;	/* Generic PCI field: capability length */
-	u8 cfg_type;	/* Identifies the structure. */
-	u8 bar;		/* Where to find it. */
-	u8 padding[3];	/* Pad to full dword. */
-	le32 offset;	/* Offset within bar. */
-	le32 length;	/* Length of the structure, in bytes. */
-};
+	struct virtio_pci_cap {
+		u8 cap_vndr;	/* Generic PCI field: PCI_CAP_ID_VNDR */
+		u8 cap_next;	/* Generic PCI field: next ptr. */
+		u8 cap_len;	/* Generic PCI field: capability length */
+		u8 cfg_type;	/* Identifies the structure. */
+		u8 bar;		/* Where to find it. */
+		u8 padding[3];	/* Pad to full dword. */
+		le32 offset;	/* Offset within bar. */
+		le32 length;	/* Length of the structure, in bytes. */
+	};
 
 This structure can optionally followed by extra data, depending on
 other fields, as documented below.
@@ -1844,18 +1844,18 @@ In addition to the basic channel commands, virtio-ccw defines a
 set of channel commands related to configuration and operation of
 virtio:
 
-#define CCW_CMD_SET_VQ 0x13
-#define CCW_CMD_VDEV_RESET 0x33
-#define CCW_CMD_SET_IND 0x43
-#define CCW_CMD_SET_CONF_IND 0x53
-#define CCW_CMD_SET_IND_ADAPTER 0x73
-#define CCW_CMD_READ_FEAT 0x12
-#define CCW_CMD_WRITE_FEAT 0x11
-#define CCW_CMD_READ_CONF 0x22
-#define CCW_CMD_WRITE_CONF 0x21
-#define CCW_CMD_WRITE_STATUS 0x31
-#define CCW_CMD_READ_VQ_CONF 0x32
-#define CCW_CMD_SET_VIRTIO_REV 0x83
+	#define CCW_CMD_SET_VQ 0x13
+	#define CCW_CMD_VDEV_RESET 0x33
+	#define CCW_CMD_SET_IND 0x43
+	#define CCW_CMD_SET_CONF_IND 0x53
+	#define CCW_CMD_SET_IND_ADAPTER 0x73
+	#define CCW_CMD_READ_FEAT 0x12
+	#define CCW_CMD_WRITE_FEAT 0x11
+	#define CCW_CMD_READ_CONF 0x22
+	#define CCW_CMD_WRITE_CONF 0x21
+	#define CCW_CMD_WRITE_STATUS 0x31
+	#define CCW_CMD_READ_VQ_CONF 0x32
+	#define CCW_CMD_SET_VIRTIO_REV 0x83
 
 The virtio-ccw device acts like a normal channel device, as specified
 in [S390 PoP] and [S390 Common I/O]. In particular:
@@ -1886,11 +1886,11 @@ CCW_CMD_SET_VIRTIO_REV is issued by the driver to set the revision of
 the virtio-ccw transport it intends to drive the device with. It uses the
 following communication structure:
 
-struct virtio_rev_info {
-       __u16 revision;
-       __u16 length;
-       __u8 data[];
-};
+	struct virtio_rev_info {
+	       __u16 revision;
+	       __u16 length;
+	       __u8 data[];
+	};
 
 revision contains the desired revision id, length the length of the
 data portion and data revision-dependent additional desired options.
@@ -2125,12 +2125,12 @@ To communicate the location of the summary and queue indicator bits,
 the driver uses the CCW_CMD_SET_IND_ADAPTER command with the following
 payload:
 
-struct virtio_thinint_area {
-       be64 summary_indicator;
-       be64 indicator;
-       be64 bit_nr;
-       u8 isc;
-} __attribute__ ((packed));
+	struct virtio_thinint_area {
+	       be64 summary_indicator;
+	       be64 indicator;
+	       be64 bit_nr;
+	       u8 isc;
+	} __attribute__ ((packed));
 
 summary_indicator contains the guest address of the 8 bit summary
 indicator.
