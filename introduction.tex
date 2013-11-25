@@ -1,30 +1,66 @@
 \chapter{Introduction}
 
-\section{Terminology}
+This document describes the specifications of the “virtio” family of
+devices. These are devices are found in virtual environments, yet by
+design they are not all that different from physical devices, and this
+document treats them as such. This allows the guest to use standard
+drivers and discovery mechanisms.
 
-The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in \hyperref[intro:rfc2119]{[RFC2119]}.
+The purpose of virtio and this specification is that virtual
+environments and guests should have a straightforward, efficient,
+standard and extensible mechanism for virtual devices, rather
+than boutique per-environment or per-OS mechanisms.
 
+  Straightforward: Virtio devices use normal bus mechanisms of
+  interrupts and DMA which should be familiar to any device driver
+  author. There is no exotic page-flipping or COW mechanism: it's just
+  a normal device.
+\footnote{This lack of page-sharing implies that the implementation of the
+device (e.g. the hypervisor or host) needs full access to the
+guest memory. Communication with untrusted parties (i.e.
+inter-guest communication) requires copying.
+}
+
+  Efficient: Virtio devices consist of rings of descriptors
+  for input and output, which are neatly separated to avoid cache
+  effects from both guest and device writing to the same cache
+  lines.
+
+  Standard: Virtio makes no assumptions about the environment in which
+  it operates, beyond supporting the bus attaching the device.  Virtio
+  devices are implemented over PCI and other buses, and earlier drafts
+  been implemented on other buses not included in this spec.
+\footnote{The Linux implementation further separates the PCI virtio code
+from the specific virtio drivers: these drivers are shared with
+the non-PCI implementations (currently lguest and S/390).
+}
+
+  Extensible: Virtio PCI devices contain feature bits which are
+  acknowledged by the guest operating system during device setup.
+  This allows forwards and backwards compatibility: the device
+  offers all the features it knows about, and the driver
+  acknowledges those it understands and wishes to use.
+
+\section{Terminology}\label{Terminology}
+
+The key words "must", "must not", "required", "shall", "shall
+not", "should", "should not", "recommended", "may", and
+"optional" are to be interpreted as
+described in \hyperref[intro:rfc2119]{[RFC2119]}.  Note that for
+reasons of style, these words are not capitalized in this
+document.
 
 \section{Normative References}
 
 \begin{longtable}{l p{5in}}
 	\phantomsection\label{intro:rfc2119}\textbf{[RFC2119]} & S. Bradner, Key words for use in RFCs to Indicate Requirement Levels, \newline\url{http://www.ietf.org/rfc/rfc2119.txt}, March 1997\\
+	\phantomsection\label{intro:S390 PoP}\textbf{[S390 PoP]} & z/Architecture Principles of Operation, \newline IBM Publication SA22-7832\\
+	\phantomsection\label{intro:S390 Common I/O}\textbf{[S390 Common I/O]} & ESA/390 Common I/O-Device and Self-Description, \newline IBM Publication SA22-7204\\
 \end{longtable}
 
 
 \section{Non-Normative References}
 
 
-
-
-
 \newpage
-\section{Section}
-
-
-\subsection{Second level heading}
-\subsubsection{Third level heading}
-\paragraph{Fourth level heading}
-\subparagraph{Fifth level heading}
-
 
