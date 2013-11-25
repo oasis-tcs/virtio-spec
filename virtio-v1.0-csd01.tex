@@ -35,6 +35,16 @@
 \usepackage{xltxtra}
 \usepackage{etoolbox}
 \usepackage{underscore}
+% This is an alternative to package underscore above
+% It makes it possible to disable hyphenation of upper-case
+% identifiers with underscore (of which we have many) by
+% treating them as acronyms.
+% However, the result doesn't look pretty, so don't use this
+% for now.
+%\catcode`\_=\active
+%\def_{\_}
+% Don't hyphenate acronyms
+%\uchyph=0
 \setmainfont[Mapping=tex-text]{Arial}
 \setromanfont{Arial}
 \setmonofont{Courier New}
