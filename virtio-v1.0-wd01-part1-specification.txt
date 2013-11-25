@@ -1821,7 +1821,7 @@ importantly SENSE ID.
 For a virtio-ccw proxy device, SENSE ID will return the following
 information:
 
-------------------------------------------------------
++-------+--------------------------------------------+
 | Bytes | Contents                                   |
 |-------|--------------------------------------------|
 | 0     | reserved              | 0xff               |
@@ -1835,7 +1835,7 @@ information:
 | 6     | device model          | zeroes (unset)     |
 |-------|-----------------------|--------------------|
 | 7-255 | extended SenseId data | zeroes (unset)     |
-------------------------------------------------------
++-------+--------------------------------------------+
 
 A driver for virtio-ccw devices MUST check for a control unit
 type of 0x3832 and MUST ignore the device type and model.
@@ -1897,7 +1897,7 @@ data portion and data revision-dependent additional desired options.
 
 The following values are supported:
 
-------------------------------------------------------------------
++----------+--------+-----------+--------------------------------+
 | revision | length | data      | remarks                        |
 |----------|--------|-----------|--------------------------------|
 | 0        | 0      | <empty>   | legacy interface; transitional |
@@ -1906,7 +1906,7 @@ The following values are supported:
 | 1        | 0      | <empty>   | Virtio 1.0                     |
 |----------|--------|-----------|--------------------------------|
 | 2-n      |        |           | reserved for later revisions   |
-------------------------------------------------------------------
++----------+--------+-----------+--------------------------------+
 
 Note that a change in the virtio standard does not neccessarily
 correspond to a change in the virtio-ccw revision.
