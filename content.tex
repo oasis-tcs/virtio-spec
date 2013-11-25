@@ -912,17 +912,17 @@ applicable).
 
 When used through the legacy interface, the virtio header looks as follows:
 
-\begin{verbatim}
-+------------++---------------------+---------------------+----------+--------+---------+---------+---------+--------+
-| Bits       || 32                  | 32                  | 32       | 16     | 16      | 16      | 8       | 8      |
-+------------++---------------------+---------------------+----------+--------+---------+---------+---------+--------+
-| Read/Write || R                   | R+W                 | R+W      | R      | R+W     | R+W     | R+W     | R      |
-+------------++---------------------+---------------------+----------+--------+---------+---------+---------+--------+
-| Purpose    || Device              | Guest               | Queue    | Queue  | Queue   | Queue   | Device  | ISR    |
-|            || Features bits 0:31  | Features bits 0:31  | Address  | Size   | Select  | Notify  | Status  | Status |
-+------------++---------------------+---------------------+----------+--------+---------+---------+---------+--------+
-\end{verbatim}
-
+\begin{tabularx}{\textwidth}{ |X||X|X|X|X|X|X|X|X| }
+\hline
+ Bits & 32 & 32 & 32 & 16 & 16 & 16 & 8 & 8 \\
+\hline
+ Read / Write & R & R+W & R+W & R & R+W & R+W & R+W & R \\
+\hline
+ Purpose & Device Features bits 0:31 & Guest Features bits 0:31 &
+  Queue Size & Queue Select & Queue Notify & Queue Address &
+  Device Status & ISR \newline Status \\
+\hline
+\end{tabularx}
 
 If MSI-X is enabled for the device, two additional fields
 immediately follow this header:
