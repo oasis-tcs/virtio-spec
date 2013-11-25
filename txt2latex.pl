@@ -105,6 +105,8 @@ for ($s = 0; $s <= $#sections; $s++) {
 		last if (not defined $latest_by_depth{$#path - $i});
 		$label = "$latest_by_depth{$#path - $i} / $label";
 	}
+	#It's best to avoid underscore in labels
+	$label =~ s/_/-/g;
 	$text[$l] = $type . "{$name}\\label{sec:$label}\n";
 	$label_by_section{$section} = $label;
 }
