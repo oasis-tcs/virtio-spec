@@ -1528,7 +1528,7 @@ configuration space. The following list presents their layout:
   register triggers a device reset, including clearing all
   bits in the InterruptStatus register and ready bits in the
   QueueReady register for all queues in the device.
-  See also p. 2.3.2.3.1. "Device Initialization".
+  See also p. "2.3.2.3.1. Device Initialization".
 
 * 0x080 | W | QueueDescLow
   0x084 | W | QueueDescHigh
@@ -1593,7 +1593,7 @@ and if its value is zero (0x0) must abort initialization and
 must not access any other register.
 
 Further initialization must follow the procedure described in
-p. 2.2.1. "Device Initialization".
+p. "2.2.1. Device Initialization".
 
 2.3.2.3.2. Virtqueue Configuration
 ----------------------------------
@@ -1752,9 +1752,9 @@ The virtual queue page size is defined by writing to the GuestPageSize
 register, as written by the guest. This must be done before the
 virtual queues are configured.
 
-The virtual queue layout follows p. 2.1.4.1. "Legacy Interfaces: A Note
-on Virtqueue Layout", with the alignment defined in the QueueAlign
-register.
+The virtual queue layout follows
+p. "2.1.4.1. Legacy Interfaces: A Note on Virtqueue Layout",
+with the alignment defined in the QueueAlign register.
 
 The virtual queue is configured as follows:
 
