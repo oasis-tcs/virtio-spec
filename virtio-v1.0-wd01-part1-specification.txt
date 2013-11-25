@@ -2427,8 +2427,8 @@ native endian of the guest rather than (necessarily) little-endian.
   checksummed packets can be received, and if it can do that then
   the VIRTIO_NET_F_GUEST_TSO4, VIRTIO_NET_F_GUEST_TSO6,
   VIRTIO_NET_F_GUEST_UFO and VIRTIO_NET_F_GUEST_ECN are the input
-  equivalents of the features described above. See “Receiving
-  Packets” below.
+  equivalents of the features described above.
+  See "2.4.1.5.2. Setting Up Receive Buffers" and "2.4.1.5.2.1. Packet Receive Interrupt" below.
 
 2.4.1.5. Device Operation
 ------------------------
@@ -2522,6 +2522,7 @@ new descriptors from the used ring and free the corresponding
 headers and packets.
 
 2.4.1.5.2. Setting Up Receive Buffers
+-----------------------------------------
 
 It is generally a good idea to keep the receive virtqueue as
 fully populated as possible: if it runs out, network performance
