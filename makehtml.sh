@@ -15,4 +15,6 @@ sed 's/~</"</g' $SPECDOC.tmp4 >$SPECDOC.tmp5
 mv $SPECDOC.tmp5 $SPECDOC.html
 rm $SPECDOC.tmp*
 
+cp virtio-v1.0-csd01.css $SPECDOC.css
+
 zip $SPECDOC.zip $SPECDOC.html $SPECDOC.css images/*.png
