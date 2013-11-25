@@ -36,6 +36,7 @@
 \usepackage{tocloft}
 \renewcommand{\cftdot}{\normalfont.}
 \renewcommand{\cftchapdotsep}{4.5}
+\usepackage{etoolbox}
 \setmainfont[Mapping=tex-text]{Arial}
 \setromanfont{Arial}
 \setmonofont{Courier New}
@@ -71,6 +72,12 @@
 \titleformat{\subsubsection}{\color{oasis1}\normalfont\normalsize\bfseries}{\color{oasis1}\thesubsubsection}{1em}{#1}
 \titleformat{\paragraph}[hang]{\color{oasis1}\normalfont\normalsize\bfseries}{\color{oasis1}\theparagraph}{1em}{#1}
 \titleformat{\subparagraph}[hang]{\color{oasis1}\normalfont\normalsize\bfseries}{\color{oasis1}\thesubparagraph}{1em}{#1}
+
+% hyperref toc hack - do not include the chapter/section number in the link
+\makeatletter
+\def\process@contentsline#1#2{#1{#2}\hyper@linkstart{link}{\Hy@tocdestname}}
+\patchcmd{\contentsline}{\hyper@linkstart{link}{\Hy@tocdestname}{#2}}{\process@contentsline#2}{}{}
+\makeatother
 
 % main document
 \input{main.tex}
