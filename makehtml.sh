@@ -14,7 +14,17 @@ sed 's/>~/>"/g' $SPECDOC.tmp2 >$SPECDOC.tmp3
 sed 's/>=~/>="/g' $SPECDOC.tmp3 >$SPECDOC.tmp4
 sed 's/~</"</g' $SPECDOC.tmp4 >$SPECDOC.tmp5
 
-mv $SPECDOC.tmp5 $SPECDOC.html
+#For some unclear reason we get 'fi' replaced by NULL character
+# on Fedora. file recognizes result as a binary data.
+# Detect and work around this.
+if test `file -b $SPECDOC.tmp5` = 'data';
+then
+	perl -p -e 's/\0/fi/g' $SPECDOC.tmp5 >$SPECDOC.tmp6
+else
+	cp $SPECDOC.tmp5 $SPECDOC.tmp6
+fi
+
+mv $SPECDOC.tmp6 $SPECDOC.html
 rm $SPECDOC.tmp*
 
 #uncomment if you have a broken t4ht
