@@ -1,10 +1,12 @@
 #!/bin/sh
 
-SPECDOC=virtio-v1.0-csd01-html
+SPECDOC=virtio-v1.0-csd01
+
+cp virtio-html.tex $SPECDOC.tex
 
 #uncomment if you have a broken t4ht
 #PATH=./t4ht-workaround:${PATH} htlatex $SPECDOC.tex "virtiohtml,info,charset=utf-8" " -cunihtf -utf8"
-htlatex $SPECDOC.tex "virtiohtml,info,charset=utf-8" " -cunihtf -utf8"
+htlatex $SPECDOC.tex "virtio-html,info,charset=utf-8" " -cunihtf -utf8"
 
 rm $SPECDOC.aux
 mv $SPECDOC.html $SPECDOC.tmp1
