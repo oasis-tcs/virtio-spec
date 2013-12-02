@@ -522,10 +522,10 @@ The driver MUST follow this sequence to initialize a device:
 \item Read device feature bits, and write the subset of feature bits
    understood by the OS and driver to the device.
 
-\item\label{item:General Initialization And Device Operation / Device Initialization / Set FEATURES_OK} Set the FEATURES_OK status bit.  The driver MUST not accept
+\item\label{item:General Initialization And Device Operation / Device Initialization / Set FEATURES-OK} Set the FEATURES_OK status bit.  The driver MUST not accept
    new feature bits after this step.
 
-\item\label{item:General Initialization And Device Operation / Device Initialization / Re-read FEATURES_OK} Re-read the status byte to ensure the FEATURES_OK bit is still
+\item\label{item:General Initialization And Device Operation / Device Initialization / Re-read FEATURES-OK} Re-read the status byte to ensure the FEATURES_OK bit is still
    set: otherwise, the device does not support our subset of features
    and the device is unusable.
 
@@ -533,7 +533,7 @@ The driver MUST follow this sequence to initialize a device:
    device, optional per-bus setup, reading and possibly writing the
    device's virtio configuration space, and population of virtqueues.
 
-\item\label{item:General Initialization And Device Operation / Device Initialization / Set DRIVER_OK} Set the DRIVER_OK status bit.  At this point the device is
+\item\label{item:General Initialization And Device Operation / Device Initialization / Set DRIVER-OK} Set the DRIVER_OK status bit.  At this point the device is
    "live".
 \end{enumerate}
 
@@ -561,7 +561,7 @@ the initial operation of the device.
 Legacy device implementations often used the device before setting the
 DRIVER_OK bit.
 
-The result was the steps \ref{item:General Initialization And Device Operation / Device Initialization / Set FEATURES_OK} and \ref{item:General Initialization And Device Operation / Device Initialization / Re-read FEATURES_OK} were omitted, and steps \ref{item:General Initialization And Device Operation / Device Initialization / Device-specific Setup} and \ref{item:General Initialization And Device Operation / Device Initialization / Set DRIVER_OK}
+The result was the steps \ref{item:General Initialization And Device Operation / Device Initialization / Set FEATURES-OK} and \ref{item:General Initialization And Device Operation / Device Initialization / Re-read FEATURES-OK} were omitted, and steps \ref{item:General Initialization And Device Operation / Device Initialization / Device-specific Setup} and \ref{item:General Initialization And Device Operation / Device Initialization / Set DRIVER-OK}
 were conflated.
 
 \section{Device Operation}\label{sec:General Initialization And Device Operation / Device Operation}
