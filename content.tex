@@ -15,10 +15,11 @@ To reinforce this the examples use typenames like "le16" instead of "uint16_t".
 
 \section{Device Status Field}\label{sec:Basic Facilities of a Virtio Device / Device Status Field}
 
-The Device Status field is updated by the guest/driver to indicate its
-progress. This provides a simple low-level diagnostic: it's most
-useful to imagine them hooked up to traffic lights on the console
-indicating the status of each device.
+The driver MUST update the Device Status field in the order below to
+indicate its progress. This provides a simple low-level diagnostic:
+it's most useful to imagine them hooked up to traffic lights on the
+console indicating the status of each device.  The driver MUST NOT
+clear a device status bit.
 
 This field is 0 upon reset, otherwise at least one bit should be set:
 
@@ -39,23 +40,30 @@ This field is 0 upon reset, otherwise at least one bit should be set:
   FAILED (128) Indicates that something went wrong in the guest,
   and it has given up on the device. This could be an internal
   error, or the driver didn't like the device for some reason, or
-  even a fatal error during device operation. The device must be
-  reset before attempting to re-initialize.
+  even a fatal error during device operation. The driver MUST
+  reset the device before attempting to re-initialize.
 
 \section{Feature Bits}\label{sec:Basic Facilities of a Virtio Device / Feature Bits}
 
-Each virtio device lists all the features it understands.  During
+Each virtio device offers all the features it understands.  During
 device initialization, the driver reads this and tells the device the
-subset that it understands.  The only way to renegotiate is to reset
+subset that it accepts.  The only way to renegotiate is to reset
 the device.
 
 This allows for forwards and backwards compatibility: if the device is
 enhanced with a new feature bit, older drivers will not write that
-feature bit back to the device and it can go into backwards
+feature bit back to the device and it SHOULD go into backwards
 compatibility mode. Similarly, if a driver is enhanced with a feature
 that the device doesn't support, it see the new feature is not offered
-and can go into backwards compatibility mode (or, for poor
-implementations, set the FAILED Device Status bit).
+and SHOULD go into backwards compatibility mode (or, for poor
+implementations it MAY set the FAILED Device Status bit).
+
+The driver MUST NOT accept a feature which the device did not offer,
+and MUST NOT accept a feature which requires another feature which was
+not accepted.
+
+The device MUST NOT offer a feature which requires another feature
+which was not offered.
 
 Feature bits are allocated as follows:
 
@@ -71,8 +79,9 @@ Device ID 1) indicates that the device supports checksumming of
 packets.
 
 In particular, new fields in the device configuration space are
-indicated by offering a feature bit, so the driver can check
-before accessing that part of the configuration space.
+indicated by offering a feature bit, so the driver MUST check that the
+feature is offered before accessing that part of the configuration
+space.
 
 \subsection{Legacy Interface: A Note on transitions from earlier drafts}\label{sec:Basic Facilities of a Virtio Device / Feature Bits / Legacy Interface: A Note on transitions from earlier drafts}
 
@@ -125,7 +134,7 @@ Interface' in the section title.
 \section{Configuration Space}\label{sec:Basic Facilities of a Virtio Device / Configuration Space}
 
 Configuration space is generally used for rarely-changing or
-initialization-time parameters.  Drivers must not assume reads from
+initialization-time parameters.  Drivers MUST NOT assume reads from
 fields greater than 32 bits wide are atomic, nor or reads from
 multiple fields.
 
@@ -134,7 +143,7 @@ space, which must change whenever there is a possibility that two
 accesses to the configuration space can see different versions of that
 space.
 
-Thus drivers should read configuration space fields like so:
+Thus drivers SHOULD read configuration space fields like so:
 
 \begin{lstlisting}
 	u32 before, after;
@@ -145,21 +154,21 @@ Thus drivers should read configuration space fields like so:
 	} while (after != before);
 \end{lstlisting}
 
-Note that configuration space generally uses the little-endian format
+Note that configuration space uses the little-endian format
 for multi-byte fields.
 
 Note that future versions of this specification will likely
 extend the configuration space for devices by adding extra fields
 at the tail end of some structures in configuration space.
 
-To allow forward compatibility with such extensions, drivers must
-not limit structure size and configuration space size.  Instead,
-drivers should only check that configuration space is *large enough* to
+To allow forward compatibility with such extensions, drivers MUST
+NOT limit structure size and configuration space size.  Instead,
+drivers SHOULD only check that configuration space is *large enough* to
 contain the fields required for device operation.
 
 For example, if the specification states that configuration
 space 'includes a single 8-bit field' drivers should understand this to mean that
-the configuration space can also include an arbitrary amount of
+the configuration space might also include an arbitrary amount of
 tail padding, and accept any configuration space size equal to or
 greater than the specified 8-bit size.
 
@@ -213,8 +222,8 @@ virtqueue are summarized in the following table:
 \end{verbatim}
 
 The Alignment column gives the miminum alignment: for each part
-of the virtqueue, the physical address of the first byte of it
-must be a multiple of the specified alignment value.
+of the virtqueue, the physical address of the first byte
+MUST be a multiple of the specified alignment value.
 
 The Size column gives the total number of bytes required for each
 part of the virtqueue.
@@ -229,7 +238,7 @@ When the driver wants to send a buffer to the device, it fills in
 a slot in the descriptor table (or chains several together), and
 writes the descriptor index into the available ring.  It then
 notifies the device. When the device has finished a buffer, it
-writes the descriptor into the used ring, and sends an interrupt.
+writes the descriptor index into the used ring, and sends an interrupt.
 
 
 \subsection{Legacy Interfaces: A Note on Virtqueue Layout}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Legacy Interfaces: A Note on Virtqueue Layout}
@@ -285,7 +294,8 @@ endian of the guest, not little-endian as specified by this standard.
 It is assumed that the host is already aware of the guest endian.
 
 \subsection{Message Framing}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Message Framing}
-The message framing (the particular layout of descriptors) is
+The device MUST NOT make assumptions about the particular arrangement
+of descriptors: the message framing is
 independent of the contents of the buffers. For example, a network
 transmit buffer consists of a 12 byte header followed by the network
 packet. This could be most simply placed in the descriptor table as a
@@ -326,7 +336,8 @@ device type.  Most common is to begin the data with a header
 (containing little-endian fields) for the device to read, and postfix
 it with a status tailer for the device to write.
 
-No descriptor chain may be more than $2^{32}$ bytes long in total.
+Drivers MUST NOT add a descriptor chain over than $2^{32}$ bytes long in total;
+this implies that loops in the descriptor chain are forbidden!
 
 \begin{lstlisting}
 	struct vring_desc {
@@ -354,14 +365,18 @@ for this virtqueue.
 \subsubsection{Indirect Descriptors}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}
 
 Some devices benefit by concurrently dispatching a large number
-of large requests. The VIRTIO_RING_F_INDIRECT_DESC feature can be
-used to allow this (see \ref{sec:virtio-ring.h}~\nameref{sec:virtio-ring.h}). To increase
-ring capacity it is possible to store a table of indirect
+of large requests. The VIRTIO_RING_F_INDIRECT_DESC feature allows this (see \ref{sec:virtio-ring.h}~\nameref{sec:virtio-ring.h}). To increase
+ring capacity the driver can store a table of indirect
 descriptors anywhere in memory, and insert a descriptor in main
 virtqueue (with flags\&VRING_DESC_F_INDIRECT on) that refers to memory buffer
 containing this indirect descriptor table; fields addr and len
 refer to the indirect table address and length in bytes,
-respectively. The indirect table layout structure looks like this
+respectively.
+
+The driver MUST NOT set the VRING_DESC_F_INDIRECT flag unless the
+VIRTIO_RING_F_INDIRECT_DESC feature was negotiated.
+
+The indirect table layout structure looks like this
 (len is the length of the descriptor that refers to this table,
 which is a variable, so this code won't compile):
 
@@ -378,27 +393,11 @@ chained by next field. An indirect descriptor without next field
 (with flags\&VRING_DESC_F_NEXT off) signals the end of the descriptor.
 An
 indirect descriptor can not refer to another indirect descriptor
-table (flags\&VRING_DESC_F_INDIRECT must be off). A single indirect descriptor
+table (flags\&VRING_DESC_F_INDIRECT MUST be off). A single indirect descriptor
 table can include both read-only and write-only descriptors;
-write-only flag (flags\&VRING_DESC_F_WRITE) in the descriptor that refers to it
-is ignored.
+the device MUST ignore the write-only flag (flags\&VRING_DESC_F_WRITE) in the descriptor that refers to it.
 
 \subsection{The Virtqueue Available Ring}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Available Ring}
-
-The available ring refers to what descriptor chains we are offering the
-device: each entry refers to the head of a descriptor chain. The “flags” field
-is currently 0 or 1: 1 indicating that we do not need an interrupt
-when the device consumes a descriptor chain from the available
-ring. Alternatively, the driver can ask the device to delay interrupts
-until an entry with an index specified by the “used_event” field is
-written in the used ring (equivalently, until the idx field in the
-used ring will reach the value used_event + 1). The method employed by
-the device is controlled by the VIRTIO_RING_F_EVENT_IDX feature bit
-(see \ref{sec:virtio-ring.h}~\nameref{sec:virtio-ring.h}). This interrupt suppression is
-merely an optimization; it may not suppress interrupts entirely.
-
-The “idx” field indicates where we would put the next descriptor
-entry (modulo the queue size). This starts at 0, and increases.
 
 \begin{lstlisting}
 	struct vring_avail {
@@ -410,40 +409,33 @@ entry (modulo the queue size). This starts at 0, and increases.
 	};
 \end{lstlisting}
 
+The available ring refers to what descriptor chains the driver is offering the
+device: each ring entry refers to the head of a descriptor chain.  It is only
+written by the driver and read by the device.
+
+The “idx” field indicates where we would put the next descriptor
+entry in the ring (modulo the queue size). This starts at 0, and increases.
+
+If the VIRTIO_RING_F_INDIRECT_DESC feature bit is not negotiated, the
+“flags” field offers a crude interrupt control mechanism.  The driver
+MUST set this to 0 or 1: 1 indicates that the device SHOULD NOT send
+an interrupt when it consumes a descriptor chain from the available
+ring.  The device MUST ignore the used_event value in this case.
+
+Otherwise, if the VIRTIO_RING_F_EVENT_IDX feature bit is negotiated,
+the driver MUST set the "flags" field to 0, and use the “used_event”
+field in the used ring instead.  The driver can ask the device to delay interrupts
+until an entry with an index specified by the “used_event” field is
+written in the used ring (equivalently, until the idx field in the
+used ring will reach the value used_event + 1).
+
+The driver MUST handle spurious interrupts: either form of interrupt
+suppression is merely an optimization; it may not suppress interrupts
+entirely.
+
 \subsection{The Virtqueue Used Ring}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Used Ring}
 
-The used ring is where the device returns buffers once it is done
-with them. The flags field can be used by the device to hint that
-no notification is necessary when the driver adds to the available
-ring. Alternatively, the “avail_event” field can be used by the
-device to hint that no notification is necessary until an entry
-with an index specified by the “avail_event” is written in the
-available ring (equivalently, until the idx field in the
-available ring will reach the value avail_event + 1). The method
-employed by the device is controlled by the driver through the
-VIRTIO_RING_F_EVENT_IDX feature bit (
-see \ref{sec:virtio-ring.h}~\nameref{sec:virtio-ring.h}).
-\footnote{These fields are kept here because this is the only part of the
-virtqueue written by the device
-}
-
-Each entry in the ring is a pair: the head entry of the
-descriptor chain describing the buffer (this matches an entry
-placed in the available ring by the driver earlier), and the total
-of bytes written into the buffer. The latter is extremely useful
-for drivers using untrusted buffers: if you do not know exactly
-how much has been written by the device, you usually have to zero
-the buffer to ensure no data leakage occurs.
-
 \begin{lstlisting}
-	/* le32 is used here for ids for padding reasons. */
-	struct vring_used_elem {
-		/* Index of start of used descriptor chain. */
-		le32 id;
-		/* Total length of the descriptor chain which was used (written to) */
-		le32 len;
-	};
-
 	struct vring_used {
 	#define VRING_USED_F_NO_NOTIFY  1
 		le16 flags;
@@ -451,7 +443,45 @@ the buffer to ensure no data leakage occurs.
 		struct vring_used_elem ring[ /* Queue Size */];
 		le16 avail_event; /* Only if VIRTIO_RING_F_EVENT_IDX */
 	};
+
+	/* le32 is used here for ids for padding reasons. */
+	struct vring_used_elem {
+		/* Index of start of used descriptor chain. */
+		le32 id;
+		/* Total length of the descriptor chain which was used (written to) */
+		le32 len;
+	};
 \end{lstlisting}
+
+The used ring is where the device returns buffers once it is done with
+them: it is only written to by the device, and read by the driver.
+
+Each entry in the ring is a pair: the head entry of the
+descriptor chain describing the buffer (this matches an entry
+placed in the available ring by the guest earlier), and the total
+of bytes written into the buffer. The latter is extremely useful
+for drivers using untrusted buffers: if you do not know exactly
+how much has been written by the device, you usually have to zero
+the buffer to ensure no data leakage occurs.
+
+If the VIRTIO_RING_F_INDIRECT_DESC feature bit is not negotiated, the
+“flags” field offers a crude interrupt control mechanism.  The driver
+MUST initialize this to 0, the device MUST set this to 0 or 1: 1
+indicates that the driver SHOULD NOT send an notification when it adds
+a descriptor chain to the available ring.  The driver MUST ignore the
+used_event value in this case.
+
+Otherwise, if the VIRTIO_RING_F_EVENT_IDX feature bit is negotiated,
+the device MUST leave the "flags" field at 0, and use the
+“avail_event” field in the used ring instead.  The device can ask the
+driver to delay notifications until an entry with an index specified
+by the “avail_event” field is written in the available ring (equivalently,
+until the idx field in the used ring will reach the value avail_event +
+1).
+
+The device MUST handle spurious notification: either form of
+notification suppression is merely an optimization; it may not
+suppress them entirely.
 
 \subsection{Helpers for Operating Virtqueues}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Helpers for Operating Virtqueues}
 
@@ -471,36 +501,40 @@ how to communicate with the specific device.
 
 \section{Device Initialization}\label{sec:General Initialization And Device Operation / Device Initialization}
 
+The driver MUST follow this sequence to initialize a device:
+
 1. Reset the device.
 
-2. The ACKNOWLEDGE status bit is set: we have noticed the device.
+2. Set the ACKNOWLEDGE status bit: we have noticed the device.
 
-3. The DRIVER status bit is set: we know how to drive the device.
+3. Set the DRIVER status bit: we know how to drive the device.
 
-4. Device feature bits are read, and the the subset of feature bits
-   understood by the OS and driver is written to the device.
+4. Read device feature bits, and write the subset of feature bits
+   understood by the OS and driver to the device.
 
-5. The FEATURES_OK status bit is set.
+5. Set the FEATURES_OK status bit.  The driver MUST not accept
+   new feature bits after this step.
 
-6. The status byte is re-read to ensure the FEATURES_OK bit is still
+6. Re-read the status byte to ensure the FEATURES_OK bit is still
    set: otherwise, the device does not support our subset of features
    and the device is unusable.
 
-7. Device-specific setup, including discovery of virtqueues for the
+7. Perform device-specific setup, including discovery of virtqueues for the
    device, optional per-bus setup, reading and possibly writing the
    device's virtio configuration space, and population of virtqueues.
 
-8. The DRIVER_OK status bit is set.  At this point the device is
+8. Set the DRIVER_OK status bit.  At this point the device is
    "live".
 
-If any of these steps go irrecoverably wrong, the driver should
+If any of these steps go irrecoverably wrong, the driver SHOULD
 set the FAILED status bit to indicate that it has given up on the
-device (it can reset the device later to restart if desired).
+device (it can reset the device later to restart if desired).  The
+driver MUST not continue initialization in that case.
 
-The device must not consume buffers before DRIVER_OK, and the driver
-must not notify the device before it sets DRIVER_OK.
+The device MUST NOT consume buffers before DRIVER_OK, and the driver
+MUST NOT notify the device before it sets DRIVER_OK.
 
-Devices should support all valid combinations of features, but we know
+Devices SHOULD support all valid combinations of features, but we know
 that implementations may well make assuptions that they will only be
 used by fully-optimized drivers.  The resetting of the FEATURES_OK flag
 provides a semi-graceful failure mode for this case.
@@ -532,29 +566,29 @@ they are used.
 
 \subsection{Supplying Buffers to The Device}\label{sec:General Initialization And Device Operation / Device Operation / Supplying Buffers to The Device}
 
-Actual transfer of buffers from the guest OS to the device
-operates as follows:
+The driver offers buffers to one of the device's virtqueues as follows:
 
-1. Place the buffer(s) into free descriptor(s).
+1. The driver places the buffer into free descriptor(s) in the
+   descriptor table, chaining as necessary (see \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table}~\nameref{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table}).
 
-2. Place the id of the buffer in the next ring entry of the
-  available ring.
+2. The driver places the index of the head of the descriptor chain
+   into the next ring entry of the available ring.
 
-3. The steps (1) and (2) may be performed repeatedly if batching
+3. Steps (1) and (2) may be performed repeatedly if batching
   is possible.
 
-4. A memory barrier should be executed to ensure the device sees
+4. The driver MUST perform suitable a memory barrier to ensure the device sees
   the updated descriptor table and available ring before the next
   step.
 
-5. The available “idx” field should be increased by the number of
-  entries added to the available ring.
+5. The available “idx” field is increased by the number of
+  descriptor chain heads added to the available ring.
 
-6. A memory barrier should be executed to ensure that we update
-  the idx field before checking for notification suppression.
+6. The driver MUST perform a suitable memory barrier to ensure that it updates
+  the "idx" field before checking for notification suppression.
 
-7. If notifications are not suppressed, the device should be
-  notified of the new buffers.
+7. If notifications are not suppressed, the driver MUST notify the device
+    of the new available buffers.
 
 Note that the above code does not take precautions against the
 available ring buffer wrapping around: this is not possible since
@@ -572,7 +606,8 @@ Here is a description of each stage in more detail.
 A buffer consists of zero or more read-only physically-contiguous
 elements followed by zero or more physically-contiguous
 write-only elements (it must have at least one element). This
-algorithm maps it into the descriptor table:
+algorithm maps it into the descriptor table to form a descriptor
+chain:
 
 for each buffer element, b:
 
@@ -599,7 +634,7 @@ free descriptors before beginning the mappings.
 \subsubsection{Updating The Available Ring}\label{sec:General Initialization And Device Operation / Device Operation / Supplying Buffers to The Device / Updating The Available Ring}
 
 The head of the buffer we mapped is the first d in the algorithm
-above. A naive implementation would do the following (with the
+above (the descriptor chain head).  A naive implementation would do the following (with the
 appropriate conversion to-and-from little-endian assumed):
 
 \begin{lstlisting}
@@ -633,7 +668,7 @@ The index field always increments, and we let it wrap naturally at
 
 The actual method of device notification is bus-specific, but generally
 it can be expensive.  So the device can suppress such notifications if it
-doesn't need them.  We have to be careful to expose the new index
+doesn't need them.  The driver has to be careful to expose the new index
 value before checking if notifications are suppressed: it's OK to notify
 gratuitously, but not to omit a required notification. So again,
 we use a memory barrier here before reading the flags or the
@@ -734,11 +769,11 @@ Any PCI device with Vendor ID 0x1AF4, and Device ID 0x1000 through
 }.
 
 The Subsystem Device ID indicates which virtio device is
-supported by the device. The Subsystem Vendor ID should reflect
+supported by the device. The Subsystem Vendor ID SHOULD reflect
 the PCI Vendor ID of the environment (it's currently only used
 for informational purposes by the driver).
 
-All Drivers must match devices with any Revision ID, this
+All drivers MUST match devices with any Revision ID, this
 is to allow devices to be versioned without breaking drivers.
 
 \subsubsection{Legacy Interfaces: A Note on PCI Device Discovery}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Discovery / Legacy Interfaces: A Note on PCI Device Discovery}
@@ -756,7 +791,7 @@ To configure the device,
 use I/O and/or memory regions and/or PCI configuration space of the PCI device.
 These contain the virtio header registers, the notification register, the
 ISR status register and device specific registers, as specified by Virtio
-+ Structure PCI Capabilities
+Structure PCI Capabilities.
 
 There may be different widths of accesses to the I/O region; the
 “natural” access method for each field must be
@@ -766,7 +801,7 @@ PCI Device Configuration Layout includes the common configuration,
 ISR, notification and device specific configuration
 structures.
 
-Unless explicitly specified otherwise, all multi-byte fields are little-endian.
+All multi-byte fields are little-endian.
 
 \subsubsection{Common configuration structure layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common configuration structure layout}
 Common configuration structure layout is documented below:
@@ -797,87 +832,92 @@ Common configuration structure layout is documented below:
 
 device_feature_select
 
-        Selects which Feature Bits does device_feature field refer to.
+        The driver uses this to select which Feature Bits the device_feature field shows.
         Value 0x0 selects Feature Bits 0 to 31
         Value 0x1 selects Feature Bits 32 to 63
-        All other values cause reads from device_feature to return 0.
+        The device MUST present 0 on device_feature for any other value.
 
 device_feature
 
-        Used by device to report Feature Bits to driver.
+        The device uses this to report Feature Bits to the driver.
         Device Feature Bits selected by device_feature_select.
 
 driver_feature_select
 
-        Selects which Feature Bits does driver_feature field refer to.
+        The driver uses this to select which Feature Bits the driver_feature field shows.
         Value 0x0 selects Feature Bits 0 to 31
         Value 0x1 selects Feature Bits 32 to 63
         When set to any other value, reads from driver_feature
-        return 0, writing 0 into driver_feature has no effect, and
-        writing any other value into driver_feature is an error.
+        return 0, writing 0 into driver_feature has no effect.  The driver
+        MUST not write any other value into driver_feature (a corollary of
+        the rule that the driver can only write a subset of device features).
 
 driver_feature
 
-        Used by driver to acknowledge Feature Bits to device.
+        The driver writes this to accept feature bits offered by the device.
         Driver Feature Bits selected by driver_feature_select.
 
 msix_config
 
-        Configuration Vector for MSI-X.
+        The driver sets the Configuration Vector for MSI-X.
 
 num_queues
 
-        Specifies the maximum number of virtqueues supported by device.
+        The device specifies the maximum number of virtqueues supported here.
 
 device_status
 
-        Device Status field. Writing 0 into this field resets the
-        device.
+        The driver writes the Device Status here. Writing 0 into this
+        field resets the device.
 
 config_generation
 
-        Configuration atomicity value.  Changes every time the
+        Configuration atomicity value.  The device changes this every time the
         configuration noticeably changes.  This means the device may
         only change the value after a configuration read operation,
-        but it must change if there is any risk of a device seeing an
+        but MUST change it if there is any risk of a driver seeing an
         inconsistent configuration state.
 
 queue_select
 
-        Queue Select. Selects which virtqueue do other fields refer to.
+        Queue Select. The driver selects which virtqueue the following
+        fields refer to.
 
 queue_size
 
         Queue Size.  On reset, specifies the maximum queue size supported by
         the hypervisor. This can be modified by driver to reduce memory requirements.
-        Set to 0 if this virtqueue is unused.
+        The device MUST set this to 0 if this virtqueue is unavailable.
 
 queue_msix_vector
 
-        Queue Vector for MSI-X.
+        The driver uses this to specify the Queue Vector for MSI-X.
 
 queue_enable
 
-        Used to selectively prevent device from executing requests from this virtqueue.
+        The driver uses this to selectively prevent the device from executing requests from this virtqueue.
         1 - enabled; 0 - disabled
+
+        The driver MUST configure the other virtqueue fields before enabling
+        the virtqueue.
 
 queue_notify_off
 
-        Used to calculate the offset from start of Notification structure at
+        The driver reads this to calculate the offset from start of Notification structure at
         which this virtqueue is located.
         Note: this is *not* an offset in bytes. See notify_off_multiplier below.
 
 queue_desc
 
-        Physical address of Descriptor Table.
+        The driver writes the physical address of Descriptor Table here.
 
 queue_avail
 
-        Physical address of Available Ring.
+        The driver writes the physical address of Available Ring here.
 
 queue_used
 
-        Physical address of Used Ring.
+        The driver writes the physical address of Used Ring here.
 
 \subsubsection{ISR status structure layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / ISR status structure layout}
 ISR status structure includes a single 8-bit ISR status field.
@@ -886,7 +926,7 @@ ISR status structure includes a single 8-bit ISR status field.
 Notification structure is always a multiple of 2 bytes in size.
 It includes 2-byte Queue Notify fields for each virtqueue of
 the device. Note that multiple virtqueues can use the same
-Queue Notify field, if necessary.
+Queue Notify field, if necessary: see notify_off_multiplier below.
 
 \subsubsection{Device specific structure}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Device specific structure}
 
@@ -1052,14 +1092,14 @@ cfg_type
 	#define VIRTIO_PCI_CAP_PCI_CFG		5
 \end{lstlisting}
 
-        Any other value - reserved for future use. Drivers must
+        Any other value - reserved for future use. Drivers MUST
         ignore any vendor-specific capability structure which has
         a reserved cfg_type value.
 
         More than one capability can identify the same structure - this makes it
         possible for the device to expose multiple interfaces to drivers.  The order of
         the capabilities in the capability list specifies the order of preference
-        suggested by the device; drivers should use the first interface that they can
+        suggested by the device; drivers SHOULD use the first interface that they can
         support.  For example, on some hypervisors, notifications using IO accesses are
         faster than memory accesses. In this case, hypervisor can expose two
         capabilities with cfg_type set to VIRTIO_PCI_CAP_NOTIFY_CFG:
@@ -1074,7 +1114,7 @@ bar
         The BAR is permitted to be either 32-bit or 64-bit, it can map Memory Space
         or I/O Space.
 
-        Any other value - reserved for future use. Drivers must
+        Any other value is reserved for future use. Drivers MUST
         ignore any vendor-specific capability structure which has
         a reserved bar value.
 
@@ -1085,7 +1125,7 @@ offset
 length
         indicates the length of the structure.
         This size might include padding, or fields unused by the driver.
-        Drivers are also recommended to only map part of configuration structure
+        Drivers SHOULD only map part of configuration structure
         large enough for device operation.
         For example, a future device might present a large structure size of several
         MBytes.
@@ -1199,13 +1239,13 @@ or NO_VECTOR if unmapped. All queue and configuration change
 events are unmapped by default.
 
 Note that mapping an event to vector might require allocating
-internal device resources, and might fail. Devices report such
+internal device resources, and might fail. Devices MUST report such
 failures by returning the NO_VECTOR value when the relevant
 Vector field is read. After mapping an event to vector, the
-driver must verify success by reading the Vector field value: on
+driver MUST verify success by reading the Vector field value: on
 success, the previously written value is returned, and on
 failure, NO_VECTOR is returned. If a mapping failure is detected,
-the driver can retry mapping with fewervectors, or disable MSI-X.
+the driver can retry mapping with fewer vectors, or disable MSI-X.
 
 \paragraph{Virtqueue Configuration}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Virtqueue Configuration}
 
@@ -1214,13 +1254,13 @@ transport (for example, the simplest network device has two), the driver
 needs to configure them as part of the device-specific
 configuration.
 
-This is done as follows, for each virtqueue a device has:
+The driver does this as follows, for each virtqueue a device has:
 
 1. Write the virtqueue index (first queue is 0) to the Queue
   Select field.
 
-2. Read the virtqueue size from the Queue Size field, which is
-  always a power of 2. This controls how big the virtqueue is
+2. Read the virtqueue size from the Queue Size field, which MUST
+   be a power of 2. This controls how big the virtqueue is
   (see \ref{sec:Basic Facilities of a Virtio Device / Virtqueues}~\nameref{sec:Basic Facilities of a Virtio Device / Virtqueues}). If this field is 0, the virtqueue does not exist.
 
 3. Optionally, select a smaller virtqueue size and write it in the Queue Size
