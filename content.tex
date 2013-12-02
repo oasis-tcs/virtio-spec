@@ -1290,7 +1290,7 @@ state, as reflected in the virtio header in the PCI configuration
 space. In this case:
 
 1. If MSI-X capability is disabled: an interrupt is delivered and
-  the second highest bit is set in the ISR Status field to
+  the second lowest bit is set in the ISR Status field to
   indicate that the driver should re-examine the configuration
   space.  Note that a single interrupt can indicate both that one
   or more virtqueue has been used and that the configuration
