@@ -15,7 +15,7 @@ To reinforce this the examples use typenames like "le16" instead of "uint16_t".
 
 \section{Device Status Field}\label{sec:Basic Facilities of a Virtio Device / Device Status Field}
 
-The Device Status field is updated by the guest to indicate its
+The Device Status field is updated by the guest/driver to indicate its
 progress. This provides a simple low-level diagnostic: it's most
 useful to imagine them hooked up to traffic lights on the console
 indicating the status of each device.
@@ -45,14 +45,14 @@ This field is 0 upon reset, otherwise at least one bit should be set:
 \section{Feature Bits}\label{sec:Basic Facilities of a Virtio Device / Feature Bits}
 
 Each virtio device lists all the features it understands.  During
-device initialization, the guest reads this and tells the device the
+device initialization, the driver reads this and tells the device the
 subset that it understands.  The only way to renegotiate is to reset
 the device.
 
 This allows for forwards and backwards compatibility: if the device is
-enhanced with a new feature bit, older guests will not write that
+enhanced with a new feature bit, older drivers will not write that
 feature bit back to the device and it can go into backwards
-compatibility mode. Similarly, if a guest is enhanced with a feature
+compatibility mode. Similarly, if a driver is enhanced with a feature
 that the device doesn't support, it see the new feature is not offered
 and can go into backwards compatibility mode (or, for poor
 implementations, set the FAILED Device Status bit).
@@ -71,7 +71,7 @@ Device ID 1) indicates that the device supports checksumming of
 packets.
 
 In particular, new fields in the device configuration space are
-indicated by offering a feature bit, so the guest can check
+indicated by offering a feature bit, so the driver can check
 before accessing that part of the configuration space.
 
 \subsection{Legacy Interface: A Note on transitions from earlier drafts}\label{sec:Basic Facilities of a Virtio Device / Feature Bits / Legacy Interface: A Note on transitions from earlier drafts}
@@ -315,7 +315,7 @@ VIRTIO_F_ANY_LAYOUT feature is accepted.
 
 \subsection{The Virtqueue Descriptor Table}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table}
 
-The descriptor table refers to the buffers the guest is using for
+The descriptor table refers to the buffers the driver is using for
 the device. The addresses are physical addresses, and the buffers
 can be chained via the next field. Each descriptor describes a
 buffer which is read-only or write-only, but a chain of
@@ -389,7 +389,7 @@ The available ring refers to what descriptor chains we are offering the
 device: each entry refers to the head of a descriptor chain. The “flags” field
 is currently 0 or 1: 1 indicating that we do not need an interrupt
 when the device consumes a descriptor chain from the available
-ring. Alternatively, the guest can ask the device to delay interrupts
+ring. Alternatively, the driver can ask the device to delay interrupts
 until an entry with an index specified by the “used_event” field is
 written in the used ring (equivalently, until the idx field in the
 used ring will reach the value used_event + 1). The method employed by
@@ -414,13 +414,13 @@ entry (modulo the queue size). This starts at 0, and increases.
 
 The used ring is where the device returns buffers once it is done
 with them. The flags field can be used by the device to hint that
-no notification is necessary when the guest adds to the available
+no notification is necessary when the driver adds to the available
 ring. Alternatively, the “avail_event” field can be used by the
 device to hint that no notification is necessary until an entry
 with an index specified by the “avail_event” is written in the
 available ring (equivalently, until the idx field in the
 available ring will reach the value avail_event + 1). The method
-employed by the device is controlled by the guest through the
+employed by the device is controlled by the driver through the
 VIRTIO_RING_F_EVENT_IDX feature bit (
 see \ref{sec:virtio-ring.h}~\nameref{sec:virtio-ring.h}).
 \footnote{These fields are kept here because this is the only part of the
@@ -429,9 +429,9 @@ virtqueue written by the device
 
 Each entry in the ring is a pair: the head entry of the
 descriptor chain describing the buffer (this matches an entry
-placed in the available ring by the guest earlier), and the total
+placed in the available ring by the driver earlier), and the total
 of bytes written into the buffer. The latter is extremely useful
-for guests using untrusted buffers: if you do not know exactly
+for drivers using untrusted buffers: if you do not know exactly
 how much has been written by the device, you usually have to zero
 the buffer to ensure no data leakage occurs.
 
@@ -493,7 +493,7 @@ how to communicate with the specific device.
 8. The DRIVER_OK status bit is set.  At this point the device is
    "live".
 
-If any of these steps go irrecoverably wrong, the guest should
+If any of these steps go irrecoverably wrong, the driver should
 set the FAILED status bit to indicate that it has given up on the
 device (it can reset the device later to restart if desired).
 
@@ -682,11 +682,11 @@ buffer:
 	(u16)(new_idx - used_event - 1) < (u16)(new_idx - old_idx)
 \end{lstlisting}
 
-For each ring, guest should then disable interrupts by writing
+For each ring, the driver should then disable interrupts by writing
 VRING_AVAIL_F_NO_INTERRUPT flag in avail structure, if required.
 It can then process used ring entries finally enabling interrupts
 by clearing the VRING_AVAIL_F_NO_INTERRUPT flag or updating the
-EVENT_IDX field in the available structure.  The guest should then
+EVENT_IDX field in the available structure.  The driver should then
 execute a memory barrier, and then recheck the ring empty
 condition. This is necessary to handle the case where after the
 last check and before enabling interrupts, an interrupt has been
@@ -736,7 +736,7 @@ Any PCI device with Vendor ID 0x1AF4, and Device ID 0x1000 through
 The Subsystem Device ID indicates which virtio device is
 supported by the device. The Subsystem Vendor ID should reflect
 the PCI Vendor ID of the environment (it's currently only used
-for informational purposes by the guest).
+for informational purposes by the driver).
 
 All Drivers must match devices with any Revision ID, this
 is to allow devices to be versioned without breaking drivers.
@@ -776,8 +776,8 @@ Common configuration structure layout is documented below:
 		/* About the whole device. */
 		le32 device_feature_select;	/* read-write */
 		le32 device_feature;		/* read-only */
-		le32 guest_feature_select;	/* read-write */
-		le32 guest_feature;		/* read-write */
+		le32 driver_feature_select;	/* read-write */
+		le32 driver_feature;		/* read-write */
 		le16 msix_config;		/* read-write */
 		le16 num_queues;		/* read-only */
 		u8 device_status;		/* read-write */
@@ -804,22 +804,22 @@ device_feature_select
 
 device_feature
 
-        Used by Device to report Feature Bits to Driver.
+        Used by device to report Feature Bits to driver.
         Device Feature Bits selected by device_feature_select.
 
-guest_feature_select
+driver_feature_select
 
-        Selects which Feature Bits does guest_feature field refer to.
+        Selects which Feature Bits does driver_feature field refer to.
         Value 0x0 selects Feature Bits 0 to 31
         Value 0x1 selects Feature Bits 32 to 63
-        When set to any other value, reads from guest_feature
-        return 0, writing 0 into guest_feature has no effect, and
-        writing any other value into guest_feature is an error.
+        When set to any other value, reads from driver_feature
+        return 0, writing 0 into driver_feature has no effect, and
+        writing any other value into driver_feature is an error.
 
-guest_feature
+driver_feature
 
-        Used by Driver to acknowledge Feature Bits to Device.
-        Guest Feature Bits selected by guest_feature_select.
+        Used by driver to acknowledge Feature Bits to device.
+        Driver Feature Bits selected by driver_feature_select.
 
 msix_config
 
@@ -858,7 +858,7 @@ queue_msix_vector
 
 queue_enable
 
-        Used to selectively prevent host from executing requests from this virtqueue.
+        Used to selectively prevent device from executing requests from this virtqueue.
         1 - enabled; 0 - disabled
 
 queue_notify_off
@@ -918,7 +918,7 @@ When used through the legacy interface, the virtio header looks as follows:
 \hline
  Read / Write & R & R+W & R+W & R & R+W & R+W & R+W & R \\
 \hline
- Purpose & Device Features bits 0:31 & Guest Features bits 0:31 &
+ Purpose & Device Features bits 0:31 & Driver Features bits 0:31 &
   Queue Size & Queue Select & Queue Notify & Queue Address &
   Device Status & ISR \newline Status \\
 \hline
@@ -1269,11 +1269,11 @@ If an interrupt is necessary:
     ii. If Queue Vector field value is NO_VECTOR, no interrupt
       message is requested for this event.
 
-The guest interrupt handler should:
+The driver interrupt handler should:
 
 1. If MSI-X capability is disabled: read the ISR Status field,
   which will reset it to zero. If the lower bit is zero, the
-  interrupt was not for this device. Otherwise, the guest driver
+  interrupt was not for this device. Otherwise, the driver
   should look through the used rings of each virtqueue for the
   device, to see if any progress has been made by the device
   which requires servicing.
@@ -1353,39 +1353,39 @@ configuration space. The following list presents their layout:
 * 0x00c | R | VendorID
   Virtio Subsystem Vendor ID.
 
-* 0x010 | R | HostFeatures
+* 0x010 | R | DeviceFeatures
   Flags representing features the device supports.
   Reading from this register returns 32 consecutive flag bits,
   first bit depending on the last value written to the
-  HostFeaturesSel register. Access to this register returns
-  bits HostFeaturesSel*32 to (HostFeaturesSel*32)+31, eg.
-  feature bits 0 to 31 if HostFeaturesSel is set to 0 and
-  features bits 32 to 63 if HostFeaturesSel is set to 1.
+  DeviceFeaturesSel register. Access to this register returns
+  bits DeviceFeaturesSel*32 to (DeviceFeaturesSel*32)+31, eg.
+  feature bits 0 to 31 if DeviceFeaturesSel is set to 0 and
+  features bits 32 to 63 if DeviceFeaturesSel is set to 1.
   Also see \ref{sec:Basic Facilities of a Virtio Device / Feature Bits}~\nameref{sec:Basic Facilities of a Virtio Device / Feature Bits}.
 
-* 0x014 | W | HostFeaturesSel
-  Device (Host) features word selection.
+* 0x014 | W | DeviceFeaturesSel
+  Device (host) features word selection.
   Writing to this register selects a set of 32 device feature bits
-  accessible by reading from the HostFeatures register. Device driver
-  must write a value to the HostFeaturesSel register before
-  reading from the HostFeatures register.
+  accessible by reading from the DeviceFeatures register. Device driver
+  must write a value to the DeviceFeaturesSel register before
+  reading from the DeviceFeatures register.
 
-* 0x020 | W | GuestFeatures
+* 0x020 | W | DriverFeatures
   Flags representing device features understood and activated by
   the driver.
   Writing to this register sets 32 consecutive flag bits, first
-  bit depending on the last value written to the GuestFeaturesSel
-  register. Access to this register sets bits GuestFeaturesSel*32
-  to (GuestFeaturesSel*32)+31, eg. feature bits 0 to 31 if
-  GuestFeaturesSel is set to 0 and features bits 32 to 63 if
-  GuestFeaturesSel is set to 1. Also see \ref{sec:Basic Facilities of a Virtio Device / Feature Bits}~\nameref{sec:Basic Facilities of a Virtio Device / Feature Bits}.
+  bit depending on the last value written to the DriverFeaturesSel
+  register. Access to this register sets bits DriverFeaturesSel*32
+  to (DriverFeaturesSel*32)+31, eg. feature bits 0 to 31 if
+  DriverFeaturesSel is set to 0 and features bits 32 to 63 if
+  DriverFeaturesSel is set to 1. Also see \ref{sec:Basic Facilities of a Virtio Device / Feature Bits}~\nameref{sec:Basic Facilities of a Virtio Device / Feature Bits}.
 
-* 0x024 | W | GuestFeaturesSel
-  Activated (Guest) features word selection.
+* 0x024 | W | DriverFeaturesSel
+  Activated (guest) features word selection.
   Writing to this register selects a set of 32 activated feature
-  bits accessible by writing to the GuestFeatures register.
-  Device driver must write a value to the GuestFeaturesSel
-  register before writing to the GuestFeatures register.
+  bits accessible by writing to the DriverFeatures register.
+  Device driver must write a value to the DriverFeaturesSel
+  register before writing to the DriverFeatures register.
 
 * 0x030 | W | QueueSel
   Virtual queue index (first queue is 0).
@@ -1397,7 +1397,7 @@ configuration space. The following list presents their layout:
 * 0x034 | R | QueueNumMax
   Maximum virtual queue size.
   Reading from the register returns the maximum size of the queue
-  the Host is ready to process or zero (0x0) if the queue is not
+  the device is ready to process or zero (0x0) if the queue is not
   available. This applies to the queue selected by writing to
   QueueSel and is allowed only when QueueReady is set to zero
   (0x0), so when the queue is not in use.
@@ -1406,24 +1406,24 @@ configuration space. The following list presents their layout:
   Virtual queue size.
   Queue size is the number of elements in the queue, therefore size
   of the Descriptor Table and both Available and Used rings.
-  Writing to this register notifies the Host what size of the
-  queue the Guest will use. This applies to the queue selected by
+  Writing to this register notifies the device what size of the
+  queue the Driver will use. This applies to the queue selected by
   writing to QueueSel and is allowed only when QueueReady is set
   to zero (0x0), so when the queue is not in use.
 
 * 0x03c | RW | QueueReady
   Virtual queue ready bit.
-  Writing one (0x1) to this register notifies the Host that the
+  Writing one (0x1) to this register notifies the device that the
   virtual queue is ready to be used. Reading from this register
   returns the last value written to it. Both read and write
   accesses apply to the queue selected by writing to QueueSel.
-  When the Guest wants to stop using the queue it must write
+  When the Driver wants to stop using the queue it must write
   zero (0x0) to this register and read the value back to
   ensure synchronisation.
 
 * 0x050 | W | QueueNotify
   Queue notifier.
-  Writing a queue index to this register notifies the Host that
+  Writing a queue index to this register notifies the device that
   there are new buffers to process in the queue.
 
 * 0x60 | R | InterruptStatus
@@ -1433,7 +1433,7 @@ configuration space. The following list presents their layout:
   corresponding bit is set, ie. equals one (1).
 
   – Bit 0 | Used Ring Update
-    This interrupt is asserted when the Host has updated the Used
+    This interrupt is asserted when the device has updated the Used
     Ring in at least one of the active virtual queues.
 
   – Bit 1 | Configuration change
@@ -1442,7 +1442,7 @@ configuration space. The following list presents their layout:
 
 * 0x064 | W | InterruptACK
   Interrupt acknowledge.
-  Writing to this register notifies the Host that the Guest
+  Writing to this register notifies the device that the Driver
   finished handling interrupts. Set bits in the value clear
   the corresponding bits of the InterruptStatus register.
 
@@ -1451,7 +1451,7 @@ configuration space. The following list presents their layout:
   Reading from this register returns the current device status
   flags.
   Writing non-zero values to this register sets the status flags,
-  indicating the Guest progress. Writing zero (0x0) to this
+  indicating the OS/driver progress. Writing zero (0x0) to this
   register triggers a device reset, including clearing all
   bits in the InterruptStatus register and ready bits in the
   QueueReady register for all queues in the device.
@@ -1462,7 +1462,7 @@ configuration space. The following list presents their layout:
   Virtual queue's Descriptor Table 64 bit long physical address.
   Writing to these two registers (lower 32 bits of the address
   to QueueDescLow, higher 32 bits to QueueDescHigh) notifies
-  the host about location of the Descriptor Table of the queue
+  the device about location of the Descriptor Table of the queue
   selected by writing to the QueueSel register. It is allowed
   only when QueueReady is set to zero (0x0), so when the queue
   is not in use.
@@ -1472,7 +1472,7 @@ configuration space. The following list presents their layout:
   Virtual queue's Available Ring 64 bit long physical address.
   Writing to these two registers (lower 32 bits of the address
   to QueueAvailLow, higher 32 bits to QueueAvailHigh) notifies
-  the host about location of the Available Ring of the queue
+  the device about location of the Available Ring of the queue
   selected by writing to the QueueSel register. It is allowed
   only when QueueReady is set to zero (0x0), so when the queue
   is not in use.
@@ -1482,7 +1482,7 @@ configuration space. The following list presents their layout:
   Virtual queue's Used Ring 64 bit long physical address.
   Writing to these two registers (lower 32 bits of the address
   to QueueUsedLow, higher 32 bits to QueueUsedHigh) notifies
-  the host about location of the Used Ring of the queue
+  the device about location of the Used Ring of the queue
   selected by writing to the QueueSel register. It is allowed
   only when QueueReady is set to zero (0x0), so when the queue
   is not in use.
@@ -1511,7 +1511,7 @@ can cause undefined behavior.
 
 \subsubsection{Device Initialization}\label{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Device Initialization}
 
-The guest must start the device initialization by reading and
+The driver must start the device initialization by reading and
 checking values from the MagicValue and the Version registers.
 If both values are valid, it must read the DeviceID register
 and if its value is zero (0x0) must abort initialization and
@@ -1536,9 +1536,9 @@ p. \ref{sec:General Initialization And Device Operation / Device Initialization}
    is physically contiguous. It is recommended to align the
    Used Ring to an optimal boundary (usually page size).
    Size of the allocated queue may be smaller than or equal to
-   the maximum size returned by the Host.
+   the maximum size returned by the device.
 
-5. Notify the Host about the queue size by writing the size to
+5. Notify the device about the queue size by writing the size to
    the QueueNum register.
 
 6. Write physical addresses of the queue's Descriptor Table,
@@ -1602,9 +1602,9 @@ nor behaviour:
 
 * 0x028 | W | GuestPageSize
   Guest page size.
-  Device driver must write the guest page size in bytes to the
+  The driver must write the guest page size in bytes to the
   register during initialization, before any queues are used.
-  This value must be a power of 2 and is used by the Host to
+  This value must be a power of 2 and is used by the device to
   calculate the Guest address of the first queue page
   (see QueuePFN).
 
@@ -1617,7 +1617,7 @@ nor behaviour:
 * 0x034 | R | QueueNumMax
   Maximum virtual queue size.
   Reading from the register returns the maximum size of the queue
-  the Host is ready to process or zero (0x0) if the queue is not
+  the device is ready to process or zero (0x0) if the queue is not
   available. This applies to the queue selected by writing to the
   QueueSel and is allowed only when the QueuePFN is set to zero
   (0x0), so when the queue is not actively used.
@@ -1626,24 +1626,24 @@ nor behaviour:
   Virtual queue size.
   Queue size is the number of elements in the queue, therefore size
   of the descriptor table and both available and used rings.
-  Writing to this register notifies the Host what size of the
-  queue the Guest will use. This applies to the queue selected by
+  Writing to this register notifies the device what size of the
+  queue the Driver will use. This applies to the queue selected by
   writing to the QueueSel register.
 
 * 0x03c | W | QueueAlign
   Used Ring alignment in the virtual queue.
-  Writing to this register notifies the Host about alignment
+  Writing to this register notifies the device about alignment
   boundary of the Used Ring in bytes. This value must be a power
   of 2 and applies to the queue selected by writing to the QueueSel
   register.
 
 * 0x040 | RW | QueuePFN
   Guest physical page number of the virtual queue.
-  Writing to this register notifies the host about location of the
+  Writing to this register notifies the device about location of the
   virtual queue in the Guest's physical address space. This value
   is the index number of a page starting with the queue
   Descriptor Table. Value zero (0x0) means physical address zero
-  (0x00000000) and is illegal. When the Guest stops using the
+  (0x00000000) and is illegal. When the Driver stops using the
   queue it must write zero (0x0) to this register.
   Reading from this register returns the currently used page
   number of the queue, therefore a value other than zero (0x0)
@@ -1662,7 +1662,7 @@ nor behaviour:
   Reading from this register returns the current device status
   flags.
   Writing non-zero values to this register sets the status flags,
-  indicating the Guest progress. Writing zero (0x0) to this
+  indicating the OS/driver progress. Writing zero (0x0) to this
   register triggers a device reset. This should include
   setting QueuePFN to zero (0x0) for all queues in the device.
   Also see \ref{sec:General Initialization And Device Operation / Device Initialization}~\nameref{sec:General Initialization And Device Operation / Device Initialization}.
@@ -1692,12 +1692,12 @@ The virtual queue is configured as follows:
 4. Allocate and zero the queue pages in contiguous virtual
    memory, aligning the Used Ring to an optimal boundary (usually
    page size). Size of the allocated queue may be smaller than or
-   equal to the maximum size returned by the Host.
+   equal to the maximum size returned by the device.
 
-5. Notify the Host about the queue size by writing the size to
+5. Notify the device about the queue size by writing the size to
    the QueueNum register.
 
-6. Notify the Host about the used alignment by writing its value
+6. Notify the device about the used alignment by writing its value
    in bytes to the QueueAlign register.
 
 7. Write the physical number of the first page of the queue to
@@ -1875,7 +1875,7 @@ implies that the device must reject any command not valid for revision
 
 \subsubsection{Configuring a Virtqueue}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Configuring a Virtqueue}
 
-CCW_CMD_READ_VQ_CONF is issued by the guest to obtain information
+CCW_CMD_READ_VQ_CONF is issued by the driver to obtain information
 about a queue. It uses the following structure for communicating:
 
 \begin{lstlisting}
@@ -1888,8 +1888,8 @@ about a queue. It uses the following structure for communicating:
 The requested number of buffers for queue index is returned in
 max_num.
 
-Afterwards, CCW_CMD_SET_VQ is issued by the guest to inform the
-host about the location used for its queue. The transmitted
+Afterwards, CCW_CMD_SET_VQ is issued by the driver to inform the
+device about the location used for its queue. The transmitted
 structure is
 
 \begin{lstlisting}
@@ -1950,7 +1950,7 @@ The calculation for total size is as follows:
 
 \subsubsection{Communicating Status Information}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Communicating Status Information}
 
-The guest can change the status of a device via the
+The driver can change the status of a device via the
 CCW_CMD_WRITE_STATUS command, which transmits an 8 bit status
 value.
 
@@ -1974,11 +1974,11 @@ features are the 32 bits of features currently accessed, while
 index describes which of the feature bit values is to be
 accessed.
 
-The guest may obtain the host's device feature set via the
-CCW_CMD_READ_FEAT command. The host stores the features at index
+The guest may obtain the device's device feature set via the
+CCW_CMD_READ_FEAT command. The device stores the features at index
 to features.
 
-For communicating its device features to the host, the guest may
+For communicating its supported features to the device, the driver may
 use the CCW_CMD_WRITE_FEAT command, denoting a features/index
 combination.
 
@@ -1987,16 +1987,16 @@ combination.
 The device's configuration space is located in host memory. It is
 the same size as the standard PCI configuration space.
 
-To obtain information from the configuration space, the guest may
-use CCW_CMD_READ_CONF, specifying the guest memory for the host
+To obtain information from the configuration space, the driver may
+use CCW_CMD_READ_CONF, specifying the guest memory for the device
 to write to.
 
-For changing configuration information, the guest may use
-CCW_CMD_WRITE_CONF, specifying the guest memory for the host to
+For changing configuration information, the driver may use
+CCW_CMD_WRITE_CONF, specifying the guest memory for the device to
 read from.
 
 In both cases, the complete configuration space is transmitted.  This
-allows the guest to compare the new configuration space with the old
+allows the driver to compare the new configuration space with the old
 version, and keep a generation count internally whenever it changes.
 
 \subsubsection{Setting Up Indicators}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Setting Up Indicators}
@@ -2018,7 +2018,7 @@ Indicators for notification via classic I/O interrupts are contained
 in a 64 bit value per virtio-ccw proxy device.
 
 To communicate the location of the indicator bits for host->guest
-notification, the guest uses the CCW_CMD_SET_IND command,
+notification, the driver uses the CCW_CMD_SET_IND command,
 pointing to a location containing the guest address of the
 indicators in a 64 bit value.
 
@@ -2094,12 +2094,12 @@ If the driver used the CCW_CMD_SET_IND command to set up queue
 indicators, the device will use classic I/O interrupts for
 host->guest notification about virtqueue activity.
 
-For notifying the guest of virtqueue buffers, the host sets the
+For notifying the driver of virtqueue buffers, the device sets the
 corresponding bit in the guest-provided indicators. If an
-interrupt is not already pending for the subchannel, the host
+interrupt is not already pending for the subchannel, the device
 generates an unsolicited I/O interrupt.
 
-If the host wants to notify the guest about configuration
+If the device wants to notify the driver about configuration
 changes, it sets bit 0 in the configuration indicators and
 generates an unsolicited I/O interrupt, if needed. This also
 applies if adapter I/O interrupts are used for queue notifications.
@@ -2110,7 +2110,7 @@ If the driver used the CCW_CMD_SET_IND_ADAPTER command to set up
 queue indicators, the device will use adapter I/O interrupts for
 host->guest notification about virtqueue activity.
 
-For notifying the guest of virtqueue buffers, the host sets the
+For notifying the driver of virtqueue buffers, the device sets the
 bit in the guest-provided indicator area at the corresponding offset.
 The guest-provided summary indicator is also set. An adapter I/O
 interrupt for the corresponding interruption subclass is generated.
@@ -2126,7 +2126,7 @@ host->guest notification will always be done via classic I/O interrupts.
 
 \subsubsection{Guest->Host Notification}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Operation / Guest->Host Notification}
 
-For notifying the host of virtqueue buffers, the guest
+For notifying the device of virtqueue buffers, the driver
 unfortunately can't use a channel command (the asynchronous
 characteristics of channel I/O interact badly with the host block
 I/O backend). Instead, it uses a diagnose 0x500 call with subcode
@@ -2163,7 +2163,7 @@ used.
 
 \subsubsection{Resetting Devices}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Operation / Resetting Devices}
 
-In order to reset a device, a guest may send the
+In order to reset a device, a driver may send the
 CCW_CMD_VDEV_RESET command.
 
 
@@ -2236,20 +2236,20 @@ features.
 
   VIRTIO_NET_F_CSUM (0) Device handles packets with partial checksum
 
-  VIRTIO_NET_F_GUEST_CSUM (1) Guest handles packets with partial checksum
+  VIRTIO_NET_F_GUEST_CSUM (1) Driver handles packets with partial checksum
 
   VIRTIO_NET_F_CTRL_GUEST_OFFLOADS (2) Control channel offloads
         reconfiguration support.
 
   VIRTIO_NET_F_MAC (5) Device has given MAC address.
 
-  VIRTIO_NET_F_GUEST_TSO4 (7) Guest can receive TSOv4.
+  VIRTIO_NET_F_GUEST_TSO4 (7) Driver can receive TSOv4.
 
-  VIRTIO_NET_F_GUEST_TSO6 (8) Guest can receive TSOv6.
+  VIRTIO_NET_F_GUEST_TSO6 (8) Driver can receive TSOv6.
 
-  VIRTIO_NET_F_GUEST_ECN (9) Guest can receive TSO with ECN.
+  VIRTIO_NET_F_GUEST_ECN (9) Driver can receive TSO with ECN.
 
-  VIRTIO_NET_F_GUEST_UFO (10) Guest can receive UFO.
+  VIRTIO_NET_F_GUEST_UFO (10) Driver can receive UFO.
 
   VIRTIO_NET_F_HOST_TSO4 (11) Device can receive TSOv4.
 
@@ -2259,7 +2259,7 @@ features.
 
   VIRTIO_NET_F_HOST_UFO (14) Device can receive UFO.
 
-  VIRTIO_NET_F_MRG_RXBUF (15) Guest can merge receive buffers.
+  VIRTIO_NET_F_MRG_RXBUF (15) Driver can merge receive buffers.
 
   VIRTIO_NET_F_STATUS (16) Configuration status field is
     available.
@@ -2270,7 +2270,7 @@ features.
 
   VIRTIO_NET_F_CTRL_VLAN (19) Control channel VLAN filtering.
 
-  VIRTIO_NET_F_GUEST_ANNOUNCE(21) Guest can send gratuitous
+  VIRTIO_NET_F_GUEST_ANNOUNCE(21) Driver can send gratuitous
     packets.
 
 \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Network Device / Feature bits / Legacy Interface: Feature bits}
@@ -2311,7 +2311,7 @@ native endian of the guest rather than (necessarily) little-endian.
 2. If the VIRTIO_NET_F_MAC feature bit is set, the configuration
   space “mac” entry indicates the “physical” address of the the
   network card, otherwise a private MAC address should be
-  assigned. All guests are expected to negotiate this feature if
+  assigned. All drivers are expected to negotiate this feature if
   it is set.
 
 3. If the VIRTIO_NET_F_CTRL_VQ feature bit is negotiated,
@@ -2474,7 +2474,7 @@ fully populated as possible: if it runs out, network performance
 will suffer.
 
 If the VIRTIO_NET_F_GUEST_TSO4, VIRTIO_NET_F_GUEST_TSO6 or
-VIRTIO_NET_F_GUEST_UFO features are used, the Guest will need to
+VIRTIO_NET_F_GUEST_UFO features are used, the Driver will need to
 accept packets of up to 65550 bytes long (the maximum size of a
 TCP or UDP packet, plus the 14 byte ethernet header), otherwise
 1514. bytes. So unless VIRTIO_NET_F_MRG_RXBUF is negotiated, every
@@ -2618,7 +2618,7 @@ native endian of the guest rather than (necessarily) little-endian.
 \paragraph{Gratuitous Packet Sending}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Gratuitous Packet Sending}
 
 If the driver negotiates the VIRTIO_NET_F_GUEST_ANNOUNCE (depends
-on VIRTIO_NET_F_CTRL_VQ), it can ask the guest to send gratuitous
+on VIRTIO_NET_F_CTRL_VQ), it can ask the driver to send gratuitous
 packets; this is usually done after the guest has been physically
 migrated, and needs to announce its presence on the new network
 links. (As hypervisor does not have the knowledge of guest
@@ -2630,7 +2630,7 @@ the guest in this way).
 	 #define VIRTIO_NET_CTRL_ANNOUNCE_ACK             0
 \end{lstlisting}
 
-The Guest needs to check VIRTIO_NET_S_ANNOUNCE bit in status
+The Driver needs to check VIRTIO_NET_S_ANNOUNCE bit in status
 field when it notices the changes of device configuration. The
 command VIRTIO_NET_CTRL_ANNOUNCE_ACK is used to indicate that
 driver has recevied the notification and device would clear the
@@ -2717,7 +2717,7 @@ device except where noted.
     alignment.
 
 \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Block Device / Feature bits / Legacy Interface: Feature bits}
-  VIRTIO_BLK_F_BARRIER (0) Host supports request barriers.
+  VIRTIO_BLK_F_BARRIER (0) Device supports request barriers.
 
   VIRTIO_BLK_F_SCSI (7) Device supports scsi packet commands.
 
@@ -2799,7 +2799,7 @@ negotiating VIRTIO_BLK_F_FLUSH: the cache will be in writeback mode
 after reset if and only if VIRTIO_BLK_F_FLUSH is negotiated.
 
 Some older legacy devices did not operate in writethrough mode even
-after a guest announced lack of support for VIRTIO_BLK_F_FLUSH.
+after a driver announced lack of support for VIRTIO_BLK_F_FLUSH.
 
 \subsection{Device Operation}\label{sec:Device Types / Block Device / Device Operation}
 
@@ -2835,8 +2835,8 @@ the read or write is to occur. This field is unused and set to 0
 for scsi packet commands and for flush commands.
 
 The final status byte is written by the device: either
-VIRTIO_BLK_S_OK for success, VIRTIO_BLK_S_IOERR for host or guest
-error or VIRTIO_BLK_S_UNSUPP for a request unsupported by host:
+VIRTIO_BLK_S_OK for success, VIRTIO_BLK_S_IOERR for device or driver
+error or VIRTIO_BLK_S_UNSUPP for a request unsupported by device:
 
 \begin{lstlisting}
 	#define VIRTIO_BLK_S_OK        0
@@ -2941,9 +2941,9 @@ of input and output virtqueues. Moreover, a device has a pair of
 control IO virtqueues. The control virtqueues are used to
 communicate information between the device and the driver about
 ports being opened and closed on either side of the connection,
-indication from the host about whether a particular port is a
+indication from the device about whether a particular port is a
 console port, adding new ports, port hot-plug/unplug, etc., and
-indication from the guest about whether a port or a device was
+indication from the driver about whether a port or a device was
 successfully added, port open/close, etc.. For data IO, one or
 more empty buffers are placed in the receive queue for incoming
 data and outgoing characters are placed in the transmit queue.
@@ -2999,11 +2999,11 @@ native endian of the guest rather than (necessarily) little-endian.
   case, the control virtqueues are enabled and according to the
   max_nr_ports configuration-space value, the appropriate number
   of virtqueues are created. A control message indicating the
-  driver is ready is sent to the host. The host can then send
+  driver is ready is sent to the device. The device can then send
   control messages for adding new ports to the device. After
   creating and initializing each port, a
-  VIRTIO_CONSOLE_PORT_READY control message is sent to the host
-  for that port so the host can let us know of any additional
+  VIRTIO_CONSOLE_PORT_READY control message is sent to the device
+  for that port so the device can let us know of any additional
   configuration options set for that port.
 
 3. The receiveq for each port is populated with one or more
@@ -3031,14 +3031,14 @@ when a port is closed or hot-unplugged.
   be read from the configuration fields.
 
 4. If the driver negotiated the VIRTIO_CONSOLE_F_MULTIPORT
-  feature, active ports are announced by the host using the
+  feature, active ports are announced by the device using the
   VIRTIO_CONSOLE_PORT_ADD control message. The same message is
   used for port hot-plug as well.
 
-5. If the host specified a port `name', a sysfs attribute is
+5. If the device specified a port `name', a sysfs attribute is
   created with the name filled in, so that udev rules can be
   written that can create a symlink from the port's name to the
-  char device for port discovery by applications in the guest.
+  char device for port discovery by applications in the driver.
 
 6. Changes to ports' state are effected by control messages.
   Appropriate action is taken on the port indicated in the
@@ -3099,7 +3099,7 @@ by random data by the device.
 
 The virtio memory balloon device is a primitive device for
 managing guest memory: the device asks for a certain amount of
-memory, and the guest supplies it (or withdraws it, if the device
+memory, and the driver supplies it (or withdraws it, if the device
 has more than it asks for). This allows the guest to adapt to
 changes in allowance of underlying physical memory. If the
 feature is negotiated, the device can also be used to communicate
@@ -3144,7 +3144,7 @@ that legacy device fields are guest endian.
   (a) Identify the stats virtqueue.
 
   (b) Add one empty buffer to the stats virtqueue and notify the
-    host.
+    device.
 
 Device operation begins immediately.
 
@@ -3297,7 +3297,7 @@ targets that receive and process the requests.
 \subsection{Device configuration layout}\label{sec:Device Types / SCSI Host Device / Device configuration layout}
 
   All fields of this configuration are always available. sense_size
-  and cdb_size are writable by the guest.
+  and cdb_size are writable by the driver.
 
 \begin{lstlisting}
 	struct virtio_scsi_config {
@@ -3322,10 +3322,10 @@ targets that receive and process the requests.
     command. A bidirectional command can include seg_max input
     segments and seg_max output segments.
 
-  max_sectors is a hint to the guest about the maximum transfer
+  max_sectors is a hint to the driver about the maximum transfer
     size it should use.
 
-  cmd_per_lun is a hint to the guest about the maximum number of
+  cmd_per_lun is a hint to the driver about the maximum number of
     linked commands it should send to one LUN. The actual value
     to be used is the minimum of cmd_per_lun and the virtqueue
     size.
@@ -3481,7 +3481,7 @@ following:
   (severed link).
 
   VIRTIO_SCSI_S_TARGET_FAILURE if the target is suffering a
-  failure and the guest should not retry on other paths.
+  failure and the driver should not retry on other paths.
 
   VIRTIO_SCSI_S_NEXUS_FAILURE if the nexus is suffering a failure
   but retrying on other paths might yield a different result.
@@ -3489,7 +3489,7 @@ following:
   VIRTIO_SCSI_S_BUSY if the request failed but retrying on the
   same path should work.
 
-  VIRTIO_SCSI_S_FAILURE for other host or guest error. In
+  VIRTIO_SCSI_S_FAILURE for other host or driver error. In
   particular, if neither dataout nor datain is empty, and the
   VIRTIO_SCSI_F_INOUT feature has not been negotiated, the
   request will be immediately returned with a response equal to
@@ -3741,8 +3741,8 @@ contents of the event field. The following events are defined:
   should ask the initiator to rescan the target, in order to
   detect the case when an entire target has appeared or
   disappeared. These two events will never be reported unless the
-  VIRTIO_SCSI_F_HOTPLUG feature was negotiated between the host
-  and the guest.
+  VIRTIO_SCSI_F_HOTPLUG feature was negotiated between the device
+  and the driver.
 
   Events will also be reported via sense codes (this obviously
   does not apply to newly appeared buses or targets, since the
@@ -3821,7 +3821,7 @@ Currently there are four device-independent feature bits defined:
   and the avail_event fields. If set, it indicates that the
   device should ignore the flags field in the available ring
   structure. Instead, the used_event field in this structure is
-  used by guest to suppress device interrupts. Further, the
+  used by driver to suppress device interrupts. Further, the
   driver should ignore the flags field in the used ring
   structure. Instead, the avail_event field in this structure is
   used by the device to suppress notifications. If unset, the
@@ -3910,7 +3910,7 @@ reducing interrupt sharing between devices and queues within the
 device, and handling interrupts from multiple CPUs. However, some
 systems impose a limit (which might be as low as 256) on the
 total number of MSI-X vectors that can be allocated to all
-devices. Devices and/or device drivers should take this into
+devices. Devices and/or drivers should take this into
 account, limiting the number of vectors used unless the device is
 expected to cause a high volume of interrupts. Devices can
 control the number of vectors used by limiting the MSI-X Table

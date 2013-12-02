@@ -41,11 +41,11 @@
 /* This means the buffer contains a list of buffer descriptors. */
 #define VRING_DESC_F_INDIRECT   4
 
-/* The Host uses this in used->flags to advise the Guest: don't kick me
+/* The device uses this in used->flags to advise the driver: don't kick me
  * when you add a buffer.  It's unreliable, so it's simply an
- * optimization.  Guest will still kick if it's out of buffers. */
+ * optimization. */
 #define VRING_USED_F_NO_NOTIFY  1
-/* The Guest uses this in avail->flags to advise the Host: don't
+/* The driver uses this in avail->flags to advise the device: don't
  * interrupt me when you consume a buffer.  It's unreliable, so it's
  * simply an optimization.  */
 #define VRING_AVAIL_F_NO_INTERRUPT      1
