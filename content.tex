@@ -522,18 +522,18 @@ The driver MUST follow this sequence to initialize a device:
 \item Read device feature bits, and write the subset of feature bits
    understood by the OS and driver to the device.
 
-\item\label{item:General Initialization And Device Operation / Device Initialization / Set FEATURES-OK} Set the FEATURES_OK status bit.  The driver MUST not accept
+\item\label{itm:General Initialization And Device Operation / Device Initialization / Set FEATURES-OK} Set the FEATURES_OK status bit.  The driver MUST not accept
    new feature bits after this step.
 
-\item\label{item:General Initialization And Device Operation / Device Initialization / Re-read FEATURES-OK} Re-read the status byte to ensure the FEATURES_OK bit is still
+\item\label{itm:General Initialization And Device Operation / Device Initialization / Re-read FEATURES-OK} Re-read the status byte to ensure the FEATURES_OK bit is still
    set: otherwise, the device does not support our subset of features
    and the device is unusable.
 
-\item\label{item:General Initialization And Device Operation / Device Initialization / Device-specific Setup} Perform device-specific setup, including discovery of virtqueues for the
+\item\label{itm:General Initialization And Device Operation / Device Initialization / Device-specific Setup} Perform device-specific setup, including discovery of virtqueues for the
    device, optional per-bus setup, reading and possibly writing the
    device's virtio configuration space, and population of virtqueues.
 
-\item\label{item:General Initialization And Device Operation / Device Initialization / Set DRIVER-OK} Set the DRIVER_OK status bit.  At this point the device is
+\item\label{itm:General Initialization And Device Operation / Device Initialization / Set DRIVER-OK} Set the DRIVER_OK status bit.  At this point the device is
    "live".
 \end{enumerate}
 
@@ -561,7 +561,7 @@ the initial operation of the device.
 Legacy device implementations often used the device before setting the
 DRIVER_OK bit.
 
-The result was the steps \ref{item:General Initialization And Device Operation / Device Initialization / Set FEATURES-OK} and \ref{item:General Initialization And Device Operation / Device Initialization / Re-read FEATURES-OK} were omitted, and steps \ref{item:General Initialization And Device Operation / Device Initialization / Device-specific Setup} and \ref{item:General Initialization And Device Operation / Device Initialization / Set DRIVER-OK}
+The result was the steps \ref{itm:General Initialization And Device Operation / Device Initialization / Set FEATURES-OK} and \ref{itm:General Initialization And Device Operation / Device Initialization / Re-read FEATURES-OK} were omitted, and steps \ref{itm:General Initialization And Device Operation / Device Initialization / Device-specific Setup} and \ref{itm:General Initialization And Device Operation / Device Initialization / Set DRIVER-OK}
 were conflated.
 
 \section{Device Operation}\label{sec:General Initialization And Device Operation / Device Operation}
@@ -580,13 +580,13 @@ they are used.
 The driver offers buffers to one of the device's virtqueues as follows:
 
 \begin{enumerate}
-\item\label{item:General Initialization And Device Operation / Device Operation / Supplying Buffers to The Device / Place Buffers} The driver places the buffer into free descriptor(s) in the
+\item\label{itm:General Initialization And Device Operation / Device Operation / Supplying Buffers to The Device / Place Buffers} The driver places the buffer into free descriptor(s) in the
    descriptor table, chaining as necessary (see \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table}~\nameref{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table}).
 
-\item\label{item:General Initialization And Device Operation / Device Operation / Supplying Buffers to The Device / Place Index} The driver places the index of the head of the descriptor chain
+\item\label{itm:General Initialization And Device Operation / Device Operation / Supplying Buffers to The Device / Place Index} The driver places the index of the head of the descriptor chain
    into the next ring entry of the available ring.
 
-\item Steps \ref{item:General Initialization And Device Operation / Device Operation / Supplying Buffers to The Device / Place Buffers} and \ref{item:General Initialization And Device Operation / Device Operation / Supplying Buffers to The Device / Place Index} may be performed repeatedly if batching
+\item Steps \ref{itm:General Initialization And Device Operation / Device Operation / Supplying Buffers to The Device / Place Buffers} and \ref{itm:General Initialization And Device Operation / Device Operation / Supplying Buffers to The Device / Place Index} may be performed repeatedly if batching
   is possible.
 
 \item The driver MUST perform suitable a memory barrier to ensure the device sees
