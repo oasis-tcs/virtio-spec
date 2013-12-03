@@ -39,6 +39,16 @@ case "$1" in
 	exit 1
 esac
 
+#Prepend OASIS unless already there
+case "$STAGENAME" in
+	OASIS*)
+		OASISSTAGENAME="OASIS $STAGENAME"
+		;;
+	*)
+		OASISSTAGENAME="$STAGENAME"
+		;;
+esac
+
 cat > setup-generated.tex <<EOF
 % define VIRTIO Working Draft number and date
 \newcommand{\virtiorev}{$VERSION}
@@ -48,4 +58,5 @@ cat > setup-generated.tex <<EOF
 \newcommand{\virtiodraftstageextra}{$STAGEEXTRA}
 \newcommand{\virtiodraftstageextratitle}{$STAGEEXTRATITLE}
 \newcommand{\virtiodraftstagename}{$STAGENAME}
+\newcommand{\virtiodraftoasisstagename}{$OASISSTAGENAME}
 EOF
