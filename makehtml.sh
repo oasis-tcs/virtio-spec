@@ -35,4 +35,4 @@ rm $SPECDOC.tmp*
 #uncomment if you have a broken t4ht
 #cp ./t4ht-workaround/virtio-v1.0-csd01.css $SPECDOC.css
 
-zip $SPECDOC.zip $SPECDOC.html $SPECDOC.css images/*.png
+zip $SPECDOC.zip $SPECDOC*.html $SPECDOC.css images/*.png

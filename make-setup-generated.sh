@@ -1,5 +1,11 @@
 #! /bin/sh
 
+VERSION=1.0
+if [ x"$DATESTR" = x ]; then
+    ISODATE=`git show --format=format:'%cd' --date=iso | head -n 1`
+    DATESTR=`date -d "$DATE" +'%d %B %Y'`
+fi
+
 case "$1" in
     *-wd*)
 	STAGE=wd
@@ -20,6 +26,8 @@ case "$1" in
 	STAGE=csprd
 	STAGENAME="Committee Specification Public Review Draft"
 	WORKINGDRAFT=`basename "$1" | sed 's/.*-csprd//'`
+	STAGEEXTRATITLE=" / \newline Public Review Draft $WORKINGDRAFT"
+	STAGEEXTRA=" / Public Review Draft $WORKINGDRAFT"
 	;;
     *-cs*)
 	STAGE=cs
@@ -31,14 +39,13 @@ case "$1" in
 	exit 1
 esac
 
-VERSION=1.0
-ISODATE=`git show --format=format:'%cd' --date=iso | head -n 1`
-DATESTR=`date -d "$DATE" +'%d %b %Y'`
 cat > setup-generated.tex <<EOF
 % define VIRTIO Working Draft number and date
 \newcommand{\virtiorev}{$VERSION}
 \newcommand{\virtioworkingdraftdate}{$DATESTR}
 \newcommand{\virtioworkingdraft}{$WORKINGDRAFT}
 \newcommand{\virtiodraftstage}{$STAGE}
+\newcommand{\virtiodraftstageextra}{$STAGEEXTRA}
+\newcommand{\virtiodraftstageextratitle}{$STAGEEXTRATITLE}
 \newcommand{\virtiodraftstagename}{$STAGENAME}
 EOF
