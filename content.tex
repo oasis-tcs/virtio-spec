@@ -2343,6 +2343,8 @@ features.
 \item[VIRTIO_NET_F_MQ(22)] Device supports multiqueue with automatic
     receive steering.
 
+\item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
+    channel.
 \end{description}
 
 \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Network Device / Feature bits / Legacy Interface: Feature bits}
@@ -2681,6 +2683,7 @@ off. The command-specific-data is one byte containing 0 (off) or
 
 	#define VIRTIO_NET_CTRL_MAC    1
 	 #define VIRTIO_NET_CTRL_MAC_TABLE_SET        0
+	 #define VIRTIO_NET_CTRL_MAC_ADDR_SET         1
 \end{lstlisting}
 
 The device can filter incoming packets by any number of destination
@@ -2693,9 +2696,39 @@ command-specific-data is two variable length tables of 6-byte MAC
 addresses. The first table contains unicast addresses, and the second
 contains multicast addresses.
 
+When VIRTIO_NET_F_MAC_ADDR is not negotiated, the mac field in
+config space is writeable and is used to set the default MAC
+address which rx filtering accepts.
+When VIRTIO_NET_F_MAC_ADDR is negotiated, the mac field in
+config space becomes read-only.
+The VIRTIO_NET_CTRL_MAC_ADDR_SET command is used to set the
+default MAC address which rx filtering
+accepts
+
+Depending on whether VIRTIO_NET_F_MAC_ADDR has been negotiated,
+the mac field in config space or the VIRTIO_NET_CTRL_MAC_ADDR_SET
+is used to set the default MAC address which rx filtering
+accepts.
+The command-specific-data for VIRTIO_NET_CTRL_MAC_ADDR_SET is
+the 6-byte MAC address.
+
+The
+VIRTIO_NET_CTRL_MAC_ADDR_SET command is atomic whereas the
+mac field in config space is not, therefore drivers
+MUST negotiate VIRTIO_NET_F_MAC_ADDR if they change
+mac address when device is accepting incoming packets.
+
 \subparagraph{Legacy Interface: Setting MAC Address Filtering}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Setting MAC Address Filtering / Legacy Interface: Setting MAC Address Filtering}
 For legacy devices, the entries field in struct virtio_net_ctrl_mac is the
 native endian of the guest rather than (necessarily) little-endian.
+
+Legacy drivers that didn't negotiate VIRTIO_NET_F_MAC_ADDR
+changed the mac field in config space when NIC is accepting
+incoming packets. These drivers always wrote the mac value from
+first to last byte, therefore after detecting such drivers,
+a transitional device CAN defer MAC update, or CAN defer
+processing incoming packets until driver writes the last byte
+of the mac field in config space.
 
 \paragraph{VLAN Filtering}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / VLAN Filtering}
 
