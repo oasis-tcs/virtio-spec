@@ -1,4 +1,4 @@
-export SPECDOC=${SPECDOC:-virtio-v1.0-wd01}
+export SPECDOC=${SPECDOC:-`cat REVISION`}
 rm -f $SPECDOC
 if test -d .git; then
 	git archive --format=zip --prefix=tex/ -o $SPECDOC.zip HEAD

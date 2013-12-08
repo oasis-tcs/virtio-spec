@@ -1,6 +1,6 @@
 #!/bin/sh
 
-SPECDOC=${SPECDOC:-virtio-v1.0-csd01}
+SPECDOC=${SPECDOC:-`cat REVISION`}
 ./make-setup-generated.sh "$SPECDOC"
 
 cp virtio-html.tex $SPECDOC.tex
