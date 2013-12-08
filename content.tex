@@ -2285,12 +2285,18 @@ features.
 \subsection{Virtqueues}\label{sec:Device Types / Network Device / Virtqueues}
 
 \begin{description}
-\item[0] receiveq
-\item[1] transmitq
-\item[2] controlq
+\item[0] receiveq0
+\item[1] transmitq0
+\item[...]
+\item[2N] receiveqN
+\item[2N+1] transmitqN
+\item[2N+2] controlq
 \end{description}
 
- Virtqueue 2 only exists if VIRTIO_NET_F_CTRL_VQ set.
+ N=0 if VIRTIO_NET_F_MQ is not negotiated, otherwise N is derived
+ from max_virtqueue_pairs control field.
+
+ controlq only exists if VIRTIO_NET_F_CTRL_VQ set.
 
 \subsection{Feature bits}\label{sec:Device Types / Network Device / Feature bits}
 
@@ -2333,6 +2339,10 @@ features.
 
 \item[VIRTIO_NET_F_GUEST_ANNOUNCE(21)] Driver can send gratuitous
     packets.
+
+\item[VIRTIO_NET_F_MQ(22)] Device supports multiqueue with automatic
+    receive steering.
+
 \end{description}
 
 \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Network Device / Feature bits / Legacy Interface: Feature bits}
@@ -2346,7 +2356,7 @@ were required.
 
 \subsection{Device configuration layout}\label{sec:Device Types / Network Device / Device configuration layout}
 
-Two configuration fields are currently defined. The mac address field
+Three configuration fields are currently defined. The mac address field
 always exists (though is only valid if VIRTIO_NET_F_MAC is set), and
 the status field only exists if VIRTIO_NET_F_STATUS is set. Two
 read-only bits are currently defined for the status field:
@@ -2355,10 +2365,20 @@ VIRTIO_NET_S_LINK_UP and VIRTIO_NET_S_ANNOUNCE.
 \begin{lstlisting}
 	#define VIRTIO_NET_S_LINK_UP	1
 	#define VIRTIO_NET_S_ANNOUNCE	2
+\end{lstlisting}
 
+The following read-only field, max_virtqueue_pairs only exists if
+VIRTIO_NET_F_MQ is set. This field specifies the maximum number
+of each of transmit and receive virtqueues (receiveq0..receiveqN
+and transmitq0..transmitqN respectively;
+ N=max_virtqueue_pairs - 1) that can be configured once VIRTIO_NET_F_MQ
+is negotiated.  Legal values for this field are 1 to 0x8000.
+
+\begin{lstlisting}
 	struct virtio_net_config {
 		u8 mac[6];
 		le16 status;
+		u16 max_virtqueue_pairs;
 	};
 \end{lstlisting}
 
@@ -2371,7 +2391,9 @@ native endian of the guest rather than (necessarily) little-endian.
 
 \begin{enumerate}
 \item The initialization routine should identify the receive and
-  transmission virtqueues.
+  transmission virtqueues, up to N+1 of each kind. If
+  VIRTIO_NET_F_MQ feature bit is negotiated,
+  N=max_virtqueue_pairs-1, otherwise identify N=0.
 
 \item If the VIRTIO_NET_F_MAC feature bit is set, the configuration
   space “mac” entry indicates the “physical” address of the the
@@ -2386,9 +2408,18 @@ native endian of the guest rather than (necessarily) little-endian.
   status can be read from the bottom bit of the “status” config
   field. Otherwise, the link should be assumed active.
 
-\item The receive virtqueue should be filled with receive buffers.
-  This is described in detail below in “Setting Up Receive
-  Buffers”.
+\item Only receiveq0, transmitq0 and controlq are used by default.
+  To use more queues driver must negotiate the VIRTIO_NET_F_MQ
+  feature; initialize up to max_virtqueue_pairs of each of
+  transmit and receive queues;
+  execute_VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command specifying the
+  number of the transmit and receive queues that is going to be
+  used and wait until the device consumes the controlq buffer and
+  acks this command.
+  The receive virtqueue should be filled with receive buffers
+  before multiqueue is activated
+  (see \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode}~\nameref{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode}).
+  This is described in detail below in \nameref{sec:Device Types / Network Device / Device Operation / Setting Up Receive Buffers}.
 
 \item A driver can indicate that it will generate checksumless
   packets by negotating the VIRTIO_NET_F_CSUM feature. This 
@@ -2424,9 +2455,10 @@ if both guests are amenable.
 
 \subsection{Device Operation}\label{sec:Device Types / Network Device / Device Operation}
 
-Packets are transmitted by placing them in the transmitq, and
-buffers for incoming packets are placed in the receiveq. In each
-case, the packet itself is preceeded by a header:
+Packets are transmitted by placing them in the
+transmitq0..transmitqN, and buffers for incoming packets are
+placed in the receiveq0..receiveqN. In each case, the packet
+itself is preceeded by a header:
 
 \begin{lstlisting}
 	struct virtio_net_hdr {
@@ -2550,6 +2582,9 @@ elements.
 If VIRTIO_NET_F_MRG_RXBUF is negotiated, each buffer must be at
 least the size of the struct virtio_net_hdr.
 
+If VIRTIO_NET_F_MQ is negotiated, each of receiveq0...receiveqN
+that will be used should be populated with receive buffers.
+
 \paragraph{Packet Receive Interrupt}\label{sec:Device Types / Network Device / Device Operation / Setting Up Receive Buffers / Packet Receive Interrupt}
 
 When a packet is copied into a buffer in the receiveq, the
@@ -2588,7 +2623,7 @@ Processing packet involves:
 
 \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue}
 
-The driver uses the control virtqueue (if VIRTIO_NET_F_VTRL_VQ is
+The driver uses the control virtqueue (if VIRTIO_NET_F_CTRL_VQ is
 negotiated) to send commands to manipulate various features of
 the device which would not easily map into the configuration
 space.
@@ -2712,6 +2747,49 @@ Processing this notification involves:
 \item Sending VIRTIO_NET_CTRL_ANNOUNCE_ACK command through control
   vq.
 \end{enumerate}
+
+\paragraph{Automatic receive steering in multiqueue mode}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode}
+
+If the driver negotiates the VIRTIO_NET_F_MQ feature bit (depends
+on VIRTIO_NET_F_CTRL_VQ), it can transmit outgoing packets on one
+of the multiple transmitq0..transmitqN and ask the device to
+queue incoming packets into one the multiple receiveq0..receiveqN
+depending on the packet flow.
+
+\begin{lstlisting}
+	struct virtio_net_ctrl_mq {
+		u16 virtqueue_pairs;
+	};
+
+	#define VIRTIO_NET_CTRL_MQ    4
+	 #define VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET        0
+	 #define VIRTIO_NET_CTRL_MQ_VQ_PAIRS_MIN        1
+	 #define VIRTIO_NET_CTRL_MQ_VQ_PAIRS_MAX        0x8000
+\end{lstlisting}
+
+Multiqueue is disabled by default. Driver enables multiqueue by
+executing the VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command, specifying
+the number of the transmit and receive queues that will be used;
+thus transmitq0..transmitqn and receiveq0..receiveqn where
+n=virtqueue_pairs-1 will be used. All these virtqueues must have
+been pre-configured in advance. The range of legal values for the
+virtqueue_pairs field is between 1 and max_virtqueue_pairs.
+
+When multiqueue is enabled, device uses automatic receive steering
+based on packet flow.Programming of the receive steering
+classificator is implicit. Transmitting a packet of a specific
+flow on transmitqX will cause incoming packets for this flow to
+be steered to receiveqX. For uni-directional protocols, or where
+no packets have been transmitted yet, device will steer a packet
+to a random queue out of the specified receiveq0..receiveqn.
+
+Multiqueue is disabled by setting virtqueue_pairs = 1 (this is
+the default). After the command is consumed by the device, the
+device will not steer new packets on virtqueues
+receveq1..receiveqN (i.e. other than receiveq0) nor read from
+transmitq1..transmitqN (i.e. other than transmitq0); accordingly,
+driver should not transmit new packets on virtqueues other than
+transmitq0.
 
 \paragraph{Offloads State Configuration}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Offloads State Configuration}
 
