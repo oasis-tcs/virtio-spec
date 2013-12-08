@@ -1,6 +1,18 @@
 export SPECDOC=${SPECDOC:-virtio-v1.0-wd01}
 rm -f $SPECDOC
-git archive --format=zip --prefix=tex/ -o $SPECDOC.zip HEAD
+if test -d .git; then
+	git archive --format=zip --prefix=tex/ -o $SPECDOC.zip HEAD
+elif test -d .svn; then
+	rm -fr export-from-svn
+	mkdir -p export-from-svn
+	svn export . export-from-svn/tex
+	cd export-from-svn/
+	zip ../$SPECDOC.zip tex/
+	cd ..
+else
+	echo Neither .git nor .svn found.
+	echo Falling back to generated list.
+fi
 zip -d $SPECDOC.zip tex/.gitattributes
 ./makehtml.sh
 ./makepdf.sh
