@@ -2243,6 +2243,10 @@ GPR  &   Input Value     & Output Value \\
 \hline
 \end{tabular}
 
+The device MUST ignore bits 0-31 (counting from the left) of GPR2.
+This aligns passing the subchannel ID with the way it is passed
+for the existing I/O instructions.
+
 Host cookie is an optional per-virtqueue 64 bit value that can be
 used by the hypervisor to speed up the notification execution.
 For each notification, the output value is returned in GPR2 and
