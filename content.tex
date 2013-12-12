@@ -1516,26 +1516,32 @@ All register values are organized as Little Endian.
   }
   \hline 
   \mmioreg{InterruptStatus}{Interrupt status}{0x60}{R}{%
-    Reading from this register returns a bit mask of interrupts
-    asserted by the device. An interrupt is asserted if the
-    corresponding bit is set, ie. equals one (1). The following
-    interrupts can be asserted:
+    Reading from this register returns a bit mask of events that
+    caused the device interrupt to be asserted.
+    From a moment when any of these events takes place, the
+    device MUST be returning a value with the related
+    bits set, ie. equal one (1), and all other bits cleared, 
+    ie. equal zero (0), until the driver acknowledges the interrupt
+    by writing a corresponding bit mask to the InterruptACK register.
+    The following events are possible:
     \begin{description}
-      \item[Used Ring Update] - bit 0 - this interrupt is asserted
-        when the device has updated the Used
+      \item[Used Ring Update] - bit 0 - the interrupt was asserted
+        because the device has updated the Used
         Ring in at least one of the active virtual queues.
-      \item [Configuration Change] - bit 1 - this interrupt is
-        asserted when configuration of the device has changed.
+      \item [Configuration Change] - bit 1 - the interrupt was
+        asserted because the configuration of the device has changed.
     \end{description}
-    Other bits of the value are reserved for future use and MUST be
-    ignored.
+    Other bits of the value are reserved for future use and the
+    driver MUST ignore them.
   }
   \hline 
   \mmioreg{InterruptACK}{Interrupt acknowledge}{0x064}{W}{%
-    Writing to this register notifies the device that the driver
-    finished handling interrupts. Set bits in the value clear
-    the corresponding bits of the InterruptStatus register.
-    Reserved bits MUST NOT be set, ie. all must equal zero (0).
+    Writing to this register notifies the device that the interrupt
+    has been handled.
+    When the driver finishes handling an interrupt, it MUST write
+    a value to this register with bits corresponding to the handled
+    events (as defined for the InterruptStatus register) set, ie.
+    equal one (1), and all other bits cleared, ie. equal zero (0).
   }
   \hline 
   \mmioreg{Status}{Device status}{0x070}{RW}{%
@@ -1638,15 +1644,15 @@ The driver MUST initialize the virtual queue in the following way:
 
 \subsubsection{Notifying The Device}\label{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Notifying The Device}
 
-The device MUST be notified about new buffers available in a queue by
-writing the queue index to the QueueNum register.
+The driver MUST notify the device about new buffers being available in
+a queue by writing the index of the updated queue to the QueueNum register.
 
 \subsubsection{Notifications From The Device}\label{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Notifications From The Device}
 
-The memory mapped virtio device is using single, dedicated
-interrupt signal, which is raised when at least one of the
-interrupts described in the InterruptStatus register
-description is asserted. This way the device may notify the
+The memory mapped virtio device is using a single, dedicated
+interrupt signal, which is asserted when at least one of the
+bits described in the InterruptStatus register
+description is set. This way the device may notify the
 driver about a new used buffer being available in the queue
 or about a change in the device configuration.
 
@@ -1654,7 +1660,7 @@ After receiving an interrupt, the driver MUST read the
 InterruptStatus register to check what caused the interrupt
 (see the register description). After the interrupt is handled,
 the driver MUST acknowledge it by writing a bit mask
-corresponding to the serviced interrupt to the InterruptACK register.
+corresponding to the handled events to the InterruptACK register.
 
 \subsection{Legacy interface}\label{sec:Virtio Transport Options / Virtio Over MMIO / Legacy interface}
 
