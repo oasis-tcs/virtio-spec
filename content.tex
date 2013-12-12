@@ -1417,17 +1417,26 @@ All register values are organized as Little Endian.
   \endfoot
   \endlastfoot
   \mmioreg{MagicValue}{Magic value}{0x000}{R}{%
-    MUST be 0x74726976 (a Little Endian equivalent of the "virt" string).
+    Device MUST return value 0x74726976
+    (a Little Endian equivalent of the "virt" string).
+    Driver MUST ignore device returning other values,
+    although it MAY report an error.
   } 
   \hline
   \mmioreg{Version}{Device version number}{0x004}{R}{%
     Devices compliant with this specification MUST return value 0x2.
+    Legacy device (see \ref{sec:Virtio Transport Options / Virtio Over MMIO / Legacy interface}~\nameref{sec:Virtio Transport Options / Virtio Over MMIO / Legacy interface}) MAY return value 0x1.
+    Driver MUST ignore device returning other values,
+    although it MAY report an error.
   }
   \hline 
   \mmioreg{DeviceID}{Virtio Subsystem Device ID}{0x008}{R}{%
     See \ref{sec:Device Types}~\nameref{sec:Device Types} for possible values.
-    Value zero (0x0) is invalid and devices returning this ID MUST be ignored
-    by the driver.
+    Value zero (0x0) is invalid and driver MUST ignore such device
+    but MUST NOT report any error. This behaviour can be used to
+    define a system memory map with placeholder devices at static,
+    well known addresses, assigning functions to them depending
+    on user's needs.
   }
   \hline 
   \mmioreg{VendorID}{Virtio Subsystem Vendor ID}{0x00c}{R}{}
@@ -1675,7 +1684,7 @@ nor behaviour:
   \endlastfoot
   \mmioreg{MagicValue}{Magic value}{0x000}{R}{}
   \hline
-  \mmioreg{Version}{Device version number}{0x004}{R}{Legacy devices MUST return value 0x1.}
+  \mmioreg{Version}{Device version number}{0x004}{R}{Legacy device MUST return value 0x1.}
   \hline
   \mmioreg{DeviceID}{Virtio Subsystem Device ID}{0x008}{R}{}
   \hline
