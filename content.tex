@@ -2060,7 +2060,7 @@ communication block:
 
 \begin{lstlisting}
 	struct virtio_feature_desc {
-		be32 features;
+		le32 features;
 		u8 index;
 	} __attribute__ ((packed));
 \end{lstlisting}
