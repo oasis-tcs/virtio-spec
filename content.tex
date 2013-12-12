@@ -1876,18 +1876,18 @@ The virtio-ccw device acts like a normal channel device, as specified
 in \hyperref[intro:S390 PoP]{[S390 PoP]} and \hyperref[intro:S390 Common I/O]{[S390 Common I/O]}. In particular:
 
 \begin{itemize}
-\item A device must post a unit check with command reject for any command
+\item A device MUST post a unit check with command reject for any command
   it does not support.
 
 \item If a driver did not suppress length checks for a channel command,
-  the device must present a subchannel status as detailed in the
+  the device MUST present a subchannel status as detailed in the
   architecture when the actual length did not match the expected length.
 
 \item If a driver did suppress length checks for a channel command, the
-  device must present a check condition if the transmitted data does
+  device MUST present a check condition if the transmitted data does
   not contain enough data to process the command. If the driver submitted
-  a buffer that was too long, the device should accept the command.
-  The driver should attempt to provide the correct length even if it
+  a buffer that was too long, the device SHOULD accept the command.
+  The driver SHOULD attempt to provide the correct length even if it
   suppresses length checks.
 \end{itemize}
 
@@ -1929,26 +1929,26 @@ revision & length & data      & remarks \\
 Note that a change in the virtio standard does not neccessarily
 correspond to a change in the virtio-ccw revision.
 
-A device must post a unit check with command reject for any revision
+A device MUST post a unit check with command reject for any revision
 it does not support. For any invalid combination of revision, length
-and data, it must post a unit check with command reject as well. A
-non-transitional device must reject revision id 0.
+and data, it MUST post a unit check with command reject as well. A
+non-transitional device MUST reject revision id 0.
 
-A driver should start with trying to set the highest revision it
+A driver SHOULD start with trying to set the highest revision it
 supports and continue with lower revisions if it gets a command reject.
 
-A driver must not issue any other virtio-ccw specific channel commands
+A driver MUST NOT issue any other virtio-ccw specific channel commands
 prior to setting the revision.
 
-A device must answer with command reject to any virtio-ccw specific
+A device MUST answer with command reject to any virtio-ccw specific
 channel command that is not contained in the revision selected by the
 driver.
 
 After a revision has been successfully selected by the driver, it
-must not attempt to select a different revision. A device must answer
+MUST NOT attempt to select a different revision. A device MUST answer
 to any such attempt with a command reject.
 
-A device must treat the revision as unset from the time the associated
+A device MUST treat the revision as unset from the time the associated
 subchannel has been enabled until a revision has been successfully set
 by the driver. This implies that revisions are not persistent across
 disabling and enabling of the associated subchannel.
@@ -1956,16 +1956,16 @@ disabling and enabling of the associated subchannel.
 \paragraph{Legacy Interfaces: A Note on Setting the Virtio Revision}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Setting the Virtio Revision / Legacy Interfaces: A Note on Setting the Virtio Revision}
 
 A legacy device will not support the CCW_CMD_SET_VIRTIO_REV and answer
-with a command reject. A non-transitional driver must stop trying to
-operate this device in that case. A transitional driver must operate
+with a command reject. A non-transitional driver MUST stop trying to
+operate this device in that case. A transitional driver MUST operate
 the device as if it had been able to set revision 0.
 
 A legacy driver will not issue the CCW_CMD_SET_VIRTIO_REV prior to
-issueing other virtio-ccw specific channel commands. A non-transitional
-device therefore must answer any such attempts with a command reject.
-A transitional device must assume in this case that the driver is a
+issuing other virtio-ccw specific channel commands. A non-transitional
+device therefore MUST answer any such attempts with a command reject.
+A transitional device MUST assume in this case that the driver is a
 legacy driver and continue as if the driver selected revision 0. This
-implies that the device must reject any command not valid for revision
+implies that the device MUST reject any command not valid for revision
 0, including a subsequent CCW_CMD_SET_VIRTIO_REV.
 
 \subsubsection{Configuring a Virtqueue}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Configuring a Virtqueue}
@@ -2001,7 +2001,7 @@ structure is
 desc, avail and used contain the guest addresses for the descriptor table,
 available ring and used ring for queue index, respectively. The actual
 virtqueue size (number of allocated buffers) is transmitted in num.
-res0 is reserved and must be ignored by the device.
+res0 is reserved and MUST be ignored by the device.
 
 \paragraph{Legacy Interface: A Note on Configuring a Virtqueue}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Configuring a Virtqueue / Legacy Interface: A Note on Configuring a Virtqueue}
 
@@ -2045,7 +2045,7 @@ The calculation for total size is as follows:
 
 \subsubsection{Communicating Status Information}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Communicating Status Information}
 
-The driver can change the status of a device via the
+The driver changes the status of a device via the
 CCW_CMD_WRITE_STATUS command, which transmits an 8 bit status
 value.
 
@@ -2069,12 +2069,12 @@ features are the 32 bits of features currently accessed, while
 index describes which of the feature bit values is to be
 accessed.
 
-The guest may obtain the device's device feature set via the
+The guest obtains the device's device feature set via the
 CCW_CMD_READ_FEAT command. The device stores the features at index
 to features.
 
-For communicating its supported features to the device, the driver may
-use the CCW_CMD_WRITE_FEAT command, denoting a features/index
+For communicating its supported features to the device, the driver
+uses the CCW_CMD_WRITE_FEAT command, denoting a features/index
 combination.
 
 \subsubsection{Device Configuration}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Device Configuration}
@@ -2082,11 +2082,11 @@ combination.
 The device's configuration space is located in host memory. It is
 the same size as the standard PCI configuration space.
 
-To obtain information from the configuration space, the driver may
-use CCW_CMD_READ_CONF, specifying the guest memory for the device
+To obtain information from the configuration space, the driver
+uses CCW_CMD_READ_CONF, specifying the guest memory for the device
 to write to.
 
-For changing configuration information, the driver may use
+For changing configuration information, the driver uses
 CCW_CMD_WRITE_CONF, specifying the guest memory for the device to
 read from.
 
@@ -2177,12 +2177,12 @@ reject CCW_CMD_SET_IND_ADAPTER as they don't know that command.
 
 \subsubsection{Host->Guest Notification}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Operation / Host->Guest Notification}
 
-There are two modes of operation regarding host->guest notifcation,
+There are two modes of operation regarding host->guest notification,
 classic I/O interrupts and adapter I/O interrupts. The mode to be
 used is determined by the driver by using CCW_CMD_SET_IND respectively
 CCW_CMD_SET_IND_ADAPTER to set up queue indicators.
 
-For configuration changes, the driver will always use classic I/O
+For configuration changes, the driver always uses classic I/O
 interrupts.
 
 \paragraph{Notification via Classic I/O Interrupts}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Operation / Host->Guest Notification / Notification via Classic I/O Interrupts}
@@ -2261,7 +2261,7 @@ used.
 
 \subsubsection{Resetting Devices}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Operation / Resetting Devices}
 
-In order to reset a device, a driver may send the
+In order to reset a device, a driver sends the
 CCW_CMD_VDEV_RESET command.
 
 
