@@ -1645,7 +1645,7 @@ The driver MUST initialize the virtual queue in the following way:
 \subsubsection{Notifying The Device}\label{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Notifying The Device}
 
 The driver MUST notify the device about new buffers being available in
-a queue by writing the index of the updated queue to the QueueNum register.
+a queue by writing the index of the updated queue to the QueueNotify register.
 
 \subsubsection{Notifications From The Device}\label{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Notifications From The Device}
 
