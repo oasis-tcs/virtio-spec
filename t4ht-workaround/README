@@ -1,0 +1,18 @@
+Recent Fedora and some other distros have broken t4ht
+packages, making makehtml fail.  The correct fix is to put a
+working t4ht somewhere in your path.
+
+For example, for Fedora one can get an old copy from here:
+http://pkgs.fedoraproject.org/repo/pkgs/tetex-tex4ht/tex4ht-1.0.2008_02_28_2058.tar.gz/dc9d78c8ad22acd4b40dfd2cbbe2b8de/tex4ht-1.0.2008_02_28_
+after unpacking, t4ht is under ./bin/linux/t4ht, put it on
+path.
+tex4ht.env is under texmf/tex4ht/base/unix/tex4ht.env, put it
+in $HOME (you can rename it .tex4ht) or under current
+directory. Make sure to fix up paths otherwise output
+will be mailformed!
+
+Alternatively, you can also put this t4ht-workaround directory first
+on your path, it includes an emoty stub for t4ht.
+You will also need to uncomment a work-around in makehtml.sh.
+If you use this work-around you will get an html output though it
+won't be properly formatted.
