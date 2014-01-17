@@ -2844,9 +2844,9 @@ Processing this notification involves:
 \paragraph{Automatic receive steering in multiqueue mode}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode}
 
 If the driver negotiates the VIRTIO_NET_F_MQ feature bit (depends
-on VIRTIO_NET_F_CTRL_VQ), it can transmit outgoing packets on one
+on VIRTIO_NET_F_CTRL_VQ), it MAY transmit outgoing packets on one
 of the multiple transmitq0..transmitqN and ask the device to
-queue incoming packets into one the multiple receiveq0..receiveqN
+queue incoming packets into one of the multiple receiveq0..receiveqN
 depending on the packet flow.
 
 \begin{lstlisting}
@@ -2860,28 +2860,28 @@ depending on the packet flow.
 	 #define VIRTIO_NET_CTRL_MQ_VQ_PAIRS_MAX        0x8000
 \end{lstlisting}
 
-Multiqueue is disabled by default. Driver enables multiqueue by
+Multiqueue is disabled by default. The driver enables multiqueue by
 executing the VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command, specifying
-the number of the transmit and receive queues that will be used;
-thus transmitq0..transmitqn and receiveq0..receiveqn where
-n=virtqueue_pairs-1 will be used. All these virtqueues must have
+the number of the transmit and receive queues to be used; subsequently,
+transmitq0..transmitqn and receiveq0..receiveqn where
+n=virtqueue_pairs-1 MAY be used. All these virtqueues MUST have
 been pre-configured in advance. The range of legal values for the
 virtqueue_pairs field is between 1 and max_virtqueue_pairs.
 
-When multiqueue is enabled, device uses automatic receive steering
-based on packet flow.Programming of the receive steering
-classificator is implicit. Transmitting a packet of a specific
-flow on transmitqX will cause incoming packets for this flow to
+When multiqueue is enabled, the device MUST use automatic receive steering
+based on packet flow. Programming of the receive steering
+classificator is implicit. After the driver transmitted a packet of a specific
+flow on transmitqX, the device MUST cause incoming packets for this flow to
 be steered to receiveqX. For uni-directional protocols, or where
-no packets have been transmitted yet, device will steer a packet
+no packets have been transmitted yet, the device MAY steer a packet
 to a random queue out of the specified receiveq0..receiveqn.
 
 Multiqueue is disabled by setting virtqueue_pairs = 1 (this is
-the default). After the command is consumed by the device, the
-device will not steer new packets on virtqueues
-receveq1..receiveqN (i.e. other than receiveq0) nor read from
+the default). After the command has been consumed by the device, the
+device MUST NOT steer new packets to virtqueues
+receveq1..receiveqN (i.e. other than receiveq0) and MUST NOT read from
 transmitq1..transmitqN (i.e. other than transmitq0); accordingly,
-driver should not transmit new packets on virtqueues other than
+the driver MUST NOT transmit new packets on virtqueues other than
 transmitq0.
 
 \paragraph{Offloads State Configuration}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Offloads State Configuration}
