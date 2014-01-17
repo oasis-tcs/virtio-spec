@@ -19,13 +19,13 @@ case "$1" in
 	;;
     *-csd*)
 	STAGE=csd
-	STAGENAME="Committee Specification Draft"
 	WORKINGDRAFT=`basename "$1" | sed 's/.*-csd//'`
+	STAGENAME="Committee Specification Draft $WORKINGDRAFT"
 	;;
     *-csprd*)
 	STAGE=csprd
-	STAGENAME="Committee Specification Public Review Draft"
 	WORKINGDRAFT=`basename "$1" | sed 's/.*-csprd//'`
+	STAGENAME="Committee Specification Draft $WORKINGDRAFT"
 	STAGEEXTRATITLE=" / \newline Public Review Draft $WORKINGDRAFT"
 	STAGEEXTRA=" / Public Review Draft $WORKINGDRAFT"
 	;;
