@@ -2440,12 +2440,12 @@ is negotiated.  Legal values for this field are 1 to 0x8000.
 	struct virtio_net_config {
 		u8 mac[6];
 		le16 status;
-		u16 max_virtqueue_pairs;
+		le16 max_virtqueue_pairs;
 	};
 \end{lstlisting}
 
 \subsubsection{Legacy Interface: Device configuration layout}\label{sec:Device Types / Network Device / Device configuration layout / Legacy Interface: Device configuration layout}
-For legacy devices, the status field in struct virtio_net_config is the
+For legacy devices, the status and max_virtqueue_pairs fields in struct virtio_net_config are the
 native endian of the guest rather than (necessarily) little-endian.
 
 
@@ -2851,7 +2851,7 @@ depending on the packet flow.
 
 \begin{lstlisting}
 	struct virtio_net_ctrl_mq {
-		u16 virtqueue_pairs;
+		le16 virtqueue_pairs;
 	};
 
 	#define VIRTIO_NET_CTRL_MQ    4
@@ -2883,6 +2883,10 @@ receveq1..receiveqN (i.e. other than receiveq0) and MUST NOT read from
 transmitq1..transmitqN (i.e. other than transmitq0); accordingly,
 the driver MUST NOT transmit new packets on virtqueues other than
 transmitq0.
+
+\subparagraph{Legacy Interface: Automatic receive steering in multiqueue mode}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode / Legacy Interface: Automatic receive steering in multiqueue mode}
+For legacy devices, the virtqueue_paris field is in the
+native endian of the guest rather than (necessarily) little-endian.
 
 \paragraph{Offloads State Configuration}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Offloads State Configuration}
 
