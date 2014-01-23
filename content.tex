@@ -3218,12 +3218,14 @@ data and outgoing characters are placed in the transmit queue.
 
 \subsection{Feature bits}\label{sec:Device Types / Console Device / Feature bits}
 
-  VIRTIO_CONSOLE_F_SIZE (0) Configuration cols and rows fields
+\begin{description}
+\item[VIRTIO_CONSOLE_F_SIZE (0)] Configuration cols and rows fields
     are valid.
 
-  VIRTIO_CONSOLE_F_MULTIPORT(1) Device has support for multiple
+\item[VIRTIO_CONSOLE_F_MULTIPORT (1)] Device has support for multiple
     ports; configuration fields nr_ports and max_nr_ports are
     valid and control virtqueues will be used.
+\end{description}
 
 \subsection{Device configuration layout}\label{sec:Device Types / Console Device / Device configuration layout}
 
