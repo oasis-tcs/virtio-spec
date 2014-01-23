@@ -1918,9 +1918,9 @@ following communication structure:
 
 \begin{lstlisting}
 	struct virtio_rev_info {
-	       __u16 revision;
-	       __u16 length;
-	       __u8 data[];
+		be16 revision;
+		be16 length;
+		u8 data[];
 	};
 \end{lstlisting}
 
