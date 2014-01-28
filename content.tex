@@ -1500,7 +1500,7 @@ All register values are organized as Little Endian.
     the queue is in use (so when QueueReady is not zero).
   }
   \hline 
-  \mmioreg{QueueReady}{Virtual queue ready bit}{0x03c}{RW}{%
+  \mmioreg{QueueReady}{Virtual queue ready bit}{0x044}{RW}{%
     Writing one (0x1) to this register notifies the device that the
     virtual queue is ready to be used. Reading from this register
     returns the last value written to it. Both read and write
