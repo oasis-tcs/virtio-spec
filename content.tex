@@ -801,9 +801,10 @@ any Revision ID value.
 
 \subsection{PCI Device Layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout}
 
-To configure the device,
-use I/O and/or memory regions and/or PCI configuration space of the PCI device.
-These contain the virtio header registers, the notification register, the
+The device is configured via I/O and/or memory regions (though see
+VIRTIO_PCI_CAP_PCI_CFG for access via the PCI configuration space).
+
+These regions contain the virtio header registers, the notification register, the
 ISR status register and device specific registers, as specified by Virtio
 Structure PCI Capabilities.
 
@@ -847,8 +848,7 @@ Common configuration structure layout is documented below:
 \begin{description}
 \item[device_feature_select]
         The driver uses this to select which Feature Bits the device_feature field shows.
-        Value 0x0 selects Feature Bits 0 to 31
-        Value 0x1 selects Feature Bits 32 to 63
+        Value 0x0 selects Feature Bits 0 to 31, 0x1 selects Feature Bits 32 to 63.
         The device MUST present 0 on device_feature for any other value.
 
 \item[device_feature]
@@ -857,8 +857,7 @@ Common configuration structure layout is documented below:
 
 \item[driver_feature_select]
         The driver uses this to select which Feature Bits the driver_feature field shows.
-        Value 0x0 selects Feature Bits 0 to 31
-        Value 0x1 selects Feature Bits 32 to 63
+        Value 0x0 selects Feature Bits 0 to 31, 0x1 selects Feature Bits 32 to 63.
         When set to any other value, reads from driver_feature
         return 0, writing 0 into driver_feature has no effect.  The driver
         MUST not write any other value into driver_feature (a corollary of
@@ -899,7 +898,7 @@ Common configuration structure layout is documented below:
 
 \item[queue_enable]
         The driver uses this to selectively prevent the device from executing requests from this virtqueue.
-        1 - enabled; 0 - disabled
+        1 - enabled; 0 - disabled.
 
         The driver MUST configure the other virtqueue fields before enabling
         the virtqueue.
@@ -1043,7 +1042,7 @@ read-only:
 	};
 \end{lstlisting}
 
-This structure can optionally followed by extra data, depending on
+This structure can optionally be followed by extra data, depending on
 other fields, as documented below.
 
 Note that future versions of this specification will likely
@@ -1369,10 +1368,13 @@ following sections.
 
 \subsection{MMIO Device Discovery}\label{sec:Virtio Transport Options / Virtio Over MMIO / MMIO Device Discovery}
 
-Unlike PCI, MMIO provides no generic device discovery. For
-systems using Flattened Device Trees the suggested format is:
+Unlike PCI, MMIO provides no generic device discovery.  For each
+device, the guest OS will need to know the location of the registers
+and interrupt(s) used.  The suggested binding for systems using
+flattened device trees is shown in this example:
 
 \begin{lstlisting}
+        // EXAMPLE: virtio_block device taking 256 bytes at 0x1e000, interrupt 42.
 	virtio_block@1e000 {
 		compatible = "virtio,mmio";
 		reg = <0x1e000 0x100>;
@@ -1941,7 +1943,7 @@ revision & length & data      & remarks \\
 \hline
 \end{tabular}
 
-Note that a change in the virtio standard does not neccessarily
+Note that a change in the virtio standard does not necessarily
 correspond to a change in the virtio-ccw revision.
 
 A device MUST post a unit check with command reject for any revision
@@ -2037,7 +2039,7 @@ and align the alignment.
 
 \subsubsection{Virtqueue Layout}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Virtqueue Layout}
 
-The virtqueue is physically contiguous, with padded added to make the
+The virtqueue is physically contiguous, with padding added to make the
 used ring meet the align value:
 
 \begin{tabular}{|l|l|l|}
@@ -2174,7 +2176,8 @@ summary_indicator contains the guest address of the 8 bit summary
 indicator.
 indicator contains the guest address of an area wherin the indicators
 for the devices are contained, starting at bit_nr, one bit per
-virtqueue of the device. Bit numbers start at the left.
+virtqueue of the device. Bit numbers start at the left, i.e. the most
+significant bit in the first byte is assigned the bit number 0.
 isc contains the I/O interruption subclass to be used for the adapter
 I/O interrupt. It may be different from the isc used by the proxy
 virtio-ccw device's subchannel.
@@ -2224,7 +2227,7 @@ host->guest notification about virtqueue activity.
 
 For notifying the driver of virtqueue buffers, the device sets the
 bit in the guest-provided indicator area at the corresponding offset.
-The guest-provided summary indicator is also set. An adapter I/O
+The guest-provided summary indicator is set to 0x01. An adapter I/O
 interrupt for the corresponding interruption subclass is generated.
 The device SHOULD only generate an adapter I/O interrupt if the
 summary indicator had not been set prior to notification. The driver
@@ -2272,11 +2275,6 @@ should be passed in GPR4 for the next notification:
                                  virtqueue_get_queue_index(vq),
                                  info->cookie);
 \end{lstlisting}
-
-\subsubsection{Early printk for Virtio Consoles}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Operation / Early printk for Virtio Consoles}
-
-For the early printk mechanism, diagnose 0x500 with subcode 0 is
-used.
 
 \subsubsection{Resetting Devices}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Operation / Resetting Devices}
 
