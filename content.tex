@@ -3223,6 +3223,9 @@ data and outgoing characters are placed in the transmit queue.
 \item[VIRTIO_CONSOLE_F_MULTIPORT (1)] Device has support for multiple
     ports; configuration fields nr_ports and max_nr_ports are
     valid and control virtqueues will be used.
+
+\item[VIRTIO_CONSOLE_F_EMERG_WRITE (2)] Device has support for emergency write.
+    Configuration field emerg_wr is valid.
 \end{description}
 
 \subsection{Device configuration layout}\label{sec:Device Types / Console Device / Device configuration layout}
@@ -3233,11 +3236,16 @@ data and outgoing characters are placed in the transmit queue.
   is set, the maximum number of ports supported by the device can
   be fetched.
 
+  If VIRTIO_CONSOLE_F_EMERG_WRITE is set then the driver can use emergency write
+  to output a single character without initializing virtio queues, or even
+  acknowledging the feature.
+
 \begin{lstlisting}
 	struct virtio_console_config {
 		le16 cols;
 		le16 rows;
 		le32 max_nr_ports;
+		le32 emerg_wr;
 	};
 \end{lstlisting}
 
@@ -3248,6 +3256,11 @@ native endian of the guest rather than (necessarily) little-endian.
 \subsection{Device Initialization}\label{sec:Device Types / Console Device / Device Initialization}
 
 \begin{enumerate}
+\item If the VIRTIO_CONSOLE_F_EMERG_WRITE feature is offered, the
+  emerg_wr field of the configuration can be written at any time.
+  Thus it should work for very early boot debugging output as well as
+  catastophic OS failures (eg. virtio ring corruption).
+
 \item If the VIRTIO_CONSOLE_F_SIZE feature is negotiated, the driver
   can read the console dimensions from the configuration fields.
 
