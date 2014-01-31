@@ -644,17 +644,18 @@ free descriptors before beginning the mappings.
 
 \subsubsection{Updating The Available Ring}\label{sec:General Initialization And Device Operation / Device Operation / Supplying Buffers to The Device / Updating The Available Ring}
 
-The head of the buffer we mapped is the first d in the algorithm
-above (the descriptor chain head).  A naive implementation would do the following (with the
+The descriptor chain head is the first d in the algorithm
+above, ie. the index of the descriptor table entry referring to the first
+part of the buffer.  A naive implementation would do the following (with the
 appropriate conversion to-and-from little-endian assumed):
 
 \begin{lstlisting}
 	avail->ring[avail->idx % qsz] = head;
 \end{lstlisting}
 
-However, in general we can add many descriptor chains before we update
+However, in general the driver can add many descriptor chains before it updates
 the “idx” field (at which point they become visible to the
-device), so we keep a counter of how many we've added:
+device), so it is common to keep a counter of how many the driver has added:
 
 \begin{lstlisting}
 	avail->ring[(avail->idx + added++) % qsz] = head;
@@ -663,12 +664,12 @@ device), so we keep a counter of how many we've added:
 \subsubsection{Updating The Index Field}\label{sec:General Initialization And Device Operation / Device Operation / Supplying Buffers to The Device / Updating The Index Field}
 
 Once the index field of the virtqueue is updated, the device will
-be able to access the descriptor chains we've created and the
+be able to access the descriptor chains the driver created and the
 memory they refer to. This is why a memory barrier is generally
 used before the index update, to ensure it sees the most up-to-date
 copy.
 
-The index field always increments, and we let it wrap naturally at
+The index field always increments, and the driver can let it wrap naturally at
 65536:
 
 \begin{lstlisting}
@@ -678,22 +679,21 @@ The index field always increments, and we let it wrap naturally at
 \subsubsection{Notifying The Device}\label{sec:General Initialization And Device Operation / Device Operation / Supplying Buffers to The Device / Notifying The Device}
 
 The actual method of device notification is bus-specific, but generally
-it can be expensive.  So the device can suppress such notifications if it
+it can be expensive.  So the device MAY suppress such notifications if it
 doesn't need them.  The driver has to be careful to expose the new index
-value before checking if notifications are suppressed: it's OK to notify
-gratuitously, but not to omit a required notification. So again,
-we use a memory barrier here before reading the flags or the
+value before checking if notifications are suppressed: the driver MAY notify
+gratuitously, but MUST NOT to omit a required notification. So again,
+the driver SHOULD use a memory barrier here before reading the flags or the
 avail_event field.
 
 If the VIRTIO_F_RING_EVENT_IDX feature is not negotiated, and if the
 VRING_USED_F_NOTIFY flag is not set, the driver SHOULD notify the
 device.
 
-If the VIRTIO_F_RING_EVENT_IDX feature is negotiated, we read the
+If the VIRTIO_F_RING_EVENT_IDX feature is negotiated, the driver reads the
 avail_event field in the available ring structure. If the
 available index crossed_the avail_event field value since the
-last notification, we go ahead and write to the PCI configuration
-space.  The avail_event field wraps naturally at 65536 as well,
+last notification, the driver SHOULD notify the device.  The avail_event field wraps naturally at 65536 as well,
 giving the following algorithm for calculating whether a device needs
 notification:
 
