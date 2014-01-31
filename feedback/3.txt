@@ -3,6 +3,7 @@ Number: 3
 Date: Tue, 21 Jan 2014 15:09:54 +0530
 Link to Mail: https://lists.oasis-open.org/archives/virtio-comment/201401/msg00037.html
 Commenter name: Pranavkumar Sawargaonkar <pranavkumar@linaro.org>
+Decision: Agreed at meeting 2014-01-28.
 
 This patch updates virtio spec lyx for adding emergency write to 
 virtio console.
@@ -59,6 +60,3 @@ index 17d1bd7..96645df 100644
  \item If the VIRTIO_CONSOLE_F_SIZE feature is negotiated, the driver
    can read the console dimensions from the configuration fields.
  
-
-Decision:
-

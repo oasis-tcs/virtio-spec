@@ -3,6 +3,7 @@ Number: 1
 Date: Fri, 10 Jan 2014 11:01:44 +0100
 Link to Mail: https://lists.oasis-open.org/archives/virtio-comment/201401/msg00000.html
 Commenter name: Thomas Huth <thuth@linux.vnet.ibm.com>
+Decision: Agreed at meeting 2014-01-28.
 
 - The first three chapters sometimes uses the pronoun "we" in sentences.
   I think this should be avoided, since it is not always clear who is
@@ -147,6 +148,3 @@ index 803615d..8850c1a 100644
  execute a memory barrier, and then recheck the ring empty
  condition. This is necessary to handle the case where after the
  last check and before enabling interrupts, an interrupt has been
-
-Decision:
-
