@@ -1,0 +1,43 @@
+Document: virtio-v1.0-csprd01
+Number: 5
+Date: Tue, 28 Jan 2014 09:44:50 -0500
+Link to Mail: https://lists.oasis-open.org/archives/virtio-comment/201401/msg00046.html
+Commenter name: Laura Novich <lnovich@redhat.com>
+Decision:
+
+Proposal:
+
+diff --git a/abstract.tex b/abstract.tex
+index b42a0b6..186fb81 100644
+--- a/abstract.tex
++++ b/abstract.tex
+@@ -1,7 +1,7 @@
+ This document describes the specifications of the “virtio” family of
+ devices. These devices are found in virtual environments, yet by
+ design they are not all that different from physical devices, and this
+-document treats them as such. This allows the guest to use standard
++document treats them as such. This similarity allows the guest to use standard
+ drivers and discovery mechanisms.
+ 
+ The purpose of virtio and this specification is that virtual
+diff --git a/introduction.tex b/introduction.tex
+index 5d57f78..98e1e0d 100644
+--- a/introduction.tex
++++ b/introduction.tex
+@@ -13,14 +13,14 @@ inter-guest communication) requires copying.
+ }
+ 
+   Efficient: Virtio devices consist of rings of descriptors
+-  for input and output, which are neatly separated to avoid cache
++  for both input and output, which are neatly separated to avoid cache
+   effects from both driver and device writing to the same cache
+   lines.
+ 
+   Standard: Virtio makes no assumptions about the environment in which
+   it operates, beyond supporting the bus attaching the device.  Virtio
+   devices are implemented over PCI and other buses, and earlier drafts
+-  been implemented on other buses not included in this spec.
++  have been implemented on other buses not included in this specification.
+ \footnote{The Linux implementation further separates the PCI virtio code
+ from the specific virtio drivers: these drivers are shared with
+ the non-PCI implementations (currently lguest and S/390).
