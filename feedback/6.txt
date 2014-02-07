@@ -1,0 +1,467 @@
+Document: virtio-v1.0-csprd01
+Number: 6
+Date: Wed, 29 Jan 2014 21:36:30 +0100
+Link to Mail: https://lists.oasis-open.org/archives/virtio-comment/201401/msg00055.html
+Commenter name: Thomas Huth <thuth@linux.vnet.ibm.com>
+Decision: 
+
+Generic remark: Quite a lot of structures use a mixture of "u8"
+and "char" types for bytes, e.g. struct virtio_blk_req. Is that
+intended? If not, I'd suggest to always use "u8" here instead.
+
+
+Page 38 / Device Types:
+
+Is the information about other virtio devices like 9P documented
+somewhere else? If yes, you might want to put a pointer to these
+documents here.
+
+
+Page 43 and page 44:
+
+Some of the #defines are indented with an additional space.
+That looks a little bit ugly, would be great if you could get rid
+of the indentation here.
+
+
+Page 43 / Setting MAC Address Filtering
+
+ETH_ALEN is a Linux-internal #define only, which is not defined
+in this spec, so I'd suggest to simply replace ETH_ALEN with 6 here.
+
+
+Page 48 / Virtqueues
+
+The initial numbered list names the second pair of console virtqueues
+"port1" but the next sentence talks about "Port 2" ... that's confusing.
+==> Maybe replace "Ports 2 onwards only exist ..." with something like
+"All ports except the first one only exist ..." ?
+
+
+Page 50:
+
+The paragraph "5." says:
+"If the device specified a port `name', a sysfs attribute is created with
+the name filled in, so that udev rules can be written that can create a
+symlink from the port's name to the char device for port discovery by
+applications in the driver."
+==> That's completely specific to Linux as far as I can tell, so I think
+this should not go into a generic specification document, or at least it
+should be marked as an example for Linux.
+Also, this paragraph talks about the "name" which is not introduced before
+paragraph "6.", so I think if you really want to keep this paragraph "5.",
+it should be moved behind "6." instead.
+
+Concerning paragraph "6.":
+The console port change events are hardly documented ... I think this
+paragraph needs some love. How does the "value" look like for the
+various message types? For example, how is the size of the console
+passed when the VIRTIO_CONSOLE_RESIZE event occured? Or the name? What
+is the difference between VIRTIO_CONSOLE_PORT_ADD and
+VIRTIO_CONSOLE_PORT_OPEN?
+
+As a further remark, I also I wonder whether should be a way to signal
+the terminal type (like "vt100") to the guest?
+
+
+Page 55 / Device Operation: Request Queues
+
+While reading this chapter, I first got a little bit confused about the
+terms "read-only" and "write-only" since I read chapter 4.1.3.1.1
+("Virtio Device Configuration Layout Detection") shortly before, where
+the terms are used in the opposite way - since "read-only" and
+"write-only" are dependend on the view, whether you talk about the device
+or the driver.
+So even it's clear when you read the various chapters twice and think
+about everything logically, it might be more consisten and easier to
+read if you always say something more explicit like "read-only for the
+device" or "read-only for the driver" throughout the specification.
+
+Proposal:
+
+diff --git a/content.tex b/content.tex
+index 48c2d8e..f9a83b6 100644
+--- a/content.tex
++++ b/content.tex
+@@ -289,7 +289,7 @@ struct vring {
+         struct vring_avail avail;
+ 
+         // Padding to the next PAGE_SIZE boundary.
+-        char pad[ Padding ];
++        u8 pad[ Padding ];
+ 
+         // A ring of used descriptor heads with free-running index.
+         struct vring_used used;
+@@ -337,8 +337,11 @@ VIRTIO_F_ANY_LAYOUT feature is accepted.
+ The descriptor table refers to the buffers the driver is using for
+ the device. The addresses are physical addresses, and the buffers
+ can be chained via the next field. Each descriptor describes a
+-buffer which is read-only or write-only, but a chain of
+-descriptors can contain both read-only and write-only buffers.
++buffer which is read-only for the device (``device-readable'') or write-only for the device (``device-writable''), but a chain of
++descriptors can contain both device-readable and device-writable buffers.
++A device MUST NOT write to a device-readable buffer, and a device SHOULD NOT
++read a device-writable buffer (it might do so for debugging or diagnostic
++purposes).
+ 
+ The actual contents of the memory offered to the device depends on the
+ device type.  Most common is to begin the data with a header
+@@ -357,7 +360,7 @@ struct vring_desc {
+ 
+ /* This marks a buffer as continuing via the next field. */
+ #define VRING_DESC_F_NEXT   1
+-/* This marks a buffer as write-only (otherwise read-only). */
++/* This marks a buffer as device write-only (otherwise device read-only). */
+ #define VRING_DESC_F_WRITE     2
+ /* This means the buffer contains a list of buffer descriptors. */
+ #define VRING_DESC_F_INDIRECT   4
+@@ -403,7 +406,7 @@ chained by next field. An indirect descriptor without next field
+ An
+ indirect descriptor can not refer to another indirect descriptor
+ table (flags\&VRING_DESC_F_INDIRECT MUST be off). A single indirect descriptor
+-table can include both read-only and write-only descriptors;
++table can include both device-readable and device-writable descriptors;
+ the device MUST ignore the write-only flag (flags\&VRING_DESC_F_WRITE) in the descriptor that refers to it.
+ 
+ \subsection{The Virtqueue Available Ring}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Available Ring}
+@@ -570,8 +573,8 @@ There are two parts to device operation: supplying new buffers to
+ the device, and processing used buffers from the device. As an
+ example, the simplest virtio network device has two virtqueues: the
+ transmit virtqueue and the receive virtqueue. The driver adds
+-outgoing (read-only) packets to the transmit virtqueue, and then
+-frees them after they are used. Similarly, incoming (write-only)
++outgoing (device-readable) packets to the transmit virtqueue, and then
++frees them after they are used. Similarly, incoming (device-writable)
+ buffers are added to the receive virtqueue, and processed after
+ they are used.
+ 
+@@ -616,9 +619,9 @@ Here is a description of each stage in more detail.
+ 
+ \subsubsection{Placing Buffers Into The Descriptor Table}\label{sec:General Initialization And Device Operation / Device Operation / Supplying Buffers to The Device / Placing Buffers Into The Descriptor Table}
+ 
+-A buffer consists of zero or more read-only physically-contiguous
++A buffer consists of zero or more device-readable physically-contiguous
+ elements followed by zero or more physically-contiguous
+-write-only elements (it must have at least one element). This
++device-writable elements (it must have at least one element). This
+ algorithm maps it into the descriptor table to form a descriptor
+ chain:
+ 
+@@ -628,7 +631,7 @@ for each buffer element, b:
+ \item Get the next free descriptor table entry, d
+ \item Set d.addr to the physical address of the start of b
+ \item Set d.len to the length of b.
+-\item If b is write-only, set d.flags to VRING_DESC_F_WRITE,
++\item If b is device-writable, set d.flags to VRING_DESC_F_WRITE,
+     otherwise 0.
+ \item If there is a buffer element after this:
+     \begin{enumerate}
+@@ -703,7 +706,7 @@ notification:
+ 
+ \subsection{Receiving Used Buffers From The Device}\label{sec:General Initialization And Device Operation / Device Operation / Receiving Used Buffers From The Device}
+ 
+-Once the device has used a buffer (read from or written to it, or
++Once the device has used buffers referred to by a descriptor (read from or written to them, or
+ parts of both, depending on the nature of the virtqueue and the
+ device), it SHOULD send an interrupt, following an algorithm very
+ similar to the algorithm used for the driver to send the device a
+@@ -825,20 +828,20 @@ Common configuration structure layout is documented below:
+ struct virtio_pci_common_cfg {
+         /* About the whole device. */
+         le32 device_feature_select;     /* read-write */
+-        le32 device_feature;            /* read-only */
++        le32 device_feature;            /* read-only for driver */
+         le32 driver_feature_select;     /* read-write */
+         le32 driver_feature;            /* read-write */
+         le16 msix_config;               /* read-write */
+-        le16 num_queues;                /* read-only */
++        le16 num_queues;                /* read-only for driver */
+         u8 device_status;               /* read-write */
+-        u8 config_generation;           /* read-only */
++        u8 config_generation;           /* read-only for driver */
+ 
+         /* About a specific virtqueue. */
+         le16 queue_select;              /* read-write */
+         le16 queue_size;                /* read-write, power of 2, or 0. */
+         le16 queue_msix_vector;         /* read-write */
+         le16 queue_enable;              /* read-write */
+-        le16 queue_notify_off;          /* read-only */
++        le16 queue_notify_off;          /* read-only for driver */
+         le64 queue_desc;                /* read-write */
+         le64 queue_avail;               /* read-write */
+         le64 queue_used;                /* read-write */
+@@ -2325,6 +2328,13 @@ Device ID  &  Virtio Device    \\
+ \hline
+ \end{tabular}
+ 
++Some of the devices above are unspecified by this document,
++because they are seen as immature or especially niche.  Be warned
++that may only be specified by the sole existing implementation;
++they may become part of a future specification, be abandoned
++entirely, or live on outside this standard.  We shall speak of
++them no further.
++
+ \section{Network Device}\label{sec:Device Types / Network Device}
+ 
+ The virtio network device is a virtual ethernet card, and is the
+@@ -2736,7 +2746,7 @@ off. The command-specific-data is one byte containing 0 (off) or
+ \begin{lstlisting}
+ struct virtio_net_ctrl_mac {
+         le32 entries;
+-        u8 macs[entries][ETH_ALEN];
++        u8 macs[entries][6];
+ };
+ 
+ #define VIRTIO_NET_CTRL_MAC    1
+@@ -3060,7 +3070,7 @@ struct virtio_blk_req {
+         le32 type;
+         le32 reserved;
+         le64 sector;
+-        char data[][512];
++        u8 data[][512];
+         u8 status;
+ };
+ \end{lstlisting}
+@@ -3125,8 +3135,8 @@ struct virtio_scsi_pc_req {
+         u32 type;
+         u32 ioprio;
+         u64 sector;
+-        char cmd[];
+-        char data[][512];
++        u8 cmd[];
++        u8 data[][512];
+ #define SCSI_SENSE_BUFFERSIZE   96
+         u8 sense[SCSI_SENSE_BUFFERSIZE];
+         u32 errors;
+@@ -3152,8 +3162,8 @@ single, separate read-only buffer; command length can be derived
+ from the length of this buffer.
+ 
+ Note that these first three (four for scsi packet commands)
+-fields are always read-only: the data field is either read-only
+-or write-only, depending on the request. The size of the read or
++fields are always device-readable: the data field is either device-readable
++or device-writable, depending on the request. The size of the read or
+ write can be derived from the total size of the request buffers.
+ 
+ The sense field is only present for scsi packet command requests,
+@@ -3172,12 +3182,12 @@ requests and indicates the residual size, calculated as data
+ length - number of bytes actually transferred.
+ 
+ Historically, devices assumed that the fields type, ioprio and
+-sector reside in a single, separate read-only buffer; the fields
++sector reside in a single, separate device-readable buffer; the fields
+ errors, data_len, sense_len and residual reside in a single,
+-separate write-only buffer; the sense field in a separate
++separate device-writable buffer; the sense field in a separate
+ write-only buffer of size 96 bytes, by itself; the fields errors,
+-data_len, sense_len and residual in a single write-only buffer;
+-and the status field is a separate write-only buffer of size 1
++data_len, sense_len and residual in a single device-writable buffer;
++and the status field is a separate device-writable buffer of size 1
+ byte, by itself.
+ 
+ 
+@@ -3212,7 +3222,8 @@ data and outgoing characters are placed in the transmit queue.
+ \item[\ldots]
+ \end{description}
+ 
+-  Ports 2 onwards only exist if VIRTIO_CONSOLE_F_MULTIPORT is set.
++The port 0 receive and transmit queues always exist: other queues
++only exist if VIRTIO_CONSOLE_F_MULTIPORT is set.
+ 
+ \subsection{Feature bits}\label{sec:Device Types / Console Device / Feature bits}
+ 
+@@ -3274,7 +3285,7 @@ native endian of the guest rather than (necessarily) little-endian.
+   control messages for adding new ports to the device. After
+   creating and initializing each port, a
+   VIRTIO_CONSOLE_PORT_READY control message is sent to the device
+-  for that port so the device can let us know of any additional
++  for that port so the device can let the driver know of any additional
+   configuration options set for that port.
+ 
+ \item The receiveq for each port is populated with one or more
+@@ -3300,22 +3311,21 @@ when a port is closed or hot-unplugged.
+ 
+ \item If the driver negotiated the VIRTIO_CONSOLE_F_SIZE feature, a
+   configuration change interrupt may occur. The updated size can
+-  be read from the configuration fields.
++  be read from the configuration fields.  This size applies to port 0 only.
+ 
+ \item If the driver negotiated the VIRTIO_CONSOLE_F_MULTIPORT
+   feature, active ports are announced by the device using the
+   VIRTIO_CONSOLE_PORT_ADD control message. The same message is
+   used for port hot-plug as well.
++\end{enumerate}
+ 
+-\item If the device specified a port `name', a sysfs attribute is
+-  created with the name filled in, so that udev rules can be
+-  written that can create a symlink from the port's name to the
+-  char device for port discovery by applications in the driver.
++\subsubsection{Multiport Device Operation}\label{sec:Device Types / Console Device / Device Operation / Multiport Device Operation}
+ 
+-\item Changes to ports' state are effected by control messages.
+-  Appropriate action is taken on the port indicated in the
+-  control message. The layout of the structure of the control
+-  buffer and the events associated are:
++If the driver negotiated the VIRTIO_CONSOLE_F_MULTIPORT, the two
++control queues are used to manipulate the different console ports: the
++control receiveq for messages from the device to the driver, and the
++control sendq for driver-to-device messages.  The layout of the
++control messages is:
+ 
+ \begin{lstlisting}
+ struct virtio_console_control {
+@@ -3323,18 +3333,41 @@ struct virtio_console_control {
+         le16 event; /* The kind of control event */
+         le16 value; /* Extra information for the event */
+ };
++\end{lstlisting}
+ 
+-/* Some events for the internal messages (control packets) */
+-#define VIRTIO_CONSOLE_DEVICE_READY     0
+-#define VIRTIO_CONSOLE_PORT_ADD         1
+-#define VIRTIO_CONSOLE_PORT_REMOVE      2
+-#define VIRTIO_CONSOLE_PORT_READY       3
+-#define VIRTIO_CONSOLE_CONSOLE_PORT     4
+-#define VIRTIO_CONSOLE_RESIZE           5
+-#define VIRTIO_CONSOLE_PORT_OPEN        6
+-#define VIRTIO_CONSOLE_PORT_NAME        7
++\begin{description}
++\item [VIRTIO_CONSOLE_DEVICE_READY (0)] Sent by the driver at initialization
++  to indicate that it is ready to receive control messages.  A value of
++  1 indicates success, and 0 indicates failure.  The port number is unused.
++\item [VIRTIO_CONSOLE_DEVICE_ADD (1)] Sent by the device, to create a new
++  port.  The device MUST NOT specify a port which exists.  event is unused.
++\item [VIRTIO_CONSOLE_DEVICE_READY (2)] Sent by the driver in response
++  to the device's VIRTIO_CONSOLE_PORT_ADD message, to indicate that
++  the port is ready to be used. A value of 1 indicates success, and 0
++  indicates failure.
++\item [VIRTIO_CONSOLE_CONSOLE_PORT (3)] Sent by the device to nominate
++  a port as a console port.  There may be more than one console port.
++  The driver SHOULD treat the port in a manner suitable for text
++  console access; the driver MUST respond with a VIRTIO_CONSOLE_PORT_OPEN
++  message.
++\item [VIRTIO_CONSOLE_RESIZE (5)] Sent by the device to indicate
++  a console size change.  This is followed by the number of columns and rows:
++\begin{lstlisting}
++struct virtio_console_resize {
++        le16 cols;
++        le16 rows;
++};
+ \end{lstlisting}
+-\end{enumerate}
++\item [VIRTIO_CONSOLE_PORT_OPEN (6)] This message is sent by both the
++  device and the driver.  The value field MUST BE set to 0 (port
++  closed) or 1 (port open).  This allows for ports to be used directly
++  by guest and host processes to communicate in an application-defined
++  manner.
++\item [VIRTIO_CONSOLE_PORT_NAME (7)] Sent by the device to give a tag
++  to the port.  This control command is immediately
++  followed by the UTF-8 name of the port for identification
++  within the guest (without a NUL terminator).
++\end{description}
+ 
+ \subsubsection{Legacy Interface: Device Operation}\label{sec:Device Types / Console Device / Device Operation / Legacy Interface: Device Operation}
+ For legacy devices, the fields in struct virtio_console_control are the
+@@ -3583,7 +3616,7 @@ targets that receive and process the requests.
+ 
+ \begin{description}
+ \item[VIRTIO_SCSI_F_INOUT (0)] A single request can include both
+-    read-only and write-only data buffers.
++    device-readable and device-writable data buffers.
+ 
+ \item[VIRTIO_SCSI_F_HOTPLUG (1)] The host should enable
+     hot-plug/hot-unplug of new LUNs and targets on the SCSI bus.
+@@ -3683,22 +3716,22 @@ Requests have the following format:
+ 
+ \begin{lstlisting}
+ struct virtio_scsi_req_cmd {
+-        // Read-only
++        // Device-readable part
+         u8 lun[8];
+         le64 id;
+         u8 task_attr;
+         u8 prio;
+         u8 crn;
+-        char cdb[cdb_size];
+-        char dataout[];
+-        // Write-only part
++        u8 cdb[cdb_size];
++        u8 dataout[];
++        // Device-writable part
+         le32 sense_len;
+         le32 residual;
+         le16 status_qualifier;
+         u8 status;
+         u8 response;
+         u8 sense[sense_size];
+-        char datain[];
++        u8 datain[];
+ };
+ 
+ 
+@@ -3739,10 +3772,10 @@ value defined by the protocol is 255, since CRN is stored in an
+ 8-bit integer.
+ 
+ All of these fields are defined in SAM. They are always
+-read-only, as are the cdb and dataout field. The cdb_size is
++device readable, as are the cdb and dataout field. The cdb_size is
+ taken from the configuration space.
+ 
+-sense and subsequent fields are always write-only. The sense_len
++sense and subsequent fields are always device writable. The sense_len
+ field indicates the number of bytes actually written to the sense
+ buffer. The residual field indicates the residual size,
+ calculated as “data_length - number_of_transferred_bytes”, for
+@@ -3844,12 +3877,12 @@ The following commands are defined:
+ 
+ struct virtio_scsi_ctrl_tmf
+ {
+-        // Read-only part
++        // Device-readable part
+         le32 type;
+         le32 subtype;
+         u8   lun[8];
+         le64 id;
+-        // Write-only part
++        // Device-writable part
+         u8   response;
+ }
+ 
+@@ -3881,11 +3914,11 @@ struct virtio_scsi_ctrl_tmf
+ #define VIRTIO_SCSI_T_AN_QUERY                    1
+ 
+ struct virtio_scsi_ctrl_an {
+-    // Read-only part
++    // Device-readable part
+     le32 type;
+     u8   lun[8];
+     le32 event_requested;
+-    // Write-only part
++    // Device-writable part
+     le32 event_actual;
+     u8   response;
+ }
+@@ -3916,11 +3949,11 @@ struct virtio_scsi_ctrl_an {
+ #define VIRTIO_SCSI_T_AN_SUBSCRIBE                2
+ 
+ struct virtio_scsi_ctrl_an {
+-        // Read-only part
++        // Device-readable part
+         le32 type;
+         u8   lun[8];
+         le32 event_requested;
+-        // Write-only part
++        // Device-writable part
+         le32 event_actual;
+         u8   response;
+ }
+@@ -3975,7 +4008,7 @@ following format:
+ #define VIRTIO_SCSI_T_EVENTS_MISSED   0x80000000
+ 
+ struct virtio_scsi_event {
+-        // Write-only part
++        // Device-writable part
+         le32 event;
+         u8  lun[8];
+         le32 reason;
