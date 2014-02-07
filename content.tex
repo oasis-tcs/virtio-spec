@@ -520,7 +520,11 @@ The driver MUST follow this sequence to initialize a device:
 \item Set the DRIVER status bit: the guest OS knows how to drive the device.
 
 \item Read device feature bits, and write the subset of feature bits
-   understood by the OS and driver to the device.
+   understood by the OS and driver to the device.  During this step the
+   driver MAY read (but MUST NOT write) the device-specific configuration fields to check that it can support the device before accepting it.
+   The device MUST allow reading of any device-specific configuration field
+   before FEATURES_OK is set.  This includes fields which are conditional
+   on feature bits, as long as those feature bits are offered by the device.
 
 \item\label{itm:General Initialization And Device Operation / Device Initialization / Set FEATURES-OK} Set the FEATURES_OK status bit.  The driver MUST not accept
    new feature bits after this step.
@@ -540,9 +544,9 @@ The driver MUST follow this sequence to initialize a device:
 If any of these steps go irrecoverably wrong, the driver SHOULD
 set the FAILED status bit to indicate that it has given up on the
 device (it can reset the device later to restart if desired).  The
-driver MUST not continue initialization in that case.
+driver MUST NOT continue initialization in that case.
 
-The device MUST NOT consume buffers before DRIVER_OK, and the driver
+The device MUST NOT consume buffers or notify the driver before DRIVER_OK, and the driver
 MUST NOT notify the device before it sets DRIVER_OK.
 
 Devices SHOULD support all valid combinations of features, but we know
@@ -765,7 +769,20 @@ for (;;) {
 For devices where the configuration information can be changed, an
 interrupt is delivered when a configuration change occurs.
 
+\section{Device Cleanup}\label{sec:General Initialization And Device Operation / Device Cleanup}
 
+Once the driver has set the DRIVER_OK status bit, all the configured
+virtqueue of the device are considered live.  None of the virtqueues
+of a device are live once the device has been reset.
+
+A driver MUST NOT alter descriptor table entries which have been
+exposed in the available ring (and not marked consumed by the device
+in the used ring) of a live virtqueue.
+
+A driver MUST NOT decrement the available index on a live virtqueue (ie.
+there is no way to "unexpose" buffers).
+
+Thus a driver MUST ensure a virtqueue isn't live (by device reset) before removing exposed buffers.
 
 \chapter{Virtio Transport Options}\label{sec:Virtio Transport Options}
 
