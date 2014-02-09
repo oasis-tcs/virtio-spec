@@ -80,7 +80,7 @@ device" or "read-only for the driver" throughout the specification.
 Proposal:
 
 diff --git a/content.tex b/content.tex
-index 48c2d8e..f9a83b6 100644
+index 2eb0b26..4a5e868 100644
 --- a/content.tex
 +++ b/content.tex
 @@ -289,7 +289,7 @@ struct vring {
@@ -124,7 +124,7 @@ index 48c2d8e..f9a83b6 100644
  the device MUST ignore the write-only flag (flags\&VRING_DESC_F_WRITE) in the descriptor that refers to it.
  
  \subsection{The Virtqueue Available Ring}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Available Ring}
-@@ -570,8 +573,8 @@ There are two parts to device operation: supplying new buffers to
+@@ -574,8 +577,8 @@ There are two parts to device operation: supplying new buffers to
  the device, and processing used buffers from the device. As an
  example, the simplest virtio network device has two virtqueues: the
  transmit virtqueue and the receive virtqueue. The driver adds
@@ -135,7 +135,7 @@ index 48c2d8e..f9a83b6 100644
  buffers are added to the receive virtqueue, and processed after
  they are used.
  
-@@ -616,9 +619,9 @@ Here is a description of each stage in more detail.
+@@ -620,9 +623,9 @@ Here is a description of each stage in more detail.
  
  \subsubsection{Placing Buffers Into The Descriptor Table}\label{sec:General Initialization And Device Operation / Device Operation / Supplying Buffers to The Device / Placing Buffers Into The Descriptor Table}
  
@@ -147,7 +147,7 @@ index 48c2d8e..f9a83b6 100644
  algorithm maps it into the descriptor table to form a descriptor
  chain:
  
-@@ -628,7 +631,7 @@ for each buffer element, b:
+@@ -632,7 +635,7 @@ for each buffer element, b:
  \item Get the next free descriptor table entry, d
  \item Set d.addr to the physical address of the start of b
  \item Set d.len to the length of b.
@@ -156,7 +156,7 @@ index 48c2d8e..f9a83b6 100644
      otherwise 0.
  \item If there is a buffer element after this:
      \begin{enumerate}
-@@ -703,7 +706,7 @@ notification:
+@@ -707,7 +710,7 @@ notification:
  
  \subsection{Receiving Used Buffers From The Device}\label{sec:General Initialization And Device Operation / Device Operation / Receiving Used Buffers From The Device}
  
@@ -165,7 +165,7 @@ index 48c2d8e..f9a83b6 100644
  parts of both, depending on the nature of the virtqueue and the
  device), it SHOULD send an interrupt, following an algorithm very
  similar to the algorithm used for the driver to send the device a
-@@ -825,20 +828,20 @@ Common configuration structure layout is documented below:
+@@ -842,20 +845,20 @@ Common configuration structure layout is documented below:
  struct virtio_pci_common_cfg {
          /* About the whole device. */
          le32 device_feature_select;     /* read-write */
@@ -190,13 +190,22 @@ index 48c2d8e..f9a83b6 100644
          le64 queue_desc;                /* read-write */
          le64 queue_avail;               /* read-write */
          le64 queue_used;                /* read-write */
-@@ -2325,6 +2328,13 @@ Device ID  &  Virtio Device    \\
+@@ -1044,7 +1047,7 @@ or accessed though PCI configuration space.
+ Actual location of each structure is specified using vendor-specific PCI capability located
+ on capability list in PCI configuration space of the device.
+ This virtio structure capability uses little-endian format; all bits are
+-read-only:
++read-only for the driver:
+ 
+ \begin{lstlisting}
+ struct virtio_pci_cap {
+@@ -2342,6 +2345,13 @@ Device ID  &  Virtio Device    \\
  \hline
  \end{tabular}
  
 +Some of the devices above are unspecified by this document,
 +because they are seen as immature or especially niche.  Be warned
-+that may only be specified by the sole existing implementation;
++that they may only be specified by the sole existing implementation;
 +they may become part of a future specification, be abandoned
 +entirely, or live on outside this standard.  We shall speak of
 +them no further.
@@ -204,7 +213,7 @@ index 48c2d8e..f9a83b6 100644
  \section{Network Device}\label{sec:Device Types / Network Device}
  
  The virtio network device is a virtual ethernet card, and is the
-@@ -2736,7 +2746,7 @@ off. The command-specific-data is one byte containing 0 (off) or
+@@ -2753,7 +2763,7 @@ off. The command-specific-data is one byte containing 0 (off) or
  \begin{lstlisting}
  struct virtio_net_ctrl_mac {
          le32 entries;
@@ -213,7 +222,7 @@ index 48c2d8e..f9a83b6 100644
  };
  
  #define VIRTIO_NET_CTRL_MAC    1
-@@ -3060,7 +3070,7 @@ struct virtio_blk_req {
+@@ -3077,7 +3087,7 @@ struct virtio_blk_req {
          le32 type;
          le32 reserved;
          le64 sector;
@@ -222,7 +231,7 @@ index 48c2d8e..f9a83b6 100644
          u8 status;
  };
  \end{lstlisting}
-@@ -3125,8 +3135,8 @@ struct virtio_scsi_pc_req {
+@@ -3142,8 +3152,8 @@ struct virtio_scsi_pc_req {
          u32 type;
          u32 ioprio;
          u64 sector;
@@ -233,7 +242,7 @@ index 48c2d8e..f9a83b6 100644
  #define SCSI_SENSE_BUFFERSIZE   96
          u8 sense[SCSI_SENSE_BUFFERSIZE];
          u32 errors;
-@@ -3152,8 +3162,8 @@ single, separate read-only buffer; command length can be derived
+@@ -3169,8 +3179,8 @@ single, separate read-only buffer; command length can be derived
  from the length of this buffer.
  
  Note that these first three (four for scsi packet commands)
@@ -244,7 +253,7 @@ index 48c2d8e..f9a83b6 100644
  write can be derived from the total size of the request buffers.
  
  The sense field is only present for scsi packet command requests,
-@@ -3172,12 +3182,12 @@ requests and indicates the residual size, calculated as data
+@@ -3189,12 +3199,12 @@ requests and indicates the residual size, calculated as data
  length - number of bytes actually transferred.
  
  Historically, devices assumed that the fields type, ioprio and
@@ -261,7 +270,7 @@ index 48c2d8e..f9a83b6 100644
  byte, by itself.
  
  
-@@ -3212,7 +3222,8 @@ data and outgoing characters are placed in the transmit queue.
+@@ -3229,7 +3239,8 @@ data and outgoing characters are placed in the transmit queue.
  \item[\ldots]
  \end{description}
  
@@ -271,7 +280,7 @@ index 48c2d8e..f9a83b6 100644
  
  \subsection{Feature bits}\label{sec:Device Types / Console Device / Feature bits}
  
-@@ -3274,7 +3285,7 @@ native endian of the guest rather than (necessarily) little-endian.
+@@ -3291,7 +3302,7 @@ native endian of the guest rather than (necessarily) little-endian.
    control messages for adding new ports to the device. After
    creating and initializing each port, a
    VIRTIO_CONSOLE_PORT_READY control message is sent to the device
@@ -280,7 +289,7 @@ index 48c2d8e..f9a83b6 100644
    configuration options set for that port.
  
  \item The receiveq for each port is populated with one or more
-@@ -3300,22 +3311,21 @@ when a port is closed or hot-unplugged.
+@@ -3317,22 +3328,21 @@ when a port is closed or hot-unplugged.
  
  \item If the driver negotiated the VIRTIO_CONSOLE_F_SIZE feature, a
    configuration change interrupt may occur. The updated size can
@@ -311,7 +320,7 @@ index 48c2d8e..f9a83b6 100644
  
  \begin{lstlisting}
  struct virtio_console_control {
-@@ -3323,18 +3333,41 @@ struct virtio_console_control {
+@@ -3340,18 +3350,45 @@ struct virtio_console_control {
          le16 event; /* The kind of control event */
          le16 value; /* Extra information for the event */
  };
@@ -326,23 +335,27 @@ index 48c2d8e..f9a83b6 100644
 -#define VIRTIO_CONSOLE_RESIZE           5
 -#define VIRTIO_CONSOLE_PORT_OPEN        6
 -#define VIRTIO_CONSOLE_PORT_NAME        7
++The values for \field{event} are:
 +\begin{description}
 +\item [VIRTIO_CONSOLE_DEVICE_READY (0)] Sent by the driver at initialization
 +  to indicate that it is ready to receive control messages.  A value of
 +  1 indicates success, and 0 indicates failure.  The port number is unused.
 +\item [VIRTIO_CONSOLE_DEVICE_ADD (1)] Sent by the device, to create a new
-+  port.  The device MUST NOT specify a port which exists.  event is unused.
-+\item [VIRTIO_CONSOLE_DEVICE_READY (2)] Sent by the driver in response
++  port.  The device MUST NOT specify a port which exists.  \field{value} is unused.
++\item [VIRTIO_CONSOLE_DEVICE_REMOVE (2)] Sent by the device, to remove an
++  existing port.  The device MUST NOT specify a port which has not been
++  created with VIRTIO_CONSOLE_DEVICE_ADD.  \field{value} is unused.
++\item [VIRTIO_CONSOLE_PORT_READY (3)] Sent by the driver in response
 +  to the device's VIRTIO_CONSOLE_PORT_ADD message, to indicate that
-+  the port is ready to be used. A value of 1 indicates success, and 0
++  the port is ready to be used. A \field{value} of 1 indicates success, and 0
 +  indicates failure.
-+\item [VIRTIO_CONSOLE_CONSOLE_PORT (3)] Sent by the device to nominate
++\item [VIRTIO_CONSOLE_CONSOLE_PORT (4)] Sent by the device to nominate
 +  a port as a console port.  There may be more than one console port.
 +  The driver SHOULD treat the port in a manner suitable for text
 +  console access; the driver MUST respond with a VIRTIO_CONSOLE_PORT_OPEN
-+  message.
++  message.  The driver MUST set \field{value} to 1.
 +\item [VIRTIO_CONSOLE_RESIZE (5)] Sent by the device to indicate
-+  a console size change.  This is followed by the number of columns and rows:
++  a console size change.  \field{value} is unused.  The buffer is followed by the number of columns and rows:
 +\begin{lstlisting}
 +struct virtio_console_resize {
 +        le16 cols;
@@ -351,7 +364,7 @@ index 48c2d8e..f9a83b6 100644
  \end{lstlisting}
 -\end{enumerate}
 +\item [VIRTIO_CONSOLE_PORT_OPEN (6)] This message is sent by both the
-+  device and the driver.  The value field MUST BE set to 0 (port
++  device and the driver.  \field{value} MUST BE set to 0 (port
 +  closed) or 1 (port open).  This allows for ports to be used directly
 +  by guest and host processes to communicate in an application-defined
 +  manner.
@@ -363,7 +376,7 @@ index 48c2d8e..f9a83b6 100644
  
  \subsubsection{Legacy Interface: Device Operation}\label{sec:Device Types / Console Device / Device Operation / Legacy Interface: Device Operation}
  For legacy devices, the fields in struct virtio_console_control are the
-@@ -3583,7 +3616,7 @@ targets that receive and process the requests.
+@@ -3600,7 +3637,7 @@ targets that receive and process the requests.
  
  \begin{description}
  \item[VIRTIO_SCSI_F_INOUT (0)] A single request can include both
@@ -372,7 +385,7 @@ index 48c2d8e..f9a83b6 100644
  
  \item[VIRTIO_SCSI_F_HOTPLUG (1)] The host should enable
      hot-plug/hot-unplug of new LUNs and targets on the SCSI bus.
-@@ -3683,22 +3716,22 @@ Requests have the following format:
+@@ -3700,22 +3737,22 @@ Requests have the following format:
  
  \begin{lstlisting}
  struct virtio_scsi_req_cmd {
@@ -400,7 +413,7 @@ index 48c2d8e..f9a83b6 100644
  };
  
  
-@@ -3739,10 +3772,10 @@ value defined by the protocol is 255, since CRN is stored in an
+@@ -3756,10 +3793,10 @@ value defined by the protocol is 255, since CRN is stored in an
  8-bit integer.
  
  All of these fields are defined in SAM. They are always
@@ -413,7 +426,7 @@ index 48c2d8e..f9a83b6 100644
  field indicates the number of bytes actually written to the sense
  buffer. The residual field indicates the residual size,
  calculated as “data_length - number_of_transferred_bytes”, for
-@@ -3844,12 +3877,12 @@ The following commands are defined:
+@@ -3861,12 +3898,12 @@ The following commands are defined:
  
  struct virtio_scsi_ctrl_tmf
  {
@@ -428,7 +441,7 @@ index 48c2d8e..f9a83b6 100644
          u8   response;
  }
  
-@@ -3881,11 +3914,11 @@ struct virtio_scsi_ctrl_tmf
+@@ -3898,11 +3935,11 @@ struct virtio_scsi_ctrl_tmf
  #define VIRTIO_SCSI_T_AN_QUERY                    1
  
  struct virtio_scsi_ctrl_an {
@@ -442,7 +455,7 @@ index 48c2d8e..f9a83b6 100644
      le32 event_actual;
      u8   response;
  }
-@@ -3916,11 +3949,11 @@ struct virtio_scsi_ctrl_an {
+@@ -3933,11 +3970,11 @@ struct virtio_scsi_ctrl_an {
  #define VIRTIO_SCSI_T_AN_SUBSCRIBE                2
  
  struct virtio_scsi_ctrl_an {
@@ -456,7 +469,7 @@ index 48c2d8e..f9a83b6 100644
          le32 event_actual;
          u8   response;
  }
-@@ -3975,7 +4008,7 @@ following format:
+@@ -3992,7 +4029,7 @@ following format:
  #define VIRTIO_SCSI_T_EVENTS_MISSED   0x80000000
  
  struct virtio_scsi_event {
