@@ -843,7 +843,7 @@ MUST access each field using the “natural” access method (i.e. 32-bit access
 
 \subsection{Virtio Structure PCI Capabilities}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / Virtio Structure PCI Capabilities}
 
-The virtio device configuration layout includes a common configuration header, notification area, ISR status area and a device-specific configuration area.
+The virtio device configuration layout includes a common configuration structure, the notification area, ISR status register and a device-specific configuration registers.
 
 Each structure can be mapped by a Base Address register (BAR) belonging to
 the function, or accessed via the special VIRTIO_PCI_CAP_PCI_CFG field in the PCI configuration space.
@@ -1145,18 +1145,18 @@ registers in a legacy configuration structure in BAR0 in the first I/O
 region of the PCI device, as documented below.
 
 There may be different widths of accesses to the I/O region; the
-“natural” access method for each field in the virtio header must be
+“natural” access method for each field in the virtio common configuration structure must be
 used (i.e. 32-bit accesses for 32-bit fields, etc), but 
 when accessed through the legacy interface the
 device-specific region can be accessed using any width accesses, and
 should obtain the same results.
 
-Note that this is possible because while the virtio header is PCI
+Note that this is possible because while the virtio common configuration structure is PCI
 (i.e. little) endian, when using the legacy interface the device-specific
 region is encoded in the native endian of the guest (where such distinction is
 applicable).
 
-When used through the legacy interface, the virtio header looks as follows:
+When used through the legacy interface, the virtio common configuration structure looks as follows:
 
 \begin{tabularx}{\textwidth}{ |X||X|X|X|X|X|X|X|X| }
 \hline
@@ -1184,7 +1184,7 @@ Purpose (MSI-X) & \field{config_msix_vector}  & \field{queue_msix_vector} \\
 \end{tabular}
 
 Note: When MSI-X capability is enabled, device specific configuration starts at
-byte offset 24 in virtio header structure. When MSI-X capability is not
+byte offset 24 in virtio common configuration structure structure. When MSI-X capability is not
 enabled, device specific configuration starts at byte offset 20 in virtio
 header.  ie. once you enable MSI-X on the device, the other fields move.
 If you turn it off again, they move back!
