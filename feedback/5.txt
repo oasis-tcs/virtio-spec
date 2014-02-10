@@ -5,6 +5,32 @@ Link to Mail: https://lists.oasis-open.org/archives/virtio-comment/201401/msg000
 Commenter name: Laura Novich <lnovich@redhat.com>
 Decision:
 
+INTRODUCTION
+===============
+1. Remove The entire first paragraph with the exveption of the first
+sentence.
+2. Replace with - A virtual device in its truest sense is not any different
+from a physical device. The virtual machine sees a virtual device just as a
+physical machine would see a physical one. As such, this document will treat
+virtual devices as physical devices.
+3. The purpose of ...
+4. replace rather than using boutique to  rather than using vendor-specific,
+per-environment, or per-OS mechanisms. 
+
+5. ADD -The categories described above are further defined as follows:
+  Straightforward: Revise last sentence to read - There aren’t any exotic
+page-flipping or COW mechanisms and it functions as a  normal device.[1]
+6. Efficient: ADD to input and output (I/O),
+7. effects from both guest and (not sure but i think you should ADD host)
+device writing to the same cache
+  lines.
+8. Standard: CHANGE TO READ: Virtio makes no assumptions about the
+environment in which
+  it operates, beyond what is required in order to allow the bus to  attach
+the host device to the driver on the guest.  Virtio
+  devices are implemented over PCI and other buses, and earlier drafts that
+  have been implemented on other buses not included in this specification.[2]
+
 Proposal:
 
 diff --git a/abstract.tex b/abstract.tex
@@ -21,10 +47,10 @@ index b42a0b6..186fb81 100644
  
  The purpose of virtio and this specification is that virtual
 diff --git a/introduction.tex b/introduction.tex
-index 5d57f78..98e1e0d 100644
+index 5d57f78..275ad98 100644
 --- a/introduction.tex
 +++ b/introduction.tex
-@@ -13,14 +13,14 @@ inter-guest communication) requires copying.
+@@ -13,14 +13,15 @@ inter-guest communication) requires copying.
  }
  
    Efficient: Virtio devices consist of rings of descriptors
@@ -34,10 +60,12 @@ index 5d57f78..98e1e0d 100644
    lines.
  
    Standard: Virtio makes no assumptions about the environment in which
-   it operates, beyond supporting the bus attaching the device.  Virtio
+-  it operates, beyond supporting the bus attaching the device.  Virtio
++  it operates, beyond supporting the bus to which device is attached.
++  In this specification, virtio
    devices are implemented over PCI and other buses, and earlier drafts
 -  been implemented on other buses not included in this spec.
-+  have been implemented on other buses not included in this specification.
++  have been implemented on other buses not included here.
  \footnote{The Linux implementation further separates the PCI virtio code
  from the specific virtio drivers: these drivers are shared with
  the non-PCI implementations (currently lguest and S/390).
