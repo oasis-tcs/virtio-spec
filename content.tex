@@ -799,6 +799,17 @@ into virtio general and bus-specific sections.
 
 Virtio devices are commonly implemented as PCI devices.
 
+A Virtio device can be implemented as any kind of PCI device:
+a Conventional PCI device, a PCI-X device or a PCI Express
+device.  A Virtio device using Virtio Over PCI Bus MUST expose to
+guest an interface that meets the specification requirements of
+the appropriate PCI specification: \hyperref[intro:PCI]{[PCI]},
+\hyperref[intro:PCI-X]{[PCI-X]} and \hyperref[intro:PCIe]{[PCIe]}
+respectively.  To assure designs meet the latest level
+requirements, designers of Virtio Over PCI devices must refer to
+the PCI-SIG home page at \url{http://www.pcisig.com} for any
+approved changes.
+
 \subsection{PCI Device Discovery}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Discovery}
 
 Any PCI device with Vendor ID 0x1AF4, and Device ID 0x1000 through
