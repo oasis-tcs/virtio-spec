@@ -1094,7 +1094,13 @@ Queue Notify address.
 \subsubsection{ISR status capability}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / ISR status capability}
 
 The device MUST present at least one VIRTIO_PCI_CAP_ISR_CFG capability.  This
-refers to at least a single byte, which contains the 8-bit ISR status field.
+refers to at least a single byte, which contains the 8-bit ISR status field:
+\begin{lstlisting}
+#define VIRTIO_PCI_ISR_VQ       0x1
+#define VIRTIO_PCI_ISR_CONFIG   0x2
+\end{lstlisting}
+
+See sections \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Virtqueue Interrupts From The Device} and \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Notification of Device Configuration Changes} for how this is used.
 
 \subsubsection{Device specific structure}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Device specific structure}
 
