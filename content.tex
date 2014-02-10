@@ -937,7 +937,8 @@ The fields are interpreted as follows:
 
 \item[\field{offset}]
         indicates where the structure begins relative to the base address associated
-        with the BAR.
+        with the BAR.  The alignment requirement of \field{offset} are indicated
+        in each structure-specific section below.
 
 \item[\field{length}]
         indicates the length of the structure.
@@ -961,6 +962,7 @@ The fields are interpreted as follows:
 \subsubsection{Common configuration structure layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common configuration structure layout}
 
 The common configuration structure is found at the \field{bar} and \field{offset} within the VIRTIO_PCI_CAP_COMMON_CFG capability; its layout is below.
+\field{offset} must be 4-byte aligned.
 
 The device MUST present at least one common configuration capability.
 
@@ -1067,7 +1069,7 @@ struct virtio_pci_common_cfg {
 The device MUST present at least one notification capability.
 
 The notification location is found using the VIRTIO_PCI_CAP_NOTIFY_CFG
-capability.  This capability is immediately followed by an additional
+capability.  The \field{offset} must be 2-byte aligned.  This capability is immediately followed by an additional
 field, like so:
 
 \begin{lstlisting}
@@ -1108,10 +1110,14 @@ refers to at least a single byte, which contains the 8-bit ISR status field:
 
 See sections \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Virtqueue Interrupts From The Device} and \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Notification of Device Configuration Changes} for how this is used.
 
+The \field{offset} for the ISR status has no specific alignment requirements.
+
 \subsubsection{Device specific structure}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Device specific structure}
 
 The device MAY present at least one VIRTIO_PCI_CAP_DEVICE_CFG capability (some
 devices may not have any device specific structure).
+
+The \field{offset} for the device specific structure must be 4-byte aligned.
 
 \subsubsection{PCI configuration access capability}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / PCI configuration access capability}
 
