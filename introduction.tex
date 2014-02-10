@@ -13,15 +13,14 @@ inter-guest communication) requires copying.
 }
 
   Efficient: Virtio devices consist of rings of descriptors
-  for both input and output, which are neatly laid out to avoid cache
+  for input and output, which are neatly separated to avoid cache
   effects from both driver and device writing to the same cache
   lines.
 
   Standard: Virtio makes no assumptions about the environment in which
-  it operates, beyond supporting the bus to which device is attached.
-  In this specification, virtio
+  it operates, beyond supporting the bus attaching the device.  Virtio
   devices are implemented over PCI and other buses, and earlier drafts
-  have been implemented on other buses not included here.
+  been implemented on other buses not included in this spec.
 \footnote{The Linux implementation further separates the PCI virtio code
 from the specific virtio drivers: these drivers are shared with
 the non-PCI implementations (currently lguest and S/390).
@@ -43,40 +42,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 	\phantomsection\label{intro:rfc2119}\textbf{[RFC2119]} & S. Bradner, Key words for use in RFCs to Indicate Requirement Levels, \newline\url{http://www.ietf.org/rfc/rfc2119.txt}, March 1997\\
 	\phantomsection\label{intro:S390 PoP}\textbf{[S390 PoP]} & z/Architecture Principles of Operation, \newline IBM Publication SA22-7832\\
 	\phantomsection\label{intro:S390 Common I/O}\textbf{[S390 Common I/O]} & ESA/390 Common I/O-Device and Self-Description, \newline IBM Publication SA22-7204\\
-	\phantomsection\label{intro:PCI}\textbf{[PCI]} &
-	Conventional PCI Specifications,
-	\newline\url{http://www.pcisig.com/specifications/conventional/},
-	PCI-SIG\\
-	\phantomsection\label{intro:PCI-X}\textbf{[PCI-X]} &
-	PCI-X Specifications,
-	\newline\url{http://www.pcisig.com/specifications/pcix_20/},
-	PCI-SIG\\
-	\phantomsection\label{intro:PCI-X}\textbf{[PCIe]} &
-	PCI Express Specifications
-	\newline\url{http://www.pcisig.com/specifications/pciexpress/},
-	PCI-SIG\\
 \end{longtable}
-
-\section{Structure Specifications}
-
-Many device and driver in-memory structure layouts are documented using
-the C struct syntax. All structures are assumed to be without additional
-padding. To stress this, cases where common C compilers are known to insert
-extra padding within structures are tagged using the GNU C
-__attribute__((packed))  syntax.
-
-For the integer data types used in the structure definitions, the following
-conventions are used:
-
-\begin{description}
-\item[u8, u16, u32, u64] An unsigned integer of the specified length in bits.
-
-\item[le16, le32, le64] An unsigned integer of the specified length in bits,
-in little-endian byte order.
-
-\item[be16, be32, be64] An unsigned integer of the specified length in bits,
-in big-endian byte order.
-\end{description}
 
 \newpage
 
