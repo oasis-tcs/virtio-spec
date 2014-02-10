@@ -760,6 +760,8 @@ for (;;) {
 
                 if (vq->last_seen_used != le16_to_cpu(vring->used.idx))
                         break;
+
+                vring_disable_interrupts(vq);
         }
 
         struct vring_used_elem *e = vring.used->ring[vq->last_seen_used%vsz];
