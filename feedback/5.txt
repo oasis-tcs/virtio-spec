@@ -55,7 +55,7 @@ index 5d57f78..275ad98 100644
  
    Efficient: Virtio devices consist of rings of descriptors
 -  for input and output, which are neatly separated to avoid cache
-+  for both input and output, which are neatly separated to avoid cache
++  for both input and output, which are neatly laid out to avoid cache
    effects from both driver and device writing to the same cache
    lines.
  
