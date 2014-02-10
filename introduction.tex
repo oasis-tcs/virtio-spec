@@ -13,14 +13,15 @@ inter-guest communication) requires copying.
 }
 
   Efficient: Virtio devices consist of rings of descriptors
-  for input and output, which are neatly separated to avoid cache
+  for both input and output, which are neatly laid out to avoid cache
   effects from both driver and device writing to the same cache
   lines.
 
   Standard: Virtio makes no assumptions about the environment in which
-  it operates, beyond supporting the bus attaching the device.  Virtio
+  it operates, beyond supporting the bus to which device is attached.
+  In this specification, virtio
   devices are implemented over PCI and other buses, and earlier drafts
-  been implemented on other buses not included in this spec.
+  have been implemented on other buses not included here.
 \footnote{The Linux implementation further separates the PCI virtio code
 from the specific virtio drivers: these drivers are shared with
 the non-PCI implementations (currently lguest and S/390).
