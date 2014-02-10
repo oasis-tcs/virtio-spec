@@ -843,7 +843,13 @@ MUST access each field using the “natural” access method (i.e. 32-bit access
 
 \subsection{Virtio Structure PCI Capabilities}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / Virtio Structure PCI Capabilities}
 
-The virtio device configuration layout includes a common configuration structure, the notification area, ISR status register and a device-specific configuration registers.
+The virtio device configuration layout includes several structures:
+\begin{item}
+\item Common configuration
+\item Notifications
+\item ISR Status
+\item Device-specific configuration (optional)
+\end{item}
 
 Each structure can be mapped by a Base Address register (BAR) belonging to
 the function, or accessed via the special VIRTIO_PCI_CAP_PCI_CFG field in the PCI configuration space.
