@@ -57,7 +57,7 @@ index 1f6fad2..671757b 100644
 +% How we format a field name
 +\newcommand{\field}[1]{\emph{#1}}
 diff --git a/content.tex b/content.tex
-index a856b5e..b67081f 100644
+index 37850c8..b75d77d 100644
 --- a/content.tex
 +++ b/content.tex
 @@ -6,21 +6,21 @@ A virtio device is discovered and identified by a bus-specific method
@@ -359,135 +359,196 @@ index a856b5e..b67081f 100644
  execute a memory barrier, and then recheck the ring empty
  condition. This is necessary to handle the case where after the
  last check and before enabling interrupts, an interrupt has been
-@@ -778,7 +778,7 @@ A driver MUST NOT alter descriptor table entries which have been
+@@ -780,7 +780,7 @@ A driver MUST NOT alter descriptor table entries which have been
  exposed in the available ring (and not marked consumed by the device
  in the used ring) of a live virtqueue.
  
 -A driver MUST NOT decrement the available index on a live virtqueue (ie.
 +A driver MUST NOT decrement the available \field{idx} on a live virtqueue (ie.
- do not try to "unexpose" buffers).
+ there is no way to "unexpose" buffers).
  
  Thus a driver MUST ensure a virtqueue isn't live (by device reset) before removing exposed buffers.
-@@ -849,25 +849,25 @@ struct virtio_pci_cap {
- \end{lstlisting}
+@@ -809,35 +809,138 @@ All drivers MUST match devices with any Revision ID, this
+ is to allow devices to be versioned without breaking drivers.
  
- This structure can be followed by extra data, depending on
--cfg_type, as documented below.  The device MAY append extra data
--or padding to any structure beyond that, the device MUST accept a cap_len field
+ \subsubsection{Legacy Interfaces: A Note on PCI Device Discovery}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Discovery / Legacy Interfaces: A Note on PCI Device Discovery}
+-Transitional devices must have a Revision ID of 0 to match
++Transitional devices MUST have a Revision ID of 0 to match
+ legacy drivers.
+ 
+-Non-transitional devices must have a Revision ID of 1 or higher.
++Non-transitional devices MUST have a Revision ID of 1 or higher.
+ 
+-Both transitional and non-transitional drivers must match
++Both transitional and non-transitional drivers MUST match
+ any Revision ID value.
+ 
+ \subsection{PCI Device Layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout}
+ 
+ The device is configured via I/O and/or memory regions (though see
+-VIRTIO_PCI_CAP_PCI_CFG for access via the PCI configuration space).
++\ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / PCI configuration access capability} for access via the PCI configuration space).
+ 
+-These regions contain the virtio header registers, the notification register, the
+-ISR status register and device specific registers, as specified by Virtio
+-Structure PCI Capabilities.
++There may be different widths of accesses to the I/O region; the driver
++MUST access each field using the “natural” access method (i.e. 32-bit accesses for 32-bit fields, etc).  All multi-byte fields are little-endian.
+ 
+-There may be different widths of accesses to the I/O region; the
+-“natural” access method for each field must be
+-used (i.e. 32-bit accesses for 32-bit fields, etc).
++\subsection{Virtio Structure PCI Capabilities}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / Virtio Structure PCI Capabilities}
++
++The virtio device configuration layout includes a common configuration header, notification area, ISR status area and a device-specific configuration area.
++
++Each structure can be mapped by a Base Address register (BAR) belonging to
++the function, or accessed via the special VIRTIO_PCI_CAP_PCI_CFG field in the PCI configuration space.
+ 
+-PCI Device Configuration Layout includes the common configuration,
+-ISR, notification and device specific configuration
+-structures.
++The location of each structure is specified using a vendor-specific PCI capability located
++on the capability list in PCI configuration space of the device.
++This virtio structure capability uses little-endian format; all fields are
++read-only unless stated otherwise:
+ 
+-All multi-byte fields are little-endian.
++\begin{lstlisting}
++struct virtio_pci_cap {
++        u8 cap_vndr;    /* Generic PCI field: PCI_CAP_ID_VNDR */
++        u8 cap_next;    /* Generic PCI field: next ptr. */
++        u8 cap_len;     /* Generic PCI field: capability length */
++        u8 cfg_type;    /* Identifies the structure. */
++        u8 bar;         /* Where to find it. */
++        u8 padding[3];  /* Pad to full dword. */
++        le32 offset;    /* Offset within bar. */
++        le32 length;    /* Length of the structure, in bytes. */
++};
++\end{lstlisting}
++
++This structure can be followed by extra data, depending on
 +\field{cfg_type}, as documented below.  The device MAY append extra data
 +or padding to any structure beyond that, the device MUST accept a \field{cap_len} value
- which is larger than specified here.
- 
- The fields are interpreted as follows:
- 
- \begin{description}
--\item[cap_vndr]
++which is larger than specified here.
++
++The fields are interpreted as follows:
++
++\begin{description}
 +\item[\field{cap_vndr}]
-         0x09; Identifies a vendor-specific capability.
- 
--\item[cap_next]
++        0x09; Identifies a vendor-specific capability.
++
 +\item[\field{cap_next}]
-         Link to next capability in the capability list in the configuration space.
- 
--\item[cap_len]
++        Link to next capability in the capability list in the configuration space.
++
 +\item[\field{cap_len}]
-         Length of this capability structure, including the whole of
-         struct virtio_pci_cap, and extra data if any.
-         This length MAY include padding, or fields unused by the driver.
- 
--\item[cfg_type]
++        Length of this capability structure, including the whole of
++        struct virtio_pci_cap, and extra data if any.
++        This length MAY include padding, or fields unused by the driver.
++
 +\item[\field{cfg_type}]
-         identifies the structure, according to the following table:
- 
- \begin{lstlisting}
-@@ -885,7 +885,7 @@ The fields are interpreted as follows:
- 
-         Any other value - reserved for future use. Drivers MUST
-         ignore any vendor-specific capability structure which has
--        a reserved cfg_type value.
++        identifies the structure, according to the following table:
++
++\begin{lstlisting}
++/* Common configuration */
++#define VIRTIO_PCI_CAP_COMMON_CFG        1
++/* Notifications */
++#define VIRTIO_PCI_CAP_NOTIFY_CFG        2
++/* ISR Status */
++#define VIRTIO_PCI_CAP_ISR_CFG           3
++/* Device specific configuration */
++#define VIRTIO_PCI_CAP_DEVICE_CFG        4
++/* PCI configuration access */
++#define VIRTIO_PCI_CAP_PCI_CFG           5
++\end{lstlisting}
++
++        Any other value - reserved for future use. Drivers MUST
++        ignore any vendor-specific capability structure which has
 +        a reserved \field{cfg_type} value.
- 
-         The device MAY offer more than one structure of any type - this makes it
-         possible for the device to expose multiple interfaces to drivers.  The order of
-@@ -893,14 +893,14 @@ The fields are interpreted as follows:
-         suggested by the device; drivers SHOULD use the first interface that they can
-         support.  For example, on some hypervisors, notifications using IO accesses are
-         faster than memory accesses. In this case, the device would expose two
--        capabilities with cfg_type set to VIRTIO_PCI_CAP_NOTIFY_CFG:
++
++        The device MAY offer more than one structure of any type - this makes it
++        possible for the device to expose multiple interfaces to drivers.  The order of
++        the capabilities in the capability list specifies the order of preference
++        suggested by the device; drivers SHOULD use the first interface that they can
++        support.  For example, on some hypervisors, notifications using IO accesses are
++        faster than memory accesses. In this case, the device would expose two
 +        capabilities with \field{cfg_type} set to VIRTIO_PCI_CAP_NOTIFY_CFG:
-         the first one addressing an I/O BAR, the second one addressing a memory BAR.
-         In this example, the driver SHOULD use the I/O BAR if I/O resources are available, and fall back on
-         memory BAR when I/O resources are unavailable.
- 
-         Each structure is detailed individually below.
- 
--\item[bar]
++        the first one addressing an I/O BAR, the second one addressing a memory BAR.
++        In this example, the driver SHOULD use the I/O BAR if I/O resources are available, and fall back on
++        memory BAR when I/O resources are unavailable.
++
++        Each structure is detailed individually below.
++
 +\item[\field{bar}]
-         values 0x0 to 0x5 specify a Base Address register (BAR) belonging to
-         the function located beginning at 10h in Configuration Space
-         and used to map the structure into Memory or I/O Space.
-@@ -909,21 +909,21 @@ The fields are interpreted as follows:
- 
-         Any other value is reserved for future use. Drivers MUST
-         ignore any vendor-specific capability structure which has
--        a reserved bar value.
++        values 0x0 to 0x5 specify a Base Address register (BAR) belonging to
++        the function located beginning at 10h in Configuration Space
++        and used to map the structure into Memory or I/O Space.
++        The BAR is permitted to be either 32-bit or 64-bit, it can map Memory Space
++        or I/O Space.
++
++        Any other value is reserved for future use. Drivers MUST
++        ignore any vendor-specific capability structure which has
 +        a reserved \field{bar} value.
- 
--\item[offset]
++
 +\item[\field{offset}]
-         indicates where the structure begins relative to the base address associated
-         with the BAR.
- 
--\item[length]
++        indicates where the structure begins relative to the base address associated
++        with the BAR.
++
 +\item[\field{length}]
-         indicates the length of the structure.
- 
--        length MAY include padding, or fields unused by the driver, or
++        indicates the length of the structure.
++
 +        \field{length} MAY include padding, or fields unused by the driver, or
-         future extensions.
- 
-         Drivers SHOULD only map part of configuration structure
-         large enough for device operation.  Drivers MUST handle
--        unexpectedly large length fields, but MAY check that length
++        future extensions.
++
++        Drivers SHOULD only map part of configuration structure
++        large enough for device operation.  Drivers MUST handle
 +        an unexpectedly large \field{length}, but MAY check that \field{length}
-         is large enough for device operation.
- 
-         For example, a future device might present a large structure size of several
-@@ -936,7 +936,7 @@ The fields are interpreted as follows:
++        is large enough for device operation.
++
++        For example, a future device might present a large structure size of several
++        MBytes.
++        As current devices never utilize structures larger than 4KBytes in size,
++        driver can limit the mapped structure size to e.g.
++        4KBytes to allow forward compatibility with such devices without loss of
++        functionality and without wasting resources.
++\end{description}
  
  \subsubsection{Common configuration structure layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common configuration structure layout}
- 
--The common configuration structure is found at the bar and offset within the VIRTIO_PCI_CAP_COMMON_CFG capability; its layout is below.
+-Common configuration structure layout is documented below:
++
 +The common configuration structure is found at the \field{bar} and \field{offset} within the VIRTIO_PCI_CAP_COMMON_CFG capability; its layout is below.
++
++The device MUST present at least one common configuration capability.
  
- The device MUST present at least one common configuration capability.
- 
-@@ -965,76 +965,76 @@ struct virtio_pci_common_cfg {
+ \begin{lstlisting}
+ struct virtio_pci_common_cfg {
+@@ -864,90 +967,160 @@ struct virtio_pci_common_cfg {
  \end{lstlisting}
  
  \begin{description}
 -\item[device_feature_select]
--        The driver uses this to select which feature bits the device_feature field shows.
+-        The driver uses this to select which Feature Bits the device_feature field shows.
 +\item[\field{device_feature_select}]
 +        The driver uses this to select which feature bits \field{device_feature} shows.
          Value 0x0 selects Feature Bits 0 to 31, 0x1 selects Feature Bits 32 to 63.
--        The device MUST present 0 on device_feature for any other value, but the driver MUST NOT rely on this.
+-        The device MUST present 0 on device_feature for any other value.
 +        The device MUST present 0 on \field{device_feature} for any other value, but the driver MUST NOT rely on this.
  
 -\item[device_feature]
+-        The device uses this to report Feature Bits to the driver.
+-        Device Feature Bits selected by device_feature_select.
 +\item[\field{device_feature}]
-         The device uses this to report which feature bits it is
-         offering to the driver: the driver writes to
--        device_feature_select to select which are presented.
++        The device uses this to report which feature bits it is
++        offering to the driver: the driver writes to
 +        \field{device_feature_select} to select which are presented.
  
 -\item[driver_feature_select]
--        The driver uses this to select which feature bits the driver_feature field shows.
+-        The driver uses this to select which Feature Bits the driver_feature field shows.
 +\item[\field{driver_feature_select}]
 +        The driver uses this to select which feature bits \field{driver_feature} shows.
          Value 0x0 selects Feature Bits 0 to 31, 0x1 selects Feature Bits 32 to 63.
--        When set to any other value, the device MUST return 0 on reads from driver_feature
--        return 0, and ignore writing of 0 into driver_feature.  The driver
+-        When set to any other value, reads from driver_feature
+-        return 0, writing 0 into driver_feature has no effect.  The driver
 -        MUST not write any other value into driver_feature (a corollary of
 +        When set to any other value, the device MUST return 0 on reads from \field{driver_feature}
 +        return 0, and ignore writing of 0 into \field{driver_feature}.  The driver
@@ -550,7 +611,8 @@ index a856b5e..b67081f 100644
 +\item[\field{queue_notify_off}]
          The driver reads this to calculate the offset from start of Notification structure at
          which this virtqueue is located.
-         Note: this is *not* an offset in bytes. See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability} below.
+-        Note: this is *not* an offset in bytes. See notify_off_multiplier below.
++        Note: this is *not* an offset in bytes. See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability} below.
  
 -\item[queue_desc]
 +\item[\field{queue_desc}]
@@ -565,70 +627,99 @@ index a856b5e..b67081f 100644
          The driver writes the physical address of Used Ring here.
  \end{description}
  
-@@ -1053,24 +1053,24 @@ struct virtio_pci_notify_cap {
- };
- \end{lstlisting}
- 
--The device MUST present an even cap.length of at least 2.
+-\subsubsection{ISR status structure layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / ISR status structure layout}
+-ISR status structure includes a single 8-bit ISR status field.
++\subsubsection{Notification structure layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability}
++
++The device MUST present at least one notification capability.
++
++The notification location is found using the VIRTIO_PCI_CAP_NOTIFY_CFG
++capability.  This capability is immediately followed by an additional
++field, like so:
++
++\begin{lstlisting}
++struct virtio_pci_notify_cap {
++        struct virtio_pci_cap cap;
++        le32 notify_off_multiplier; /* Multiplier for queue_notify_off. */
++};
++\end{lstlisting}
++
 +The device MUST present an even \field{cap.length} of at least 2.
- 
--The device MUST present notify_off_multiplier as an even power of 2,
--or 0.  The device MUST ignore a capability with notify_off_multiplier
++
 +The device MUST present \field{notify_off_multiplier} as an even power of 2,
 +or 0.  The device MUST ignore a capability with \field{notify_off_multiplier}
- of 1.
- 
--notify_off_multiplier field is combined with the queue_notify_off to
++of 1.
++
 +\field{notify_off_multiplier} is combined with the \field{queue_notify_off} to
- derive the Queue Notify address within a BAR for a specific queue:
- 
- \begin{lstlisting}
-         cap.offset + queue_notify_off * notify_off_multiplier
- \end{lstlisting}
- 
--The BAR, offset and notify_off_multiplier are taken from the
--notification capability structure above, and the queue_notify_off is
++derive the Queue Notify address within a BAR for a specific queue:
++
++\begin{lstlisting}
++        cap.offset + queue_notify_off * notify_off_multiplier
++\end{lstlisting}
++
 +The \field{bar}, \field{offset} and \field{notify_off_multiplier} are taken from the
 +notification capability structure above, and the \field{queue_notify_off} is
- taken from the common configuration structure.
- 
--For example, if notifier_off_multiplier is 0, all queues will use the same 
++taken from the common configuration structure.
++
 +For example, if \field{notifier_off_multiplier} is 0, all queues will use the same 
- Queue Notify address.
++Queue Notify address.
++
++\subsubsection{ISR status capability}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / ISR status capability}
  
- \subsubsection{ISR status capability}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / ISR status capability}
-@@ -1102,23 +1102,23 @@ To access a device region, the driver writes into the capability
- structure (ie. within the PCI configuration space) as follows:
+-\subsubsection{Notification structure layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification structure layout}
+-Notification structure is always a multiple of 2 bytes in size.
+-It includes 2-byte Queue Notify fields for each virtqueue of
+-the device. Note that multiple virtqueues can use the same
+-Queue Notify field, if necessary: see notify_off_multiplier below.
++The device MUST present at least one VIRTIO_PCI_CAP_ISR_CFG capability.  This
++refers to at least a single byte, which contains the 8-bit ISR status field.
  
- \begin{itemize}
--\item The driver sets the BAR to access by writing to the cap.bar field.
+ \subsubsection{Device specific structure}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Device specific structure}
+ 
+-Device specific structure is optional.
++The device MAY present at least one VIRTIO_PCI_CAP_DEVICE_CFG capability (some
++devices may not have any device specific structure).
++
++\subsubsection{PCI configuration access capability}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / PCI configuration access capability}
++
++The device MUST present at least one VIRTIO_PCI_CAP_PCI_CFG.  This
++creates an alternative (and likely suboptimal) access method to the
++common configuration, notification, ISR and device-specific regions.
++
++The capability is immediately followed by an additional field like so:
++
++\begin{lstlisting}
++struct virtio_pci_cfg_cap {
++        struct virtio_pci_cap cap;
++        u8 pci_cfg_data[4]; /* Data for BAR access. */
++};
++\end{lstlisting}
++
++To access a device region, the driver writes into the capability
++structure (ie. within the PCI configuration space) as follows:
++
++\begin{itemize}
 +\item The driver sets the BAR to access by writing to \field{cap.bar}.
- 
- \item The driver sets the size of the access by writing 1, 2 or 4 to
--  the cap.length field.
++
++\item The driver sets the size of the access by writing 1, 2 or 4 to
 +  \field{cap.length}.
- 
--\item The driver sets the offset within the BAR by writing to the
--  cap.offset field.  The driver MUST NOT write an offset which is not
--  a multiple of cap.length (ie. all accesses must be aligned).
++
 +\item The driver sets the offset within the BAR by writing to
 +  \field{cap.offset}.  The driver MUST NOT write an offset which is not
 +  a multiple of \field{cap.length} (ie. all accesses must be aligned).
- \end{itemize}
- 
- At that point, the pci_cfg_data field will provide a window of size
--cap.length into the given cap.bar at offset cap.offset: writes will
++\end{itemize}
++
++At that point, the pci_cfg_data field will provide a window of size
 +\field{cap.length} into the given \field{cap.bar} at offset \field{cap.offset}: writes will
- have the same effect as writes into the BAR, and reads will have the
- same effect and return the same value as reads from the BAR.
- 
- The driver MUST perform reads/writes from/to pci_cfg_data of the same
--width as given by cap.length.
++have the same effect as writes into the BAR, and reads will have the
++same effect and return the same value as reads from the BAR.
++
++The driver MUST perform reads/writes from/to pci_cfg_data of the same
 +width as given by \field{cap.length}.
  
  \subsubsection{Legacy Interfaces: A Note on PCI Device Layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Legacy Interfaces: A Note on PCI Device Layout}
  
-@@ -1147,7 +1147,7 @@ When used through the legacy interface, the virtio header looks as follows:
+@@ -976,7 +1149,7 @@ When used through the legacy interface, the virtio header looks as follows:
   Read / Write & R & R+W & R+W & R & R+W & R+W & R+W & R \\
  \hline
   Purpose & Device Features bits 0:31 & Driver Features bits 0:31 &
@@ -637,7 +728,7 @@ index a856b5e..b67081f 100644
    Device Status & ISR \newline Status \\
  \hline
  \end{tabularx}
-@@ -1161,7 +1161,7 @@ Bits       & 16             & 16     \\
+@@ -990,7 +1163,7 @@ Bits       & 16             & 16     \\
  \hline
  Read/Write & R+W            & R+W    \\
  \hline
@@ -646,7 +737,7 @@ index a856b5e..b67081f 100644
  \hline
  \end{tabular}
  
-@@ -1189,7 +1189,7 @@ Legacy Interface. When used through the Legacy Interface,
+@@ -1018,7 +1191,7 @@ Legacy Interface. When used through the Legacy Interface,
  Transitional Devices must assume that Feature Bits 32 to 63
  are not acknowledged by Driver.
  
@@ -655,7 +746,199 @@ index a856b5e..b67081f 100644
  see \ref{sec:Basic Facilities of a Virtio Device / Configuration Space / Legacy Interface: Configuration Space}~\nameref{sec:Basic Facilities of a Virtio Device / Configuration Space / Legacy Interface: Configuration Space} for workarounds.
  
  \subsection{PCI-specific Initialization And Device Operation}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation}
-@@ -1244,12 +1244,11 @@ driver attempts to drive them:
+@@ -1032,179 +1205,13 @@ device.
+ 
+ \paragraph{Virtio Device Configuration Layout Detection}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Virtio Device Configuration Layout Detection}
+ 
+-As a prerequisite to device initialization, driver executes a
+-PCI capability list scan, detecting virtio configuration layout using Virtio
++As a prerequisite to device initialization, the driver scans the
++PCI capability list, detecting virtio configuration layout using the Virtio
+ Structure PCI capabilities.
+ 
+-Virtio Device Configuration Layout includes virtio configuration header, Notification
+-and ISR Status and device configuration structures.
+-Each structure can be mapped by a Base Address register (BAR) belonging to
+-the function, located beginning at 10h in Configuration Space,
+-or accessed though PCI configuration space.
+-
+-Actual location of each structure is specified using vendor-specific PCI capability located
+-on capability list in PCI configuration space of the device.
+-This virtio structure capability uses little-endian format; all bits are
+-read-only:
+-
+-\begin{lstlisting}
+-struct virtio_pci_cap {
+-        u8 cap_vndr;    /* Generic PCI field: PCI_CAP_ID_VNDR */
+-        u8 cap_next;    /* Generic PCI field: next ptr. */
+-        u8 cap_len;     /* Generic PCI field: capability length */
+-        u8 cfg_type;    /* Identifies the structure. */
+-        u8 bar;         /* Where to find it. */
+-        u8 padding[3];  /* Pad to full dword. */
+-        le32 offset;    /* Offset within bar. */
+-        le32 length;    /* Length of the structure, in bytes. */
+-};
+-\end{lstlisting}
+-
+-This structure can optionally be followed by extra data, depending on
+-other fields, as documented below.
+-
+-Note that future versions of this specification will likely
+-extend devices by adding extra fields at the tail end of some structures.
+-
+-To allow forward compatibility with such extensions, drivers must
+-not limit structure size.  Instead, drivers should only
+-check that structures are *large enough* to contain the fields
+-required for device operation.
+-
+-For example, if the specification states 'structure includes a
+-single 8-bit field' drivers should understand this to mean that
+-the structure can also include an arbitrary amount of tail padding,
+-and accept any structure size equal to or greater than the
+-specified 8-bit size.
+-
+-The fields are interpreted as follows:
+-
+-\begin{description}
+-\item[cap_vndr]
+-        0x09; Identifies a vendor-specific capability.
+-
+-\item[cap_next]
+-        Link to next capability in the capability list in the configuration space.
+-
+-\item[cap_len]
+-        Length of the capability structure, including the whole of
+-        struct virtio_pci_cap, and extra data if any.
+-        This length might include padding, or fields unused by the driver.
+-
+-\item[cfg_type]
+-        identifies the structure, according to the following table.
+-
+-\begin{lstlisting}
+-/* Common configuration */
+-#define VIRTIO_PCI_CAP_COMMON_CFG        1
+-/* Notifications */
+-#define VIRTIO_PCI_CAP_NOTIFY_CFG        2
+-/* ISR Status */
+-#define VIRTIO_PCI_CAP_ISR_CFG           3
+-/* Device specific configuration */
+-#define VIRTIO_PCI_CAP_DEVICE_CFG        4
+-/* PCI configuration access */
+-#define VIRTIO_PCI_CAP_PCI_CFG           5
+-\end{lstlisting}
+-
+-        Any other value - reserved for future use. Drivers MUST
+-        ignore any vendor-specific capability structure which has
+-        a reserved cfg_type value.
+-
+-        More than one capability can identify the same structure - this makes it
+-        possible for the device to expose multiple interfaces to drivers.  The order of
+-        the capabilities in the capability list specifies the order of preference
+-        suggested by the device; drivers SHOULD use the first interface that they can
+-        support.  For example, on some hypervisors, notifications using IO accesses are
+-        faster than memory accesses. In this case, hypervisor can expose two
+-        capabilities with cfg_type set to VIRTIO_PCI_CAP_NOTIFY_CFG:
+-        the first one addressing an I/O BAR, the second one addressing a memory BAR.
+-        Driver will use the I/O BAR if I/O resources are available, and fall back on
+-        memory BAR when I/O resources are unavailable.
+-
+-\item[bar]
+-        values 0x0 to 0x5 specify a Base Address register (BAR) belonging to
+-        the function located beginning at 10h in Configuration Space
+-        and used to map the structure into Memory or I/O Space.
+-        The BAR is permitted to be either 32-bit or 64-bit, it can map Memory Space
+-        or I/O Space.
+-
+-        Any other value is reserved for future use. Drivers MUST
+-        ignore any vendor-specific capability structure which has
+-        a reserved bar value.
+-
+-\item[offset]
+-        indicates where the structure begins relative to the base address associated
+-        with the BAR.
+-
+-\item[length]
+-        indicates the length of the structure.
+-        This size might include padding, or fields unused by the driver.
+-        Drivers SHOULD only map part of configuration structure
+-        large enough for device operation.
+-        For example, a future device might present a large structure size of several
+-        MBytes.
+-        As current devices never utilize structures larger than 4KBytes in size,
+-        driver can limit the mapped structure size to e.g.
+-        4KBytes to allow forward compatibility with such devices without loss of
+-        functionality and without wasting resources.
+-\end{description}
+-
+-If cfg_type is VIRTIO_PCI_CAP_NOTIFY_CFG this structure is immediately followed
+-by additional fields:
+-
+-\begin{lstlisting}
+-struct virtio_pci_notify_cap {
+-        struct virtio_pci_cap cap;
+-        le32 notify_off_multiplier; /* Multiplier for queue_notify_off. */
+-};
+-\end{lstlisting}
+-
+-\begin{description}
+-\item[notify_off_multiplier]
+-
+-        Virtqueue offset multiplier, in bytes. Must be even and either a power of two, or 0.
+-        Value 0x1 is reserved.
+-        For a given virtqueue, the address to use for notifications is calculated as follows:
+-
+-        queue_notify_off * notify_off_multiplier + offset
+-
+-        If notify_off_multiplier is 0, all virtqueues use the same address in
+-        the Notifications structure!
+-\end{description}
+-
+-If cfg_type is VIRTIO_PCI_CAP_PCI_CFG the fields bar, offset and length are RW
+-and this structure is immediately followed by an additional field:
+-
+-\begin{lstlisting}
+-struct virtio_pci_cfg_cap {
+-        __u8 pci_cfg_data[4]; /* Data for BAR access. */
+-};
+-\end{lstlisting}
+-
+-\begin{description}
+-\item[pci_cfg_data]
+-
+-        This RW field allows an indirect access to any BAR on the
+-        device using PCI configuration accesses.
+-
+-        The BAR to access is selected using the bar field.
+-        The length of the access is specified by the length
+-        field, which can be set to 1, 2 and 4.
+-        The offset within the BAR is specified by the offset
+-        field, which must be aligned to length bytes.
+-
+-        After this field is written by driver, the first length
+-        bytes in pci_cfg_data are written at the selected
+-        offset in the selected BAR.
+-
+-        When this field is read by driver, length bytes at the
+-        selected offset in the selected BAR are read into pci_cfg_data.
+-\end{description}
+-
+ \subparagraph{Legacy Interface: A Note on Device Layout Detection}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Virtio Device Configuration Layout Detection / Legacy Interface: A Note on Device Layout Detection}
+ 
+-Legacy drivers skipped  Device Layout Detection step, assuming legacy
++Legacy drivers skipped the Device Layout Detection step, assuming legacy
+ configuration space in BAR0 in I/O space unconditionally.
+ 
+ Legacy devices did not have the Virtio PCI Capability in their
+@@ -1226,7 +1233,7 @@ and fail gracefully.
+ 
+ Non-transitional devices, on a platform where a legacy driver for
+ a legacy device with the same ID might have previously existed,
+-must take the following steps to fail gracefully when a legacy
++MUST take the following steps to fail gracefully when a legacy
+ driver attempts to drive them:
+ 
+ \begin{enumerate}
+@@ -1239,12 +1246,11 @@ driver attempts to drive them:
  \paragraph{Queue Vector Configuration}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Queue Vector Configuration}
  
  When MSI-X capability is present and enabled in the device
@@ -671,7 +954,7 @@ index a856b5e..b67081f 100644
  by the configuration change/selected queue events respectively to
  the corresponding MSI-X vector. To disable interrupts for a
  specific event type, unmap it by writing a special NO_VECTOR
-@@ -1283,15 +1282,13 @@ configuration.
+@@ -1278,15 +1284,13 @@ configuration.
  The driver does this as follows, for each virtqueue a device has:
  
  \begin{enumerate}
@@ -690,7 +973,7 @@ index a856b5e..b67081f 100644
  
  \item Allocate and zero Descriptor Table, Available and Used rings for the
     virtqueue in contiguous physical memory.
-@@ -1299,8 +1296,8 @@ The driver does this as follows, for each virtqueue a device has:
+@@ -1294,8 +1298,8 @@ The driver does this as follows, for each virtqueue a device has:
  \item Optionally, if MSI-X capability is present and enabled on the
    device, select a vector to use to request interrupts triggered
    by virtqueue events. Write the MSI-X Table entry number
@@ -701,16 +984,28 @@ index a856b5e..b67081f 100644
    returned; on failure, NO_VECTOR value is returned.
  \end{enumerate}
  
-@@ -1319,7 +1316,7 @@ of this virtqueue to the Queue Notify address.  See \ref{sec:Virtio Transport Op
+@@ -1305,16 +1309,16 @@ device is defined as 4096 bytes.  Driver writes the physical address, divided
+ by 4096 to the Queue Address field\footnote{The 4096 is based on the x86 page size, but it's also large
+ enough to ensure that the separate parts of the virtqueue are on
+ separate cache lines.
+-}.
++}.  There was no mechanism to negotiate the queue size.
+ 
+ \subsubsection{Notifying The Device}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Notifying The Device}
+ 
+-Device notification occurs by writing the 16-bit virtqueue index
+-of this virtqueue to the Queue Notify field.
++The driver notifies the device by writing the 16-bit virtqueue index
++of this virtqueue to the Queue Notify address.  See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability} for how to calculate this address.
  
  \subsubsection{Virtqueue Interrupts From The Device}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Virtqueue Interrupts From The Device}
  
--If an interrupt is necessary, the device SHOULD:
+-If an interrupt is necessary:
 +If an interrupt is necessary for a virtqueue, the device SHOULD:
  
  \begin{itemize}
    \item If MSI-X capability is disabled:
-@@ -1332,10 +1329,10 @@ If an interrupt is necessary, the device SHOULD:
+@@ -1327,26 +1331,27 @@ If an interrupt is necessary:
    \item If MSI-X capability is enabled:
      \begin{enumerate}
      \item Request the appropriate MSI-X interrupt message for the
@@ -719,22 +1014,60 @@ index a856b5e..b67081f 100644
        number.
  
 -    \item If Queue Vector field value is NO_VECTOR, no interrupt
+-      message is requested for this event.
 +    \item If the vector field value is NO_VECTOR, no interrupt
-       message is requested for this event, so the device MUST NOT
-       deliver an interrupt.
++      message is requested for this event, so the device MUST NOT
++      deliver an interrupt.
      \end{enumerate}
-@@ -1372,8 +1369,8 @@ state, as reflected in the device-specific region of the device. In this case:
-   MUST be scanned.
+ \end{itemize}
+ 
+-The driver interrupt handler should:
++The driver interrupt handler SHOULD:
+ 
+ \begin{itemize}
+   \item If MSI-X capability is disabled: read the ISR Status field,
+   which will reset it to zero. If the lower bit is zero, the
+   interrupt was not for this device. Otherwise, the driver
+-  should look through the used rings of each virtqueue for the
++  SHOULD look through the used rings of all virtqueues for the
+   device, to see if any progress has been made by the device
+   which requires servicing.
+ 
+   \item If MSI-X capability is enabled: look through the used rings of
+-  each virtqueue mapped to the specific MSI-X vector for the
++  all virtqueues mapped to the specific MSI-X vector for the
+   device, to see if any progress has been made by the device
+   which requires servicing.
+ \end{itemize}
+@@ -1354,8 +1359,7 @@ The driver interrupt handler should:
+ \subsubsection{Notification of Device Configuration Changes}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Notification of Device Configuration Changes}
+ 
+ Some virtio PCI devices can change the device configuration
+-state, as reflected in the virtio header in the PCI configuration
+-space. In this case:
++state, as reflected in the device-specific region of the device. In this case:
+ 
+ \begin{itemize}
+   \item If MSI-X capability is disabled: an interrupt is delivered and
+@@ -1364,12 +1368,13 @@ space. In this case:
+   space.  Note that a single interrupt can indicate both that one
+   or more virtqueue has been used and that the configuration
+   space has changed: even if the config bit is set, virtqueues
+-  must be scanned.
++  MUST be scanned.
  
    \item If MSI-X capability is enabled: an interrupt message is
 -  requested. The Configuration Vector field sets the MSI-X Table
 -  entry number to use. If Configuration Vector field value is
+-  NO_VECTOR, no interrupt message is requested for this event.
 +  requested. \field{config_msix_vector} sets the MSI-X Table
 +  entry number to use. If \field{config_msix_vector} is
-   NO_VECTOR, no interrupt message is requested for this event and
-   the device MUST NOT deliver an interrupt.
++  NO_VECTOR, no interrupt message is requested for this event and
++  the device MUST NOT deliver an interrupt.
  \end{itemize}
-@@ -1420,7 +1417,7 @@ All register values are organized as Little Endian.
+ 
+ \section{Virtio Over MMIO}\label{sec:Virtio Transport Options / Virtio Over MMIO}
+@@ -1414,7 +1419,7 @@ All register values are organized as Little Endian.
  
  
  \newcommand{\mmioreg}[5]{% Name Function Offset Direction Description
@@ -743,7 +1076,7 @@ index a856b5e..b67081f 100644
  }
  
  \newcommand{\mmiodreg}[7]{% NameHigh NameLow Function OffsetHigh OffsetLow Direction Description
-@@ -1469,42 +1466,42 @@ All register values are organized as Little Endian.
+@@ -1463,42 +1468,42 @@ All register values are organized as Little Endian.
    \hline 
    \mmioreg{DeviceFeatures}{Flags representing features the device supports}{0x010}{R}{%
      Reading from this register returns 32 consecutive flag bits,
@@ -805,7 +1138,7 @@ index a856b5e..b67081f 100644
      number of the first queue is zero (0x0). 
    }
    \hline 
-@@ -1512,8 +1509,8 @@ All register values are organized as Little Endian.
+@@ -1506,8 +1511,8 @@ All register values are organized as Little Endian.
      Reading from the register returns the maximum size (number of
      elements) of the queue the device is ready to process or
      zero (0x0) if the queue is not available. This applies to the
@@ -816,7 +1149,7 @@ index a856b5e..b67081f 100644
      is not zero).
    }
    \hline 
-@@ -1522,15 +1519,15 @@ All register values are organized as Little Endian.
+@@ -1516,15 +1521,15 @@ All register values are organized as Little Endian.
      of the Descriptor Table and both Available and Used rings.
      Writing to this register notifies the device what size of the
      queue the driver will use. This applies to the queue selected by
@@ -835,7 +1168,7 @@ index a856b5e..b67081f 100644
      When the driver wants to stop using the queue it MUST write
      zero (0x0) to this register and MUST read the value back to
      ensure synchronisation.
-@@ -1566,7 +1563,7 @@ All register values are organized as Little Endian.
+@@ -1560,7 +1565,7 @@ All register values are organized as Little Endian.
      has been handled.
      When the driver finishes handling an interrupt, it MUST write
      a value to this register with bits corresponding to the handled
@@ -844,7 +1177,7 @@ index a856b5e..b67081f 100644
      equal one (1), and all other bits cleared, ie. equal zero (0).
    }
    \hline 
-@@ -1576,35 +1573,35 @@ All register values are organized as Little Endian.
+@@ -1570,35 +1575,35 @@ All register values are organized as Little Endian.
      Writing non-zero values to this register sets the status flags,
      indicating the driver progress. Writing zero (0x0) to this
      register triggers a device reset, including clearing all
@@ -891,7 +1224,7 @@ index a856b5e..b67081f 100644
      is not zero).
    }
    \hline 
-@@ -1628,8 +1625,8 @@ All register values are organized as Little Endian.
+@@ -1622,8 +1627,8 @@ All register values are organized as Little Endian.
  \subsubsection{Device Initialization}\label{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Device Initialization}
  
  The driver MUST start the device initialization by reading and
@@ -902,7 +1235,7 @@ index a856b5e..b67081f 100644
  and if its value is zero (0x0) MUST abort initialization and
  MUST NOT access any other register.
  
-@@ -1641,14 +1638,14 @@ Further initialization MUST follow the procedure described in
+@@ -1635,14 +1640,14 @@ Further initialization MUST follow the procedure described in
  The driver MUST initialize the virtual queue in the following way:
  
  \begin{enumerate}
@@ -923,7 +1256,7 @@ index a856b5e..b67081f 100644
     queue is not available.
  
  \item Allocate and zero the queue pages, making sure the memory
-@@ -1658,32 +1655,33 @@ The driver MUST initialize the virtual queue in the following way:
+@@ -1652,32 +1657,33 @@ The driver MUST initialize the virtual queue in the following way:
     the maximum size returned by the device.
  
  \item Notify the device about the queue size by writing the size to
@@ -967,7 +1300,7 @@ index a856b5e..b67081f 100644
  (see the register description). After the interrupt is handled,
  the driver MUST acknowledge it by writing a bit mask
  corresponding to the handled events to the InterruptACK register.
-@@ -1740,8 +1738,8 @@ nor behaviour:
+@@ -1734,8 +1740,8 @@ nor behaviour:
    \hline
    \mmioreg{QueueSel}{Virtual queue index}{0x030}{W}{%
      Writing to this register selects the virtual queue that the
@@ -978,7 +1311,7 @@ index a856b5e..b67081f 100644
      number of the first queue is zero (0x0). 
  .
    }
-@@ -1749,8 +1747,8 @@ nor behaviour:
+@@ -1743,8 +1749,8 @@ nor behaviour:
    \mmioreg{QueueNumMax}{Maximum virtual queue size}{0x034}{R}{%
      Reading from the register returns the maximum size of the queue
      the device is ready to process or zero (0x0) if the queue is not
@@ -989,7 +1322,7 @@ index a856b5e..b67081f 100644
      (0x0), so when the queue is not actively used.
    }
    \hline
-@@ -1759,14 +1757,13 @@ nor behaviour:
+@@ -1753,14 +1759,13 @@ nor behaviour:
      of the descriptor table and both available and used rings.
      Writing to this register notifies the device what size of the
      queue the driver will use. This applies to the queue selected by
@@ -1006,7 +1339,7 @@ index a856b5e..b67081f 100644
    }
    \hline
    \mmioreg{QueuePFN}{Guest physical page number of the virtual queue}{0x040}{RW}{%
-@@ -1780,7 +1777,7 @@ nor behaviour:
+@@ -1774,7 +1779,7 @@ nor behaviour:
      number of the queue, therefore a value other than zero (0x0)
      means that the queue is in use.
      Both read and write accesses apply to the queue selected by
@@ -1015,7 +1348,7 @@ index a856b5e..b67081f 100644
    }
    \hline
    \mmioreg{QueueNotify}{Queue notifier}{0x050}{W}{}
-@@ -1795,7 +1792,7 @@ nor behaviour:
+@@ -1789,7 +1794,7 @@ nor behaviour:
      Writing non-zero values to this register sets the status flags,
      indicating the OS/driver progress. Writing zero (0x0) to this
      register triggers a device reset. This should include
@@ -1024,7 +1357,7 @@ index a856b5e..b67081f 100644
      Also see \ref{sec:General Initialization And Device Operation / Device Initialization}~\nameref{sec:General Initialization And Device Operation / Device Initialization}.
    }
    \hline
-@@ -1803,24 +1800,24 @@ nor behaviour:
+@@ -1797,24 +1802,24 @@ nor behaviour:
    \hline
  \end{longtable}
  
@@ -1058,7 +1391,7 @@ index a856b5e..b67081f 100644
     queue is not available.
  
  \item Allocate and zero the queue pages in contiguous virtual
-@@ -1829,13 +1826,13 @@ The virtual queue is configured as follows:
+@@ -1823,13 +1828,13 @@ The virtual queue is configured as follows:
     equal to the maximum size returned by the device.
  
  \item Notify the device about the queue size by writing the size to
@@ -1075,7 +1408,7 @@ index a856b5e..b67081f 100644
  \end{enumerate}
  
  Notification mechanisms did not change.
-@@ -1950,14 +1947,14 @@ struct virtio_rev_info {
+@@ -1944,14 +1949,14 @@ struct virtio_rev_info {
  };
  \end{lstlisting}
  
@@ -1093,7 +1426,7 @@ index a856b5e..b67081f 100644
  \hline \hline
  0        & 0      & <empty>   & legacy interface; transitional devices only \\
  \hline
-@@ -1970,9 +1967,9 @@ revision & length & data      & remarks \\
+@@ -1964,9 +1969,9 @@ revision & length & data      & remarks \\
  Note that a change in the virtio standard does not necessarily
  correspond to a change in the virtio-ccw revision.
  
@@ -1106,41 +1439,44 @@ index a856b5e..b67081f 100644
  non-transitional device MUST reject revision id 0.
  
  A driver SHOULD start with trying to set the highest revision it
-@@ -2022,7 +2019,7 @@ struct vq_config_block {
+@@ -2015,8 +2020,8 @@ struct vq_config_block {
+ } __attribute__ ((packed));
  \end{lstlisting}
  
- The requested number of buffers for queue index is returned in
+-The requested number of buffers for queue index is returned in
 -max_num.
++The requested number of buffers for queue \field{index} is returned in
 +\field{max_num}.
  
  Afterwards, CCW_CMD_SET_VQ is issued by the driver to inform the
  device about the location used for its queue. The transmitted
-@@ -2039,10 +2036,10 @@ struct vq_info_block {
+@@ -2033,10 +2038,10 @@ struct vq_info_block {
  } __attribute__ ((packed));
  \end{lstlisting}
  
 -desc, avail and used contain the guest addresses for the descriptor table,
-+\field{desc}, \field{avail} and \field{used} contain the guest addresses for the descriptor table,
- available ring and used ring for queue index, respectively. The actual
+-available ring and used ring for queue index, respectively. The actual
 -virtqueue size (number of allocated buffers) is transmitted in num.
 -res0 is reserved and MUST be ignored by the device.
++\field{desc}, \field{avail} and \field{used} contain the guest addresses for the descriptor table,
++available ring and used ring for queue \field{index}, respectively. The actual
 +virtqueue size (number of allocated buffers) is transmitted in \field{num}.
 +\field{res0} is reserved and MUST be ignored by the device.
  
  \paragraph{Legacy Interface: A Note on Configuring a Virtqueue}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Configuring a Virtqueue / Legacy Interface: A Note on Configuring a Virtqueue}
  
-@@ -2058,8 +2055,8 @@ struct vq_info_block_legacy {
+@@ -2052,8 +2057,8 @@ struct vq_info_block_legacy {
  } __attribute__ ((packed));
  \end{lstlisting}
  
 -queue contains the guest address for queue index, num the number of buffers
 -and align the alignment.
-+\field{queue} contains the guest address for queue index, \field{num} the number of buffers
++\field{queue} contains the guest address for queue \field{index}, \field{num} the number of buffers
 +and \field{align} the alignment.
  
  \subsubsection{Virtqueue Layout}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Virtqueue Layout}
  
-@@ -2106,16 +2103,16 @@ struct virtio_feature_desc {
+@@ -2100,16 +2105,16 @@ struct virtio_feature_desc {
  } __attribute__ ((packed));
  \end{lstlisting}
  
@@ -1162,7 +1498,7 @@ index a856b5e..b67081f 100644
  combination.
  
  \subsubsection{Device Configuration}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Device Configuration}
-@@ -2196,13 +2193,13 @@ struct virtio_thinint_area {
+@@ -2190,13 +2195,13 @@ struct virtio_thinint_area {
  } __attribute__ ((packed));
  \end{lstlisting}
  
@@ -1180,7 +1516,7 @@ index a856b5e..b67081f 100644
  I/O interrupt. It may be different from the isc used by the proxy
  virtio-ccw device's subchannel.
  
-@@ -2376,7 +2373,7 @@ features.
+@@ -2370,7 +2375,7 @@ features.
  \end{description}
  
   N=0 if VIRTIO_NET_F_MQ is not negotiated, otherwise N is derived
@@ -1189,7 +1525,7 @@ index a856b5e..b67081f 100644
  
   controlq only exists if VIRTIO_NET_F_CTRL_VQ set.
  
-@@ -2440,9 +2437,9 @@ were required.
+@@ -2434,9 +2439,9 @@ were required.
  
  \subsection{Device configuration layout}\label{sec:Device Types / Network Device / Device configuration layout}
  
@@ -1201,7 +1537,7 @@ index a856b5e..b67081f 100644
  read-only bits are currently defined for the status field:
  VIRTIO_NET_S_LINK_UP and VIRTIO_NET_S_ANNOUNCE.
  
-@@ -2451,11 +2448,11 @@ VIRTIO_NET_S_LINK_UP and VIRTIO_NET_S_ANNOUNCE.
+@@ -2445,11 +2450,11 @@ VIRTIO_NET_S_LINK_UP and VIRTIO_NET_S_ANNOUNCE.
  #define VIRTIO_NET_S_ANNOUNCE    2
  \end{lstlisting}
  
@@ -1215,7 +1551,7 @@ index a856b5e..b67081f 100644
  is negotiated.  Legal values for this field are 1 to 0x8000.
  
  \begin{lstlisting}
-@@ -2468,7 +2465,7 @@ struct virtio_net_config {
+@@ -2462,7 +2467,7 @@ struct virtio_net_config {
  \end{lstlisting}
  
  \subsubsection{Legacy Interface: Device configuration layout}\label{sec:Device Types / Network Device / Device configuration layout / Legacy Interface: Device configuration layout}
@@ -1224,7 +1560,7 @@ index a856b5e..b67081f 100644
  native endian of the guest rather than (necessarily) little-endian.
  
  
-@@ -2478,10 +2475,10 @@ native endian of the guest rather than (necessarily) little-endian.
+@@ -2472,10 +2477,10 @@ native endian of the guest rather than (necessarily) little-endian.
  \item The initialization routine should identify the receive and
    transmission virtqueues, up to N+1 of each kind. If
    VIRTIO_NET_F_MQ feature bit is negotiated,
@@ -1237,7 +1573,7 @@ index a856b5e..b67081f 100644
    network card, otherwise a private MAC address should be
    assigned. All drivers are expected to negotiate this feature if
    it is set.
-@@ -2490,14 +2487,14 @@ native endian of the guest rather than (necessarily) little-endian.
+@@ -2484,14 +2489,14 @@ native endian of the guest rather than (necessarily) little-endian.
    identify the control virtqueue.
  
  \item If the VIRTIO_NET_F_STATUS feature bit is negotiated, the link
@@ -1256,7 +1592,7 @@ index a856b5e..b67081f 100644
    number of the transmit and receive queues that is going to be
    used and wait until the device consumes the controlq buffer and
    acks this command.
-@@ -2511,7 +2508,7 @@ native endian of the guest rather than (necessarily) little-endian.
+@@ -2505,7 +2510,7 @@ native endian of the guest rather than (necessarily) little-endian.
    “checksum offload” is a common feature on modern network cards.
  
  \item If that feature is negotiated\footnote{ie. VIRTIO_NET_F_HOST_TSO* and VIRTIO_NET_F_HOST_UFO are
@@ -1265,7 +1601,7 @@ index a856b5e..b67081f 100644
  features must offer the checksum feature, and a driver which
  accepts the offload features must accept the checksum feature.
  Similar logic applies to the VIRTIO_NET_F_GUEST_TSO4 features
-@@ -2583,20 +2580,20 @@ the different features the driver negotiated.
+@@ -2577,20 +2582,20 @@ the different features the driver negotiated.
    are set as follows. Otherwise, the packet must be fully
    checksummed, and flags is zero.
    \begin{itemize}
@@ -1291,7 +1627,7 @@ index a856b5e..b67081f 100644
  value in the TCP checksum field should be initialized to the sum
  of the TCP pseudo header, so that replacing it by the ones'
  complement checksum of the TCP header and body will give the
-@@ -2604,32 +2601,32 @@ correct result.
+@@ -2598,32 +2603,32 @@ correct result.
  
  \item If the driver negotiated
    VIRTIO_NET_F_HOST_TSO4, TSO6 or UFO, and the packet requires
@@ -1330,7 +1666,7 @@ index a856b5e..b67081f 100644
  
  \item The header and packet are added as one output buffer to the
    transmitq, and the device is notified of the new entry
-@@ -2682,28 +2679,28 @@ Processing packet involves:
+@@ -2676,28 +2681,28 @@ Processing packet involves:
  
  \begin{enumerate}
  \item If the driver negotiated the VIRTIO_NET_F_MRG_RXBUF feature,
@@ -1367,7 +1703,7 @@ index a856b5e..b67081f 100644
    desired MSS (see Packet Transmission point 2).
  \end{enumerate}
  
-@@ -2729,9 +2726,9 @@ struct virtio_net_ctrl {
+@@ -2723,9 +2728,9 @@ struct virtio_net_ctrl {
  #define VIRTIO_NET_ERR    1
  \end{lstlisting}
  
@@ -1380,7 +1716,7 @@ index a856b5e..b67081f 100644
  VIRTIO_NET_OK.
  
  \paragraph{Packet Receive Filtering}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Packet Receive Filtering}
-@@ -2780,39 +2777,39 @@ command-specific-data is two variable length tables of 6-byte MAC
+@@ -2774,39 +2779,39 @@ command-specific-data is two variable length tables of 6-byte MAC
  addresses. The first table contains unicast addresses, and the second
  contains multicast addresses.
  
@@ -1430,7 +1766,7 @@ index a856b5e..b67081f 100644
  
  \paragraph{VLAN Filtering}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / VLAN Filtering}
  
-@@ -2891,7 +2888,7 @@ the number of the transmit and receive queues to be used; subsequently,
+@@ -2885,7 +2890,7 @@ the number of the transmit and receive queues to be used; subsequently,
  transmitq0..transmitqn and receiveq0..receiveqn where
  n=virtqueue_pairs-1 MAY be used. All these virtqueues MUST have
  been pre-configured in advance. The range of legal values for the
@@ -1439,7 +1775,7 @@ index a856b5e..b67081f 100644
  
  When multiqueue is enabled, the device MUST use automatic receive steering
  based on packet flow. Programming of the receive steering
-@@ -2901,7 +2898,7 @@ be steered to receiveqX. For uni-directional protocols, or where
+@@ -2895,7 +2900,7 @@ be steered to receiveqX. For uni-directional protocols, or where
  no packets have been transmitted yet, the device MAY steer a packet
  to a random queue out of the specified receiveq0..receiveqn.
  
@@ -1448,7 +1784,7 @@ index a856b5e..b67081f 100644
  the default). After the command has been consumed by the device, the
  device MUST NOT steer new packets to virtqueues
  receveq1..receiveqN (i.e. other than receiveq0) and MUST NOT read from
-@@ -2910,7 +2907,7 @@ the driver MUST NOT transmit new packets on virtqueues other than
+@@ -2904,7 +2909,7 @@ the driver MUST NOT transmit new packets on virtqueues other than
  transmitq0.
  
  \subparagraph{Legacy Interface: Automatic receive steering in multiqueue mode}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode / Legacy Interface: Automatic receive steering in multiqueue mode}
@@ -1457,7 +1793,7 @@ index a856b5e..b67081f 100644
  native endian of the guest rather than (necessarily) little-endian.
  
  \paragraph{Offloads State Configuration}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Offloads State Configuration}
-@@ -2948,7 +2945,7 @@ change of specific offload state.
+@@ -2942,7 +2947,7 @@ change of specific offload state.
  
  
  \subparagraph{Legacy Interface: Setting Offloads State}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Offloads State Configuration / Setting Offloads State / Legacy Interface: Setting Offloads State}
@@ -1466,7 +1802,7 @@ index a856b5e..b67081f 100644
  native endian of the guest rather than (necessarily) little-endian.
  
  
-@@ -2971,17 +2968,17 @@ device except where noted.
+@@ -2965,17 +2970,17 @@ device except where noted.
  
  \begin{description}
  \item[VIRTIO_BLK_F_SIZE_MAX (1)] Maximum size of any single segment is
@@ -1489,7 +1825,7 @@ index a856b5e..b67081f 100644
  
  \item[VIRTIO_BLK_F_TOPOLOGY (10)] Device exports information on optimal I/O
      alignment.
-@@ -3006,7 +3003,7 @@ VIRTIO_BLK_T_FLUSH commands.
+@@ -3000,7 +3005,7 @@ VIRTIO_BLK_T_FLUSH commands.
  
  \subsubsection{Device configuration layout}\label{sec:Device Types / Block Device / Feature bits / Device configuration layout}
  
@@ -1498,7 +1834,7 @@ index a856b5e..b67081f 100644
  present. The availability of the others all depend on various feature
  bits as indicated above.
  
-@@ -3045,12 +3042,12 @@ native endian of the guest rather than (necessarily) little-endian.
+@@ -3039,12 +3044,12 @@ native endian of the guest rather than (necessarily) little-endian.
  \subsection{Device Initialization}\label{sec:Device Types / Block Device / Device Initialization}
  
  \begin{enumerate}
@@ -1515,7 +1851,7 @@ index a856b5e..b67081f 100644
    for the driver to use. This does not affect the units used in
    the protocol (always 512 bytes), but awareness of the correct
    value can affect performance.
-@@ -3059,16 +3056,16 @@ native endian of the guest rather than (necessarily) little-endian.
+@@ -3053,16 +3058,16 @@ native endian of the guest rather than (necessarily) little-endian.
    requests will fail.
  
  \item If the VIRTIO_BLK_F_TOPOLOGY feature is negotiated, the fields in the
@@ -1535,7 +1871,7 @@ index a856b5e..b67081f 100644
  driver can also write to the field in order to toggle the cache
  between writethrough (0) and writeback (1) mode.  If the feature is
  not available, the driver can instead look at the result of
-@@ -3106,11 +3103,11 @@ distinguish between them
+@@ -3100,11 +3105,11 @@ distinguish between them
  #define VIRTIO_BLK_T_FLUSH_OUT    5
  \end{lstlisting}
  
@@ -1549,7 +1885,7 @@ index a856b5e..b67081f 100644
  VIRTIO_BLK_S_OK for success, VIRTIO_BLK_S_IOERR for device or driver
  error or VIRTIO_BLK_S_UNSUPP for a request unsupported by device:
  
-@@ -3127,7 +3124,7 @@ be committed to non-volatile storage by the device.
+@@ -3121,7 +3126,7 @@ be committed to non-volatile storage by the device.
  For legacy devices, the fields in struct virtio_blk_req are the
  native endian of the guest rather than (necessarily) little-endian.
  
@@ -1558,7 +1894,7 @@ index a856b5e..b67081f 100644
  is a hint about the relative priorities of requests to the device:
  higher numbers indicate more important requests.
  
-@@ -3174,38 +3171,38 @@ does not distinguish between them:
+@@ -3168,38 +3173,38 @@ does not distinguish between them:
  #define VIRTIO_BLK_T_SCSI_CMD_OUT 3
  \end{lstlisting}
  
@@ -1611,7 +1947,7 @@ index a856b5e..b67081f 100644
  byte, by itself.
  
  
-@@ -3245,11 +3242,11 @@ data and outgoing characters are placed in the transmit queue.
+@@ -3239,11 +3244,11 @@ data and outgoing characters are placed in the transmit queue.
  \subsection{Feature bits}\label{sec:Device Types / Console Device / Feature bits}
  
  \begin{description}
@@ -1625,7 +1961,7 @@ index a856b5e..b67081f 100644
      valid and control virtqueues will be used.
  
  \item[VIRTIO_CONSOLE_F_EMERG_WRITE (2)] Device has support for emergency write.
-@@ -3285,19 +3282,19 @@ native endian of the guest rather than (necessarily) little-endian.
+@@ -3279,19 +3284,19 @@ native endian of the guest rather than (necessarily) little-endian.
  \subsection{Device Initialization}\label{sec:Device Types / Console Device / Device Initialization}
  
  \begin{enumerate}
@@ -1650,7 +1986,7 @@ index a856b5e..b67081f 100644
    of virtqueues are created. A control message indicating the
    driver is ready is sent to the device. The device can then send
    control messages for adding new ports to the device. After
-@@ -3470,10 +3467,10 @@ The device is driven by the receipt of a
+@@ -3464,10 +3469,10 @@ The device is driven by the receipt of a
  configuration change interrupt.
  
  \begin{enumerate}
@@ -1665,7 +2001,7 @@ index a856b5e..b67081f 100644
    use.
  
  \item To supply memory to the balloon (aka. inflate):
-@@ -3501,7 +3498,7 @@ configuration change interrupt.
+@@ -3495,7 +3500,7 @@ configuration change interrupt.
    \end{enumerate}
  
  \item In either case, once the device has completed the inflation or
@@ -1674,7 +2010,7 @@ index a856b5e..b67081f 100644
    updated to reflect the new number of pages in the balloon.\footnote{As updates to configuration space are not atomic, this field
  isn't particularly reliable, but can be used to diagnose buggy guests.
  }
-@@ -3625,8 +3622,8 @@ targets that receive and process the requests.
+@@ -3619,8 +3624,8 @@ targets that receive and process the requests.
  
  \subsection{Device configuration layout}\label{sec:Device Types / SCSI Host Device / Device configuration layout}
  
@@ -1685,7 +2021,7 @@ index a856b5e..b67081f 100644
  
  \begin{lstlisting}
  /* Note: LEGACY version was not little endian! */
-@@ -3645,41 +3642,41 @@ struct virtio_scsi_config {
+@@ -3639,41 +3644,41 @@ struct virtio_scsi_config {
  \end{lstlisting}
  
  \begin{description}
@@ -1739,7 +2075,7 @@ index a856b5e..b67081f 100644
  \end{description}
  
  \subsubsection{Legacy Interface: Device configuration layout}\label{sec:Device Types / SCSI Host Device / Device configuration layout / Legacy Interface: Device configuration layout}
-@@ -3754,48 +3751,48 @@ struct virtio_scsi_req_cmd {
+@@ -3748,48 +3753,48 @@ struct virtio_scsi_req_cmd {
  #define VIRTIO_SCSI_S_ACA               3
  \end{lstlisting}
  
@@ -1804,7 +2140,7 @@ index a856b5e..b67081f 100644
    byte is filled with a SCSI status code (not necessarily
    "GOOD").
  
-@@ -3806,7 +3803,7 @@ following:
+@@ -3800,7 +3805,7 @@ following:
    ABORT TASK or ABORT TASK SET task management function.
  
  \item[VIRTIO_SCSI_S_BAD_TARGET] if the request was never processed
@@ -1813,7 +2149,7 @@ index a856b5e..b67081f 100644
  
  \item[VIRTIO_SCSI_S_RESET] if the request was cancelled due to a bus
    or device reset (including a task management function).
-@@ -3825,7 +3822,7 @@ following:
+@@ -3819,7 +3824,7 @@ following:
    same path should work.
  
  \item[VIRTIO_SCSI_S_FAILURE] for other host or driver error. In
@@ -1822,7 +2158,7 @@ index a856b5e..b67081f 100644
    VIRTIO_SCSI_F_INOUT feature has not been negotiated, the
    request will be immediately returned with a response equal to
    VIRTIO_SCSI_S_FAILURE.
-@@ -3858,11 +3855,12 @@ struct virtio_scsi_ctrl {
+@@ -3852,11 +3857,12 @@ struct virtio_scsi_ctrl {
  #define VIRTIO_SCSI_S_INCORRECT_LUN            12
  \end{lstlisting}
  
@@ -1837,7 +2173,7 @@ index a856b5e..b67081f 100644
  \begin{lstlisting}
  #define VIRTIO_SCSI_T_TMF                      0
  
-@@ -3893,24 +3891,23 @@ struct virtio_scsi_ctrl_tmf
+@@ -3887,24 +3893,23 @@ struct virtio_scsi_ctrl_tmf
  #define VIRTIO_SCSI_S_FUNCTION_REJECTED        11
  \end{lstlisting}
  
@@ -1870,7 +2206,7 @@ index a856b5e..b67081f 100644
  \begin{lstlisting}
  #define VIRTIO_SCSI_T_AN_QUERY                    1
  
-@@ -3935,17 +3932,17 @@ struct virtio_scsi_ctrl_an {
+@@ -3929,17 +3934,17 @@ struct virtio_scsi_ctrl_an {
    By sending this command, the driver asks the device which
    events the given LUN can report, as described in paragraphs 6.6
    and A.6 of the SCSI MMC specification. The driver writes the
@@ -1894,7 +2230,7 @@ index a856b5e..b67081f 100644
  \begin{lstlisting}
  #define VIRTIO_SCSI_T_AN_SUBSCRIBE                2
  
-@@ -3963,17 +3960,18 @@ struct virtio_scsi_ctrl_an {
+@@ -3957,17 +3962,18 @@ struct virtio_scsi_ctrl_an {
    By sending this command, the driver asks the specified LUN to
    report events for its physical interface, again as described in
    the SCSI MMC specification. The driver writes the events it is
@@ -1918,7 +2254,7 @@ index a856b5e..b67081f 100644
  
  \paragraph{Legacy Interface: Device Operation: controlq}\label{sec:Device Types / SCSI Host Device / Device Operation / Device Operation: controlq / Legacy Interface: Device Operation: controlq}
  
-@@ -4016,16 +4014,17 @@ struct virtio_scsi_event {
+@@ -4010,16 +4016,17 @@ struct virtio_scsi_event {
  }
  \end{lstlisting}
  
@@ -1940,7 +2276,7 @@ index a856b5e..b67081f 100644
  \begin{lstlisting}
  #define VIRTIO_SCSI_T_NO_EVENT         0
  \end{lstlisting}
-@@ -4046,7 +4045,7 @@ contents of the event field. The following events are defined:
+@@ -4040,7 +4047,7 @@ contents of the event field. The following events are defined:
      flag.
  \end{itemize}
  
@@ -1949,7 +2285,7 @@ index a856b5e..b67081f 100644
  \begin{lstlisting}
  #define VIRTIO_SCSI_T_TRANSPORT_RESET  1
  
-@@ -4058,24 +4057,24 @@ contents of the event field. The following events are defined:
+@@ -4052,24 +4059,24 @@ contents of the event field. The following events are defined:
    By sending this event, the device signals that a logical unit
    on a target has been reset, including the case of a new device
    appearing or disappearing on the bus.The device fills in all
@@ -1982,7 +2318,7 @@ index a856b5e..b67081f 100644
  
    The “removed” and “rescan” events, when sent for LUN 0, may
    apply to the entire target. After receiving them the driver
-@@ -4110,7 +4109,7 @@ contents of the event field. The following events are defined:
+@@ -4104,7 +4111,7 @@ contents of the event field. The following events are defined:
    codes, and it will process them as if it the driver had
    received the equivalent event.
  
@@ -1991,7 +2327,7 @@ index a856b5e..b67081f 100644
  \begin{lstlisting}
  #define VIRTIO_SCSI_T_ASYNC_NOTIFY     2
  \end{lstlisting}
-@@ -4127,7 +4126,7 @@ contents of the event field. The following events are defined:
+@@ -4121,7 +4128,7 @@ contents of the event field. The following events are defined:
    When dropped events are reported, the driver should poll for
    asynchronous events manually using SCSI commands.
  
@@ -2000,7 +2336,7 @@ index a856b5e..b67081f 100644
  \begin{lstlisting}
  #define VIRTIO_SCSI_T_PARAM_CHANGE  3
  \end{lstlisting}
-@@ -4147,6 +4146,7 @@ contents of the event field. The following events are defined:
+@@ -4141,6 +4148,7 @@ contents of the event field. The following events are defined:
    event and the asynchronous notification event.
    For simplicity, as of this version of the specification the host must
    never report this event for MMC devices.
@@ -2008,7 +2344,7 @@ index a856b5e..b67081f 100644
  
  \paragraph{Legacy Interface: Device Operation: eventq}\label{sec:Device Types / SCSI Host Device / Device Operation / Device Operation: eventq / Legacy Interface: Device Operation: eventq}
  For legacy devices, the fields in struct virtio_scsi_event are the
-@@ -4161,16 +4161,16 @@ Currently there are four device-independent feature bits defined:
+@@ -4155,16 +4163,16 @@ Currently there are four device-independent feature bits defined:
    that the driver can use descriptors with the VRING_DESC_F_INDIRECT
    flag set, as described in \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}~\nameref{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}.
  
@@ -2033,7 +2369,7 @@ index a856b5e..b67081f 100644
  
    \item[VIRTIO_F_VERSION_1(32)] This feature must be offered by any device
    compliant with this specification, and acknowledged by all device
-@@ -4190,7 +4190,7 @@ Legacy or transitional devices may offer the following:
+@@ -4184,7 +4192,7 @@ Legacy or transitional devices may offer the following:
    indicates that the driver wants an interrupt if the device runs
    out of available descriptors on a virtqueue, even though
    interrupts are suppressed using the VRING_AVAIL_F_NO_INTERRUPT
