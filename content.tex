@@ -809,35 +809,138 @@ All drivers MUST match devices with any Revision ID, this
 is to allow devices to be versioned without breaking drivers.
 
 \subsubsection{Legacy Interfaces: A Note on PCI Device Discovery}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Discovery / Legacy Interfaces: A Note on PCI Device Discovery}
-Transitional devices must have a Revision ID of 0 to match
+Transitional devices MUST have a Revision ID of 0 to match
 legacy drivers.
 
-Non-transitional devices must have a Revision ID of 1 or higher.
+Non-transitional devices MUST have a Revision ID of 1 or higher.
 
-Both transitional and non-transitional drivers must match
+Both transitional and non-transitional drivers MUST match
 any Revision ID value.
 
 \subsection{PCI Device Layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout}
 
 The device is configured via I/O and/or memory regions (though see
-VIRTIO_PCI_CAP_PCI_CFG for access via the PCI configuration space).
+\ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / PCI configuration access capability} for access via the PCI configuration space).
 
-These regions contain the virtio header registers, the notification register, the
-ISR status register and device specific registers, as specified by Virtio
-Structure PCI Capabilities.
+There may be different widths of accesses to the I/O region; the driver
+MUST access each field using the “natural” access method (i.e. 32-bit accesses for 32-bit fields, etc).  All multi-byte fields are little-endian.
 
-There may be different widths of accesses to the I/O region; the
-“natural” access method for each field must be
-used (i.e. 32-bit accesses for 32-bit fields, etc).
+\subsection{Virtio Structure PCI Capabilities}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / Virtio Structure PCI Capabilities}
 
-PCI Device Configuration Layout includes the common configuration,
-ISR, notification and device specific configuration
-structures.
+The virtio device configuration layout includes a common configuration header, notification area, ISR status area and a device-specific configuration area.
 
-All multi-byte fields are little-endian.
+Each structure can be mapped by a Base Address register (BAR) belonging to
+the function, or accessed via the special VIRTIO_PCI_CAP_PCI_CFG field in the PCI configuration space.
+
+The location of each structure is specified using a vendor-specific PCI capability located
+on the capability list in PCI configuration space of the device.
+This virtio structure capability uses little-endian format; all fields are
+read-only unless stated otherwise:
+
+\begin{lstlisting}
+struct virtio_pci_cap {
+        u8 cap_vndr;    /* Generic PCI field: PCI_CAP_ID_VNDR */
+        u8 cap_next;    /* Generic PCI field: next ptr. */
+        u8 cap_len;     /* Generic PCI field: capability length */
+        u8 cfg_type;    /* Identifies the structure. */
+        u8 bar;         /* Where to find it. */
+        u8 padding[3];  /* Pad to full dword. */
+        le32 offset;    /* Offset within bar. */
+        le32 length;    /* Length of the structure, in bytes. */
+};
+\end{lstlisting}
+
+This structure can be followed by extra data, depending on
+cfg_type, as documented below.  The device MAY append extra data
+or padding to any structure beyond that, the device MUST accept a cap_len field
+which is larger than specified here.
+
+The fields are interpreted as follows:
+
+\begin{description}
+\item[cap_vndr]
+        0x09; Identifies a vendor-specific capability.
+
+\item[cap_next]
+        Link to next capability in the capability list in the configuration space.
+
+\item[cap_len]
+        Length of this capability structure, including the whole of
+        struct virtio_pci_cap, and extra data if any.
+        This length MAY include padding, or fields unused by the driver.
+
+\item[cfg_type]
+        identifies the structure, according to the following table:
+
+\begin{lstlisting}
+/* Common configuration */
+#define VIRTIO_PCI_CAP_COMMON_CFG        1
+/* Notifications */
+#define VIRTIO_PCI_CAP_NOTIFY_CFG        2
+/* ISR Status */
+#define VIRTIO_PCI_CAP_ISR_CFG           3
+/* Device specific configuration */
+#define VIRTIO_PCI_CAP_DEVICE_CFG        4
+/* PCI configuration access */
+#define VIRTIO_PCI_CAP_PCI_CFG           5
+\end{lstlisting}
+
+        Any other value - reserved for future use. Drivers MUST
+        ignore any vendor-specific capability structure which has
+        a reserved cfg_type value.
+
+        The device MAY offer more than one structure of any type - this makes it
+        possible for the device to expose multiple interfaces to drivers.  The order of
+        the capabilities in the capability list specifies the order of preference
+        suggested by the device; drivers SHOULD use the first interface that they can
+        support.  For example, on some hypervisors, notifications using IO accesses are
+        faster than memory accesses. In this case, the device would expose two
+        capabilities with cfg_type set to VIRTIO_PCI_CAP_NOTIFY_CFG:
+        the first one addressing an I/O BAR, the second one addressing a memory BAR.
+        In this example, the driver SHOULD use the I/O BAR if I/O resources are available, and fall back on
+        memory BAR when I/O resources are unavailable.
+
+        Each structure is detailed individually below.
+
+\item[bar]
+        values 0x0 to 0x5 specify a Base Address register (BAR) belonging to
+        the function located beginning at 10h in Configuration Space
+        and used to map the structure into Memory or I/O Space.
+        The BAR is permitted to be either 32-bit or 64-bit, it can map Memory Space
+        or I/O Space.
+
+        Any other value is reserved for future use. Drivers MUST
+        ignore any vendor-specific capability structure which has
+        a reserved bar value.
+
+\item[offset]
+        indicates where the structure begins relative to the base address associated
+        with the BAR.
+
+\item[length]
+        indicates the length of the structure.
+
+        length MAY include padding, or fields unused by the driver, or
+        future extensions.
+
+        Drivers SHOULD only map part of configuration structure
+        large enough for device operation.  Drivers MUST handle
+        unexpectedly large length fields, but MAY check that length
+        is large enough for device operation.
+
+        For example, a future device might present a large structure size of several
+        MBytes.
+        As current devices never utilize structures larger than 4KBytes in size,
+        driver can limit the mapped structure size to e.g.
+        4KBytes to allow forward compatibility with such devices without loss of
+        functionality and without wasting resources.
+\end{description}
 
 \subsubsection{Common configuration structure layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common configuration structure layout}
-Common configuration structure layout is documented below:
+
+The common configuration structure is found at the bar and offset within the VIRTIO_PCI_CAP_COMMON_CFG capability; its layout is below.
+
+The device MUST present at least one common configuration capability.
 
 \begin{lstlisting}
 struct virtio_pci_common_cfg {
@@ -865,19 +968,20 @@ struct virtio_pci_common_cfg {
 
 \begin{description}
 \item[device_feature_select]
-        The driver uses this to select which Feature Bits the device_feature field shows.
+        The driver uses this to select which feature bits the device_feature field shows.
         Value 0x0 selects Feature Bits 0 to 31, 0x1 selects Feature Bits 32 to 63.
-        The device MUST present 0 on device_feature for any other value.
+        The device MUST present 0 on device_feature for any other value, but the driver MUST NOT rely on this.
 
 \item[device_feature]
-        The device uses this to report Feature Bits to the driver.
-        Device Feature Bits selected by device_feature_select.
+        The device uses this to report which feature bits it is
+        offering to the driver: the driver writes to
+        device_feature_select to select which are presented.
 
 \item[driver_feature_select]
-        The driver uses this to select which Feature Bits the driver_feature field shows.
+        The driver uses this to select which feature bits the driver_feature field shows.
         Value 0x0 selects Feature Bits 0 to 31, 0x1 selects Feature Bits 32 to 63.
-        When set to any other value, reads from driver_feature
-        return 0, writing 0 into driver_feature has no effect.  The driver
+        When set to any other value, the device MUST return 0 on reads from driver_feature
+        return 0, and ignore writing of 0 into driver_feature.  The driver
         MUST not write any other value into driver_feature (a corollary of
         the rule that the driver can only write a subset of device features).
 
@@ -924,7 +1028,7 @@ struct virtio_pci_common_cfg {
 \item[queue_notify_off]
         The driver reads this to calculate the offset from start of Notification structure at
         which this virtqueue is located.
-        Note: this is *not* an offset in bytes. See notify_off_multiplier below.
+        Note: this is *not* an offset in bytes. See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability} below.
 
 \item[queue_desc]
         The driver writes the physical address of Descriptor Table here.
@@ -936,18 +1040,87 @@ struct virtio_pci_common_cfg {
         The driver writes the physical address of Used Ring here.
 \end{description}
 
-\subsubsection{ISR status structure layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / ISR status structure layout}
-ISR status structure includes a single 8-bit ISR status field.
+\subsubsection{Notification structure layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability}
 
-\subsubsection{Notification structure layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification structure layout}
-Notification structure is always a multiple of 2 bytes in size.
-It includes 2-byte Queue Notify fields for each virtqueue of
-the device. Note that multiple virtqueues can use the same
-Queue Notify field, if necessary: see notify_off_multiplier below.
+The device MUST present at least one notification capability.
+
+The notification location is found using the VIRTIO_PCI_CAP_NOTIFY_CFG
+capability.  This capability is immediately followed by an additional
+field, like so:
+
+\begin{lstlisting}
+struct virtio_pci_notify_cap {
+        struct virtio_pci_cap cap;
+        le32 notify_off_multiplier; /* Multiplier for queue_notify_off. */
+};
+\end{lstlisting}
+
+The device MUST present an even cap.length of at least 2.
+
+The device MUST present notify_off_multiplier as an even power of 2,
+or 0.  The device MUST ignore a capability with notify_off_multiplier
+of 1.
+
+notify_off_multiplier field is combined with the queue_notify_off to
+derive the Queue Notify address within a BAR for a specific queue:
+
+\begin{lstlisting}
+        cap.offset + queue_notify_off * notify_off_multiplier
+\end{lstlisting}
+
+The BAR, offset and notify_off_multiplier are taken from the
+notification capability structure above, and the queue_notify_off is
+taken from the common configuration structure.
+
+For example, if notifier_off_multiplier is 0, all queues will use the same 
+Queue Notify address.
+
+\subsubsection{ISR status capability}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / ISR status capability}
+
+The device MUST present at least one VIRTIO_PCI_CAP_ISR_CFG capability.  This
+refers to at least a single byte, which contains the 8-bit ISR status field.
 
 \subsubsection{Device specific structure}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Device specific structure}
 
-Device specific structure is optional.
+The device MAY present at least one VIRTIO_PCI_CAP_DEVICE_CFG capability (some
+devices may not have any device specific structure).
+
+\subsubsection{PCI configuration access capability}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / PCI configuration access capability}
+
+The device MUST present at least one VIRTIO_PCI_CAP_PCI_CFG.  This
+creates an alternative (and likely suboptimal) access method to the
+common configuration, notification, ISR and device-specific regions.
+
+The capability is immediately followed by an additional field like so:
+
+\begin{lstlisting}
+struct virtio_pci_cfg_cap {
+        struct virtio_pci_cap cap;
+        u8 pci_cfg_data[4]; /* Data for BAR access. */
+};
+\end{lstlisting}
+
+To access a device region, the driver writes into the capability
+structure (ie. within the PCI configuration space) as follows:
+
+\begin{itemize}
+\item The driver sets the BAR to access by writing to the cap.bar field.
+
+\item The driver sets the size of the access by writing 1, 2 or 4 to
+  the cap.length field.
+
+\item The driver sets the offset within the BAR by writing to the
+  cap.offset field.  The driver MUST NOT write an offset which is not
+  a multiple of cap.length (ie. all accesses must be aligned).
+\end{itemize}
+
+At that point, the pci_cfg_data field will provide a window of size
+cap.length into the given cap.bar at offset cap.offset: writes will
+have the same effect as writes into the BAR, and reads will have the
+same effect and return the same value as reads from the BAR.
+
+The driver MUST perform reads/writes from/to pci_cfg_data of the same
+width as given by cap.length.
 
 \subsubsection{Legacy Interfaces: A Note on PCI Device Layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Legacy Interfaces: A Note on PCI Device Layout}
 
@@ -1032,179 +1205,13 @@ device.
 
 \paragraph{Virtio Device Configuration Layout Detection}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Virtio Device Configuration Layout Detection}
 
-As a prerequisite to device initialization, driver executes a
-PCI capability list scan, detecting virtio configuration layout using Virtio
+As a prerequisite to device initialization, the driver scans the
+PCI capability list, detecting virtio configuration layout using the Virtio
 Structure PCI capabilities.
-
-Virtio Device Configuration Layout includes virtio configuration header, Notification
-and ISR Status and device configuration structures.
-Each structure can be mapped by a Base Address register (BAR) belonging to
-the function, located beginning at 10h in Configuration Space,
-or accessed though PCI configuration space.
-
-Actual location of each structure is specified using vendor-specific PCI capability located
-on capability list in PCI configuration space of the device.
-This virtio structure capability uses little-endian format; all bits are
-read-only:
-
-\begin{lstlisting}
-struct virtio_pci_cap {
-        u8 cap_vndr;    /* Generic PCI field: PCI_CAP_ID_VNDR */
-        u8 cap_next;    /* Generic PCI field: next ptr. */
-        u8 cap_len;     /* Generic PCI field: capability length */
-        u8 cfg_type;    /* Identifies the structure. */
-        u8 bar;         /* Where to find it. */
-        u8 padding[3];  /* Pad to full dword. */
-        le32 offset;    /* Offset within bar. */
-        le32 length;    /* Length of the structure, in bytes. */
-};
-\end{lstlisting}
-
-This structure can optionally be followed by extra data, depending on
-other fields, as documented below.
-
-Note that future versions of this specification will likely
-extend devices by adding extra fields at the tail end of some structures.
-
-To allow forward compatibility with such extensions, drivers must
-not limit structure size.  Instead, drivers should only
-check that structures are *large enough* to contain the fields
-required for device operation.
-
-For example, if the specification states 'structure includes a
-single 8-bit field' drivers should understand this to mean that
-the structure can also include an arbitrary amount of tail padding,
-and accept any structure size equal to or greater than the
-specified 8-bit size.
-
-The fields are interpreted as follows:
-
-\begin{description}
-\item[cap_vndr]
-        0x09; Identifies a vendor-specific capability.
-
-\item[cap_next]
-        Link to next capability in the capability list in the configuration space.
-
-\item[cap_len]
-        Length of the capability structure, including the whole of
-        struct virtio_pci_cap, and extra data if any.
-        This length might include padding, or fields unused by the driver.
-
-\item[cfg_type]
-        identifies the structure, according to the following table.
-
-\begin{lstlisting}
-/* Common configuration */
-#define VIRTIO_PCI_CAP_COMMON_CFG        1
-/* Notifications */
-#define VIRTIO_PCI_CAP_NOTIFY_CFG        2
-/* ISR Status */
-#define VIRTIO_PCI_CAP_ISR_CFG           3
-/* Device specific configuration */
-#define VIRTIO_PCI_CAP_DEVICE_CFG        4
-/* PCI configuration access */
-#define VIRTIO_PCI_CAP_PCI_CFG           5
-\end{lstlisting}
-
-        Any other value - reserved for future use. Drivers MUST
-        ignore any vendor-specific capability structure which has
-        a reserved cfg_type value.
-
-        More than one capability can identify the same structure - this makes it
-        possible for the device to expose multiple interfaces to drivers.  The order of
-        the capabilities in the capability list specifies the order of preference
-        suggested by the device; drivers SHOULD use the first interface that they can
-        support.  For example, on some hypervisors, notifications using IO accesses are
-        faster than memory accesses. In this case, hypervisor can expose two
-        capabilities with cfg_type set to VIRTIO_PCI_CAP_NOTIFY_CFG:
-        the first one addressing an I/O BAR, the second one addressing a memory BAR.
-        Driver will use the I/O BAR if I/O resources are available, and fall back on
-        memory BAR when I/O resources are unavailable.
-
-\item[bar]
-        values 0x0 to 0x5 specify a Base Address register (BAR) belonging to
-        the function located beginning at 10h in Configuration Space
-        and used to map the structure into Memory or I/O Space.
-        The BAR is permitted to be either 32-bit or 64-bit, it can map Memory Space
-        or I/O Space.
-
-        Any other value is reserved for future use. Drivers MUST
-        ignore any vendor-specific capability structure which has
-        a reserved bar value.
-
-\item[offset]
-        indicates where the structure begins relative to the base address associated
-        with the BAR.
-
-\item[length]
-        indicates the length of the structure.
-        This size might include padding, or fields unused by the driver.
-        Drivers SHOULD only map part of configuration structure
-        large enough for device operation.
-        For example, a future device might present a large structure size of several
-        MBytes.
-        As current devices never utilize structures larger than 4KBytes in size,
-        driver can limit the mapped structure size to e.g.
-        4KBytes to allow forward compatibility with such devices without loss of
-        functionality and without wasting resources.
-\end{description}
-
-If cfg_type is VIRTIO_PCI_CAP_NOTIFY_CFG this structure is immediately followed
-by additional fields:
-
-\begin{lstlisting}
-struct virtio_pci_notify_cap {
-        struct virtio_pci_cap cap;
-        le32 notify_off_multiplier; /* Multiplier for queue_notify_off. */
-};
-\end{lstlisting}
-
-\begin{description}
-\item[notify_off_multiplier]
-
-        Virtqueue offset multiplier, in bytes. Must be even and either a power of two, or 0.
-        Value 0x1 is reserved.
-        For a given virtqueue, the address to use for notifications is calculated as follows:
-
-        queue_notify_off * notify_off_multiplier + offset
-
-        If notify_off_multiplier is 0, all virtqueues use the same address in
-        the Notifications structure!
-\end{description}
-
-If cfg_type is VIRTIO_PCI_CAP_PCI_CFG the fields bar, offset and length are RW
-and this structure is immediately followed by an additional field:
-
-\begin{lstlisting}
-struct virtio_pci_cfg_cap {
-        __u8 pci_cfg_data[4]; /* Data for BAR access. */
-};
-\end{lstlisting}
-
-\begin{description}
-\item[pci_cfg_data]
-
-        This RW field allows an indirect access to any BAR on the
-        device using PCI configuration accesses.
-
-        The BAR to access is selected using the bar field.
-        The length of the access is specified by the length
-        field, which can be set to 1, 2 and 4.
-        The offset within the BAR is specified by the offset
-        field, which must be aligned to length bytes.
-
-        After this field is written by driver, the first length
-        bytes in pci_cfg_data are written at the selected
-        offset in the selected BAR.
-
-        When this field is read by driver, length bytes at the
-        selected offset in the selected BAR are read into pci_cfg_data.
-\end{description}
 
 \subparagraph{Legacy Interface: A Note on Device Layout Detection}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Virtio Device Configuration Layout Detection / Legacy Interface: A Note on Device Layout Detection}
 
-Legacy drivers skipped  Device Layout Detection step, assuming legacy
+Legacy drivers skipped the Device Layout Detection step, assuming legacy
 configuration space in BAR0 in I/O space unconditionally.
 
 Legacy devices did not have the Virtio PCI Capability in their
@@ -1226,7 +1233,7 @@ and fail gracefully.
 
 Non-transitional devices, on a platform where a legacy driver for
 a legacy device with the same ID might have previously existed,
-must take the following steps to fail gracefully when a legacy
+MUST take the following steps to fail gracefully when a legacy
 driver attempts to drive them:
 
 \begin{enumerate}
@@ -1305,16 +1312,16 @@ device is defined as 4096 bytes.  Driver writes the physical address, divided
 by 4096 to the Queue Address field\footnote{The 4096 is based on the x86 page size, but it's also large
 enough to ensure that the separate parts of the virtqueue are on
 separate cache lines.
-}.
+}.  There was no mechanism to negotiate the queue size.
 
 \subsubsection{Notifying The Device}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Notifying The Device}
 
-Device notification occurs by writing the 16-bit virtqueue index
-of this virtqueue to the Queue Notify field.
+The driver notifies the device by writing the 16-bit virtqueue index
+of this virtqueue to the Queue Notify address.  See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability} for how to calculate this address.
 
 \subsubsection{Virtqueue Interrupts From The Device}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Virtqueue Interrupts From The Device}
 
-If an interrupt is necessary:
+If an interrupt is necessary, the device SHOULD:
 
 \begin{itemize}
   \item If MSI-X capability is disabled:
@@ -1331,22 +1338,23 @@ If an interrupt is necessary:
       number.
 
     \item If Queue Vector field value is NO_VECTOR, no interrupt
-      message is requested for this event.
+      message is requested for this event, so the device MUST NOT
+      deliver an interrupt.
     \end{enumerate}
 \end{itemize}
 
-The driver interrupt handler should:
+The driver interrupt handler SHOULD:
 
 \begin{itemize}
   \item If MSI-X capability is disabled: read the ISR Status field,
   which will reset it to zero. If the lower bit is zero, the
   interrupt was not for this device. Otherwise, the driver
-  should look through the used rings of each virtqueue for the
+  SHOULD look through the used rings of all virtqueues for the
   device, to see if any progress has been made by the device
   which requires servicing.
 
   \item If MSI-X capability is enabled: look through the used rings of
-  each virtqueue mapped to the specific MSI-X vector for the
+  all virtqueues mapped to the specific MSI-X vector for the
   device, to see if any progress has been made by the device
   which requires servicing.
 \end{itemize}
@@ -1354,8 +1362,7 @@ The driver interrupt handler should:
 \subsubsection{Notification of Device Configuration Changes}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Notification of Device Configuration Changes}
 
 Some virtio PCI devices can change the device configuration
-state, as reflected in the virtio header in the PCI configuration
-space. In this case:
+state, as reflected in the device-specific region of the device. In this case:
 
 \begin{itemize}
   \item If MSI-X capability is disabled: an interrupt is delivered and
@@ -1364,12 +1371,13 @@ space. In this case:
   space.  Note that a single interrupt can indicate both that one
   or more virtqueue has been used and that the configuration
   space has changed: even if the config bit is set, virtqueues
-  must be scanned.
+  MUST be scanned.
 
   \item If MSI-X capability is enabled: an interrupt message is
   requested. The Configuration Vector field sets the MSI-X Table
   entry number to use. If Configuration Vector field value is
-  NO_VECTOR, no interrupt message is requested for this event.
+  NO_VECTOR, no interrupt message is requested for this event and
+  the device MUST NOT deliver an interrupt.
 \end{itemize}
 
 \section{Virtio Over MMIO}\label{sec:Virtio Transport Options / Virtio Over MMIO}
