@@ -1047,13 +1047,13 @@ struct virtio_pci_common_cfg {
         Note: this is *not* an offset in bytes. See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability} below.
 
 \item[\field{queue_desc}]
-        The driver writes the physical address of Descriptor Table here.
+        The driver writes the physical address of Descriptor Table here.  See section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues}.
 
 \item[\field{queue_avail}]
-        The driver writes the physical address of Available Ring here.
+        The driver writes the physical address of Available Ring here.  See section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues}.
 
 \item[\field{queue_used}]
-        The driver writes the physical address of Used Ring here.
+        The driver writes the physical address of Used Ring here.  See section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues}.
 \end{description}
 
 \subsubsection{Notification structure layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability}
