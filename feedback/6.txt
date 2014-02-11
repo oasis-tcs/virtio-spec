@@ -80,7 +80,7 @@ device" or "read-only for the driver" throughout the specification.
 Proposal:
 
 diff --git a/content.tex b/content.tex
-index 7e77740..ca155ec 100644
+index 7e77740..27a957d 100644
 --- a/content.tex
 +++ b/content.tex
 @@ -286,7 +286,7 @@ struct vring {
@@ -165,6 +165,15 @@ index 7e77740..ca155ec 100644
  parts of both, depending on the nature of the virtqueue and the
  device), it SHOULD send an interrupt, following an algorithm very
  similar to the algorithm used for the driver to send the device a
+@@ -835,7 +838,7 @@ the function, or accessed via the special VIRTIO_PCI_CAP_PCI_CFG field in the PC
+ The location of each structure is specified using a vendor-specific PCI capability located
+ on the capability list in PCI configuration space of the device.
+ This virtio structure capability uses little-endian format; all fields are
+-read-only unless stated otherwise:
++read-only for the driver unless stated otherwise:
+ 
+ \begin{lstlisting}
+ struct virtio_pci_cap {
 @@ -946,20 +949,20 @@ The device MUST present at least one common configuration capability.
  struct virtio_pci_common_cfg {
          /* About the whole device. */
@@ -204,6 +213,24 @@ index 7e77740..ca155ec 100644
  \section{Network Device}\label{sec:Device Types / Network Device}
  
  The virtio network device is a virtual ethernet card, and is the
+@@ -2445,7 +2455,7 @@ were required.
+ Three configuration fields are currently defined. The mac address field
+ always exists (though is only valid if VIRTIO_NET_F_MAC is set), and
+ the status field only exists if VIRTIO_NET_F_STATUS is set. Two
+-read-only bits are currently defined for the status field:
++read-only bits (for the driver) are currently defined for the status field:
+ VIRTIO_NET_S_LINK_UP and VIRTIO_NET_S_ANNOUNCE.
+ 
+ \begin{lstlisting}
+@@ -2453,7 +2463,7 @@ VIRTIO_NET_S_LINK_UP and VIRTIO_NET_S_ANNOUNCE.
+ #define VIRTIO_NET_S_ANNOUNCE    2
+ \end{lstlisting}
+ 
+-The following read-only field, max_virtqueue_pairs only exists if
++The following driver-read-only field, max_virtqueue_pairs only exists if
+ VIRTIO_NET_F_MQ is set. This field specifies the maximum number
+ of each of transmit and receive virtqueues (receiveq0..receiveqN
+ and transmitq0..transmitqN respectively;
 @@ -2764,7 +2774,7 @@ off. The command-specific-data is one byte containing 0 (off) or
  \begin{lstlisting}
  struct virtio_net_ctrl_mac {
@@ -213,6 +240,15 @@ index 7e77740..ca155ec 100644
  };
  
  #define VIRTIO_NET_CTRL_MAC    1
+@@ -2786,7 +2796,7 @@ When VIRTIO_NET_F_MAC_ADDR is not negotiated, the mac field in
+ config space is writeable and is used to set the default MAC
+ address which rx filtering accepts.
+ When VIRTIO_NET_F_MAC_ADDR is negotiated, the mac field in
+-config space becomes read-only.
++config space becomes read-only for the driver.
+ The VIRTIO_NET_CTRL_MAC_ADDR_SET command is used to set the
+ default MAC address which rx filtering
+ accepts
 @@ -3090,7 +3100,7 @@ struct virtio_blk_req {
          le32 type;
          le32 reserved;
@@ -233,7 +269,12 @@ index 7e77740..ca155ec 100644
  #define SCSI_SENSE_BUFFERSIZE   96
          u8 sense[SCSI_SENSE_BUFFERSIZE];
          u32 errors;
-@@ -3182,8 +3192,8 @@ single, separate read-only buffer; command length can be derived
+@@ -3178,12 +3188,12 @@ does not distinguish between them:
+ 
+ The cmd field is only present for scsi packet command requests,
+ and indicates the command to perform. This field must reside in a
+-single, separate read-only buffer; command length can be derived
++single, separate device-readable buffer; command length can be derived
  from the length of this buffer.
  
  Note that these first three (four for scsi packet commands)
@@ -252,10 +293,11 @@ index 7e77740..ca155ec 100644
 +sector reside in a single, separate device-readable buffer; the fields
  errors, data_len, sense_len and residual reside in a single,
 -separate write-only buffer; the sense field in a separate
-+separate device-writable buffer; the sense field in a separate
- write-only buffer of size 96 bytes, by itself; the fields errors,
+-write-only buffer of size 96 bytes, by itself; the fields errors,
 -data_len, sense_len and residual in a single write-only buffer;
 -and the status field is a separate write-only buffer of size 1
++separate device-writable buffer; the sense field in a separate
++device-writable buffer of size 96 bytes, by itself; the fields errors,
 +data_len, sense_len and residual in a single device-writable buffer;
 +and the status field is a separate device-writable buffer of size 1
  byte, by itself.
@@ -344,7 +386,7 @@ index 7e77740..ca155ec 100644
 +  a port as a console port.  There may be more than one console port.
 +  The driver SHOULD treat the port in a manner suitable for text
 +  console access; the driver MUST respond with a VIRTIO_CONSOLE_PORT_OPEN
-+  message, with \field{value} to 1.
++  message.  The driver MUST set \field{value} to 1.
 +\item [VIRTIO_CONSOLE_RESIZE (5)] Sent by the device to indicate
 +  a console size change.  \field{value} is unused.  The buffer is followed by the number of columns and rows:
 +\begin{lstlisting}
@@ -409,11 +451,11 @@ index 7e77740..ca155ec 100644
  
  All of these fields are defined in SAM. They are always
 -read-only, as are the cdb and dataout field. The cdb_size is
-+device readable, as are the cdb and dataout field. The cdb_size is
++device-readable, as are the cdb and dataout field. The cdb_size is
  taken from the configuration space.
  
 -sense and subsequent fields are always write-only. The sense_len
-+sense and subsequent fields are always device writable. The sense_len
++sense and subsequent fields are always device-writable. The sense_len
  field indicates the number of bytes actually written to the sense
  buffer. The residual field indicates the residual size,
  calculated as “data_length - number_of_transferred_bytes”, for
@@ -460,6 +502,15 @@ index 7e77740..ca155ec 100644
          le32 event_actual;
          u8   response;
  }
+@@ -3999,7 +4036,7 @@ should be enough.
+ 
+ Buffers are placed in the eventq and filled by the device when
+ interesting events occur. The buffers should be strictly
+-write-only (device-filled) and the size of the buffers should be
++device-writable and the size of the buffers should be
+ at least the value given in the device's configuration
+ information.
+ 
 @@ -4011,7 +4048,7 @@ following format:
  #define VIRTIO_SCSI_T_EVENTS_MISSED   0x80000000
  
@@ -469,3 +520,19 @@ index 7e77740..ca155ec 100644
          le32 event;
          u8  lun[8];
          le32 reason;
+@@ -4232,13 +4269,13 @@ transmit output.
+ 
+ Configuration space should only be used for initialization-time
+ parameters.  It is a limited resource with no synchronization between
+-writable fields, so for most uses it is better to use a virtqueue to update
++field written by the driver, so for most uses it is better to use a virtqueue to update
+ configuration information (the network device does this for filtering,
+ otherwise the table in the config space could potentially be very
+ large).
+ 
+ Devices must not assume that configuration fields over 32 bits wide
+-are atomically writable.
++are atomically writable by the driver.
+ 
+ \section{What Device Number?}\label{sec:Creating New Device Types / What Device Number?}
+ 
