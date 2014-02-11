@@ -78,12 +78,12 @@ index 2adc393..d6c2591 100644
  
 -The virtio device configuration layout includes a common configuration header, notification area, ISR status area and a device-specific configuration area.
 +The virtio device configuration layout includes several structures:
-+\begin{item}
++\begin{itemize}
 +\item Common configuration
 +\item Notifications
 +\item ISR Status
 +\item Device-specific configuration (optional)
-+\end{item}
++\end{itemize}
  
  Each structure can be mapped by a Base Address register (BAR) belonging to
  the function, or accessed via the special VIRTIO_PCI_CAP_PCI_CFG field in the PCI configuration space.
