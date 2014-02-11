@@ -344,7 +344,7 @@ index 7e77740..ca155ec 100644
 +  a port as a console port.  There may be more than one console port.
 +  The driver SHOULD treat the port in a manner suitable for text
 +  console access; the driver MUST respond with a VIRTIO_CONSOLE_PORT_OPEN
-+  message.  The driver MUST set \field{value} to 1.
++  message, with \field{value} to 1.
 +\item [VIRTIO_CONSOLE_RESIZE (5)] Sent by the device to indicate
 +  a console size change.  \field{value} is unused.  The buffer is followed by the number of columns and rows:
 +\begin{lstlisting}
