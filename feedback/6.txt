@@ -3,7 +3,7 @@ Number: 6
 Date: Wed, 29 Jan 2014 21:36:30 +0100
 Link to Mail: https://lists.oasis-open.org/archives/virtio-comment/201401/msg00055.html
 Commenter name: Thomas Huth <thuth@linux.vnet.ibm.com>
-Decision: 
+Decision: 2014-02-11 minutes: Applied
 
 Generic remark: Quite a lot of structures use a mixture of "u8"
 and "char" types for bytes, e.g. struct virtio_blk_req. Is that
