@@ -3,7 +3,7 @@ Number: 5
 Date: Tue, 28 Jan 2014 09:44:50 -0500
 Link to Mail: https://lists.oasis-open.org/archives/virtio-comment/201401/msg00046.html
 Commenter name: Laura Novich <lnovich@redhat.com>
-Decision:
+Decision: 2014-02-11 minutes: Applied
 
 INTRODUCTION
 ===============
