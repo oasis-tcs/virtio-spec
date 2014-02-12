@@ -8,7 +8,7 @@ device consists of the following parts:
 \begin{itemize}
 \item Device status field
 \item Feature bits
-\item Configuration space
+\item Device Configuration space
 \item One or more virtqueues
 \end{itemize}
 
@@ -138,19 +138,19 @@ To make them easier to locate, specification sections documenting
 these transitional features are explicitly marked with 'Legacy
 Interface' in the section title.
 
-\section{Configuration Space}\label{sec:Basic Facilities of a Virtio Device / Configuration Space}
+\section{Device Configuration Space}\label{sec:Basic Facilities of a Virtio Device / Device Configuration Space}
 
-Configuration space is generally used for rarely-changing or
+Device configuration space is generally used for rarely-changing or
 initialization-time parameters.  Drivers MUST NOT assume reads from
 fields greater than 32 bits wide are atomic, nor reads from
 multiple fields.
 
-Each transport provides a generation count for the configuration
+Each transport provides a generation count for the device configuration
 space, which must change whenever there is a possibility that two
-accesses to the configuration space can see different versions of that
+accesses to the device configuration space can see different versions of that
 space.
 
-Thus drivers SHOULD read configuration space fields like so:
+Thus drivers SHOULD read device configuration space fields like so:
 
 \begin{lstlisting}
 u32 before, after;
@@ -161,30 +161,30 @@ do {
 } while (after != before);
 \end{lstlisting}
 
-Note that configuration space uses the little-endian format
+Note that device configuration space uses the little-endian format
 for multi-byte fields.
 
 Note that future versions of this specification will likely
-extend the configuration space for devices by adding extra fields
-at the tail end of some structures in configuration space.
+extend the device configuration space for devices by adding extra fields
+at the tail end of some structures in device configuration space.
 
 To allow forward compatibility with such extensions, drivers MUST
-NOT limit structure size and configuration space size.  Instead,
-drivers SHOULD only check that configuration space is *large enough* to
+NOT limit structure size and device configuration space size.  Instead,
+drivers SHOULD only check that device configuration space is *large enough* to
 contain the fields required for device operation.
 
-For example, if the specification states that configuration
+For example, if the specification states that device configuration
 space 'includes a single 8-bit field' drivers should understand this to mean that
-the configuration space might also include an arbitrary amount of
-tail padding, and accept any configuration space size equal to or
+the device configuration space might also include an arbitrary amount of
+tail padding, and accept any device configuration space size equal to or
 greater than the specified 8-bit size.
 
-\subsection{Legacy Interface: A Note on Configuration Space endian-ness}\label{sec:Basic Facilities of a Virtio Device / Configuration Space / Legacy Interface: A Note on Configuration Space endian-ness}
+\subsection{Legacy Interface: A Note on Device Configuration Space endian-ness}\label{sec:Basic Facilities of a Virtio Device / Device Configuration Space / Legacy Interface: A Note on Configuration Space endian-ness}
 
-Note that for legacy interfaces, configuration space is generally the
+Note that for legacy interfaces, device configuration space is generally the
 guest's native endian, rather than PCI's little-endian.
 
-\subsection{Legacy Interface: Configuration Space}\label{sec:Basic Facilities of a Virtio Device / Configuration Space / Legacy Interface: Configuration Space}
+\subsection{Legacy Interface: Device Configuration Space}\label{sec:Basic Facilities of a Virtio Device / Device Configuration Space / Legacy Interface: Device Configuration Space}
 
 Legacy devices did not have a configuration generation field, thus are
 susceptible to race conditions if configuration is updated.  This
@@ -772,8 +772,8 @@ for (;;) {
 
 \subsection{Notification of Device Configuration Changes}\label{sec:General Initialization And Device Operation / Device Operation / Notification of Device Configuration Changes}
 
-For devices where the configuration information can be changed, an
-interrupt is delivered when a configuration change occurs.
+For devices where the device-specific configuration information can be changed, an
+interrupt is delivered when a device-specific configuration change occurs.
 
 \section{Device Cleanup}\label{sec:General Initialization And Device Operation / Device Cleanup}
 
@@ -1254,7 +1254,9 @@ Transitional Devices must assume that Feature Bits 32 to 63
 are not acknowledged by Driver.
 
 As legacy devices had no \field{config_generation} field,
-see \ref{sec:Basic Facilities of a Virtio Device / Configuration Space / Legacy Interface: Configuration Space}~\nameref{sec:Basic Facilities of a Virtio Device / Configuration Space / Legacy Interface: Configuration Space} for workarounds.
+see \ref{sec:Basic Facilities of a Virtio Device / Device
+Configuration Space / Legacy Interface: Device Configuration
+Space}~\nameref{sec:Basic Facilities of a Virtio Device / Device Configuration Space / Legacy Interface: Device Configuration Space} for workarounds.
 
 \subsection{PCI-specific Initialization And Device Operation}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation}
 
@@ -1274,7 +1276,7 @@ Structure PCI capabilities.
 \subparagraph{Legacy Interface: A Note on Device Layout Detection}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Virtio Device Configuration Layout Detection / Legacy Interface: A Note on Device Layout Detection}
 
 Legacy drivers skipped the Device Layout Detection step, assuming legacy
-device registers in BAR0 in I/O space unconditionally.
+device configuration space in BAR0 in I/O space unconditionally.
 
 Legacy devices did not have the Virtio PCI Capability in their
 capability list.
@@ -2180,8 +2182,7 @@ combination.
 
 \subsubsection{Device Configuration}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Device Configuration}
 
-The device's configuration space is located in host memory. It is
-the same size as the standard PCI configuration space.
+The device's configuration space is located in host memory.
 
 To obtain information from the configuration space, the driver
 uses CCW_CMD_READ_CONF, specifying the guest memory for the device
@@ -3596,7 +3597,7 @@ configuration change interrupt.
 
 \item In either case, once the device has completed the inflation or
   deflation, \field{actual} should be
-  updated to reflect the new number of pages in the balloon.\footnote{As updates to configuration space are not atomic, this field
+  updated to reflect the new number of pages in the balloon.\footnote{As updates to device configuration space are not atomic, this field
 isn't particularly reliable, but can be used to diagnose buggy guests.
 }
 \end{enumerate}
@@ -4316,16 +4317,16 @@ type.
 \section{How Many Virtqueues?}\label{sec:Creating New Device Types / How Many Virtqueues?}
 
 It is possible that a very simple device will operate entirely
-through its configuration space, but most will need at least one
+through its device configuration space, but most will need at least one
 virtqueue in which it will place requests. A device with both
 input and output (eg. console and network devices described here)
 need two queues: one which the driver fills with buffers to
 receive input, and one which the driver places buffers to
 transmit output.
 
-\section{What Configuration Space Layout?}\label{sec:Creating New Device Types / What Configuration Space Layout?}
+\section{What Device Configuration Space Layout?}\label{sec:Creating New Device Types / What Device Configuration Space Layout?}
 
-Configuration space should only be used for initialization-time
+Device configuration space should only be used for initialization-time
 parameters.  It is a limited resource with no synchronization between
 field written by the driver, so for most uses it is better to use a virtqueue to update
 configuration information (the network device does this for filtering,
@@ -4362,7 +4363,7 @@ altogether.
 
 \section{Device Improvements}\label{sec:Creating New Device Types / Device Improvements}
 
-Any change to configuration space, or new virtqueues, or
+Any change to device configuration space, or new virtqueues, or
 behavioural changes, should be indicated by negotiation of a new
 feature bit. This establishes clarity\footnote{Even if it does mean documenting design or implementation
 mistakes!
