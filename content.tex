@@ -1090,8 +1090,7 @@ the same Queue Notify address for all queues.
 The value cap.length presented by the device MUST be at least 2
 and MUST be large enough to support queue notification offsets
 for all supported queues in all possible configurations.
-For all queues, the value cap.length presented by the device MUST satisty:
-
+For all queues, the value cap.length presented by the device MUST satisfy:
 \begin{lstlisting}
 	cap.length >= queue_notify_off * notify_off_multiplier + 2
 \end{lstlisting}
