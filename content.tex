@@ -2281,7 +2281,7 @@ for the devices are contained, starting at \field{bit_nr}, one bit per
 virtqueue of the device. Bit numbers start at the left, i.e. the most
 significant bit in the first byte is assigned the bit number 0.
 \field{isc} contains the I/O interruption subclass to be used for the adapter
-I/O interrupt. It may be different from the isc used by the proxy
+I/O interrupt. It MAY be different from the isc used by the proxy
 virtio-ccw device's subchannel.
 
 If the driver has already set up classic queue indicators via the
@@ -2367,10 +2367,10 @@ The device MUST ignore bits 0-31 (counting from the left) of GPR2.
 This aligns passing the subchannel ID with the way it is passed
 for the existing I/O instructions.
 
-Host cookie is an optional per-virtqueue 64 bit value that can be
+Host cookie is an optional per-virtqueue 64 bit value that MAY be
 used by the hypervisor to speed up the notification execution.
 For each notification, the output value is returned in GPR2 and
-should be passed in GPR4 for the next notification:
+SHOULD be passed in GPR4 for the next notification:
 
 \begin{lstlisting}
 info->cookie = do_notify(schid,
