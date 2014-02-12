@@ -760,6 +760,8 @@ for (;;) {
 
                 if (vq->last_seen_used != le16_to_cpu(vring->used.idx))
                         break;
+
+                vring_disable_interrupts(vq);
         }
 
         struct vring_used_elem *e = vring.used->ring[vq->last_seen_used%vsz];
@@ -796,6 +798,17 @@ into virtio general and bus-specific sections.
 \section{Virtio Over PCI Bus}\label{sec:Virtio Transport Options / Virtio Over PCI Bus}
 
 Virtio devices are commonly implemented as PCI devices.
+
+A Virtio device can be implemented as any kind of PCI device:
+a Conventional PCI device or a PCI Express
+device.  A Virtio device using Virtio Over PCI Bus MUST expose to
+guest an interface that meets the specification requirements of
+the appropriate PCI specification: \hyperref[intro:PCI]{[PCI]}
+and \hyperref[intro:PCIe]{[PCIe]}
+respectively.  To assure designs meet the latest level
+requirements, designers of Virtio Over PCI devices must refer to
+the PCI-SIG home page at \url{http://www.pcisig.com} for any
+approved changes.
 
 \subsection{PCI Device Discovery}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Discovery}
 
@@ -835,8 +848,13 @@ MUST access each field using the “natural” access method (i.e. 32-bit access
 
 \subsection{Virtio Structure PCI Capabilities}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / Virtio Structure PCI Capabilities}
 
-The virtio device configuration layout includes a common configuration header, notification area, ISR status area
-and a device-specific configuration area.
+The virtio device configuration layout includes several structures:
+\begin{itemize}
+\item Common configuration
+\item Notifications
+\item ISR Status
+\item Device-specific configuration (optional)
+\end{itemize}
 
 Each structure can be mapped by a Base Address register (BAR) belonging to
 the function, or accessed via the special VIRTIO_PCI_CAP_PCI_CFG field in the PCI configuration space.
@@ -875,7 +893,7 @@ The fields are interpreted as follows:
         0x09; Identifies a vendor-specific capability.
 
 \item[\field{cap_next}]
-        Link to next capability in the capability list in the configuration space.
+        Link to next capability in the capability list in the PCI configuration space.
 
 \item[\field{cap_len}]
         Length of this capability structure, including the whole of
@@ -917,7 +935,7 @@ The fields are interpreted as follows:
 
 \item[\field{bar}]
         values 0x0 to 0x5 specify a Base Address register (BAR) belonging to
-        the function located beginning at 10h in Configuration Space
+        the function located beginning at 10h in PCI Configuration Space
         and used to map the structure into Memory or I/O Space.
         The BAR is permitted to be either 32-bit or 64-bit, it can map Memory Space
         or I/O Space.
@@ -928,7 +946,8 @@ The fields are interpreted as follows:
 
 \item[\field{offset}]
         indicates where the structure begins relative to the base address associated
-        with the BAR.
+        with the BAR.  The alignment requirement of \field{offset} are indicated
+        in each structure-specific section below.
 
 \item[\field{length}]
         indicates the length of the structure.
@@ -953,6 +972,7 @@ The fields are interpreted as follows:
 \subsubsection{Common configuration structure layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common configuration structure layout}
 
 The common configuration structure is found at the \field{bar} and \field{offset} within the VIRTIO_PCI_CAP_COMMON_CFG capability; its layout is below.
+\field{offset} must be 4-byte aligned.
 
 The device MUST present at least one common configuration capability.
 
@@ -1049,13 +1069,13 @@ struct virtio_pci_common_cfg {
         See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability} below.
 
 \item[\field{queue_desc}]
-        The driver writes the physical address of Descriptor Table here.
+        The driver writes the physical address of Descriptor Table here.  See section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues}.
 
 \item[\field{queue_avail}]
-        The driver writes the physical address of Available Ring here.
+        The driver writes the physical address of Available Ring here.  See section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues}.
 
 \item[\field{queue_used}]
-        The driver writes the physical address of Used Ring here.
+        The driver writes the physical address of Used Ring here.  See section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues}.
 \end{description}
 
 \subsubsection{Notification structure layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability}
@@ -1063,7 +1083,7 @@ struct virtio_pci_common_cfg {
 The device MUST present at least one notification capability.
 
 The notification location is found using the VIRTIO_PCI_CAP_NOTIFY_CFG
-capability.  This capability is immediately followed by an additional
+capability.  The \field{offset} must be 2-byte aligned.  This capability is immediately followed by an additional
 field, like so:
 
 \begin{lstlisting}
@@ -1101,12 +1121,22 @@ cap.length >= queue_notify_off * notify_off_multiplier + 2
 \subsubsection{ISR status capability}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / ISR status capability}
 
 The device MUST present at least one VIRTIO_PCI_CAP_ISR_CFG capability.  This
-refers to at least a single byte, which contains the 8-bit ISR status field.
+refers to at least a single byte, which contains the 8-bit ISR status field:
+\begin{lstlisting}
+#define VIRTIO_PCI_ISR_VQ       0x1
+#define VIRTIO_PCI_ISR_CONFIG   0x2
+\end{lstlisting}
+
+See sections \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Virtqueue Interrupts From The Device} and \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Notification of Device Configuration Changes} for how this is used.
+
+The \field{offset} for the ISR status has no specific alignment requirements.
 
 \subsubsection{Device specific structure}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Device specific structure}
 
 The device MAY present at least one VIRTIO_PCI_CAP_DEVICE_CFG capability (some
 devices may not have any device specific structure).
+
+The \field{offset} for the device specific structure must be 4-byte aligned.
 
 \subsubsection{PCI configuration access capability}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / PCI configuration access capability}
 
@@ -1161,18 +1191,18 @@ registers in a legacy configuration structure in BAR0 in the first I/O
 region of the PCI device, as documented below.
 
 There may be different widths of accesses to the I/O region; the
-“natural” access method for each field in the virtio header must be
+“natural” access method for each field in the virtio common configuration structure must be
 used (i.e. 32-bit accesses for 32-bit fields, etc), but 
 when accessed through the legacy interface the
 device-specific region can be accessed using any width accesses, and
 should obtain the same results.
 
-Note that this is possible because while the virtio header is PCI
+Note that this is possible because while the virtio common configuration structure is PCI
 (i.e. little) endian, when using the legacy interface the device-specific
 region is encoded in the native endian of the guest (where such distinction is
 applicable).
 
-When used through the legacy interface, the virtio header looks as follows:
+When used through the legacy interface, the virtio common configuration structure looks as follows:
 
 \begin{tabularx}{\textwidth}{ |X||X|X|X|X|X|X|X|X| }
 \hline
@@ -1200,7 +1230,7 @@ Purpose (MSI-X) & \field{config_msix_vector}  & \field{queue_msix_vector} \\
 \end{tabular}
 
 Note: When MSI-X capability is enabled, device specific configuration starts at
-byte offset 24 in virtio header structure. When MSI-X capability is not
+byte offset 24 in virtio common configuration structure structure. When MSI-X capability is not
 enabled, device specific configuration starts at byte offset 20 in virtio
 header.  ie. once you enable MSI-X on the device, the other fields move.
 If you turn it off again, they move back!
@@ -1232,7 +1262,7 @@ see \ref{sec:Basic Facilities of a Virtio Device / Configuration Space / Legacy 
 
 This documents PCI-specific steps executed during Device Initialization.
 As the first step, driver must detect device configuration layout
-to locate configuration fields in memory, I/O or configuration space of the
+to locate configuration fields in memory, I/O or PCI configuration space of the
 device.
 
 \paragraph{Virtio Device Configuration Layout Detection}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Virtio Device Configuration Layout Detection}
@@ -1244,7 +1274,7 @@ Structure PCI capabilities.
 \subparagraph{Legacy Interface: A Note on Device Layout Detection}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Virtio Device Configuration Layout Detection / Legacy Interface: A Note on Device Layout Detection}
 
 Legacy drivers skipped the Device Layout Detection step, assuming legacy
-configuration space in BAR0 in I/O space unconditionally.
+device registers in BAR0 in I/O space unconditionally.
 
 Legacy devices did not have the Virtio PCI Capability in their
 capability list.
@@ -1390,8 +1420,7 @@ The driver interrupt handler SHOULD:
 
 \subsubsection{Notification of Device Configuration Changes}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Notification of Device Configuration Changes}
 
-Some virtio PCI devices can change the device configuration
-state, as reflected in the device-specific region of the device. In this case:
+Some devices can change the device configuration space. In this case:
 
 \begin{itemize}
   \item If MSI-X capability is disabled: an interrupt is delivered and
