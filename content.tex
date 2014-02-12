@@ -1121,15 +1121,32 @@ cap.length >= queue_notify_off * notify_off_multiplier + 2
 \subsubsection{ISR status capability}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / ISR status capability}
 
 The device MUST present at least one VIRTIO_PCI_CAP_ISR_CFG capability.  This
-refers to at least a single byte, which contains the 8-bit ISR status field:
-\begin{lstlisting}
-#define VIRTIO_PCI_ISR_VQ       0x1
-#define VIRTIO_PCI_ISR_CONFIG   0x2
-\end{lstlisting}
+refers to at least a single byte, which contains the 8-bit ISR status field.
 
-See sections \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Virtqueue Interrupts From The Device} and \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Notification of Device Configuration Changes} for how this is used.
+The \field{offset} for the ISR status field has no specific alignment requirements.
 
-The \field{offset} for the ISR status has no specific alignment requirements.
+The ISR status field is used for INT\#x interrupt handling.
+The driver MUST NOT access the ISR field when MSI-X capability
+is enabled.
+
+\begin{tabular}{ |l||l|l|l| }
+\hline
+Bits       & 0                               & 1               &  2 to 31 \\
+\hline
+Purpose    & Device Configuration Interrupt  & Queue Interrupt & Reserved \\
+\hline
+\end{tabular}
+
+If MSI-X capability is disabled, device MUST set Interrupt Status
+bit in the PCI Status register in the PCI Configuration Header of
+the device to the logical OR of all bits in ISR status field of
+the device.  Device then asserts/deasserts INT\#x interrupts unless masked
+according to standard PCI rules \hyperref[intro:PCI]{[PCI]}.
+
+Device MUST reset the ISR status field to 0 on read.
+
+In this way, driver read of ISR status causes the device to de-assert
+an interrupt.
 
 \subsubsection{Device specific structure}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Device specific structure}
 
