@@ -3,7 +3,7 @@ Number: 7
 Date: Wed, 29 Jan 2014 17:05:06 -0800
 Link to Mail: https://lists.oasis-open.org/archives/virtio-comment/201401/msg00058.html
 Commenter name: Arun Subbarao <asubbarao@lnxw.com>
-Decision: 
+Decision: 2014-02-11 minutes: Applied
 
 (PARTIAL: there is more feedback)
 
