@@ -44,5 +44,26 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 	\phantomsection\label{intro:S390 Common I/O}\textbf{[S390 Common I/O]} & ESA/390 Common I/O-Device and Self-Description, \newline IBM Publication SA22-7204\\
 \end{longtable}
 
+\section{Structure Specifications}
+
+Many device and driver in-memory structure layouts are documented using
+the C struct syntax. All structures are assumed to be without additional
+padding. To stress this, cases where common C compilers are known to insert
+extra padding within structures are tagged using the GNU C
+__attribute__((packed))  syntax.
+
+For the integer data types used in the structure definitions, the following
+conventions are used:
+
+\begin{description}
+\item[u8, u16, u32, u64] An unsigned integer of the specified length in bits.
+
+\item[le16, le32, le64] An unsigned integer of the specified length in bits,
+in little-endian byte order.
+
+\item[be16, be32, be64] An unsigned integer of the specified length in bits,
+in big-endian byte order.
+\end{description}
+
 \newpage
 

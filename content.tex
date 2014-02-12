@@ -12,9 +12,6 @@ device consists of the following parts:
 \item One or more virtqueues
 \end{itemize}
 
-Unless explicitly specified otherwise, all multi-byte fields are little-endian.
-To reinforce this the examples use typenames like "le16" instead of "uint16_t".
-
 \section{Device Status Field}\label{sec:Basic Facilities of a Virtio Device / Device Status Field}
 
 The driver MUST update the Device Status field in the order below to
@@ -349,6 +346,7 @@ Drivers MUST NOT add a descriptor chain over than $2^{32}$ bytes long in total;
 this implies that loops in the descriptor chain are forbidden!
 
 \begin{lstlisting}
+/* Note: LEGACY version was not little endian! */
 struct vring_desc {
         /* Address (guest-physical). */
         le64 addr;
@@ -409,6 +407,7 @@ the device MUST ignore the write-only flag (flags\&VRING_DESC_F_WRITE) in the de
 \subsection{The Virtqueue Available Ring}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Available Ring}
 
 \begin{lstlisting}
+/* Note: LEGACY version was not little endian! */
 struct vring_avail {
 #define VRING_AVAIL_F_NO_INTERRUPT      1
         le16 flags;
@@ -445,6 +444,7 @@ entirely.
 \subsection{The Virtqueue Used Ring}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Used Ring}
 
 \begin{lstlisting}
+/* Note: LEGACY version was not little endian! */
 struct vring_used {
 #define VRING_USED_F_NO_NOTIFY  1
         le16 flags;
@@ -453,6 +453,7 @@ struct vring_used {
         le16 avail_event; /* Only if VIRTIO_RING_F_EVENT_IDX */
 };
 
+/* Note: LEGACY version was not little endian! */
 /* le32 is used here for ids for padding reasons. */
 struct vring_used_elem {
         /* Index of start of used descriptor chain. */
@@ -2452,6 +2453,7 @@ and transmitq0..transmitqN respectively;
 is negotiated.  Legal values for this field are 1 to 0x8000.
 
 \begin{lstlisting}
+/* Note: LEGACY version was not little endian! */
 struct virtio_net_config {
         u8 mac[6];
         le16 status;
@@ -2538,6 +2540,7 @@ placed in the receiveq0..receiveqN. In each case, the packet
 itself is preceeded by a header:
 
 \begin{lstlisting}
+/* Note: LEGACY version was not little endian! */
 struct virtio_net_hdr {
 #define VIRTIO_NET_HDR_F_NEEDS_CSUM    1
         u8 flags;
@@ -2865,6 +2868,7 @@ queue incoming packets into one of the multiple receiveq0..receiveqN
 depending on the packet flow.
 
 \begin{lstlisting}
+/* Note: LEGACY version was not little endian! */
 struct virtio_net_ctrl_mq {
         le16 virtqueue_pairs;
 };
@@ -3001,6 +3005,7 @@ present. The availability of the others all depend on various feature
 bits as indicated above.
 
 \begin{lstlisting}
+/* Note: LEGACY version was not little endian! */
 struct virtio_blk_config {
         le64 capacity;
         le32 size_max;
@@ -3258,6 +3263,7 @@ data and outgoing characters are placed in the transmit queue.
   acknowledging the feature.
 
 \begin{lstlisting}
+/* Note: LEGACY version was not little endian! */
 struct virtio_console_config {
         le16 cols;
         le16 rows;
@@ -3335,6 +3341,7 @@ when a port is closed or hot-unplugged.
   buffer and the events associated are:
 
 \begin{lstlisting}
+/* Note: LEGACY version was not little endian! */
 struct virtio_console_control {
         le32 id;    /* Port number */
         le16 event; /* The kind of control event */
@@ -3524,6 +3531,7 @@ as follows:
   compatibility, unsupported statistics should be omitted.
 
 \begin{lstlisting}
+/* Note: LEGACY version was not little endian! */
 struct virtio_balloon_stat {
 #define VIRTIO_BALLOON_S_SWAP_IN  0
 #define VIRTIO_BALLOON_S_SWAP_OUT 1
@@ -3615,6 +3623,7 @@ targets that receive and process the requests.
   and cdb_size are writable by the driver.
 
 \begin{lstlisting}
+/* Note: LEGACY version was not little endian! */
 struct virtio_scsi_config {
         le32 num_queues;
         le32 seg_max;
@@ -3699,6 +3708,7 @@ consumed with no order constraints.
 Requests have the following format:
 
 \begin{lstlisting}
+/* Note: LEGACY version was not little endian! */
 struct virtio_scsi_req_cmd {
         // Read-only
         u8 lun[8];
@@ -3859,6 +3869,7 @@ The following commands are defined:
 #define VIRTIO_SCSI_T_TMF_QUERY_TASK           6
 #define VIRTIO_SCSI_T_TMF_QUERY_TASK_SET       7
 
+/* Note: LEGACY version was not little endian! */
 struct virtio_scsi_ctrl_tmf
 {
         // Read-only part
