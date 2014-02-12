@@ -844,16 +844,16 @@ This virtio structure capability uses little-endian format; all fields are
 read-only unless stated otherwise:
 
 \begin{lstlisting}
-        struct virtio_pci_cap {
-                u8 cap_vndr;    /* Generic PCI field: PCI_CAP_ID_VNDR */
-                u8 cap_next;    /* Generic PCI field: next ptr. */
-                u8 cap_len;     /* Generic PCI field: capability length */
-                u8 cfg_type;    /* Identifies the structure. */
-                u8 bar;         /* Where to find it. */
-                u8 padding[3];  /* Pad to full dword. */
-                le32 offset;    /* Offset within bar. */
-                le32 length;    /* Length of the structure, in bytes. */
-        };
+struct virtio_pci_cap {
+        u8 cap_vndr;    /* Generic PCI field: PCI_CAP_ID_VNDR */
+        u8 cap_next;    /* Generic PCI field: next ptr. */
+        u8 cap_len;     /* Generic PCI field: capability length */
+        u8 cfg_type;    /* Identifies the structure. */
+        u8 bar;         /* Where to find it. */
+        u8 padding[3];  /* Pad to full dword. */
+        le32 offset;    /* Offset within bar. */
+        le32 length;    /* Length of the structure, in bytes. */
+};
 \end{lstlisting}
 
 This structure can be followed by extra data, depending on
@@ -883,16 +883,16 @@ The fields are interpreted as follows:
         identifies the structure, according to the following table:
 
 \begin{lstlisting}
-        /* Common configuration */
-        #define VIRTIO_PCI_CAP_COMMON_CFG	1
-        /* Notifications */
-        #define VIRTIO_PCI_CAP_NOTIFY_CFG	2
-        /* ISR Status */
-        #define VIRTIO_PCI_CAP_ISR_CFG		3
-        /* Device specific configuration */
-        #define VIRTIO_PCI_CAP_DEVICE_CFG	4
-        /* PCI configuration access */
-        #define VIRTIO_PCI_CAP_PCI_CFG		5
+/* Common configuration */
+#define VIRTIO_PCI_CAP_COMMON_CFG        1
+/* Notifications */
+#define VIRTIO_PCI_CAP_NOTIFY_CFG        2
+/* ISR Status */
+#define VIRTIO_PCI_CAP_ISR_CFG           3
+/* Device specific configuration */
+#define VIRTIO_PCI_CAP_DEVICE_CFG        4
+/* PCI configuration access */
+#define VIRTIO_PCI_CAP_PCI_CFG           5
 \end{lstlisting}
 
         Any other value - reserved for future use. Drivers MUST
@@ -1042,7 +1042,7 @@ struct virtio_pci_common_cfg {
 \item[queue_notify_off]
         The driver reads this to calculate the offset from start of Notification structure at
         which this virtqueue is located.
-        Note: this is *not* an offset in bytes.
+        Note: this is \em{not} an offset in bytes.
         See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability} below.
 
 \item[queue_desc]
@@ -1064,10 +1064,10 @@ capability.  This capability is immediately followed by an additional
 field, like so:
 
 \begin{lstlisting}
-        struct virtio_pci_notify_cap {
-                struct virtio_pci_cap cap;
-                le32 notify_off_multiplier;	/* Multiplier for queue_notify_off. */
-        };
+struct virtio_pci_notify_cap {
+        struct virtio_pci_cap cap;
+        le32 notify_off_multiplier; /* Multiplier for queue_notify_off. */
+};
 \end{lstlisting}
 
 The device MUST either present notify_off_multiplier as an even power of 2,
@@ -1084,7 +1084,7 @@ The BAR, offset and notify_off_multiplier are taken from the
 notification capability structure above, and the queue_notify_off is
 taken from the common configuration structure.
 
-For example, if notifier_off_multiplier is 0, device uses
+For example, if notifier_off_multiplier is 0, the device uses
 the same Queue Notify address for all queues.
 
 The value cap.length presented by the device MUST be at least 2
@@ -1092,7 +1092,7 @@ and MUST be large enough to support queue notification offsets
 for all supported queues in all possible configurations.
 For all queues, the value cap.length presented by the device MUST satisfy:
 \begin{lstlisting}
-	cap.length >= queue_notify_off * notify_off_multiplier + 2
+cap.length >= queue_notify_off * notify_off_multiplier + 2
 \end{lstlisting}
 
 \subsubsection{ISR status capability}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / ISR status capability}
@@ -1114,19 +1114,19 @@ common configuration, notification, ISR and device-specific regions.
 The capability is immediately followed by an additional field like so:
 
 \begin{lstlisting}
-        struct virtio_pci_cfg_cap {
-                struct virtio_pci_cap cap;
-                u8 pci_cfg_data[4];	/* Data for BAR access. */
-        };
+struct virtio_pci_cfg_cap {
+        struct virtio_pci_cap cap;
+        u8 pci_cfg_data[4]; /* Data for BAR access. */
+};
 \end{lstlisting}
 
 The fields cap.bar, cap.legth, cap.offset and pci_cfg_data
 are read-write (RW).
 
-To write to a device region, the driver writes into the capability
+To access to a device region, the driver writes into the capability
 structure (ie. within the PCI configuration space) as follows:
 
-\begin{enumerate}
+\begin{itemize}
 \item The driver sets the BAR to access by writing to the cap.bar field.
 
 \item The driver sets the size of the access by writing 1, 2 or 4 to
@@ -1135,31 +1135,18 @@ structure (ie. within the PCI configuration space) as follows:
 \item The driver sets the offset within the BAR by writing to the
   cap.offset field.  The driver MUST NOT write an offset which is not
   a multiple of cap.length (ie. all accesses must be aligned).
+\end{itemize}
 
-\item The driver sets the pci_cfg_data field with the data to be written.
-
-\end{enumerate}
+At that point, the pci_cfg_data field will provide a window of size
+cap.length into the given cap.bar at offset cap.offset.
 
 Upon detecting driver write access
-to the pci_cfg_data field, device MUST execute a write access
+to the pci_cfg_data field, the device MUST execute a write access
 at offset cap.offset at BAR selected by cap.bar using the first cap.length
 bytes from pci_cfg_data.
 
-\begin{enumerate}
-\item The driver sets the BAR to access by writing to the cap.bar field.
-
-\item The driver sets the size of the access by writing 1, 2 or 4 to
-  the cap.length field.
-
-\item The driver sets the offset within the BAR by writing to the
-  cap.offset field.  The driver MUST NOT write an offset which is not
-  a multiple of cap.length (ie. all accesses must be aligned).
-
-\item The driver reads the data from the pci_cfg_data field.
-\end{enumerate}
-
 Upon detecting driver read access
-to the pci_cfg_data field, device MUST
+to the pci_cfg_data field, the device MUST
 execute a read access of length cap.length at offset cap.offset
 at BAR selected by cap.bar and store the first cap.length bytes in
 pci_cfg_data.
@@ -1247,13 +1234,13 @@ device.
 
 \paragraph{Virtio Device Configuration Layout Detection}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Virtio Device Configuration Layout Detection}
 
-As a prerequisite to device initialization, driver scans the
+As a prerequisite to device initialization, the driver scans the
 PCI capability list, detecting virtio configuration layout using Virtio
 Structure PCI capabilities.
 
 \subparagraph{Legacy Interface: A Note on Device Layout Detection}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Virtio Device Configuration Layout Detection / Legacy Interface: A Note on Device Layout Detection}
 
-Legacy drivers skipped  Device Layout Detection step, assuming legacy
+Legacy drivers skipped the Device Layout Detection step, assuming legacy
 configuration space in BAR0 in I/O space unconditionally.
 
 Legacy devices did not have the Virtio PCI Capability in their
