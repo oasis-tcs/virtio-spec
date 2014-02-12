@@ -424,7 +424,7 @@ written by the driver and read by the device.
 The “idx” field indicates where the driver would put the next descriptor
 entry in the ring (modulo the queue size). This starts at 0, and increases.
 
-If the VIRTIO_RING_F_INDIRECT_DESC feature bit is not negotiated, the
+If the VIRTIO_RING_F_EVENT_IDX feature bit is not negotiated, the
 “flags” field offers a crude interrupt control mechanism.  The driver
 MUST set this to 0 or 1: 1 indicates that the device SHOULD NOT send
 an interrupt when it consumes a descriptor chain from the available
@@ -474,7 +474,7 @@ for drivers using untrusted buffers: if you do not know exactly
 how much has been written by the device, you usually have to zero
 the buffer to ensure no data leakage occurs.
 
-If the VIRTIO_RING_F_INDIRECT_DESC feature bit is not negotiated, the
+If the VIRTIO_RING_F_EVENT_IDX feature bit is not negotiated, the
 “flags” field offers a crude interrupt control mechanism.  The driver
 MUST initialize this to 0, the device MUST set this to 0 or 1: 1
 indicates that the driver SHOULD NOT send an notification when it adds

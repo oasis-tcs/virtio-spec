@@ -3,7 +3,7 @@ Number: 4
 Date: Tue, 28 Jan 2014 10:03:51 +0200
 Link to Mail: https://lists.oasis-open.org/archives/virtio-comment/201401/msg00045.html
 Commenter name: Haggai Eran <haggaie@mellanox.com>
-Decision:
+Decision: 2014-02-11 minutes: Applied
 
 In Section 2.4.5, "The Virtqueue Available Ring", it says:
 
