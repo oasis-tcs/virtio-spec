@@ -654,14 +654,14 @@ free descriptors before beginning the mappings.
 
 The descriptor chain head is the first d in the algorithm
 above, ie. the index of the descriptor table entry referring to the first
-part of the buffer.  A naive implementation would do the following (with the
+part of the buffer.  A naive driver implementation MAY do the following (with the
 appropriate conversion to-and-from little-endian assumed):
 
 \begin{lstlisting}
 avail->ring[avail->idx % qsz] = head;
 \end{lstlisting}
 
-However, in general the driver can add many descriptor chains before it updates
+However, in general the driver MAY add many descriptor chains before it updates
 \field{idx} (at which point they become visible to the
 device), so it is common to keep a counter of how many the driver has added:
 
@@ -671,13 +671,13 @@ avail->ring[(avail->idx + added++) % qsz] = head;
 
 \subsubsection{Updating \field{idx}}\label{sec:General Initialization And Device Operation / Device Operation / Supplying Buffers to The Device / Updating idx}
 
-Once \field{idx} is updated, the device will
-be able to access the descriptor chains the driver created and the
-memory they refer to. This is why a memory barrier is generally
-used before the \field{idx} update, to ensure it sees the most up-to-date
-copy.
+Once available \field{idx} is updated by driver, the device MAY
+access the descriptor chains the driver created and the
+memory they refer to. This is why the driver SHOULD generally
+use a memory barrier before the \field{idx} update, to ensure the
+device sees the most up-to-date copy.
 
-\field{idx} always increments, and the driver can let it wrap naturally at
+\field{idx} always increments, and wraps naturally at
 65536:
 
 \begin{lstlisting}
@@ -718,7 +718,8 @@ similar to the algorithm used for the driver to send the device a
 buffer:
 
 \begin{enumerate}
-\item Write the head descriptor number to the next entry in the used
+\item Write the head descriptor number to the next free entry
+  (pointed to by the used ring \field{idx}) in the used
   ring.
 
 \item Update the used ring \field{idx}.
@@ -946,7 +947,7 @@ The fields are interpreted as follows:
 
 \item[\field{offset}]
         indicates where the structure begins relative to the base address associated
-        with the BAR.  The alignment requirement of \field{offset} are indicated
+        with the BAR.  The alignment requirements of \field{offset} are indicated
         in each structure-specific section below.
 
 \item[\field{length}]
@@ -1096,14 +1097,14 @@ struct virtio_pci_notify_cap {
 The device MUST either present \field{notify_off_multiplier} as an even power of 2,
 or present \field{notify_off_multiplier} as 0.
 
-\field{notify_off_multiplier} field is combined with the \field{queue_notify_off} to
+\field{notify_off_multiplier} is combined with the \field{queue_notify_off} to
 derive the Queue Notify address within a BAR for a specific queue:
 
 \begin{lstlisting}
         cap.offset + queue_notify_off * notify_off_multiplier
 \end{lstlisting}
 
-The BAR, \field{offset} and \field{notify_off_multiplier} are taken from the
+The \field{cap.offset} and \field{notify_off_multiplier} are taken from the
 notification capability structure above, and the \field{queue_notify_off} is
 taken from the common configuration structure.
 
@@ -1123,10 +1124,12 @@ cap.length >= queue_notify_off * notify_off_multiplier + 2
 The device MUST present at least one VIRTIO_PCI_CAP_ISR_CFG capability.  This
 refers to at least a single byte, which contains the 8-bit ISR status field.
 
-The \field{offset} for the ISR status field has no specific alignment requirements.
+The \field{offset} for the \field{ISR status} has no specific alignment requirements.
 
-The ISR status field is used for INT\#x interrupt handling.
-The driver MUST NOT access the ISR field when MSI-X capability
+\subsection{ISR status field}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / ISR status field}
+
+\field{ISR status} is used for INT\#x interrupt handling.
+Driver MUST NOT access \field{ISR status} when MSI-X capability
 is enabled.
 
 \begin{tabular}{ |l||l|l|l| }
@@ -1139,14 +1142,16 @@ Purpose    & Device Configuration Interrupt  & Queue Interrupt & Reserved \\
 
 If MSI-X capability is disabled, device MUST set Interrupt Status
 bit in the PCI Status register in the PCI Configuration Header of
-the device to the logical OR of all bits in ISR status field of
+the device to the logical OR of all bits in \field{ISR status} of
 the device.  Device then asserts/deasserts INT\#x interrupts unless masked
 according to standard PCI rules \hyperref[intro:PCI]{[PCI]}.
 
-Device MUST reset the ISR status field to 0 on read.
+Device MUST reset \field{ISR status} to 0 on read.
 
-In this way, driver read of ISR status causes the device to de-assert
+In this way, driver read of \field{ISR status} causes the device to de-assert
 an interrupt.
+
+See sections \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Virtqueue Interrupts From The Device} and \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Notification of Device Configuration Changes} for how this is used.
 
 \subsubsection{Device specific structure}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Device specific structure}
 
@@ -1170,10 +1175,10 @@ struct virtio_pci_cfg_cap {
 };
 \end{lstlisting}
 
-The fields \field{cap.bar}, \field{cap.length}, \field{cap.offset} and \field{pci_cfg_data}
-are read-write (RW).
+The fields \field{cap.bar}, \field{cap.legth}, \field{cap.offset} and
+\field{pci_cfg_data} are read-write (RW).
 
-To access to a device region, the driver writes into the capability
+To access a device region, the driver writes into the capability
 structure (ie. within the PCI configuration space) as follows:
 
 \begin{itemize}
@@ -1207,12 +1212,11 @@ Transitional devices should present part of configuration
 registers in a legacy configuration structure in BAR0 in the first I/O
 region of the PCI device, as documented below.
 
-There may be different widths of accesses to the I/O region; the
-“natural” access method for each field in the virtio common configuration structure must be
-used (i.e. 32-bit accesses for 32-bit fields, etc), but 
-when accessed through the legacy interface the
-device-specific region can be accessed using any width accesses, and
-should obtain the same results.
+When accessed through the legacy interface the driver MAY access
+the device-specific region using any width accesses, and
+a transitional device MUST present it with the same results as
+when accessed using the “natural” access method (i.e.
+32-bit accesses for 32-bit fields, etc).
 
 Note that this is possible because while the virtio common configuration structure is PCI
 (i.e. little) endian, when using the legacy interface the device-specific
@@ -1334,7 +1338,7 @@ Writing a valid MSI-X Table entry number, 0 to 0x7FF, to
 \field{config_msix_vector}/\field{queue_msix_vector} maps interrupts triggered
 by the configuration change/selected queue events respectively to
 the corresponding MSI-X vector. To disable interrupts for a
-specific event type, unmap it by writing a special NO_VECTOR
+specific event type, unmap this event by writing a special NO_VECTOR
 value:
 
 \begin{lstlisting}
@@ -1346,14 +1350,15 @@ Reading these registers returns vector mapped to a given event,
 or NO_VECTOR if unmapped. All queue and configuration change
 events are unmapped by default.
 
-Note that mapping an event to vector might require allocating
-internal device resources, and might fail. Devices MUST report such
+Note that mapping an event to vector might require device to
+allocate internal device resources, and MAY fail. Devices MUST report such
 failures by returning the NO_VECTOR value when the relevant
 Vector field is read. After mapping an event to vector, the
 driver MUST verify success by reading the Vector field value: on
 success, the previously written value is returned, and on
 failure, NO_VECTOR is returned. If a mapping failure is detected,
-the driver can retry mapping with fewer vectors, or disable MSI-X.
+the driver MAY retry mapping with fewer vectors, disable MSI-X
+or report device failure.
 
 \paragraph{Virtqueue Configuration}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Virtqueue Configuration}
 
@@ -1415,7 +1420,7 @@ If an interrupt is necessary for a virtqueue, the device SHOULD:
       device, \field{queue_msix_vector} sets the MSI-X Table entry
       number.
 
-    \item If the vector field value is NO_VECTOR, no interrupt
+    \item If the vector value is NO_VECTOR, no interrupt
       message is requested for this event, so the device MUST NOT
       deliver an interrupt.
     \end{enumerate}
@@ -1439,7 +1444,8 @@ The driver interrupt handler SHOULD:
 
 \subsubsection{Notification of Device Configuration Changes}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Notification of Device Configuration Changes}
 
-Some devices can change the device configuration space. In this case:
+Some virtio PCI devices can change the device configuration
+state, as reflected in the device-specific region of the device. In this case:
 
 \begin{itemize}
   \item If MSI-X capability is disabled: an interrupt is delivered and
@@ -3616,7 +3622,7 @@ configuration change interrupt.
 
 \item In either case, once the device has completed the inflation or
   deflation, \field{actual} should be
-  updated to reflect the new number of pages in the balloon.\footnote{As updates to device configuration space are not atomic, this field
+  updated to reflect the new number of pages in the balloon.\footnote{As updates to device-specific configuration space are not atomic, this field
 isn't particularly reliable, but can be used to diagnose buggy guests.
 }
 \end{enumerate}
