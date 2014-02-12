@@ -20,12 +20,12 @@ inter-guest communication) requires copying.
   Standard: Virtio makes no assumptions about the environment in which
   it operates, beyond supporting the bus to which device is attached.
   In this specification, virtio
-  devices are implemented over PCI and other buses, and earlier drafts
+  devices are implemented over MMIO, Channel I/O and PCI bus transports
+\footnote{The Linux implementation further separates the virtio
+transport code from the specific virtio drivers: these drivers are shared
+between different transports.
+}, earlier drafts
   have been implemented on other buses not included here.
-\footnote{The Linux implementation further separates the PCI virtio code
-from the specific virtio drivers: these drivers are shared with
-the non-PCI implementations (currently lguest and S/390).
-}
 
   Extensible: Virtio devices contain feature bits which are
   acknowledged by the guest operating system during device setup.
