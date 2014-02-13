@@ -2107,7 +2107,7 @@ about a queue. It uses the following structure for communicating:
 struct vq_config_block {
         be16 index;
         be16 max_num;
-} __attribute__ ((packed));
+};
 \end{lstlisting}
 
 The requested number of buffers for queue \field{index} is returned in
@@ -2125,7 +2125,7 @@ struct vq_info_block {
         be16 num;
         be64 avail;
         be64 used;
-} __attribute__ ((packed));
+};
 \end{lstlisting}
 
 \field{desc}, \field{avail} and \field{used} contain the guest addresses for the descriptor table,
@@ -2144,7 +2144,7 @@ struct vq_info_block_legacy {
         be32 align;
         be16 index;
         be16 num;
-} __attribute__ ((packed));
+};
 \end{lstlisting}
 
 \field{queue} contains the guest address for queue \field{index}, \field{num} the number of buffers
@@ -2192,12 +2192,13 @@ communication block:
 struct virtio_feature_desc {
         le32 features;
         u8 index;
-} __attribute__ ((packed));
+};
 \end{lstlisting}
 
 \field{features} are the 32 bits of features currently accessed, while
 \field{index} describes which of the feature bit values is to be
-accessed.
+accessed. No padding is added at the end of the structure, it is
+exactly 5 bytes in length.
 
 The guest obtains the device's device feature set via the
 CCW_CMD_READ_FEAT command. The device stores the features at \field{index}
@@ -2293,6 +2294,9 @@ significant bit in the first byte is assigned the bit number 0.
 \field{isc} contains the I/O interruption subclass to be used for the adapter
 I/O interrupt. It MAY be different from the isc used by the proxy
 virtio-ccw device's subchannel.
+No padding is added at the end of the structure, it is exactly 25 bytes
+in length.
+
 
 If the driver has already set up classic queue indicators via the
 CCW_CMD_SET_IND command, the device MUST post a unit check with
