@@ -2936,7 +2936,7 @@ native endian of the guest rather than (necessarily) little-endian.
 \paragraph{Gratuitous Packet Sending}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Gratuitous Packet Sending}
 
 If the driver negotiates the VIRTIO_NET_F_GUEST_ANNOUNCE (depends
-on VIRTIO_NET_F_CTRL_VQ), it can ask the driver to send gratuitous
+on VIRTIO_NET_F_CTRL_VQ), the device can ask the driver to send gratuitous
 packets; this is usually done after the guest has been physically
 migrated, and needs to announce its presence on the new network
 links. (As hypervisor does not have the knowledge of guest
