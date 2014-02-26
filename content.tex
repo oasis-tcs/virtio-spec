@@ -214,9 +214,8 @@ Used Ring         & 4         & $6 + 4 * $(Queue Size) \\
  \hline
 \end{tabular}
 
-The Alignment column gives the minimum alignment: for each part
-of the virtqueue, the physical address of the first byte
-MUST be a multiple of the specified alignment value.
+The Alignment column gives the minimum alignment for each part
+of the virtqueue.
 
 The Size column gives the total number of bytes required for each
 part of the virtqueue.
@@ -233,6 +232,10 @@ writes the descriptor index into the available ring.  It then
 notifies the device. When the device has finished a buffer, it
 writes the descriptor index into the used ring, and sends an interrupt.
 
+\drivernormative{Basic Facilities of a Virtio Device / Virtqueues}
+The driver MUST ensure that the physical address of the first byte
+of each virtqueue part is a multiple of the specified alignment value
+in the above table.
 
 \subsection{Legacy Interfaces: A Note on Virtqueue Layout}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Legacy Interfaces: A Note on Virtqueue Layout}
 
