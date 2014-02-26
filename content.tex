@@ -2569,6 +2569,17 @@ bit in the guest-provided indicator area at the corresponding offset.
 The guest-provided summary indicator is set to 0x01. An adapter I/O
 interrupt for the corresponding interruption subclass is generated.
 
+The recommended way to process an adapter I/O interrupt by the driver
+is as follows:
+
+\begin{itemize}
+\item Process all queue indicator bits associated with the summary indicator.
+\item Clear the summary indicator, performing a synchronization (memory
+barrier) afterwards.
+\item Process all queue indicator bits associated with the summary indicator
+again.
+\end{itemize}
+
 \devicenormative{\subparagraph}{Notification via Adapter I/O Interrupts}{Virtio Transport Options / Virtio over channel I/O / Device Operation / Host->Guest Notification / Notification via Adapter I/O Interrupts}
 
 The device SHOULD only generate an adapter I/O interrupt if the
