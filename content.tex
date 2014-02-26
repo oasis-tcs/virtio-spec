@@ -40,13 +40,13 @@ following bits are defined:
   even a fatal error during device operation.
 \end{description}
 
-\drivernormative{Basic Facilities of a Virtio Device / Device Status Field}
+\drivernormative{\subsection}{Device Status Field}{Basic Facilities of a Virtio Device / Device Status Field}
 The driver MUST update \field{device status} in the order above to
 indicate the driver's progress.  The driver MUST NOT clear a
 \field{device status} bit.  If the driver sets the FAILED bit,
 it MUST reset the device before attempting to re-initialize.
 
-\devicenormative{Basic Facilities of a Virtio Device / Device Status Field}
+\devicenormative{\subsection}{Device Status Field}{Basic Facilities of a Virtio Device / Device Status Field}
 The device MUST initialize \field{device status} to 0 upon reset.
 
 The device MUST NOT consume buffers or notify the driver before DRIVER_OK.
@@ -83,7 +83,7 @@ packets.
 In particular, new fields in the device configuration space are
 indicated by offering a new feature bit.
 
-\drivernormative{Basic Facilities of a Virtio Device / Feature Bits}
+\drivernormative{\subsection}{Feature Bits}{Basic Facilities of a Virtio Device / Feature Bits}
 The driver MUST NOT accept a feature which the device did not offer,
 and MUST NOT accept a feature which requires another feature which was
 not accepted.
@@ -92,7 +92,7 @@ The driver SHOULD go into backwards compatibility mode
 if the device does not offer a feature it understands, otherwise MUST
 set the FAILED \field{device status} bit and cease initialization.
 
-\devicenormative{Basic Facilities of a Virtio Device / Feature Bits}
+\devicenormative{\subsection}{Feature Bits}{Basic Facilities of a Virtio Device / Feature Bits}
 The device MUST NOT offer a feature which requires another feature
 which was not offered.  The device SHOULD accept any valid subset
 of features the driver accepts, otherwise it MUST fail to set the
@@ -134,7 +134,7 @@ space, which will change whenever there is a possibility that two
 accesses to the device configuration space can see different versions of that
 space.
 
-\drivernormative{Basic Facilities of a Virtio Device / Device Configuration Space}
+\drivernormative{\subsection}{Device Configuration Space}{Basic Facilities of a Virtio Device / Device Configuration Space}
 Drivers MUST NOT assume reads from
 fields greater than 32 bits wide are atomic, nor reads from
 multiple fields: drivers SHOULD read device configuration space fields like so:
@@ -168,7 +168,7 @@ tail padding, and accept any device configuration space size equal to or
 greater than the specified 8-bit size.
 \end{note}
 
-\devicenormative{Basic Facilities of a Virtio Device / Device Configuration Space}
+\devicenormative{\subsection}{Device Configuration Space}{Basic Facilities of a Virtio Device / Device Configuration Space}
 The device MUST allow reading of any device-specific configuration
 field before FEATURES_OK is set by the driver.  This includes fields which are
 conditional on feature bits, as long as those feature bits are offered
@@ -240,7 +240,7 @@ writes the descriptor index into the available ring.  It then
 notifies the device. When the device has finished a buffer, it
 writes the descriptor index into the used ring, and sends an interrupt.
 
-\drivernormative{Basic Facilities of a Virtio Device / Virtqueues}
+\drivernormative{\subsection}{Virtqueues}{Basic Facilities of a Virtio Device / Virtqueues}
 The driver MUST ensure that the physical address of the first byte
 of each virtqueue part is a multiple of the specified alignment value
 in the above table.
@@ -314,12 +314,12 @@ will be given to drivers which create unreasonably-sized descriptors
 such as by dividing a network packet into 1500 single-byte
 descriptors!
 
-\devicenormative{Basic Facilities of a Virtio Device / Message Framing}
+\devicenormative{\subsubsection}{Message Framing}{Basic Facilities of a Virtio Device / Message Framing}
 The device MUST NOT make assumptions about the particular arrangement
 of descriptors.  The device MAY have a reasonable limit of descriptors
 it will allow in a chain.
 
-\drivernormative{Basic Facilities of a Virtio Device / Message Framing}
+\drivernormative{\subsubsection}{Message Framing}{Basic Facilities of a Virtio Device / Message Framing}
 The driver SHOULD NOT use an excessive number of descriptors to
 describe a buffer.
 
@@ -372,12 +372,12 @@ struct vring_desc {
 The number of descriptors in the table is defined by the queue size
 for this virtqueue.
 
-\devicenormative{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table}
+\devicenormative{\subsubsection}{The Virtqueue Descriptor Table}{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table}
 A device MUST NOT write to a device-readable buffer, and a device SHOULD NOT
 read a device-writable buffer (it MAY do so for debugging or diagnostic
 purposes).
 
-\drivernormative{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table}
+\drivernormative{\subsubsection}{The Virtqueue Descriptor Table}{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table}
 Drivers MUST NOT add a descriptor chain over than $2^{32}$ bytes long in total;
 this implies that loops in the descriptor chain are forbidden!
 
@@ -410,13 +410,13 @@ chained by \field{next}. An indirect descriptor without a valid \field{next}
 A single indirect descriptor
 table can include both device-readable and device-writable descriptors.
 
-\drivernormative{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}
+\drivernormative{\paragraph}{Indirect Descriptors}{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}
 The driver MUST NOT set the VRING_DESC_F_INDIRECT flag unless the
 VIRTIO_RING_F_INDIRECT_DESC feature was negotiated.   The driver MUST NOT
 set the VRING_DESC_F_INDIRECT flag within an indirect descriptor (ie. only
 one table per descriptor).
 
-\devicenormative{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}
+\devicenormative{\paragraph}{Indirect Descriptors}{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}
 The device MUST ignore the write-only flag (\field{flags}\&VRING_DESC_F_WRITE) in the descriptor that refers to an indirect table.
 
 \subsection{The Virtqueue Available Ring}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Available Ring}
@@ -451,7 +451,7 @@ Neither of these interrupt suppression methods are reliable, as they
 are not explicitly synchronized with the device, but they serve as
 useful optimizations.
 
-\drivernormative{Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Interrupt Suppression}
+\drivernormative{\subsubsection}{Virtqueue Interrupt Suppression}{Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Interrupt Suppression}
 If the VIRTIO_RING_F_EVENT_IDX feature bit is not negotiated:
 \begin{itemize}
 \item The driver MUST set \field{flags} to 0 or 1.
@@ -468,7 +468,7 @@ used ring will reach the value \field{used_event} + 1).
 
 The driver MUST handle spurious interrupts from the device.
 
-\devicenormative{Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Interrupt Suppression}
+\devicenormative{\subsubsection}{Virtqueue Interrupt Suppression}{Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Interrupt Suppression}
 
 If the VIRTIO_RING_F_EVENT_IDX feature bit is not negotiated:
 \begin{itemize}
@@ -538,7 +538,7 @@ drivers can suppress interrupts as detailed in section \ref{sec:Basic Facilities
 The device manipulates \field{flags} or \field{avail_event} in the used ring the
 same way the driver manipulates \field{flags} or \field{used_event} in the available ring.
 
-\drivernormative{Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Notification Suppression}
+\drivernormative{\subsubsection}{Virtqueue Notification Suppression}{Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Notification Suppression}
 
 The driver MUST initialize \field{flags} in the used ring to 0 when
 allocating the used ring.
@@ -565,7 +565,7 @@ Otherwise, if the VIRTIO_RING_F_EVENT_IDX feature bit is negotiated:
   \end{itemize}
 \end{itemize}
 
-\devicenormative{Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Notification Suppression}
+\devicenormative{\subsubsection}{Virtqueue Notification Suppression}{Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Notification Suppression}
 If the VIRTIO_RING_F_EVENT_IDX feature bit is not negotiated:
 \begin{itemize}
 \item The device MUST set \field{flags} to 0 or 1.
@@ -600,7 +600,7 @@ how to communicate with the specific device.
 
 \section{Device Initialization}\label{sec:General Initialization And Device Operation / Device Initialization}
 
-\drivernormative{General Initialization And Device Operation / Device Initialization}
+\drivernormative{\subsection}{Device Initialization}{General Initialization And Device Operation / Device Initialization}
 The driver MUST follow this sequence to initialize a device:
 
 \begin{enumerate}
@@ -761,7 +761,7 @@ descriptor and its contents.  The device MAY
 access the descriptor chains the driver created and the
 memory they refer to immediately.
 
-\drivernormative{General Initialization And Device Operation / Device Operation / Supplying Buffers to The Device / Updating idx}
+\drivernormative{\paragraph}{Updating idx}{General Initialization And Device Operation / Device Operation / Supplying Buffers to The Device / Updating idx}
 The driver MUST perform a suitable memory barrier before the \field{idx} update, to ensure the
 device sees the most up-to-date copy.
 
@@ -774,7 +774,7 @@ doesn't need them, as detailed in section \ref{sec:Basic Facilities of a Virtio 
 The driver has to be careful to expose the new \field{idx}
 value before checking if notifications are suppressed.
 
-\drivernormative{General Initialization And Device Operation / Device Operation / Supplying Buffers to The Device / Notifying The Device}
+\drivernormative{\paragraph}{Notifying The Device}{General Initialization And Device Operation / Device Operation / Supplying Buffers to The Device / Notifying The Device}
 The driver MUST perform a suitable memory barrier before reading \field{flags} or
 \field{avail_event}, to avoid missing a required notification.
 
@@ -822,7 +822,7 @@ Once the driver has set the DRIVER_OK status bit, all the configured
 virtqueue of the device are considered live.  None of the virtqueues
 of a device are live once the device has been reset.
 
-\drivernormative{General Initialization And Device Operation / Device Cleanup}
+\drivernormative{\subsection}{Device Cleanup}{General Initialization And Device Operation / Device Cleanup}
 
 A driver MUST NOT alter descriptor table entries which have been
 exposed in the available ring (and not marked consumed by the device
@@ -849,7 +849,7 @@ requirements, designers of Virtio Over PCI devices must refer to
 the PCI-SIG home page at \url{http://www.pcisig.com} for any
 approved changes.
 
-\devicenormative{Virtio Transport Options / Virtio Over PCI Bus}
+\devicenormative{\subsection}{Virtio Over PCI Bus}{Virtio Transport Options / Virtio Over PCI Bus}
 A Virtio device using Virtio Over PCI Bus MUST expose to
 guest an interface that meets the specification requirements of
 the appropriate PCI specification: \hyperref[intro:PCI]{[PCI]}
@@ -865,14 +865,14 @@ Any PCI device with Vendor ID 0x1AF4, and Device ID 0x1000 through
 The Subsystem Device ID indicates which virtio device is
 supported by the device, as indicated in section \ref{sec:Device Types}.
 
-\devicenormative{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Discovery}
+\devicenormative{\subsubsection}{PCI Device Discovery}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Discovery}
 The Subsystem Vendor ID SHOULD reflect
 the PCI Vendor ID of the environment (it's currently only used
 for informational purposes by the driver).
 
 Non-transitional devices MUST have a Revision ID of 1 or higher.
 
-\drivernormative{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Discovery}
+\drivernormative{\subsubsection}{PCI Device Discovery}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Discovery}
 All drivers MUST match devices with any Revision ID, this
 is to allow devices to be versioned without breaking drivers.
 
@@ -893,7 +893,7 @@ Fields of different sizes are present in the device
 configuration regions.
 All 32-bit and 16-bit fields are little-endian.
 
-\drivernormative{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout}
+\drivernormative{\subsubsection}{PCI Device Layout}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout}
 
 The driver
 MUST access each field using the “natural” access method, i.e.
@@ -1012,7 +1012,7 @@ The fields are interpreted as follows:
         \end{note}
 \end{description}
 
-\drivernormative{Virtio Transport Options / Virtio Over PCI Bus / Virtio Structure PCI Capabilities}
+\drivernormative{\subsubsection}{Virtio Structure PCI Capabilities}{Virtio Transport Options / Virtio Over PCI Bus / Virtio Structure PCI Capabilities}
 
 The driver MUST ignore any vendor-specific capability structure which has
 a reserved \field{cfg_type} value.
@@ -1034,7 +1034,7 @@ The driver MUST NOT write into any field of the capability structure,
 with the exception of those with \field{cap_type} VIRTIO_PCI_CAP_PCI_CFG as
 detailed in \ref{drivernormative:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / PCI configuration access capability}.
 
-\devicenormative{Virtio Transport Options / Virtio Over PCI Bus / Virtio Structure PCI Capabilities}
+\devicenormative{\subsubsection}{Virtio Structure PCI Capabilities}{Virtio Transport Options / Virtio Over PCI Bus / Virtio Structure PCI Capabilities}
 
 The device MUST include any extra data (from the beginning of the \field{cap_vndr} field
 through end of the extra data fields if any) in \field{cap_len}.
@@ -1137,7 +1137,7 @@ struct virtio_pci_common_cfg {
         The driver writes the physical address of Used Ring here.  See section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues}.
 \end{description}
 
-\devicenormative{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common configuration structure layout}
+\devicenormative{\paragraph}{Common configuration structure layout}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common configuration structure layout}
 \field{offset} MUST be 4-byte aligned.
 
 The device MUST present at least one common configuration capability.
@@ -1176,7 +1176,7 @@ The device MUST reset when 0 is written to \field{device_status}.
 The device MUST present a 0 in \field{queue_size} if the virtqueue
 corresponding to the current \field{queue_select} is unavailable.
 
-\drivernormative{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common configuration structure layout}
+\drivernormative{\paragraph}{Common configuration structure layout}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common configuration structure layout}
 
 The driver MUST NOT write to \field{device_feature}, \field{num_queues}, \field{config_generation} or \field{queue_notify_off}.
 
@@ -1214,7 +1214,7 @@ For example, if \field{notifier_off_multiplier} is 0, the device uses
 the same Queue Notify address for all queues.
 \end{note}
 
-\devicenormative{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability}
+\devicenormative{\paragraph}{Notification capability}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability}
 The device MUST present at least one notification capability.
 
 The \field{cap.offset} must be 2-byte aligned.  
@@ -1258,7 +1258,7 @@ an interrupt.
 
 See sections \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Virtqueue Interrupts From The Device} and \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Notification of Device Configuration Changes} for how this is used.
 
-\devicenormative{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / ISR status capability}
+\devicenormative{\paragraph}{ISR status capability}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / ISR status capability}
 
 The device MUST present at least one VIRTIO_PCI_CAP_ISR_CFG capability.  
 
@@ -1270,7 +1270,7 @@ according to standard PCI rules \hyperref[intro:PCI]{[PCI]}.
 
 The device MUST reset \field{ISR status} to 0 on driver read.
 
-\drivernormative{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / ISR status capability}
+\drivernormative{\paragraph}{ISR status capability}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / ISR status capability}
 
 The driver MUST NOT access the ISR field when MSI-X capability
 is enabled.
@@ -1280,7 +1280,7 @@ is enabled.
 The device MAY present at least one VIRTIO_PCI_CAP_DEVICE_CFG capability (some
 devices may not have any device specific structure).
 
-\devicenormative{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Device specific structure}
+\devicenormative{\paragraph}{Device specific structure}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Device specific structure}
 
 The \field{offset} for the device specific structure must be 4-byte aligned.
 
@@ -1318,7 +1318,7 @@ structure (ie. within the PCI configuration space) as follows:
 At that point, \field{pci_cfg_data} will provide a window of size
 \field{cap.length} into the given \field{cap.bar} at offset \field{cap.offset}.
 
-\devicenormative{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / PCI configuration access capability}
+\devicenormative{\paragraph}{PCI configuration access capability}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / PCI configuration access capability}
 
 The device MUST present at least one VIRTIO_PCI_CAP_PCI_CFG capability.
 
@@ -1333,7 +1333,7 @@ execute a read access of length cap.length at offset \field{cap.offset}
 at BAR selected by \field{cap.bar} and store the first \field{cap.length} bytes in
 \field{pci_cfg_data}.
 
-\drivernormative{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / PCI configuration access capability}
+\drivernormative{\paragraph}{PCI configuration access capability}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / PCI configuration access capability}
 
 The driver MUST NOT write a \field{cap.offset} which is not
 a multiple of \field{cap.length} (ie. all accesses must be aligned).
@@ -1425,7 +1425,7 @@ Structure PCI capabilities as detailed in \ref{sec:Virtio Transport Options / Vi
 
 \paragraph{Non-transitional Device With Legacy Driver}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Non-transitional Device With Legacy Driver}
 
-\drivernormative{Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Non-transitional Device With Legacy Driver}
+\drivernormative{\subparagraph}{Non-transitional Device With Legacy Driver}{Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Non-transitional Device With Legacy Driver}
 
 Non-transitional devices, on a platform where a legacy driver for
 a legacy device with the same ID might have previously existed,
@@ -1482,7 +1482,7 @@ value:
 Note that mapping an event to vector might require device to
 allocate internal device resources, and thus could fail. 
 
-\devicenormative{Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / MSI-X Vector Configuration}
+\devicenormative{\subparagraph}{MSI-X Vector Configuration}{Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / MSI-X Vector Configuration}
 
 A device that has an MSI-X capability SHOULD support at least 2
 and at most 0x800 MSI-X vectors.
@@ -1510,7 +1510,7 @@ request.  Devices MUST report mapping
 failures by returning the NO_VECTOR value when the relevant
 \field{config_msix_vector}/\field{queue_msix_vector} field is read. 
 
-\drivernormative{Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / MSI-X Vector Configuration}
+\drivernormative{\subparagraph}{MSI-X Vector Configuration}{Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / MSI-X Vector Configuration}
 
 Driver MUST support device with any MSI-X Table Size 0 to 0x7FF.
 Driver MAY fall back on using INT\#x interrupts for a device
@@ -1592,7 +1592,7 @@ If an interrupt is necessary for a virtqueue, the device would typically act as 
     \end{enumerate}
 \end{itemize}
 
-\devicenormative{Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Virtqueue Interrupts From The Device}
+\devicenormative{\paragraph}{Virtqueue Interrupts From The Device}{Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Virtqueue Interrupts From The Device}
 
 If MSI-X capability is enabled and \field{queue_msix_vector} is
 NO_VECTOR for a virtqueue, the device MUST NOT deliver an interrupt
@@ -1623,13 +1623,13 @@ state, as reflected in the device-specific region of the device. In this case:
 A single interrupt MAY indicate both that one or more virtqueue has
 been used and that the configuration space has changed.
 
-\devicenormative{Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Notification of Device Configuration Changes}
+\devicenormative{\paragraph}{Notification of Device Configuration Changes}{Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Notification of Device Configuration Changes}
 
 If MSI-X capability is enabled and \field{config_msix_vector} is
 NO_VECTOR, the device MUST NOT deliver an interrupt
 for device configuration space changes.
 
-\drivernormative{Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Notification of Device Configuration Changes}
+\drivernormative{\paragraph}{Notification of Device Configuration Changes}{Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Notification of Device Configuration Changes}
 
 A driver MUST handle the case where the same interrupt is used to indicate
 both device configuration space change and one or more virtqueues being used.
@@ -1866,7 +1866,7 @@ All register values are organized as Little Endian.
   \hline
 \end{longtable}
 
-\devicenormative{Virtio Transport Options / Virtio Over MMIO / MMIO Device Register Layout}
+\devicenormative{\subsubsection}{MMIO Device Register Layout}{Virtio Transport Options / Virtio Over MMIO / MMIO Device Register Layout}
 
 The device MUST return 0x74726976 in \field{MagicValue}.
 
@@ -1884,7 +1884,7 @@ The device MUST change \field{ConfigGeneration} if there is any risk of a
 device seeing an inconsistent configuration state, but it MAY only change the value
 after a configuration read operation.
 
-\drivernormative{Virtio Transport Options / Virtio Over MMIO / MMIO Device Register Layout}
+\drivernormative{\subsubsection}{MMIO Device Register Layout}{Virtio Transport Options / Virtio Over MMIO / MMIO Device Register Layout}
 The driver MUST NOT access memory locations not explicitly described in the
 table (or, in case of the configuration space, described in the device specification),
 MUST NOT write to the read-only registers (direction R) and
@@ -1923,7 +1923,7 @@ it finishes handling an interrupt.
 
 \subsubsection{Device Initialization}\label{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Device Initialization}
 
-\drivernormative{Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Device Initialization}
+\drivernormative{\paragraph}{Device Initialization}{Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Device Initialization}
 
 The driver MUST start the device initialization by reading and
 checking values from \field{MagicValue} and \field{Version}.
@@ -1979,7 +1979,7 @@ is set. This is how the device notifies the
 driver about a new used buffer being available in the queue
 or about a change in the device configuration.
 
-\drivernormative{Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Notifications From The Device}
+\drivernormative{\paragraph}{Notifications From The Device}{Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Notifications From The Device}
 After receiving an interrupt, the driver MUST read
 \field{InterruptStatus} to check what caused the interrupt
 (see the register description). After the interrupt is handled,
@@ -2207,7 +2207,7 @@ virtio:
 #define CCW_CMD_SET_VIRTIO_REV 0x83
 \end{lstlisting}
 
-\devicenormative{Virtio Transport Options / Virtio over channel I/O / Basic Concepts}
+\devicenormative{\subsubsection}{Basic Concepts}{Virtio Transport Options / Virtio over channel I/O / Basic Concepts}
 
 The virtio-ccw device acts like a normal channel device, as specified
 in \hyperref[intro:S390 PoP]{[S390 PoP]} and \hyperref[intro:S390 Common I/O]{[S390 Common I/O]}. In particular:
@@ -2226,7 +2226,7 @@ in \hyperref[intro:S390 PoP]{[S390 PoP]} and \hyperref[intro:S390 Common I/O]{[S
   a buffer that was too long, the device SHOULD accept the command.
 \end{itemize}
 
-\drivernormative{Virtio Transport Options / Virtio over channel I/O / Basic Concepts}
+\drivernormative{\subsubsection}{Basic Concepts}{Virtio Transport Options / Virtio over channel I/O / Basic Concepts}
 
 A driver for virtio-ccw devices MUST check for a control unit
 type of 0x3832 and MUST ignore the device type and model.
@@ -2272,7 +2272,7 @@ The following values are supported:
 Note that a change in the virtio standard does not necessarily
 correspond to a change in the virtio-ccw revision.
 
-\devicenormative{Virtio Transport Options / Virtio over channel I/O / Device Initialization / Setting the Virtio Revision}
+\devicenormative{\paragraph}{Setting the Virtio Revision}{Virtio Transport Options / Virtio over channel I/O / Device Initialization / Setting the Virtio Revision}
 
 A device MUST post a unit check with command reject for any \field{revision}
 it does not support. For any invalid combination of \field{revision}, \field{length}
@@ -2291,7 +2291,7 @@ subchannel has been enabled until a revision has been successfully set
 by the driver. This implies that revisions are not persistent across
 disabling and enabling of the associated subchannel.
 
-\drivernormative{Virtio Transport Options / Virtio over channel I/O / Device Initialization / Setting the Virtio Revision}
+\drivernormative{\paragraph}{Setting the Virtio Revision}{Virtio Transport Options / Virtio over channel I/O / Device Initialization / Setting the Virtio Revision}
 
 A driver SHOULD start with trying to set the highest revision it
 supports and continue with lower revisions if it gets a command reject.
@@ -2351,7 +2351,7 @@ struct vq_info_block {
 available ring and used ring for queue \field{index}, respectively. The actual
 virtqueue size (number of allocated buffers) is transmitted in \field{num}.
 
-\devicenormative{Virtio Transport Options / Virtio over channel I/O / Device Initialization / Configuring a Virtqueue}
+\devicenormative{\paragraph}{Configuring a Virtqueue}{Virtio Transport Options / Virtio over channel I/O / Device Initialization / Configuring a Virtqueue}
 
 \field{res0} is reserved and MUST be ignored by the device.
 
@@ -2520,7 +2520,7 @@ No padding is added at the end of the structure, it is exactly 25 bytes
 in length.
 
 
-\devicenormative{Virtio Transport Options / Virtio over channel I/O / Device Initialization / Setting Up Indicators / Setting Up Two-Stage Queue Indicators}
+\devicenormative{\subparagraph}{Setting Up Two-Stage Queue Indicators}{Virtio Transport Options / Virtio over channel I/O / Device Initialization / Setting Up Indicators / Setting Up Two-Stage Queue Indicators}
 If the driver has already set up classic queue indicators via the
 CCW_CMD_SET_IND command, the device MUST post a unit check with
 command reject to any subsequent CCW_CMD_SET_IND_ADAPTER command.
@@ -2569,12 +2569,12 @@ bit in the guest-provided indicator area at the corresponding offset.
 The guest-provided summary indicator is set to 0x01. An adapter I/O
 interrupt for the corresponding interruption subclass is generated.
 
-\devicenormative{Virtio Transport Options / Virtio over channel I/O / Device Operation / Host->Guest Notification / Notification via Adapter I/O Interrupts}
+\devicenormative{\subparagraph}{Notification via Adapter I/O Interrupts}{Virtio Transport Options / Virtio over channel I/O / Device Operation / Host->Guest Notification / Notification via Adapter I/O Interrupts}
 
 The device SHOULD only generate an adapter I/O interrupt if the
 summary indicator had not been set prior to notification.
 
-\drivernormative{Virtio Transport Options / Virtio over channel I/O / Device Operation / Host->Guest Notification / Notification via Adapter I/O Interrupts}
+\drivernormative{\subparagraph}{Notification via Adapter I/O Interrupts}{Virtio Transport Options / Virtio over channel I/O / Device Operation / Host->Guest Notification / Notification via Adapter I/O Interrupts}
 The driver
 MUST clear the summary indicator after receiving an adapter I/O
 interrupt before it processes the queue indicators.
@@ -2606,7 +2606,7 @@ GPR  &   Input Value     & Output Value \\
 \hline
 \end{tabular}
 
-\devicenormative{Virtio Transport Options / Virtio over channel I/O / Device Operation / Guest->Host Notification}
+\devicenormative{\paragraph}{Guest->Host Notification}{Virtio Transport Options / Virtio over channel I/O / Device Operation / Guest->Host Notification}
 The device MUST ignore bits 0-31 (counting from the left) of GPR2.
 This aligns passing the subchannel ID with the way it is passed
 for the existing I/O instructions.
@@ -2614,7 +2614,7 @@ for the existing I/O instructions.
 The device MAY return a 64-bit host cookie in GPR2 to speed up the
 notification execution.
 
-\drivernormative{Virtio Transport Options / Virtio over channel I/O / Device Operation / Guest->Host Notification}
+\drivernormative{\paragraph}{Guest->Host Notification}{Virtio Transport Options / Virtio over channel I/O / Device Operation / Guest->Host Notification}
 
 For each notification, the driver SHOULD use GPR4 to pass the host cookie received in GPR2 from the previous notication.
 
@@ -2658,7 +2658,7 @@ Device ID  &  Virtio Device    \\
 \hline
 4          &  entropy source    \\
 \hline
-5          & memory ballooning  \\
+5          & memory ballooning (legacy)  \\
 \hline
 6          &     ioMemory       \\
 \hline
@@ -2673,6 +2673,8 @@ Device ID  &  Virtio Device    \\
 11         &   rproc serial     \\
 \hline
 12         &   virtio CAIF      \\
+\hline
+13         &  memory balloon    \\
 \hline
 16         &   GPU device       \\
 \hline
@@ -2827,12 +2829,12 @@ struct virtio_net_config {
 };
 \end{lstlisting}
 
-\devicenormative{Device Types / Network Device / Device configuration layout}
+\devicenormative{\subsubsection}{Device configuration layout}{Device Types / Network Device / Device configuration layout}
 
 The device MUST set \field{max_virtqueue_pairs} to between 1 and 0x8000 inclusive,
 if it offers VIRTIO_NET_F_MQ.
 
-\drivernormative{Device Types / Network Device / Device configuration layout}
+\drivernormative{\subsubsection}{Device configuration layout}{Device Types / Network Device / Device configuration layout}
 
 A driver SHOULD negotiate VIRTIO_NET_F_MAC if the device offers it.
 If the driver negotiates the VIRTIO_NET_F_MAC feature, the driver MUST set
@@ -3006,7 +3008,7 @@ VIRTIO_NET_F_MRG_RXBUF case.
 }
 \end{enumerate}
 
-\drivernormative{Device Types / Network Device / Device Operation / Packet Transmission}
+\drivernormative{\paragraph}{Packet Transmission}{Device Types / Network Device / Device Operation / Packet Transmission}
 
 If a driver has not negotiated VIRTIO_NET_F_CSUM, \field{flags} MUST be zero and
 the packet must be fully checksummed.
@@ -3048,7 +3050,7 @@ TCP or UDP packet, plus the 14 byte ethernet header), otherwise
 1514 bytes.  The 12-byte struct virtio_net_hdr is prepended to this,
 making for 65562 or 1526 bytes.
 
-\drivernormative{Device Types / Network Device / Device Operation / Setting Up Receive Buffers}
+\drivernormative{\paragraph}{Setting Up Receive Buffers}{Device Types / Network Device / Device Operation / Setting Up Receive Buffers}
 
 \begin{itemize}
 \item If VIRTIO_NET_F_MRG_RXBUF is not negotiated:
@@ -3190,7 +3192,7 @@ accepts.
 The command-specific-data for VIRTIO_NET_CTRL_MAC_ADDR_SET is
 the 6-byte MAC address.
 
-\drivernormative{Device Types / Network Device / Device Operation / Control Virtqueue / Setting MAC Address Filtering}
+\drivernormative{\subparagraph}{Setting MAC Address Filtering}{Device Types / Network Device / Device Operation / Control Virtqueue / Setting MAC Address Filtering}
 
 A driver MUST NOT write to the \field{mac} if VIRTIO_NET_F_MAC_ADDR is
 negotiated.
@@ -3263,14 +3265,14 @@ Processing this notification involves:
   vq.
 \end{enumerate}
 
-\drivernormative{Device Types / Network Device / Device Operation / Control Virtqueue / Gratuitous Packet Sending}
+\drivernormative{\subparagraph}{Gratuitous Packet Sending}{Device Types / Network Device / Device Operation / Control Virtqueue / Gratuitous Packet Sending}
 
 If the driver negotiates VIRTIO_NET_F_GUEST_ANNOUNCE, it SHOULD notify
 network peers of its new location after it sees the VIRTIO_NET_S_ANNOUNCE bit
 in \field{status}.  The driver MUST send a command on the command queue
 with class VIRTIO_NET_CTRL_ANNOUNCE and command VIRTIO_NET_CTRL_ANNOUNCE_ACK.
 
-\devicenormative{Device Types / Network Device / Device Operation / Control Virtqueue / Gratuitous Packet Sending}
+\devicenormative{\subparagraph}{Gratuitous Packet Sending}{Device Types / Network Device / Device Operation / Control Virtqueue / Gratuitous Packet Sending}
 
 If VIRTIO_NET_F_GUEST_ANNOUNCE is negotiated, the device MUST clear the
 VIRTIO_NET_S_ANNOUNCE bit in \field{status} upon receipt of a command buffer
@@ -3315,7 +3317,7 @@ to a random queue out of the specified receiveq0..receiveqn.
 Multiqueue is disabled by setting \field{virtqueue_pairs} to 1 (this is
 the default) and waiting for the device to use the command buffer.
 
-\drivernormative{Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode}
+\drivernormative{\subparagraph}{Automatic receive steering in multiqueue mode}{Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode}
 
 The driver MUST configure the virtqueues before enabling them with the 
 VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command.
@@ -3329,7 +3331,7 @@ VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command.
 The driver MUST NOT queue packets on transmit queues greater than
 \field{virtqueue_pairs} once it has placed the VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command in the available ring.
 
-\devicenormative{Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode}
+\devicenormative{\subparagraph}{Automatic receive steering in multiqueue mode}{Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode}
 
 The device MUST queue packets only on any receiveq0 before the 
 VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command.
@@ -3371,7 +3373,7 @@ There is a corresponding device feature for each offload. Upon feature
 negotiation corresponding offload gets enabled to preserve backward
 compartibility.
 
-\drivernormative{Device Types / Network Device / Device Operation / Control Virtqueue / Offloads State Configuration / Setting Offloads State}
+\drivernormative{\subparagraph}{Setting Offloads State}{Device Types / Network Device / Device Operation / Control Virtqueue / Offloads State Configuration / Setting Offloads State}
 
 A driver MUST NOT enable a offload for which the appropriate feature
 has not been negotiated.
@@ -3547,7 +3549,7 @@ error or VIRTIO_BLK_S_UNSUPP for a request unsupported by device:
 #define VIRTIO_BLK_S_UNSUPP    2
 \end{lstlisting}
 
-\drivernormative{Device Types / Block Device / Device Operation}
+\drivernormative{\subsection}{Device Operation}{Device Types / Block Device / Device Operation}
 
 A driver MUST NOT submit a request which would cause a read or write
 beyond \field{capacity}.
@@ -3557,7 +3559,7 @@ A driver SHOULD accept the VIRTIO_BLK_F_RO feature if offered.
 A driver MUST set \field{sector} to 0 for a VIRTIO_BLK_T_FLUSH request.
 A driver SHOULD NOT include any data in a VIRTIO_BLK_T_FLUSH request.
 
-\devicenormative{Device Types / Block Device / Device Operation}
+\devicenormative{\subsection}{Device Operation}{Device Types / Block Device / Device Operation}
 
 A device MUST set the \field{status} byte to VIRTIO_BLK_S_IOERR
 for a write request if the VIRTIO_BLK_F_RO feature if offered, and MUST NOT
@@ -3754,7 +3756,7 @@ native endian of the guest rather than (necessarily) little-endian.
   receive buffers.
 \end{enumerate}
 
-\devicenormative{Device Types / Console Device / Device Initialization}
+\devicenormative{\subsubsection}{Device Initialization}{Device Types / Console Device / Device Initialization}
 
 The device MUST allow a write to \field{emerg_wr}, even on an
 unconfigured device.
@@ -3789,7 +3791,7 @@ when a port is closed or hot-unplugged.
   used for port hot-plug as well.
 \end{enumerate}
 
-\drivernormative{Device Types / Console Device / Device Operation}
+\drivernormative{\subsubsection}{Device Operation}{Device Types / Console Device / Device Operation}
 
 The driver MUST NOT put a device-readable in a receiveq. The driver
 MUST NOT put a device-writable buffer in a transmitq.
@@ -3845,7 +3847,7 @@ struct virtio_console_resize {
   within the guest (without a NUL terminator).
 \end{description}
 
-\devicenormative{Device Types / Console Device / Device Operation / Multiport Device Operation}
+\devicenormative{\paragraph}{Multiport Device Operation}{Device Types / Console Device / Device Operation / Multiport Device Operation}
 
 The device MUST NOT specify a port which exists in a
 VIRTIO_CONSOLE_DEVICE_ADD message, nor a port which is equal or
@@ -3854,7 +3856,7 @@ greater than \field{max_nr_ports}.
 The device MUST NOT specify a port in VIRTIO_CONSOLE_DEVICE_REMOVE
 which has not been created with a previous VIRTIO_CONSOLE_DEVICE_ADD.
 
-\drivernormative{Device Types / Console Device / Device Operation / Multiport Device Operation}
+\drivernormative{\paragraph}{Multiport Device Operation}{Device Types / Console Device / Device Operation / Multiport Device Operation}
 
 The driver must send a VIRTIO_CONSOLE_DEVICE_READY message if
 VIRTIO_CONSOLE_F_MULTIPORT is negotiated.
@@ -3900,19 +3902,24 @@ When the driver requires random bytes, it places the descriptor
 of one or more buffers in the queue. It will be completely filled
 by random data by the device.
 
-\drivernormative{Device Types / Entropy Device / Device Operation}
+\drivernormative{\subsubsection}{Device Operation}{Device Types / Entropy Device / Device Operation}
 
 The driver MUST NOT place driver-readable buffers into the queue.
 
 The driver MUST examine the length written by the driver to determine
 how many random bytes were received.
 
-\devicenormative{Device Types / Entropy Device / Device Operation}
+\devicenormative{\subsubsection}{Device Operation}{Device Types / Entropy Device / Device Operation}
 
 The device MUST place one or more random bytes into the buffer, but it
 MAY use less than the entire buffer length.
 
-\section{Memory Balloon Device}\label{sec:Device Types / Memory Balloon Device}
+\section{Legacy Interface: Memory Balloon Device}\label{sec:Device Types / Memory Balloon Device}
+
+This device is deprecated, and thus only exists as a legacy device
+illustrated here for reference.  The device number 13 is reserved for
+a new memory balloon interface which is expected in a future version
+of the standard.
 
 The virtio memory balloon device is a primitive device for
 managing guest memory: the device asks for a certain amount of
@@ -3954,7 +3961,6 @@ struct virtio_balloon_config {
 };
 \end{lstlisting}
 
-\subsubsection{Legacy Interface: Device configuration layout}\label{sec:Device Types / Memory Balloon Device / Device configuration layout / Legacy Interface: Device configuration layout}
 Note that these fields are always little endian, despite convention
 that legacy device fields are guest endian.
 
@@ -4047,7 +4053,6 @@ as follows:
   compatibility, unsupported statistics should be omitted.
 
 \begin{lstlisting}
-/* Note: LEGACY version was not little endian! */
 struct virtio_balloon_stat {
 #define VIRTIO_BALLOON_S_SWAP_IN  0
 #define VIRTIO_BALLOON_S_SWAP_OUT 1
@@ -4055,15 +4060,10 @@ struct virtio_balloon_stat {
 #define VIRTIO_BALLOON_S_MINFLT   3
 #define VIRTIO_BALLOON_S_MEMFREE  4
 #define VIRTIO_BALLOON_S_MEMTOT   5
-        le16 tag;
-        le64 val;
+        u16 tag;
+        u64 val;
 } __attribute__((packed));
 \end{lstlisting}
-
-\paragraph{Legacy Interface: Memory Statistics}\label{sec:Device Types / Memory Balloon Device / Device Operation / Memory Statistics / Legacy Interface: Memory Statistics}
-For legacy devices, the fields in struct virtio_balloon_stat are the
-native endian of the guest rather than (necessarily) little-endian.
-
 
 \subsubsection{Memory Statistics Tags}\label{sec:Device Types / Memory Balloon Device / Device Operation / Memory Statistics Tags}
 
@@ -4192,12 +4192,12 @@ struct virtio_scsi_config {
     host.
 \end{description}
 
-\drivernormative{Device Types / SCSI Host Device / Device configuration layout}
+\drivernormative{\subsubsection}{Device configuration layout}{Device Types / SCSI Host Device / Device configuration layout}
 
 The driver MUST NOT write to device configuration fields other than
 \field{sense_size} and \field{cdb_size}.
 
-\devicenormative{Device Types / SCSI Host Device / Device configuration layout}
+\devicenormative{\subsubsection}{Device configuration layout}{Device Types / SCSI Host Device / Device configuration layout}
 
 On reset, the device MUST set \field{sense_size} to 96 and
 \field{cdb_size} to 32.
@@ -4351,7 +4351,7 @@ following:
   VIRTIO_SCSI_S_FAILURE.
 \end{description}
 
-\drivernormative{Device Types / SCSI Host Device / Device Operation / Device Operation: Request Queues}
+\drivernormative{\paragraph}{Device Operation: Request Queues}{Device Types / SCSI Host Device / Device Operation / Device Operation: Request Queues}
 
 \field{task_attr}, \field{prio} and \field{crn} SHOULD be zero.
 
@@ -4659,7 +4659,7 @@ contents of \field{event}. The following events are defined:
   reports this event for MMC devices.
 \end{itemize}
 
-\drivernormative{Device Types / SCSI Host Device / Device Operation / Device Operation: eventq}
+\drivernormative{\paragraph}{Device Operation: eventq}{Device Types / SCSI Host Device / Device Operation / Device Operation: eventq}
 
 The driver SHOULD keep the eventq populated with buffers.  These
 buffers MUST be device-writable, and SHOULD be at least
@@ -4677,7 +4677,7 @@ VIRTIO_SCSI_EVT_RESET_RESCAN for LUN 0, the driver SHOULD ask the
 initiator to rescan the target, in order to detect the case when an
 entire target has appeared or disappeared.
 
-\devicenormative{Device Types / SCSI Host Device / Device Operation / Device Operation: eventq}
+\devicenormative{\paragraph}{Device Operation: eventq}{Device Types / SCSI Host Device / Device Operation / Device Operation: eventq}
 
 The device MUST set bit 31 in \field{event} if events were lost due to
 missing buffers, and it MAY use a VIRTIO_SCSI_T_NO_EVENT event to report
@@ -4709,12 +4709,12 @@ Currently there are three device-independent feature bits defined:
     specification, giving a simple way to detect legacy devices or drivers.
 \end{description}
 
-\drivernormative{Reserved Feature Bits}
+\drivernormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
 
 A driver MUST accept VIRTIO_F_VERSION_1 if it is offered.  A driver
 MAY fail to operate further if VIRTIO_F_VERSION_1 is not offered.
 
-\devicenormative{Reserved Feature Bits}
+\devicenormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
 
 A device MUST offer VIRTIO_F_VERSION_1.  A device MAY fail to operate further
 if VIRTIO_F_VERSION_1 is not accepted.
