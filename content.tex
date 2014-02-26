@@ -3884,7 +3884,7 @@ struct virtio_scsi_req_cmd {
 
 \field{lun} addresses a target and logical unit in the
 virtio-scsi device's SCSI domain. The only supported format for
-the \field{lun} field is: first byte set to 1, second byte set to target,
+\field{lun} is: first byte set to 1, second byte set to target,
 third and fourth byte representing a single level LUN structure,
 followed by four zero bytes. With this representation, a
 virtio-scsi device can serve up to 256 targets and 16384 LUNs per
@@ -3910,7 +3910,7 @@ calculated as “data_length - number_of_transferred_bytes”, for
 read or write operations. For bidirectional commands, the
 number_of_transferred_bytes includes both read and written bytes.
 A \field{residual} that is less than the size of \field{datain} means that
-the dataout field was processed entirely. A \field{residual} that
+\field{dataout} was processed entirely. A \field{residual} that
 exceeds the size of \field{datain} means that \field{dataout} was
 processed partially and \field{datain} was not processed at
 all.
@@ -4029,7 +4029,7 @@ struct virtio_scsi_ctrl_tmf
 
   Other fields may be irrelevant for the requested TMF; if so,
   they are ignored but they should still be present. \field{lun}
-  field is in the same format specified for request queues; the
+  is in the same format specified for request queues; the
   single level LUN is ignored when the task management function
   addresses a whole I_T nexus. When relevant, the value of \field{id}
   is matched against the id values passed on the requestq.
@@ -4165,8 +4165,8 @@ contents of \field{event}. The following events are defined:
 \begin{itemize}
 \item When the device detects in the eventq a buffer that is
     shorter than what is indicated in the configuration field, it
-    might use it immediately and put this dummy value in the
-    event field. A well-written driver will never observe this
+    might use it immediately and put this dummy value in \field{event}.
+    A well-written driver will never observe this
     situation.
 
 \item When events are dropped, the device may signal this event as
@@ -4248,9 +4248,9 @@ contents of \field{event}. The following events are defined:
   By sending this event, the device signals that an asynchronous
   event was fired from a physical interface.
 
-  All fields are written by the device. The event field is set to
-  VIRTIO_SCSI_T_ASYNC_NOTIFY. The lun field addresses a logical
-  unit in the SCSI host. The reason field is a subset of the
+  All fields are written by the device. \field{event} is set to
+  VIRTIO_SCSI_T_ASYNC_NOTIFY. \field{lun} addresses a logical
+  unit in the SCSI host. \field{reason} is a subset of the
   events that the driver has subscribed to via the "Asynchronous
   notification subscription" command.
 
@@ -4264,11 +4264,11 @@ contents of \field{event}. The following events are defined:
 
   By sending this event, the device signals that the configuration parameters
   (for example the capacity) of a logical unit have changed.
-  The event field is set to VIRTIO_SCSI_T_PARAM_CHANGE.
-  The lun field addresses a logical unit in the SCSI host.
+  \field{event} is set to VIRTIO_SCSI_T_PARAM_CHANGE.
+  \field{lun} addresses a logical unit in the SCSI host.
 
   The same event is also reported as a unit attention condition.
-  The reason field contains the additional sense code and additional sense code qualifier,
+  \field{reason} contains the additional sense code and additional sense code qualifier,
   respectively in bits 0..7 and 8..15.
   For example, a change in capacity will be reported as asc 0x2a, ascq 0x09
   (CAPACITY DATA HAS CHANGED).
