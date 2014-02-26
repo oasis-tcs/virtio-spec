@@ -1904,7 +1904,7 @@ Before reading from \field{DeviceFeatures}, the driver MUST write a value to \fi
 Before writing to the \field{DriverFeatures} register, the driver MUST write a value to the \field{DriverFeaturesSel} register.
 
 The driver MUST write a value to \field{QueueNum} which is less than
-or equal to the value presented by the device.
+or equal to the value presented by the device in \field{QueueNumMax}.
 
 When \field{QueueReady} is not zero, the driver MUST NOT access
 \field{QueueNum}, \field{QueueDescLow}, \field{QueueDescHigh},
