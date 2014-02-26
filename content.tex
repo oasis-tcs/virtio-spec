@@ -1295,6 +1295,20 @@ As a prerequisite to device initialization, the driver scans the
 PCI capability list, detecting virtio configuration layout using Virtio
 Structure PCI capabilities.
 
+\paragraph{Non-transitional Device With Legacy Driver}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Non-transitional Device With Legacy Driver}
+
+Non-transitional devices, on a platform where a legacy driver for
+a legacy device with the same ID might have previously existed,
+MUST take the following steps to fail gracefully when a legacy
+driver attempts to drive them:
+
+\begin{enumerate}
+\item Present an I/O BAR in BAR0, and
+\item Respond to a single-byte zero write to offset 18
+   (corresponding to Device Status register in the legacy layout)
+   of BAR0 by presenting zeroes on every BAR and ignoring writes.
+\end{enumerate}
+
 \subparagraph{Legacy Interface: A Note on Device Layout Detection}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Virtio Device Configuration Layout Detection / Legacy Interface: A Note on Device Layout Detection}
 
 Legacy drivers skipped the Device Layout Detection step, assuming legacy
@@ -1316,18 +1330,6 @@ Non-transitional drivers should look for the Virtio PCI
 Capabilities on the capability list.
 If these are not present, driver should assume a legacy device,
 and fail gracefully.
-
-Non-transitional devices, on a platform where a legacy driver for
-a legacy device with the same ID might have previously existed,
-MUST take the following steps to fail gracefully when a legacy
-driver attempts to drive them:
-
-\begin{enumerate}
-\item Present an I/O BAR in BAR0, and
-\item Respond to a single-byte zero write to offset 18
-   (corresponding to Device Status register in the legacy layout)
-   of BAR0 by presenting zeroes on every BAR and ignoring writes.
-\end{enumerate}
 
 \paragraph{MSI-X Vector Configuration}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / MSI-X Vector Configuration}
 
