@@ -40,11 +40,13 @@ following bits are defined:
   even a fatal error during device operation.
 \end{description}
 
+\drivernormative{Basic Facilities of a Virtio Device / Device Status Field}
 The driver MUST update \field{device status} in the order above to
 indicate the driver's progress.  The driver MUST NOT clear a
 \field{device status} bit.  If the driver sets the FAILED bit,
 it MUST reset the device before attempting to re-initialize.
 
+\devicenormative{Basic Facilities of a Virtio Device / Device Status Field}
 The device MUST initialize \field{device status} to 0 upon reset.
 
 \section{Feature Bits}\label{sec:Basic Facilities of a Virtio Device / Feature Bits}
