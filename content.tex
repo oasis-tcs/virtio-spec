@@ -2719,9 +2719,10 @@ features.
 \subsection{Feature bits}\label{sec:Device Types / Network Device / Feature bits}
 
 \begin{description}
-\item[VIRTIO_NET_F_CSUM (0)] Device handles packets with partial checksum
+\item[VIRTIO_NET_F_CSUM (0)] Device handles packets with partial checksum.   This 
+  “checksum offload” is a common feature on modern network cards.
 
-\item[VIRTIO_NET_F_GUEST_CSUM (1)] Driver handles packets with partial checksum
+\item[VIRTIO_NET_F_GUEST_CSUM (1)] Driver handles packets with partial checksum.
 
 \item[VIRTIO_NET_F_CTRL_GUEST_OFFLOADS (2)] Control channel offloads
         reconfiguration support.
@@ -2765,6 +2766,29 @@ features.
     channel.
 \end{description}
 
+\subsubsection{Feature bit requirements}\label{sec:Device Types / Network Device / Feature bits / Feature bit requirements}
+
+Some networking feature bits require other networking feature bits
+(see \ref{drivernormative:Basic Facilities of a Virtio Device / Feature Bits}):
+
+\begin{description}
+\item[VIRTIO_NET_F_GUEST_TSO4] Requires VIRTIO_NET_F_GUEST_CSUM.
+\item[VIRTIO_NET_F_GUEST_TSO6] Requires VIRTIO_NET_F_GUEST_CSUM.
+\item[VIRTIO_NET_F_GUEST_ECN] Requires VIRTIO_NET_F_GUEST_TSO4 or VIRTIO_NET_F_GUEST_TSO6.
+\item[VIRTIO_NET_F_GUEST_UFO] Requires VIRTIO_NET_F_GUEST_CSUM.
+
+\item[VIRTIO_NET_F_HOST_TSO4] Requires VIRTIO_NET_F_CSUM.
+\item[VIRTIO_NET_F_HOST_TSO6] Requires VIRTIO_NET_F_CSUM.
+\item[VIRTIO_NET_F_HOST_ECN] Requires VIRTIO_NET_F_HOST_TSO4 or VIRTIO_NET_F_HOST_TSO6.
+\item[VIRTIO_NET_F_HOST_UFO] Requires VIRTIO_NET_F_CSUM.
+
+\item[VIRTIO_NET_F_CTRL_RX] Requires VIRTIO_NET_F_CTRL_VQ.
+\item[VIRTIO_NET_F_CTRL_VLAN] Requires VIRTIO_NET_F_CTRL_VQ.
+\item[VIRTIO_NET_F_GUEST_ANNOUNCE] Requires VIRTIO_NET_F_CTRL_VQ.
+\item[VIRTIO_NET_F_MQ] Requires VIRTIO_NET_F_CTRL_VQ.
+\item[VIRTIO_NET_F_CTRL_MAC_ADDR] Requires VIRTIO_NET_F_CTRL_VQ.
+\end{description}
+
 \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Network Device / Feature bits / Legacy Interface: Feature bits}
 \begin{description}
 \item[VIRTIO_NET_F_GSO (6)] Device handles packets with any GSO type.
@@ -2792,7 +2816,7 @@ VIRTIO_NET_F_MQ is set. This field specifies the maximum number
 of each of transmit and receive virtqueues (receiveq0..receiveqN
 and transmitq0..transmitqN respectively;
  N=\field{max_virtqueue_pairs} - 1) that can be configured once VIRTIO_NET_F_MQ
-is negotiated.  Legal values for this field are 1 to 0x8000.
+is negotiated.
 
 \begin{lstlisting}
 /* Note: LEGACY version was not little endian! */
@@ -2803,6 +2827,23 @@ struct virtio_net_config {
 };
 \end{lstlisting}
 
+\devicenormative{Device Types / Network Device / Device configuration layout}
+
+The device MUST set \field{max_virtqueue_pairs} to between 1 and 0x8000 inclusive,
+if it offers VIRTIO_NET_F_MQ.
+
+\drivernormative{Device Types / Network Device / Device configuration layout}
+
+A driver SHOULD negotiate VIRTIO_NET_F_MAC if the device offers it.
+If the driver negotiates the VIRTIO_NET_F_MAC feature, the driver MUST set
+the physical address of the NIC to \field{mac}.  Otherwise, it SHOULD
+use a locally-administered MAC address (see \hyperref[intro:IEEE 802]{IEEE 802},
+"9.2 48-bit universal LAN MAC addresses").
+
+If the driver does not negotiate the VIRTIO_NET_F_STATUS feature, it SHOULD
+assume the link is active, otherwise it SHOULD read the link status from
+the bottom bit of \field{status}.
+
 \subsubsection{Legacy Interface: Device configuration layout}\label{sec:Device Types / Network Device / Device configuration layout / Legacy Interface: Device configuration layout}
 For legacy devices, \field{status} and \field{max_virtqueue_pairs} in struct virtio_net_config are the
 native endian of the guest rather than (necessarily) little-endian.
@@ -2810,56 +2851,40 @@ native endian of the guest rather than (necessarily) little-endian.
 
 \subsection{Device Initialization}\label{sec:Device Types / Network Device / Device Initialization}
 
+A driver would perform a typical initialization routine like so:
+
 \begin{enumerate}
-\item The initialization routine should identify the receive and
+\item Identify and initialize the receive and
   transmission virtqueues, up to N+1 of each kind. If
   VIRTIO_NET_F_MQ feature bit is negotiated,
   N=\field{max_virtqueue_pairs}-1, otherwise identify N=0.
 
-\item If the VIRTIO_NET_F_MAC feature bit is set, the configuration
-  space \field{mac} entry indicates the “physical” address of the
-  network card, otherwise a private MAC address should be
-  assigned. All drivers are expected to negotiate this feature if
-  it is set.
-
 \item If the VIRTIO_NET_F_CTRL_VQ feature bit is negotiated,
   identify the control virtqueue.
 
+\item Fill the receive queues with buffers: see \ref{sec:Device Types / Network Device / Device Operation / Setting Up Receive Buffers}.
+
+\item Even with VIRTIO_NET_F_MQ, only receiveq0, transmitq0 and
+  controlq are used by default.  The driver would send the
+  VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command specifying the
+  number of the transmit and receive queues to use.
+
+\item If the VIRTIO_NET_F_MAC feature bit is set, the configuration
+  space \field{mac} entry indicates the “physical” address of the
+  network card, otherwise the driver would typically generate a random
+  local MAC address.
+
 \item If the VIRTIO_NET_F_STATUS feature bit is negotiated, the link
-  status can be read from the bottom bit of \field{status}.
-  Otherwise, the link should be assumed active.
+  status comes from the bottom bit of \field{status}.
+  Otherwise, the driver assumes it's active.
 
-\item Only receiveq0, transmitq0 and controlq are used by default.
-  To use more queues driver must negotiate the VIRTIO_NET_F_MQ
-  feature; initialize up to \field{max_virtqueue_pairs} of each of
-  transmit and receive queues;
-  execute VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command specifying the
-  number of the transmit and receive queues that is going to be
-  used and wait until the device consumes the controlq buffer and
-  acks this command.
-  The receive virtqueue should be filled with receive buffers
-  before multiqueue is activated
-  (see \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode}~\nameref{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode}).
-  This is described in detail below in \nameref{sec:Device Types / Network Device / Device Operation / Setting Up Receive Buffers}.
+\item A performant driver would indicate that it will generate checksumless
+  packets by negotating the VIRTIO_NET_F_CSUM feature.
 
-\item A driver can indicate that it will generate checksumless
-  packets by negotating the VIRTIO_NET_F_CSUM feature. This 
-  “checksum offload” is a common feature on modern network cards.
-
-\item If that feature is negotiated\footnote{ie. VIRTIO_NET_F_HOST_TSO* and VIRTIO_NET_F_HOST_UFO are
-dependent on VIRTIO_NET_F_CSUM; a device which offers the offload
-features must offer the checksum feature, and a driver which
-accepts the offload features must accept the checksum feature.
-Similar logic applies to the VIRTIO_NET_F_GUEST_TSO4 features
-depending on VIRTIO_NET_F_GUEST_CSUM.
-}, a driver can use TCP or UDP
+\item If that feature is negotiated, a driver can use TCP or UDP
   segmentation offload by negotiating the VIRTIO_NET_F_HOST_TSO4 (IPv4
   TCP), VIRTIO_NET_F_HOST_TSO6 (IPv6 TCP) and VIRTIO_NET_F_HOST_UFO
-  (UDP fragmentation) features. It should not send TCP packets
-  requiring segmentation offload which have the Explicit Congestion
-  Notification bit set, unless the VIRTIO_NET_F_HOST_ECN feature is
-  negotiated.\footnote{This is a common restriction in real, older network cards.
-}
+  (UDP fragmentation) features.
 
 \item The converse features are also available: a driver can save
   the virtual device some work by negotiating these features.\footnote{For example, a network packet transported between two guests on
@@ -2873,6 +2898,9 @@ if both guests are amenable.
   equivalents of the features described above.
   See \ref{sec:Device Types / Network Device / Device Operation / Setting Up Receive Buffers}~\nameref{sec:Device Types / Network Device / Device Operation / Setting Up Receive Buffers} and \ref{sec:Device Types / Network Device / Device Operation / Setting Up Receive Buffers}~\nameref{sec:Device Types / Network Device / Device Operation / Setting Up Receive Buffers} below.
 \end{enumerate}
+
+A truly minimal driver would only accept VIRTIO_NET_F_MAC and ignore
+everything else.
 
 \subsection{Device Operation}\label{sec:Device Types / Network Device / Device Operation}
 
@@ -2914,10 +2942,11 @@ Transmitting a single packet is simple, but varies depending on
 the different features the driver negotiated.
 
 \begin{enumerate}
-\item If the driver negotiated VIRTIO_NET_F_CSUM, and the packet has
-  not been fully checksummed, then the virtio_net_hdr's fields
-  are set as follows. Otherwise, the packet must be fully
-  checksummed, and flags is zero.
+\item The driver MAY send a completely checksummed packet.  In this case,
+  \field{flags} will be zero, and \field{gso_type} will be VIRTIO_NET_HDR_GSO_NONE.
+
+\item If the driver negotiated VIRTIO_NET_F_CSUM, it MAY skip
+  checksumming the packet:
   \begin{itemize}
   \item \field{flags} has the VIRTIO_NET_HDR_F_NEEDS_CSUM set,
 
@@ -2926,17 +2955,20 @@ the different features the driver negotiated.
 
   \item \field{csum_offset} indicates how many bytes after the csum_start the
     new (16 bit ones' complement) checksum should be placed.
+
+  \item The TCP checksum field in the packet is set to the sum
+    of the TCP pseudo header, so that replacing it by the ones'
+    complement checksum of the TCP header and body will give the
+    correct result.
   \end{itemize}
 
+\begin{note}
 For example, consider a partially checksummed TCP (IPv4) packet.
 It will have a 14 byte ethernet header and 20 byte IP header
 followed by the TCP header (with the TCP checksum field 16 bytes
 into that header). \field{csum_start} will be 14+20 = 34 (the TCP
-checksum includes the header), and \field{csum_offset} will be 16. The
-value in the TCP checksum field should be initialized to the sum
-of the TCP pseudo header, so that replacing it by the ones'
-complement checksum of the TCP header and body will give the
-correct result.
+checksum includes the header), and \field{csum_offset} will be 16.
+\end{note}
 
 \item If the driver negotiated
   VIRTIO_NET_F_HOST_TSO4, TSO6 or UFO, and the packet requires
@@ -2965,14 +2997,31 @@ specifically in the protocol.
    \end{itemize}
 
 \item If the driver negotiated the VIRTIO_NET_F_MRG_RXBUF feature,
-  \field{num_buffers} is set to zero.
+  \field{num_buffers} is set to zero.  This field is unused on transmitted packets.
 
-\item The header and packet are added as one output buffer to the
+\item The header and packet are added as one output descriptor to the
   transmitq, and the device is notified of the new entry
   (see \ref{sec:Device Types / Network Device / Device Initialization}~\nameref{sec:Device Types / Network Device / Device Initialization}).\footnote{Note that the header will be two bytes longer for the
 VIRTIO_NET_F_MRG_RXBUF case.
 }
 \end{enumerate}
+
+\drivernormative{Device Types / Network Device / Device Operation / Packet Transmission}
+
+If a driver has not negotiated VIRTIO_NET_F_CSUM, \field{flags} MUST be zero and
+the packet must be fully checksummed.
+
+If a driver negotiated the VIRTIO_NET_F_MRG_RXBUF feature, it MUST include
+\field{num_buffers} in the header, and it MUST set the value to zero.  If a driver
+did not negotiate VIRTIO_NET_F_MRG_RXBUF, it MUST NOT include \field{num_buffers} in the header.
+\begin{note}
+  ie. With VIRTIO_NET_F_MRG_RXBUF, both receive and transmit headers
+  are 12 bytes.  Without it, they're 10 bytes.
+\end{note}
+
+A driver SHOULD NOT send TCP packets requiring segmentation offload which have the Explicit Congestion Notification bit set, unless the VIRTIO_NET_F_HOST_ECN feature is
+negotiated\footnote{This is a common restriction in real, older network cards.}, in
+which case it MUST set the VIRTIO_NET_HDR_GSO_ECN bit in \field{gso_type}.
 
 \paragraph{Packet Transmission Interrupt}\label{sec:Device Types / Network Device / Device Operation / Packet Transmission / Packet Transmission Interrupt}
 
@@ -2993,19 +3042,33 @@ fully populated as possible: if it runs out, network performance
 will suffer.
 
 If the VIRTIO_NET_F_GUEST_TSO4, VIRTIO_NET_F_GUEST_TSO6 or
-VIRTIO_NET_F_GUEST_UFO features are used, the Driver will need to
-accept packets of up to 65550 bytes long (the maximum size of a
+VIRTIO_NET_F_GUEST_UFO features are used, the maximum incoming packet
+will be to 65550 bytes long (the maximum size of a
 TCP or UDP packet, plus the 14 byte ethernet header), otherwise
-1514. bytes. So unless VIRTIO_NET_F_MRG_RXBUF is negotiated, every
-buffer in the receive queue needs to be at least this length.\footnote{Obviously each one can be split across multiple descriptor
-elements.
-}
+1514 bytes.  The 12-byte struct virtio_net_hdr is prepended to this,
+making for 65562 or 1526 bytes.
 
-If VIRTIO_NET_F_MRG_RXBUF is negotiated, each buffer must be at
-least the size of the struct virtio_net_hdr.
+\drivernormative{Device Types / Network Device / Device Operation / Setting Up Receive Buffers}
+
+\begin{itemize}
+\item If VIRTIO_NET_F_MRG_RXBUF is not negotiated:
+  \begin{itemize}
+    \item If VIRTIO_NET_F_GUEST_TSO4, VIRTIO_NET_F_GUEST_TSO6 or
+      VIRTIO_NET_F_GUEST_UFO are negotiated, the driver SHOULD populate
+      the receive queue(s) with buffers of at least 65562 bytes.
+    \item Otherwise, the driver SHOULD populate the receive queue(s)
+      with buffers of at least 1526 bytes.
+  \end{itemize}
+\item If VIRTIO_NET_F_MRG_RXBUF is negotiated, each buffer MUST be at
+  least the size of the struct virtio_net_hdr.
+\end{itemize}
+
+\begin{note}
+Obviously each buffer can be split across multiple descriptor elements.
+\end{note}
 
 If VIRTIO_NET_F_MQ is negotiated, each of receiveq0...receiveqN
-that will be used should be populated with receive buffers.
+that will be used SHOULD be populated with receive buffers.
 
 \paragraph{Packet Receive Interrupt}\label{sec:Device Types / Network Device / Device Operation / Setting Up Receive Buffers / Packet Receive Interrupt}
 
@@ -3032,7 +3095,7 @@ Processing packet involves:
   virtio_net_hdr.
 
 \item If the VIRTIO_NET_F_GUEST_CSUM feature was negotiated, the
-  VIRTIO_NET_HDR_F_NEEDS_CSUM bit in \field{flags} may be
+  VIRTIO_NET_HDR_F_NEEDS_CSUM bit in \field{flags} MAY be
   set: if so, the checksum on the packet is incomplete and
   \field{csum_start} and \field{csum_offset} indicate how to calculate
   it (see Packet Transmission point 1).
@@ -3116,11 +3179,6 @@ command-specific-data is two variable length tables of 6-byte MAC
 addresses. The first table contains unicast addresses, and the second
 contains multicast addresses.
 
-When VIRTIO_NET_F_MAC_ADDR is not negotiated, \field{mac} in the
-config space is writeable and is used to set the default MAC
-address which rx filtering accepts.
-When VIRTIO_NET_F_MAC_ADDR is negotiated, \field{mac} in the
-config space becomes read-only for the driver.
 The VIRTIO_NET_CTRL_MAC_ADDR_SET command is used to set the
 default MAC address which rx filtering
 accepts.
@@ -3131,6 +3189,11 @@ is used to set the default MAC address which rx filtering
 accepts.
 The command-specific-data for VIRTIO_NET_CTRL_MAC_ADDR_SET is
 the 6-byte MAC address.
+
+\drivernormative{Device Types / Network Device / Device Operation / Control Virtqueue / Setting MAC Address Filtering}
+
+A driver MUST NOT write to the \field{mac} if VIRTIO_NET_F_MAC_ADDR is
+negotiated.
 
 The
 VIRTIO_NET_CTRL_MAC_ADDR_SET command is atomic whereas
@@ -3183,23 +3246,36 @@ the guest in this way).
  #define VIRTIO_NET_CTRL_ANNOUNCE_ACK             0
 \end{lstlisting}
 
-The Driver needs to check VIRTIO_NET_S_ANNOUNCE bit in status
-field when it notices the changes of device configuration. The
+The driver checks VIRTIO_NET_S_ANNOUNCE bit in the device configuration \field{status} field
+when it notices the changes of device configuration. The
 command VIRTIO_NET_CTRL_ANNOUNCE_ACK is used to indicate that
-driver has received the notification and device would clear the
-VIRTIO_NET_S_ANNOUNCE bit in the status filed after it received
-this command.
+driver has received the notification and device clears the
+VIRTIO_NET_S_ANNOUNCE bit in \field{status}.
 
 Processing this notification involves:
 
 \begin{enumerate}
-\item Sending the gratuitous packets or marking there are pending
+\item Sending the gratuitous packets (eg. ARP) or marking there are pending
   gratuitous packets to be sent and letting deferred routine to
   send them.
 
 \item Sending VIRTIO_NET_CTRL_ANNOUNCE_ACK command through control
   vq.
 \end{enumerate}
+
+\drivernormative{Device Types / Network Device / Device Operation / Control Virtqueue / Gratuitous Packet Sending}
+
+If the driver negotiates VIRTIO_NET_F_GUEST_ANNOUNCE, it SHOULD notify
+network peers of its new location after it sees the VIRTIO_NET_S_ANNOUNCE bit
+in \field{status}.  The driver MUST send a command on the command queue
+with class VIRTIO_NET_CTRL_ANNOUNCE and command VIRTIO_NET_CTRL_ANNOUNCE_ACK.
+
+\devicenormative{Device Types / Network Device / Device Operation / Control Virtqueue / Gratuitous Packet Sending}
+
+If VIRTIO_NET_F_GUEST_ANNOUNCE is negotiated, the device MUST clear the
+VIRTIO_NET_S_ANNOUNCE bit in \field{status} upon receipt of a command buffer
+with class VIRTIO_NET_CTRL_ANNOUNCE and command VIRTIO_NET_CTRL_ANNOUNCE_ACK
+before marking the buffer as used.
 
 \paragraph{Automatic receive steering in multiqueue mode}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode}
 
@@ -3223,11 +3299,10 @@ struct virtio_net_ctrl_mq {
 
 Multiqueue is disabled by default. The driver enables multiqueue by
 executing the VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command, specifying
-the number of the transmit and receive queues to be used; subsequently,
+the number of the transmit and receive queues to be used up to
+\field{max_virtqueue_pairs}; subsequently,
 transmitq0..transmitqn and receiveq0..receiveqn where
-n=virtqueue_pairs-1 MAY be used. All these virtqueues MUST have
-been pre-configured in advance. The range of legal values for the
-\field{virtqueue_pairs} field is between 1 and \field{max_virtqueue_pairs}.
+n=virtqueue_pairs-1 MAY be used.
 
 When multiqueue is enabled, the device MUST use automatic receive steering
 based on packet flow. Programming of the receive steering
@@ -3238,12 +3313,29 @@ no packets have been transmitted yet, the device MAY steer a packet
 to a random queue out of the specified receiveq0..receiveqn.
 
 Multiqueue is disabled by setting \field{virtqueue_pairs} to 1 (this is
-the default). After the command has been consumed by the device, the
-device MUST NOT steer new packets to virtqueues
-receveq1..receiveqN (i.e. other than receiveq0) and MUST NOT read from
-transmitq1..transmitqN (i.e. other than transmitq0); accordingly,
-the driver MUST NOT transmit new packets on virtqueues other than
-transmitq0.
+the default) and waiting for the device to use the command buffer.
+
+\drivernormative{Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode}
+
+The driver MUST configure the virtqueues before enabling them with the 
+VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command.
+
+The driver MUST NOT request a \field{virtqueue_pairs} of 0 or
+greater than \field{max_virtqueue_pairs} in the device configuration space.
+
+The driver MUST queue packets only on any transmitq0 before the 
+VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command.
+
+The driver MUST NOT queue packets on transmit queues greater than
+\field{virtqueue_pairs} once it has placed the VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command in the available ring.
+
+\devicenormative{Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode}
+
+The device MUST queue packets only on any receiveq0 before the 
+VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command.
+
+The device MUST NOT queue packets on receive queues greater than
+\field{virtqueue_pairs} once it has placed the VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command in the used ring.
 
 \subparagraph{Legacy Interface: Automatic receive steering in multiqueue mode}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode / Legacy Interface: Automatic receive steering in multiqueue mode}
 For legacy devices, \field{virtqueue_pairs} is in the
@@ -3279,9 +3371,10 @@ There is a corresponding device feature for each offload. Upon feature
 negotiation corresponding offload gets enabled to preserve backward
 compartibility.
 
-Corresponding feature must be negotiated at startup in order to allow dynamic
-change of specific offload state.
+\drivernormative{Device Types / Network Device / Device Operation / Control Virtqueue / Offloads State Configuration / Setting Offloads State}
 
+A driver MUST NOT enable a offload for which the appropriate feature
+has not been negotiated.
 
 \subparagraph{Legacy Interface: Setting Offloads State}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Offloads State Configuration / Setting Offloads State / Legacy Interface: Setting Offloads State}
 For legacy devices, \field{offloads} is the
