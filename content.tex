@@ -1329,11 +1329,27 @@ driver attempts to drive them:
    of BAR0 by presenting zeroes on every BAR and ignoring writes.
 \end{enumerate}
 
-\paragraph{Queue Vector Configuration}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Queue Vector Configuration}
+\paragraph{MSI-X Vector Configuration}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / MSI-X Vector Configuration}
 
 When MSI-X capability is present and enabled in the device
 (through standard PCI configuration space) \field{config_msix_vector} and \field{queue_msix_vector} are used to map configuration change and queue
 interrupts to MSI-X vectors. In this case, the ISR Status is unused.
+
+A device that has an MSI-X capability SHOULD support at least 2
+and at most 0x800 MSI-X vectors.
+Device MUST report the number of vectors supported in
+\field{Table Size} in the MSI-X Capability as specified in
+\hyperref[intro:PCI]{[PCI]}.
+Driver MUST support device with any MSI-X Table Size 0 to 0x7FF.
+Driver MAY fall back on using INT\#x interrupts for a device
+which only supports one MSI-X vector (MSI-X Table Size = 0).
+
+Driver MAY intepret the Table Size as a hint from the device
+for the suggested number of MSI-X vectors to use.
+Therefore, devices SHOULD restrict the reported MSI-X Table Size field
+to a value that might benefit system performance.
+For example, a device which does not expect to send
+interrupts at a high rate might only specify 2 MSI-X vectors.
 
 Writing a valid MSI-X Table entry number, 0 to 0x7FF, to
 \field{config_msix_vector}/\field{queue_msix_vector} maps interrupts triggered
@@ -1346,6 +1362,13 @@ value:
 /* Vector value used to disable MSI for queue */
 #define VIRTIO_MSI_NO_VECTOR            0xffff
 \end{lstlisting}
+
+Driver MUST NOT attempt to map an event to a vector
+outside the MSI-X Table supported by the device,
+as reported by \field{Table Size} in the MSI-X Capability.
+Device MUST support mapping any event type to any valid
+vector 0 to MSI-X \field{Table Size}.
+Device MUST support unmapping any event type.
 
 Reading these registers returns vector mapped to a given event,
 or NO_VECTOR if unmapped. All queue and configuration change
@@ -1360,6 +1383,10 @@ success, the previously written value is returned, and on
 failure, NO_VECTOR is returned. If a mapping failure is detected,
 the driver MAY retry mapping with fewer vectors, disable MSI-X
 or report device failure.
+
+Devices SHOULD NOT cause mapping an event to vector to fail
+unless it is impossible for the device to satisfy the mapping
+request.
 
 \paragraph{Virtqueue Configuration}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Virtqueue Configuration}
 
