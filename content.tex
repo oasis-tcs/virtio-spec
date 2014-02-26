@@ -1681,10 +1681,10 @@ and interrupt(s) used.  The suggested binding for systems using
 flattened device trees is shown in this example:
 
 \begin{lstlisting}
-// EXAMPLE: virtio_block device taking 256 bytes at 0x1e000, interrupt 42.
+// EXAMPLE: virtio_block device taking 512 bytes at 0x1e000, interrupt 42.
 virtio_block@1e000 {
         compatible = "virtio,mmio";
-        reg = <0x1e000 0x100>;
+        reg = <0x1e000 0x200>;
         interrupts = <42>;
 }
 \end{lstlisting}
