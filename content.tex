@@ -14,13 +14,10 @@ device consists of the following parts:
 
 \section{\field{Device Status} Field}\label{sec:Basic Facilities of a Virtio Device / Device Status Field}
 
-The driver MUST update the \field{device status} field in the order below to
-indicate its progress. This provides a simple low-level diagnostic:
-it's most useful to imagine them hooked up to traffic lights on the
-console indicating the status of each device.  The driver MUST NOT
-clear a \field{device status} bit.
-
-\field{device status} is 0 upon reset, otherwise at least one bit should be set:
+The \field{device status} field provides a simple low-level
+diagnostic: it's most useful to imagine them hooked up to traffic
+lights on the console indicating the status of each device.  The
+following bits are defined:
 
 \begin{description}
 \item[ACKNOWLEDGE (1)] Indicates that the guest OS has found the
@@ -40,9 +37,15 @@ clear a \field{device status} bit.
 \item[FAILED (128)] Indicates that something went wrong in the guest,
   and it has given up on the device. This could be an internal
   error, or the driver didn't like the device for some reason, or
-  even a fatal error during device operation. The driver MUST
-  reset the device before attempting to re-initialize.
+  even a fatal error during device operation.
 \end{description}
+
+The driver MUST update \field{device status} in the order above to
+indicate the driver's progress.  The driver MUST NOT clear a
+\field{device status} bit.  If the driver sets the FAILED bit,
+it MUST reset the device before attempting to re-initialize.
+
+The device MUST initialize \field{device status} to 0 upon reset.
 
 \section{Feature Bits}\label{sec:Basic Facilities of a Virtio Device / Feature Bits}
 
