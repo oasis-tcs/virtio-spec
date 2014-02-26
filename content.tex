@@ -227,7 +227,7 @@ Used Ring         & 4         & $6 + 4 * $(Queue Size) \\
  \hline
 \end{tabular}
 
-The Alignment column gives the miminum alignment: for each part
+The Alignment column gives the minimum alignment: for each part
 of the virtqueue, the physical address of the first byte
 MUST be a multiple of the specified alignment value.
 
@@ -793,7 +793,7 @@ Thus a driver MUST ensure a virtqueue isn't live (by device reset) before removi
 
 \chapter{Virtio Transport Options}\label{sec:Virtio Transport Options}
 
-Virtio can use various different busses, thus the standard is split
+Virtio can use various different buses, thus the standard is split
 into virtio general and bus-specific sections.
 
 \section{Virtio Over PCI Bus}\label{sec:Virtio Transport Options / Virtio Over PCI Bus}
@@ -1646,7 +1646,7 @@ All register values are organized as Little Endian.
     accesses apply to the queue selected by writing to \field{QueueSel}.
     When the driver wants to stop using the queue it MUST write
     zero (0x0) to this register and MUST read the value back to
-    ensure synchronisation.
+    ensure synchronization.
   }
   \hline 
   \mmioreg{QueueNotify}{Queue notifier}{0x050}{W}{%
@@ -2311,7 +2311,7 @@ struct virtio_thinint_area {
 
 \field{summary_indicator} contains the guest address of the 8 bit summary
 indicator.
-\field{indicator} contains the guest address of an area wherin the indicators
+\field{indicator} contains the guest address of an area wherein the indicators
 for the devices are contained, starting at \field{bit_nr}, one bit per
 virtqueue of the device. Bit numbers start at the left, i.e. the most
 significant bit in the first byte is assigned the bit number 0.
@@ -2975,7 +2975,7 @@ the guest in this way).
 The Driver needs to check VIRTIO_NET_S_ANNOUNCE bit in status
 field when it notices the changes of device configuration. The
 command VIRTIO_NET_CTRL_ANNOUNCE_ACK is used to indicate that
-driver has recevied the notification and device would clear the
+driver has received the notification and device would clear the
 VIRTIO_NET_S_ANNOUNCE bit in the status filed after it received
 this command.
 
@@ -3648,7 +3648,7 @@ configuration change interrupt.
 
   \item Otherwise, the guest may begin to re-use pages previously
     given to the balloon before the device has acknowledged their
-    withdrawl.\footnote{In this case, deflation advice is merely a courtesy
+    withdrawal.\footnote{In this case, deflation advice is merely a courtesy
 }
   \end{enumerate}
 
@@ -3816,7 +3816,7 @@ struct virtio_scsi_config {
 \item[\field{event_info_size}] is the maximum size that the device will fill
     for buffers that the driver places in the eventq. The driver
     should always put buffers at least of this size. It is
-    written by the device depending on the set of negotated
+    written by the device depending on the set of negotiated
     features.
 
 \item[\field{sense_size}] is the maximum size of the sense data that the
