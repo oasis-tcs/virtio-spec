@@ -38,6 +38,33 @@ between different transports.
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in \hyperref[intro:rfc2119]{[RFC2119]}.
 
+An older specification (see \hyperref[intro:Virtio PCI Draft]{[Virtio PCI Draft]}) defined a
+similar, but different interface between the hypervisor and the guest.
+To simplify transition and note differences, the following terms are used:
+
+\begin{description}
+\item[Legacy Interface]
+        An interface specified by \hyperref[intro:Virtio PCI Draft]{[Virtio PCI Draft]}.
+\item[Legacy Device]
+        A device which implements \hyperref[intro:Virtio PCI Draft]{[Virtio PCI Draft]}, but not this specification.
+\item[Legacy Driver]
+        A driver which implements \hyperref[intro:Virtio PCI Draft]{[Virtio PCI Draft]}, but not this specification. 
+\item[Transitional Device]
+        A device which implements both this specification and the older
+        \hyperref[intro:Virtio PCI Draft]{[Virtio PCI Draft]}
+        specification, thus allowing legacy drivers.
+\item[Transitional Driver]
+        A device which implements both this specification and the older
+        \hyperref[intro:Virtio PCI Draft]{[Virtio PCI Draft]}
+        specification, thus allowing legacy devices.
+\item[Non-Transitional Device]
+        A device which does not implement the
+        \hyperref[intro:Virtio PCI Draft]{[Virtio PCI Draft]} specification.
+\item[Non-Transitional Driver]
+        A driver which does not implement the
+        \hyperref[intro:Virtio PCI Draft]{[Virtio PCI Draft]} specification.
+\end{description}
+
 \section{Normative References}
 
 \begin{longtable}{l p{5in}}
