@@ -58,18 +58,8 @@ the device.
 
 This allows for forwards and backwards compatibility: if the device is
 enhanced with a new feature bit, older drivers will not write that
-feature bit back to the device and it SHOULD go into backwards
-compatibility mode. Similarly, if a driver is enhanced with a feature
-that the device doesn't support, it see the new feature is not offered
-and SHOULD go into backwards compatibility mode (or, for poor
-implementations it MAY set the FAILED Device Status bit).
-
-The driver MUST NOT accept a feature which the device did not offer,
-and MUST NOT accept a feature which requires another feature which was
-not accepted.
-
-The device MUST NOT offer a feature which requires another feature
-which was not offered.
+feature bit back to the device.  Similarly, if a driver is enhanced with a feature
+that the device doesn't support, it see the new feature is not offered.
 
 Feature bits are allocated as follows:
 
@@ -82,14 +72,29 @@ Feature bits are allocated as follows:
 \item[33 and above] Feature bits reserved for future extensions.
 \end{description}
 
+\begin{note}
 For example, feature bit 0 for a network device (i.e. Subsystem
 Device ID 1) indicates that the device supports checksumming of
 packets.
+\end{note}
 
 In particular, new fields in the device configuration space are
-indicated by offering a feature bit, so the driver MUST check that the
-feature is offered before accessing that part of the configuration
-space.
+indicated by offering a new feature bit.
+
+\drivernormative{Basic Facilities of a Virtio Device / Feature Bits}
+The driver MUST NOT accept a feature which the device did not offer,
+and MUST NOT accept a feature which requires another feature which was
+not accepted.
+
+The driver SHOULD go into backwards compatibility mode
+if the device does not offer a feature it understands, otherwise MUST
+set the FAILED \field{device status} bit and cease initialization.
+
+\devicenormative{Basic Facilities of a Virtio Device / Feature Bits}
+The device MUST NOT offer a feature which requires another feature
+which was not offered.  The device SHOULD accept any valid subset
+of features the driver accepts, otherwise it MUST fail to set the
+FEATURES_OK \field{device status} bit when the driver writes it.
 
 \subsection{Legacy Interface: A Note on transitions from earlier drafts}\label{sec:Basic Facilities of a Virtio Device / Feature Bits / Legacy Interface: A Note on transitions from earlier drafts}
 
@@ -112,16 +117,25 @@ In this case device is used through the legacy interface.
 \section{Device Configuration Space}\label{sec:Basic Facilities of a Virtio Device / Device Configuration Space}
 
 Device configuration space is generally used for rarely-changing or
-initialization-time parameters.  Drivers MUST NOT assume reads from
-fields greater than 32 bits wide are atomic, nor reads from
-multiple fields.
+initialization-time parameters.  Where configuration fields are
+optional, their existence is indicated by feature bits: Future
+versions of this specification will likely extend the device
+configuration space by adding extra fields at the tail.
 
-Each transport provides a generation count for the device configuration
-space, which must change whenever there is a possibility that two
+\begin{note}
+The device configuration space uses the little-endian format
+for multi-byte fields.
+\end{note}
+
+Each transport also provides a generation count for the device configuration
+space, which will change whenever there is a possibility that two
 accesses to the device configuration space can see different versions of that
 space.
 
-Thus drivers SHOULD read device configuration space fields like so:
+\drivernormative{Basic Facilities of a Virtio Device / Device Configuration Space}
+Drivers MUST NOT assume reads from
+fields greater than 32 bits wide are atomic, nor reads from
+multiple fields: drivers SHOULD read device configuration space fields like so:
 
 \begin{lstlisting}
 u32 before, after;
@@ -132,23 +146,25 @@ do {
 } while (after != before);
 \end{lstlisting}
 
-Note that device configuration space uses the little-endian format
-for multi-byte fields.
+For optional configuration space fields, the driver MUST check that the
+corresponding feature is offered before accessing that part of the configuration
+space.
+\begin{note}
+See section \ref{sec:General Initialization And Device Operation / Device Initialization} for details on feature negotiation.
+\end{note}
 
-Note that future versions of this specification will likely
-extend the device configuration space for devices by adding extra fields
-at the tail end of some structures in device configuration space.
-
-To allow forward compatibility with such extensions, drivers MUST
+Drivers MUST
 NOT limit structure size and device configuration space size.  Instead,
-drivers SHOULD only check that device configuration space is *large enough* to
+drivers SHOULD only check that device configuration space is {\em large enough} to
 contain the fields required for device operation.
 
+\begin{note}
 For example, if the specification states that device configuration
 space 'includes a single 8-bit field' drivers should understand this to mean that
 the device configuration space might also include an arbitrary amount of
 tail padding, and accept any device configuration space size equal to or
 greater than the specified 8-bit size.
+\end{note}
 
 \subsection{Legacy Interface: A Note on Device Configuration Space endian-ness}\label{sec:Basic Facilities of a Virtio Device / Device Configuration Space / Legacy Interface: A Note on Configuration Space endian-ness}
 
