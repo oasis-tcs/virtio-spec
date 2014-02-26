@@ -49,6 +49,8 @@ it MUST reset the device before attempting to re-initialize.
 \devicenormative{Basic Facilities of a Virtio Device / Device Status Field}
 The device MUST initialize \field{device status} to 0 upon reset.
 
+The device MUST NOT consume buffers or notify the driver before DRIVER_OK.
+
 \section{Feature Bits}\label{sec:Basic Facilities of a Virtio Device / Feature Bits}
 
 Each virtio device offers all the features it understands.  During
@@ -165,6 +167,12 @@ the device configuration space might also include an arbitrary amount of
 tail padding, and accept any device configuration space size equal to or
 greater than the specified 8-bit size.
 \end{note}
+
+\devicenormative{Basic Facilities of a Virtio Device / Device Configuration Space}
+The device MUST allow reading of any device-specific configuration
+field before FEATURES_OK is set by the driver.  This includes fields which are
+conditional on feature bits, as long as those feature bits are offered
+by the device.
 
 \subsection{Legacy Interface: A Note on Device Configuration Space endian-ness}\label{sec:Basic Facilities of a Virtio Device / Device Configuration Space / Legacy Interface: A Note on Configuration Space endian-ness}
 
@@ -334,17 +342,11 @@ the device. \field{addr} is a physical address, and the buffers
 can be chained via \field{next}. Each descriptor describes a
 buffer which is read-only for the device (``device-readable'') or write-only for the device (``device-writable''), but a chain of
 descriptors can contain both device-readable and device-writable buffers.
-A device MUST NOT write to a device-readable buffer, and a device SHOULD NOT
-read a device-writable buffer (it might do so for debugging or diagnostic
-purposes).
 
 The actual contents of the memory offered to the device depends on the
 device type.  Most common is to begin the data with a header
 (containing little-endian fields) for the device to read, and postfix
 it with a status tailer for the device to write.
-
-Drivers MUST NOT add a descriptor chain over than $2^{32}$ bytes long in total;
-this implies that loops in the descriptor chain are forbidden!
 
 \begin{lstlisting}
 /* Note: LEGACY version was not little endian! */
@@ -370,6 +372,15 @@ struct vring_desc {
 The number of descriptors in the table is defined by the queue size
 for this virtqueue.
 
+\devicenormative{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table}
+A device MUST NOT write to a device-readable buffer, and a device SHOULD NOT
+read a device-writable buffer (it MAY do so for debugging or diagnostic
+purposes).
+
+\drivernormative{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table}
+Drivers MUST NOT add a descriptor chain over than $2^{32}$ bytes long in total;
+this implies that loops in the descriptor chain are forbidden!
+
 \subsubsection{Indirect Descriptors}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}
 
 Some devices benefit by concurrently dispatching a large number
@@ -380,9 +391,6 @@ virtqueue (with \field{flags}\&VRING_DESC_F_INDIRECT on) that refers to memory b
 containing this indirect descriptor table; \field{addr} and \field{len}
 refer to the indirect table address and length in bytes,
 respectively.
-
-The driver MUST NOT set the VRING_DESC_F_INDIRECT flag unless the
-VIRTIO_RING_F_INDIRECT_DESC feature was negotiated.
 
 The indirect table layout structure looks like this
 (\field{len} is the length of the descriptor that refers to this table,
@@ -399,11 +407,17 @@ The first indirect descriptor is located at start of the indirect
 descriptor table (index 0), additional indirect descriptors are
 chained by \field{next}. An indirect descriptor without a valid \field{next}
 (with \field{flags}\&VRING_DESC_F_NEXT off) signals the end of the descriptor.
-An
-indirect descriptor can not refer to another indirect descriptor
-table (\field{flags}\&VRING_DESC_F_INDIRECT MUST be off). A single indirect descriptor
-table can include both device-readable and device-writable descriptors;
-the device MUST ignore the write-only flag (\field{flags}\&VRING_DESC_F_WRITE) in the descriptor that refers to it.
+A single indirect descriptor
+table can include both device-readable and device-writable descriptors.
+
+\drivernormative{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}
+The driver MUST NOT set the VRING_DESC_F_INDIRECT flag unless the
+VIRTIO_RING_F_INDIRECT_DESC feature was negotiated.   The driver MUST NOT
+set the VRING_DESC_F_INDIRECT flag within an indirect descriptor (ie. only
+one table per descriptor).
+
+\devicenormative{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}
+The device MUST ignore the write-only flag (\field{flags}\&VRING_DESC_F_WRITE) in the descriptor that refers to an indirect table.
 
 \subsection{The Virtqueue Available Ring}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Available Ring}
 
@@ -425,22 +439,64 @@ written by the driver and read by the device.
 \field{idx} field indicates where the driver would put the next descriptor
 entry in the ring (modulo the queue size). This starts at 0, and increases.
 
+\subsection{Virtqueue Interrupt Suppression}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Interrupt Suppression}
+
 If the VIRTIO_RING_F_EVENT_IDX feature bit is not negotiated,
-\field{flags} field offers a crude interrupt control mechanism.  The driver
-MUST set this to 0 or 1: 1 indicates that the device SHOULD NOT send
-an interrupt when it consumes a descriptor chain from the available
-ring.  The device MUST ignore the \field{used_event} value in this case.
+the \field{flags} field in the available ring offers a crude mechanism for the driver to inform
+the device that it doesn't want interrupts when buffers are used.  Otherwise
+\field{used_event} is a more performant alterative where the driver
+specifies how much progress the device should make before interrupting.
 
-Otherwise, if the VIRTIO_RING_F_EVENT_IDX feature bit is negotiated,
-the driver MUST set \field{flags} to 0, and use \field{used_event}
-in the used ring instead.  The driver can ask the device to delay interrupts
-until an entry with an index specified by \field{used_event} is
-written in the used ring (equivalently, until \field{idx} in the
+Neither of these interrupt suppression methods are reliable, as they
+are not explicitly synchronized with the device, but they serve as
+useful optimizations.
+
+\drivernormative{Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Interrupt Suppression}
+If the VIRTIO_RING_F_EVENT_IDX feature bit is not negotiated:
+\begin{itemize}
+\item The driver MUST set \field{flags} to 0 or 1.
+\item The driver MAY set \field{flags} to 1 to advise
+the device that interrupts are not required.
+\end{itemize}
+
+Otherwise, if the VIRTIO_RING_F_EVENT_IDX feature bit is negotiated:
+\begin{itemize}
+\item The driver MUST set \field{flags} to 0.
+\item The driver MAY use \field{used_event} to advise the device that interrupts are not required until the device writes entry with an index specified by \field{used_event} into the used ring (equivalently, until \field{idx} in the
 used ring will reach the value \field{used_event} + 1).
+\end{itemize}
 
-The driver MUST handle spurious interrupts: either form of interrupt
-suppression is merely an optimization; it may not suppress interrupts
-entirely.
+The driver MUST handle spurious interrupts from the device.
+
+\devicenormative{Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Interrupt Suppression}
+
+If the VIRTIO_RING_F_EVENT_IDX feature bit is not negotiated:
+\begin{itemize}
+\item The device MUST ignore the \field{used_event} value.
+\item After the device writes a descriptor index into the used ring:
+  \begin{itemize}
+  \item If \field{flags} is 1, the device SHOULD NOT send an interrupt.
+  \item If \field{flags} is 0, the device MUST send an interrupt.
+  \end{itemize}
+\end{itemize}
+
+Otherwise, if the VIRTIO_RING_F_EVENT_IDX feature bit is negotiated:
+\begin{itemize}
+\item The device MUST ignore the lower bit of \field{flags}.
+\item After the device writes a descriptor index into the used ring:
+  \begin{itemize}
+  \item If the \field{idx} field in the used ring (which determined
+    where that descriptor index was placed) was equal to
+    \field{used_event}, the device MUST send an interrupt.
+  \item Otherwise the device SHOULD NOT send an interrupt.
+  \end{itemize}
+\end{itemize}
+
+\begin{note}
+For example, if \field{used_event} is 0, then a device using
+  VIRTIO_RING_F_EVENT_IDX would interrupt after the first buffer is
+  used (and again after the 65536th buffer, etc).
+\end{note}
 
 \subsection{The Virtqueue Used Ring}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Used Ring}
 
@@ -475,24 +531,56 @@ for drivers using untrusted buffers: if you do not know exactly
 how much has been written by the device, you usually have to zero
 the buffer to ensure no data leakage occurs.
 
-If the VIRTIO_RING_F_EVENT_IDX feature bit is not negotiated,
-\field{flags} offers a crude interrupt control mechanism.  The driver
-MUST initialize this to 0, the device MUST set this to 0 or 1: 1
-indicates that the driver SHOULD NOT send an notification when it adds
-a descriptor chain to the available ring.  The driver MUST ignore the
-\field{used_event} value in this case.
+\subsection{Virtqueue Notification Suppression}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Notification Suppression}
 
-Otherwise, if the VIRTIO_RING_F_EVENT_IDX feature bit is negotiated,
-the device MUST leave \field{flags} at 0, and use
-\field{avail_event} in the used ring instead.  The device can ask the
-driver to delay notifications until an entry with an index specified
-by \field{avail_event} is written in the available ring (equivalently,
-until \field{idx} in the used ring will reach the value \field{avail_event} +
-1).
+The device can suppress notifications in a manner analogous to the way
+drivers can suppress interrupts as detailed in section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Interrupt Suppression}.
+The device manipulates \field{flags} or \field{avail_event} in the used ring the
+same way the driver manipulates \field{flags} or \field{used_event} in the available ring.
 
-The device MUST handle spurious notification: either form of
-notification suppression is merely an optimization; it may not
-suppress them entirely.
+\drivernormative{Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Notification Suppression}
+
+The driver MUST initialize \field{flags} in the used ring to 0 when
+allocating the used ring.
+
+If the VIRTIO_RING_F_EVENT_IDX feature bit is not negotiated:
+\begin{itemize}
+\item The driver MUST ignore the \field{avail_event} value.
+\item After the driver writes a descriptor index into the available ring:
+  \begin{itemize}
+        \item If \field{flags} is 1, the driver SHOULD NOT send a notification.
+        \item If \field{flags} is 0, the driver MUST send a notification.
+  \end{itemize}
+\end{itemize}
+
+Otherwise, if the VIRTIO_RING_F_EVENT_IDX feature bit is negotiated:
+\begin{itemize}
+\item The driver MUST ignore the lower bit of \field{flags}.
+\item After the driver writes a descriptor index into the available ring:
+  \begin{itemize}
+        \item If the \field{idx} field in the available ring (which determined
+          where that descriptor index was placed) was equal to
+          \field{avail_event}, the driver MUST send a notification.
+        \item Otherwise the driver SHOULD NOT send a notification.
+  \end{itemize}
+\end{itemize}
+
+\devicenormative{Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Notification Suppression}
+If the VIRTIO_RING_F_EVENT_IDX feature bit is not negotiated:
+\begin{itemize}
+\item The device MUST set \field{flags} to 0 or 1.
+\item The device MAY set \field{flags} to 1 to advise
+the driver that notifications are not required.
+\end{itemize}
+
+Otherwise, if the VIRTIO_RING_F_EVENT_IDX feature bit is negotiated:
+\begin{itemize}
+\item The device MUST set \field{flags} to 0.
+\item The device MAY use \field{avail_event} to advise the driver that notifications are not required until the driver writes entry with an index specified by \field{avail_event} into the available ring (equivalently, until \field{idx} in the
+available ring will reach the value \field{avail_event} + 1).
+\end{itemize}
+
+The device MUST handle spurious notifications from the driver.
 
 \subsection{Helpers for Operating Virtqueues}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Helpers for Operating Virtqueues}
 
@@ -512,6 +600,7 @@ how to communicate with the specific device.
 
 \section{Device Initialization}\label{sec:General Initialization And Device Operation / Device Initialization}
 
+\drivernormative{General Initialization And Device Operation / Device Initialization}
 The driver MUST follow this sequence to initialize a device:
 
 \begin{enumerate}
@@ -524,9 +613,6 @@ The driver MUST follow this sequence to initialize a device:
 \item Read device feature bits, and write the subset of feature bits
    understood by the OS and driver to the device.  During this step the
    driver MAY read (but MUST NOT write) the device-specific configuration fields to check that it can support the device before accepting it.
-   The device MUST allow reading of any device-specific configuration field
-   before FEATURES_OK is set.  This includes fields which are conditional
-   on feature bits, as long as those feature bits are offered by the device.
 
 \item\label{itm:General Initialization And Device Operation / Device Initialization / Set FEATURES-OK} Set the FEATURES_OK status bit.  The driver MUST not accept
    new feature bits after this step.
@@ -548,13 +634,7 @@ set the FAILED status bit to indicate that it has given up on the
 device (it can reset the device later to restart if desired).  The
 driver MUST NOT continue initialization in that case.
 
-The device MUST NOT consume buffers or notify the driver before DRIVER_OK, and the driver
-MUST NOT notify the device before it sets DRIVER_OK.
-
-Devices SHOULD support all valid combinations of features, but we know
-that implementations may well make assuptions that they will only be
-used by fully-optimized drivers.  The resetting of the FEATURES_OK flag
-provides a semi-graceful failure mode for this case.
+The driver MUST NOT notify the device before setting DRIVER_OK.
 
 \subsection{Legacy Interface: Device Initialization}\label{sec:General Initialization And Device Operation / Device Initialization / Legacy Interface: Device Initialization}
 Legacy devices do not support the FEATURES_OK status bit, and thus did
@@ -592,20 +672,20 @@ The driver offers buffers to one of the device's virtqueues as follows:
 \item\label{itm:General Initialization And Device Operation / Device Operation / Supplying Buffers to The Device / Place Index} The driver places the index of the head of the descriptor chain
    into the next ring entry of the available ring.
 
-\item Steps \ref{itm:General Initialization And Device Operation / Device Operation / Supplying Buffers to The Device / Place Buffers} and \ref{itm:General Initialization And Device Operation / Device Operation / Supplying Buffers to The Device / Place Index} may be performed repeatedly if batching
+\item Steps \ref{itm:General Initialization And Device Operation / Device Operation / Supplying Buffers to The Device / Place Buffers} and \ref{itm:General Initialization And Device Operation / Device Operation / Supplying Buffers to The Device / Place Index} MAY be performed repeatedly if batching
   is possible.
 
-\item The driver MUST perform suitable a memory barrier to ensure the device sees
+\item The driver performs suitable a memory barrier to ensure the device sees
   the updated descriptor table and available ring before the next
   step.
 
 \item The available \field{idx} is increased by the number of
   descriptor chain heads added to the available ring.
 
-\item The driver MUST perform a suitable memory barrier to ensure that it updates
+\item The driver performs a suitable memory barrier to ensure that it updates
   the \field{idx} field before checking for notification suppression.
 
-\item If notifications are not suppressed, the driver MUST notify the device
+\item If notifications are not suppressed, the driver notifies the device
     of the new available buffers.
 \end{enumerate}
 
@@ -618,7 +698,7 @@ In addition, the maximum queue size is 32768 (it must be a power
 of 2 which fits in 16 bits), so the 16-bit \field{idx} value can always
 distinguish between a full and empty buffer.
 
-Here is a description of each stage in more detail.
+What follows is the requirements of each stage in more detail.
 
 \subsubsection{Placing Buffers Into The Descriptor Table}\label{sec:General Initialization And Device Operation / Device Operation / Supplying Buffers to The Device / Placing Buffers Into The Descriptor Table}
 
@@ -669,12 +749,6 @@ avail->ring[(avail->idx + added++) % qsz] = head;
 
 \subsubsection{Updating \field{idx}}\label{sec:General Initialization And Device Operation / Device Operation / Supplying Buffers to The Device / Updating idx}
 
-Once available \field{idx} is updated by driver, the device MAY
-access the descriptor chains the driver created and the
-memory they refer to. This is why the driver SHOULD generally
-use a memory barrier before the \field{idx} update, to ensure the
-device sees the most up-to-date copy.
-
 \field{idx} always increments, and wraps naturally at
 65536:
 
@@ -682,72 +756,39 @@ device sees the most up-to-date copy.
 avail->idx += added;
 \end{lstlisting}
 
+Once available \field{idx} is updated by the driver, this exposes the
+descriptor and its contents.  The device MAY
+access the descriptor chains the driver created and the
+memory they refer to immediately.
+
+\drivernormative{General Initialization And Device Operation / Device Operation / Supplying Buffers to The Device / Updating idx}
+The driver MUST perform a suitable memory barrier before the \field{idx} update, to ensure the
+device sees the most up-to-date copy.
+
 \subsubsection{Notifying The Device}\label{sec:General Initialization And Device Operation / Device Operation / Supplying Buffers to The Device / Notifying The Device}
 
 The actual method of device notification is bus-specific, but generally
 it can be expensive.  So the device MAY suppress such notifications if it
-doesn't need them.  The driver has to be careful to expose the new \field{idx}
-value before checking if notifications are suppressed: the driver MAY notify
-gratuitously, but MUST NOT to omit a required notification. So again,
-the driver SHOULD use a memory barrier here before reading \field{flags} or
-\field{avail_event}.
+doesn't need them, as detailed in section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Notification Suppression}.
 
-If the VIRTIO_F_RING_EVENT_IDX feature is not negotiated, and if the
-VRING_USED_F_NOTIFY flag is not set, the driver SHOULD notify the
-device.
+The driver has to be careful to expose the new \field{idx}
+value before checking if notifications are suppressed.
 
-If the VIRTIO_F_RING_EVENT_IDX feature is negotiated, the driver reads
-\field{avail_event} in the available ring structure. If the
-available \field{idx} crossed \field{avail_event} value since the
-last notification, the driver SHOULD notify the device.  \field{avail_event} wraps naturally at 65536 as well,
-giving the following algorithm for calculating whether a device needs
-notification:
-
-\begin{lstlisting}
-(u16)(new_idx - avail_event - 1) < (u16)(new_idx - old_idx)
-\end{lstlisting}
+\drivernormative{General Initialization And Device Operation / Device Operation / Supplying Buffers to The Device / Notifying The Device}
+The driver MUST perform a suitable memory barrier before reading \field{flags} or
+\field{avail_event}, to avoid missing a required notification.
 
 \subsection{Receiving Used Buffers From The Device}\label{sec:General Initialization And Device Operation / Device Operation / Receiving Used Buffers From The Device}
 
 Once the device has used buffers referred to by a descriptor (read from or written to them, or
 parts of both, depending on the nature of the virtqueue and the
-device), it SHOULD send an interrupt, following an algorithm very
-similar to the algorithm used for the driver to send the device a
-buffer:
+device), it interrupts the driver as detailed in section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Interrupt Suppression}.
 
-\begin{enumerate}
-\item Write the head descriptor number to the next free entry
-  (pointed to by the used ring \field{idx}) in the used
-  ring.
-
-\item Update the used ring \field{idx}.
-
-\item Deliver an interrupt if necessary:
-
-  \begin{enumerate}
-  \item If the VIRTIO_F_RING_EVENT_IDX feature is not negotiated:
-    check if the VRING_AVAIL_F_NO_INTERRUPT flag is not set in
-    \field{flags} in the available structure.
-
-  \item If the VIRTIO_F_RING_EVENT_IDX feature is negotiated: check
-    whether the used \field{idx} crossed the \field{used_event} value
-    since the last update. \field{used_event} wraps naturally
-    at 65536 as well:
-\begin{lstlisting}
-(u16)(new_idx - used_event - 1) < (u16)(new_idx - old_idx)
-\end{lstlisting}
-  \end{enumerate}
-\end{enumerate}
-
-For each ring, the driver MAY then disable interrupts by writing
-VRING_AVAIL_F_NO_INTERRUPT to \field{flags} in available structure, if required.
-Once it has processed the ring entries, it SHOULD re-enable
-interrupts by clearing VRING_AVAIL_F_NO_INTERRUPT in \field{flags} or updating
-\field{event_idx} in the available structure.  The driver SHOULD then
-execute a memory barrier, and then recheck the ring empty
-condition. This is necessary to handle the case where after the
-last check and before enabling interrupts, an interrupt has been
-suppressed by the device:
+\begin{note}
+For optimal performance, a driver MAY disable interrupts while processing
+the used ring, but beware the problem of missing interrupts between
+emptying the ring and reenabling interrupts.  This is usually handled by
+re-checking for more used buffers after interrups are re-enabled:
 
 \begin{lstlisting}
 vring_disable_interrupts(vq);
@@ -768,6 +809,7 @@ for (;;) {
         vq->last_seen_used++;
 }
 \end{lstlisting}
+\end{note}
 
 \subsection{Notification of Device Configuration Changes}\label{sec:General Initialization And Device Operation / Device Operation / Notification of Device Configuration Changes}
 
@@ -779,6 +821,8 @@ interrupt is delivered when a device-specific configuration change occurs.
 Once the driver has set the DRIVER_OK status bit, all the configured
 virtqueue of the device are considered live.  None of the virtqueues
 of a device are live once the device has been reset.
+
+\drivernormative{General Initialization And Device Operation / Device Cleanup}
 
 A driver MUST NOT alter descriptor table entries which have been
 exposed in the available ring (and not marked consumed by the device
