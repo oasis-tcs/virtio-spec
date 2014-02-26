@@ -4332,10 +4332,6 @@ Currently there are four device-independent feature bits defined:
   drivers.
 \end{description}
 
-In addition, bit 30 is used by qemu's implementation to check for experimental
-early versions of virtio which did not perform correct feature negotiation,
-and should not be used.
-
 \section{Legacy Interface: Reserved Feature Bits}\label{sec:Reserved Feature Bits / Legacy Interface: Reserved Feature Bits}
 
 Legacy or transitional devices may offer the following:
@@ -4355,6 +4351,10 @@ Legacy or transitional devices may offer the following:
 \item[VIRTIO_F_ANY_LAYOUT (27)] This feature indicates that the device
   accepts arbitrary descriptor layouts, as described in Section
   \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Message Framing / Legacy Interface: Message Framing}~\nameref{sec:Basic Facilities of a Virtio Device / Virtqueues / Message Framing / Legacy Interface: Message Framing}.
+
+\item[UNUSED (30)] Bit 30 is used by qemu's implementation to check
+  for experimental early versions of virtio which did not perform
+  correct feature negotiation, and should not be used.
 \end{description}
 
 \chapter{virtio_ring.h}\label{sec:virtio-ring.h}
