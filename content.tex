@@ -2188,9 +2188,6 @@ Bytes & Description & Contents \\
 \hline
 \end{tabular}
 
-A driver for virtio-ccw devices MUST check for a control unit
-type of 0x3832 and MUST ignore the device type and model.
-
 In addition to the basic channel commands, virtio-ccw defines a
 set of channel commands related to configuration and operation of
 virtio:
@@ -2210,6 +2207,8 @@ virtio:
 #define CCW_CMD_SET_VIRTIO_REV 0x83
 \end{lstlisting}
 
+\devicenormative{Virtio Transport Options / Virtio over channel I/O / Basic Concepts}
+
 The virtio-ccw device acts like a normal channel device, as specified
 in \hyperref[intro:S390 PoP]{[S390 PoP]} and \hyperref[intro:S390 Common I/O]{[S390 Common I/O]}. In particular:
 
@@ -2225,9 +2224,15 @@ in \hyperref[intro:S390 PoP]{[S390 PoP]} and \hyperref[intro:S390 Common I/O]{[S
   device MUST present a check condition if the transmitted data does
   not contain enough data to process the command. If the driver submitted
   a buffer that was too long, the device SHOULD accept the command.
-  The driver SHOULD attempt to provide the correct length even if it
-  suppresses length checks.
 \end{itemize}
+
+\drivernormative{Virtio Transport Options / Virtio over channel I/O / Basic Concepts}
+
+A driver for virtio-ccw devices MUST check for a control unit
+type of 0x3832 and MUST ignore the device type and model.
+
+A driver SHOULD attempt to provide the correct length in a channel
+command even if it suppresses length checks for that command.
 
 \subsection{Device Initialization}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Initialization}
 
@@ -2267,10 +2272,26 @@ The following values are supported:
 Note that a change in the virtio standard does not necessarily
 correspond to a change in the virtio-ccw revision.
 
+\devicenormative{Virtio Transport Options / Virtio over channel I/O / Device Initialization / Setting the Virtio Revision}
+
 A device MUST post a unit check with command reject for any \field{revision}
 it does not support. For any invalid combination of \field{revision}, \field{length}
 and \field{data}, it MUST post a unit check with command reject as well. A
 non-transitional device MUST reject revision id 0.
+
+A device MUST answer with command reject to any virtio-ccw specific
+channel command that is not contained in the revision selected by the
+driver.
+
+A device MUST answer with command reject to any attempt to select a different revision
+after a revision has been successfully selected by the driver.
+
+A device MUST treat the revision as unset from the time the associated
+subchannel has been enabled until a revision has been successfully set
+by the driver. This implies that revisions are not persistent across
+disabling and enabling of the associated subchannel.
+
+\drivernormative{Virtio Transport Options / Virtio over channel I/O / Device Initialization / Setting the Virtio Revision}
 
 A driver SHOULD start with trying to set the highest revision it
 supports and continue with lower revisions if it gets a command reject.
@@ -2278,18 +2299,8 @@ supports and continue with lower revisions if it gets a command reject.
 A driver MUST NOT issue any other virtio-ccw specific channel commands
 prior to setting the revision.
 
-A device MUST answer with command reject to any virtio-ccw specific
-channel command that is not contained in the revision selected by the
-driver.
-
 After a revision has been successfully selected by the driver, it
-MUST NOT attempt to select a different revision. A device MUST answer
-to any such attempt with a command reject.
-
-A device MUST treat the revision as unset from the time the associated
-subchannel has been enabled until a revision has been successfully set
-by the driver. This implies that revisions are not persistent across
-disabling and enabling of the associated subchannel.
+MUST NOT attempt to select a different revision.
 
 \paragraph{Legacy Interfaces: A Note on Setting the Virtio Revision}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Setting the Virtio Revision / Legacy Interfaces: A Note on Setting the Virtio Revision}
 
@@ -2339,6 +2350,9 @@ struct vq_info_block {
 \field{desc}, \field{avail} and \field{used} contain the guest addresses for the descriptor table,
 available ring and used ring for queue \field{index}, respectively. The actual
 virtqueue size (number of allocated buffers) is transmitted in \field{num}.
+
+\devicenormative{Virtio Transport Options / Virtio over channel I/O / Device Initialization / Configuring a Virtqueue}
+
 \field{res0} is reserved and MUST be ignored by the device.
 
 \paragraph{Legacy Interface: A Note on Configuring a Virtqueue}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Configuring a Virtqueue / Legacy Interface: A Note on Configuring a Virtqueue}
@@ -2506,6 +2520,7 @@ No padding is added at the end of the structure, it is exactly 25 bytes
 in length.
 
 
+\devicenormative{Virtio Transport Options / Virtio over channel I/O / Device Initialization / Setting Up Indicators / Setting Up Two-Stage Queue Indicators}
 If the driver has already set up classic queue indicators via the
 CCW_CMD_SET_IND command, the device MUST post a unit check with
 command reject to any subsequent CCW_CMD_SET_IND_ADAPTER command.
@@ -2553,8 +2568,14 @@ For notifying the driver of virtqueue buffers, the device sets the
 bit in the guest-provided indicator area at the corresponding offset.
 The guest-provided summary indicator is set to 0x01. An adapter I/O
 interrupt for the corresponding interruption subclass is generated.
+
+\devicenormative{Virtio Transport Options / Virtio over channel I/O / Device Operation / Host->Guest Notification / Notification via Adapter I/O Interrupts}
+
 The device SHOULD only generate an adapter I/O interrupt if the
-summary indicator had not been set prior to notification. The driver
+summary indicator had not been set prior to notification.
+
+\drivernormative{Virtio Transport Options / Virtio over channel I/O / Device Operation / Host->Guest Notification / Notification via Adapter I/O Interrupts}
+The driver
 MUST clear the summary indicator after receiving an adapter I/O
 interrupt before it processes the queue indicators.
 
@@ -2585,20 +2606,26 @@ GPR  &   Input Value     & Output Value \\
 \hline
 \end{tabular}
 
+\devicenormative{Virtio Transport Options / Virtio over channel I/O / Device Operation / Guest->Host Notification}
 The device MUST ignore bits 0-31 (counting from the left) of GPR2.
 This aligns passing the subchannel ID with the way it is passed
 for the existing I/O instructions.
 
-Host cookie is an optional per-virtqueue 64 bit value that MAY be
-used by the hypervisor to speed up the notification execution.
-For each notification, the output value is returned in GPR2 and
-SHOULD be passed in GPR4 for the next notification:
+The device MAY return a 64-bit host cookie in GPR2 to speed up the
+notification execution.
 
+\drivernormative{Virtio Transport Options / Virtio over channel I/O / Device Operation / Guest->Host Notification}
+
+For each notification, the driver SHOULD use GPR4 to pass the host cookie received in GPR2 from the previous notication.
+
+\begin{note}
+For example:
 \begin{lstlisting}
 info->cookie = do_notify(schid,
                          virtqueue_get_queue_index(vq),
                          info->cookie);
 \end{lstlisting}
+\end{note}
 
 \subsubsection{Resetting Devices}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Operation / Resetting Devices}
 
