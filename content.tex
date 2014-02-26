@@ -3474,9 +3474,7 @@ native endian of the guest rather than (necessarily) little-endian.
 \subsection{Device Initialization}\label{sec:Device Types / Block Device / Device Initialization}
 
 \begin{enumerate}
-\item The device size should be read from \field{capacity}.
-  No requests should be submitted which goes
-  beyond this limit.
+\item The device size can be read from \field{capacity}.
 
 \item If the VIRTIO_BLK_F_BLK_SIZE feature is negotiated,
   \field{blk_size} can be read to determine the optimal sector size
@@ -3549,8 +3547,24 @@ error or VIRTIO_BLK_S_UNSUPP for a request unsupported by device:
 #define VIRTIO_BLK_S_UNSUPP    2
 \end{lstlisting}
 
-Any writes completed before the submission of the flush command should
-be committed to non-volatile storage by the device.
+\drivernormative{Device Types / Block Device / Device Operation}
+
+A driver MUST NOT submit a request which would cause a read or write
+beyond \field{capacity}.
+
+A driver SHOULD accept the VIRTIO_BLK_F_RO feature if offered.
+
+A driver MUST set \field{sector} to 0 for a VIRTIO_BLK_T_FLUSH request.
+A driver SHOULD NOT include any data in a VIRTIO_BLK_T_FLUSH request.
+
+\devicenormative{Device Types / Block Device / Device Operation}
+
+A device MUST set the \field{status} byte to VIRTIO_BLK_S_IOERR
+for a write request if the VIRTIO_BLK_F_RO feature if offered, and MUST NOT
+write any data.
+
+Upon receipt of a VIRTIO_BLK_T_FLUSH request, the driver SHOULD ensure
+that any writes which were completed are committed to non-volatile storage.
 
 \subsubsection{Legacy Interface: Device Operation}\label{sec:Device Types / Block Device / Device Operation / Legacy Interface: Device Operation}
 For legacy devices, the fields in struct virtio_blk_req are the
