@@ -1,0 +1,66 @@
+\chapter{Creating New Device Types}\label{sec:Creating New Device Types}
+
+Various considerations are necessary when creating a new device
+type.
+
+\section{How Many Virtqueues?}\label{sec:Creating New Device Types / How Many Virtqueues?}
+
+It is possible that a very simple device will operate entirely
+through its device configuration space, but most will need at least one
+virtqueue in which it will place requests. A device with both
+input and output (eg. console and network devices described here)
+need two queues: one which the driver fills with buffers to
+receive input, and one which the driver places buffers to
+transmit output.
+
+\section{What Device Configuration Space Layout?}\label{sec:Creating New Device Types / What Device Configuration Space Layout?}
+
+Device configuration space should only be used for initialization-time
+parameters.  It is a limited resource with no synchronization between
+field written by the driver, so for most uses it is better to use a virtqueue to update
+configuration information (the network device does this for filtering,
+otherwise the table in the config space could potentially be very
+large).
+
+Devices must not assume that configuration fields over 32 bits wide
+are atomically writable by the driver.
+
+\section{What Device Number?}\label{sec:Creating New Device Types / What Device Number?}
+
+Device numbers can be reserved by the OASIS committee: email
+virtio-dev@lists.oasis-open.org to secure a unique one.
+
+Meanwhile for experimental drivers, use 65535 and work backwards.
+
+\section{How many MSI-X vectors?  (for PCI)}\label{sec:Creating New Device Types / How many MSI-X vectors?  (for PCI)}
+
+Using the optional MSI-X capability devices can speed up
+interrupt processing by removing the need to read ISR Status
+register by guest driver (which might be an expensive operation),
+reducing interrupt sharing between devices and queues within the
+device, and handling interrupts from multiple CPUs. However, some
+systems impose a limit (which might be as low as 256) on the
+total number of MSI-X vectors that can be allocated to all
+devices. Devices and/or drivers should take this into
+account, limiting the number of vectors used unless the device is
+expected to cause a high volume of interrupts. Devices can
+control the number of vectors used by limiting the MSI-X Table
+Size or not presenting MSI-X capability in PCI configuration
+space. Drivers can control this by mapping events to as small
+number of vectors as possible, or disabling MSI-X capability
+altogether.
+
+\section{Device Improvements}\label{sec:Creating New Device Types / Device Improvements}
+
+Any change to device configuration space, or new virtqueues, or
+behavioural changes, should be indicated by negotiation of a new
+feature bit. This establishes clarity\footnote{Even if it does mean documenting design or implementation
+mistakes!
+} and avoids future expansion problems.
+
+Clusters of functionality which are always implemented together
+can use a single bit, but if one feature makes sense without the
+others they should not be gratuitously grouped together to
+conserve feature bits.
+
+
