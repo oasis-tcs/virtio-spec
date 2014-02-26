@@ -2,22 +2,22 @@
 
 \input{abstract.tex}
 
-  Straightforward: Virtio devices use normal bus mechanisms of
+\begin{description}
+\item[Straightforward:] Virtio devices use normal bus mechanisms of
   interrupts and DMA which should be familiar to any device driver
   author. There is no exotic page-flipping or COW mechanism: it's just
-  a normal device.
-\footnote{This lack of page-sharing implies that the implementation of the
+  a normal device.\footnote{This lack of page-sharing implies that the implementation of the
 device (e.g. the hypervisor or host) needs full access to the
 guest memory. Communication with untrusted parties (i.e.
 inter-guest communication) requires copying.
 }
 
-  Efficient: Virtio devices consist of rings of descriptors
+\item[Efficient:] Virtio devices consist of rings of descriptors
   for both input and output, which are neatly laid out to avoid cache
   effects from both driver and device writing to the same cache
   lines.
 
-  Standard: Virtio makes no assumptions about the environment in which
+\item[Standard:] Virtio makes no assumptions about the environment in which
   it operates, beyond supporting the bus to which device is attached.
   In this specification, virtio
   devices are implemented over MMIO, Channel I/O and PCI bus transports
@@ -27,11 +27,12 @@ between different transports.
 }, earlier drafts
   have been implemented on other buses not included here.
 
-  Extensible: Virtio devices contain feature bits which are
+\item[Extensible:] Virtio devices contain feature bits which are
   acknowledged by the guest operating system during device setup.
   This allows forwards and backwards compatibility: the device
   offers all the features it knows about, and the driver
   acknowledges those it understands and wishes to use.
+\end{description}
 
 \section{Terminology}\label{Terminology}
 
