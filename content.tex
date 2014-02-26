@@ -290,8 +290,7 @@ endian of the guest, not little-endian as specified by this standard.
 It is assumed that the host is already aware of the guest endian.
 
 \subsection{Message Framing}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Message Framing}
-The device MUST NOT make assumptions about the particular arrangement
-of descriptors: the message framing is
+The framing of messages with descriptors is
 independent of the contents of the buffers. For example, a network
 transmit buffer consists of a 12 byte header followed by the network
 packet. This could be most simply placed in the descriptor table as a
@@ -300,12 +299,21 @@ but it could also consist of a single 1526 byte output descriptor in
 the case where the header and packet are adjacent, or even three or
 more descriptors (possibly with loss of efficiency in that case).
 
-Note that, some implementations may have large-but-reasonable
+Note that, some device implementations have large-but-reasonable
 restrictions on total descriptor size (such as based on IOV_MAX in the
 host OS). This has not been a problem in practice: little sympathy
 will be given to drivers which create unreasonably-sized descriptors
 such as by dividing a network packet into 1500 single-byte
 descriptors!
+
+\devicenormative{Basic Facilities of a Virtio Device / Message Framing}
+The device MUST NOT make assumptions about the particular arrangement
+of descriptors.  The device MAY have a reasonable limit of descriptors
+it will allow in a chain.
+
+\drivernormative{Basic Facilities of a Virtio Device / Message Framing}
+The driver SHOULD NOT use an excessive number of descriptors to
+describe a buffer.
 
 \subsubsection{Legacy Interface: Message Framing}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Message Framing / Legacy Interface: Message Framing}
 
