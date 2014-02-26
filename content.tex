@@ -3754,6 +3754,14 @@ native endian of the guest rather than (necessarily) little-endian.
   receive buffers.
 \end{enumerate}
 
+\devicenormative{Device Types / Console Device / Device Initialization}
+
+The device MUST allow a write to \field{emerg_wr}, even on an
+unconfigured device.
+
+The device SHOULD transmit the lower byte written to \field{emerg_wr} to
+an appropriate log or output method.
+
 \subsection{Device Operation}\label{sec:Device Types / Console Device / Device Operation}
 
 \begin{enumerate}
@@ -3781,6 +3789,11 @@ when a port is closed or hot-unplugged.
   used for port hot-plug as well.
 \end{enumerate}
 
+\drivernormative{Device Types / Console Device / Device Operation}
+
+The driver MUST NOT put a device-readable in a receiveq. The driver
+MUST NOT put a device-writable buffer in a transmitq.
+
 \subsubsection{Multiport Device Operation}\label{sec:Device Types / Console Device / Device Operation / Multiport Device Operation}
 
 If the driver negotiated the VIRTIO_CONSOLE_F_MULTIPORT, the two
@@ -3802,21 +3815,17 @@ The values for \field{event} are:
 \begin{description}
 \item [VIRTIO_CONSOLE_DEVICE_READY (0)] Sent by the driver at initialization
   to indicate that it is ready to receive control messages.  A value of
-  1 indicates success, and 0 indicates failure.  The port number is unused.
+  1 indicates success, and 0 indicates failure.  The port number \field{id} is unused.
 \item [VIRTIO_CONSOLE_DEVICE_ADD (1)] Sent by the device, to create a new
-  port.  The device MUST NOT specify a port which exists.  \field{value} is unused.
+  port.  \field{value} is unused.
 \item [VIRTIO_CONSOLE_DEVICE_REMOVE (2)] Sent by the device, to remove an
-  existing port.  The device MUST NOT specify a port which has not been
-  created with VIRTIO_CONSOLE_DEVICE_ADD.  \field{value} is unused.
+  existing port. \field{value} is unused.
 \item [VIRTIO_CONSOLE_PORT_READY (3)] Sent by the driver in response
   to the device's VIRTIO_CONSOLE_PORT_ADD message, to indicate that
   the port is ready to be used. A \field{value} of 1 indicates success, and 0
   indicates failure.
 \item [VIRTIO_CONSOLE_CONSOLE_PORT (4)] Sent by the device to nominate
   a port as a console port.  There may be more than one console port.
-  The driver SHOULD treat the port in a manner suitable for text
-  console access; the driver MUST respond with a VIRTIO_CONSOLE_PORT_OPEN
-  message.  The driver MUST set \field{value} to 1.
 \item [VIRTIO_CONSOLE_RESIZE (5)] Sent by the device to indicate
   a console size change.  \field{value} is unused.  The buffer is followed by the number of columns and rows:
 \begin{lstlisting}
@@ -3826,7 +3835,7 @@ struct virtio_console_resize {
 };
 \end{lstlisting}
 \item [VIRTIO_CONSOLE_PORT_OPEN (6)] This message is sent by both the
-  device and the driver.  \field{value} MUST BE set to 0 (port
+  device and the driver.  \field{value} indicates the state: 0 (port
   closed) or 1 (port open).  This allows for ports to be used directly
   by guest and host processes to communicate in an application-defined
   manner.
@@ -3835,6 +3844,25 @@ struct virtio_console_resize {
   followed by the UTF-8 name of the port for identification
   within the guest (without a NUL terminator).
 \end{description}
+
+\devicenormative{Device Types / Console Device / Device Operation / Multiport Device Operation}
+
+The device MUST NOT specify a port which exists in a
+VIRTIO_CONSOLE_DEVICE_ADD message, nor a port which is equal or
+greater than \field{max_nr_ports}.
+
+The device MUST NOT specify a port in VIRTIO_CONSOLE_DEVICE_REMOVE
+which has not been created with a previous VIRTIO_CONSOLE_DEVICE_ADD.
+
+\drivernormative{Device Types / Console Device / Device Operation / Multiport Device Operation}
+
+The driver must send a VIRTIO_CONSOLE_DEVICE_READY message if
+VIRTIO_CONSOLE_F_MULTIPORT is negotiated.
+
+Upon receipt of a VIRTIO_CONSOLE_CONSOLE_PORT message, the driver
+SHOULD treat the port in a manner suitable for text console access
+and MUST respond with a VIRTIO_CONSOLE_PORT_OPEN message, which MUST
+have \field{value} set to 1.
 
 \subsubsection{Legacy Interface: Device Operation}\label{sec:Device Types / Console Device / Device Operation / Legacy Interface: Device Operation}
 For legacy devices, the fields in struct virtio_console_control are the
@@ -3871,6 +3899,18 @@ guest use.
 When the driver requires random bytes, it places the descriptor
 of one or more buffers in the queue. It will be completely filled
 by random data by the device.
+
+\drivernormative{Device Types / Entropy Device / Device Operation}
+
+The driver MUST NOT place driver-readable buffers into the queue.
+
+The driver MUST examine the length written by the driver to determine
+how many random bytes were received.
+
+\devicenormative{Device Types / Entropy Device / Device Operation}
+
+The device MUST place one or more random bytes into the buffer, but it
+MAY use less than the entire buffer length.
 
 \section{Memory Balloon Device}\label{sec:Device Types / Memory Balloon Device}
 
