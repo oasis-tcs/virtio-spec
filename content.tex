@@ -4695,7 +4695,7 @@ native endian of the guest rather than (necessarily) little-endian.
 
 \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
 
-Currently there are four device-independent feature bits defined:
+Currently there are three device-independent feature bits defined:
 
 \begin{description}
   \item[VIRTIO_F_RING_INDIRECT_DESC (28)] Negotiating this feature indicates
@@ -4703,20 +4703,21 @@ Currently there are four device-independent feature bits defined:
   flag set, as described in \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}~\nameref{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}.
 
   \item[VIRTIO_F_RING_EVENT_IDX(29)] This feature enables the \field{used_event}
-  and the \field{avail_event} fields. If set, it indicates that the
-  device should ignore \field{flags} in the available ring
-  structure. Instead, \field{used_event} in this structure is
-  used by driver to suppress device interrupts. Further, the
-  driver should ignore the \field{flags} field in the used ring
-  structure. Instead, \field{avail_event} in this structure is
-  used by the device to suppress notifications. If unset, the
-  driver should ignore \field{used_event}; the device should
-  ignore \field{avail_event} and the \field{flags} fields should be used,
+  and the \field{avail_event} fields as described in \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Interrupt Suppression} and \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Used Ring}.
 
-  \item[VIRTIO_F_VERSION_1(32)] This feature must be offered by any device
-  compliant with this specification, and acknowledged by all device
-  drivers.
+  \item[VIRTIO_F_VERSION_1(32)] This indicates compliance with this
+    specification, giving a simple way to detect legacy devices or drivers.
 \end{description}
+
+\drivernormative{Reserved Feature Bits}
+
+A driver MUST accept VIRTIO_F_VERSION_1 if it is offered.  A driver
+MAY fail to operate further if VIRTIO_F_VERSION_1 is not offered.
+
+\devicenormative{Reserved Feature Bits}
+
+A device MUST offer VIRTIO_F_VERSION_1.  A device MAY fail to operate further
+if VIRTIO_F_VERSION_1 is not accepted.
 
 \section{Legacy Interface: Reserved Feature Bits}\label{sec:Reserved Feature Bits / Legacy Interface: Reserved Feature Bits}
 
@@ -4727,12 +4728,15 @@ Legacy or transitional devices may offer the following:
   indicates that the driver wants an interrupt if the device runs
   out of available descriptors on a virtqueue, even though
   interrupts are suppressed using the VRING_AVAIL_F_NO_INTERRUPT
-  flag or the \field{used_event} field. An example of this is the
+  flag or the \field{used_event} field.
+\begin{note}
+  An example of this is the
   networking driver: it doesn't need to know every time a packet
   is transmitted, but it does need to free the transmitted
   packets a finite time after they are transmitted. It can avoid
   using a timer if the device interrupts it when all the packets
   are transmitted.
+\end{note}
 
 \item[VIRTIO_F_ANY_LAYOUT (27)] This feature indicates that the device
   accepts arbitrary descriptor layouts, as described in Section
