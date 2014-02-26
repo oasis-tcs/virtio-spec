@@ -1694,13 +1694,8 @@ virtio_block@1e000 {
 MMIO virtio devices provides a set of memory mapped control
 registers followed by a device-specific configuration space,
 described in the table~\ref{tab:Virtio Trasport Options / Virtio Over MMIO / MMIO Device Register Layout}.
-Driver MUST NOT access memory locations not explicitly described in the
-table (or, in case of the configuration space, described in the device specification),
-MUST NOT write to the read-only registers (direction R) and
-MUST NOT read from the write-only registers (direction W).
 
 All register values are organized as Little Endian.
-
 
 \newcommand{\mmioreg}[5]{% Name Function Offset Direction Description
   {\field{#1}} \newline #3 \newline #4 & {\bf#2} \newline #5 \\
@@ -1726,23 +1721,20 @@ All register values are organized as Little Endian.
   \endfoot
   \endlastfoot
   \mmioreg{MagicValue}{Magic value}{0x000}{R}{%
-    Device MUST return value 0x74726976
+    0x74726976
     (a Little Endian equivalent of the "virt" string).
-    Driver MUST ignore device returning other values,
-    although it MAY report an error.
   } 
   \hline
   \mmioreg{Version}{Device version number}{0x004}{R}{%
-    Devices compliant with this specification MUST return value 0x2.
-    Legacy device (see \ref{sec:Virtio Transport Options / Virtio Over MMIO / Legacy interface}~\nameref{sec:Virtio Transport Options / Virtio Over MMIO / Legacy interface}) MAY return value 0x1.
-    Driver MUST ignore device returning other values,
-    although it MAY report an error.
+    0x2.
+    \begin{note}
+      Legacy devices (see \ref{sec:Virtio Transport Options / Virtio Over MMIO / Legacy interface}~\nameref{sec:Virtio Transport Options / Virtio Over MMIO / Legacy interface}) used 0x1.
+    \end{note}
   }
   \hline 
   \mmioreg{DeviceID}{Virtio Subsystem Device ID}{0x008}{R}{%
     See \ref{sec:Device Types}~\nameref{sec:Device Types} for possible values.
-    Value zero (0x0) is invalid and driver MUST ignore such device
-    but MUST NOT report any error. This behaviour can be used to
+    Value zero (0x0) is used to
     define a system memory map with placeholder devices at static,
     well known addresses, assigning functions to them depending
     on user's needs.
@@ -1762,9 +1754,7 @@ All register values are organized as Little Endian.
   \hline 
   \mmioreg{DeviceFeaturesSel}{Device (host) features word selection.}{0x014}{W}{%
     Writing to this register selects a set of 32 device feature bits
-    accessible by reading from \field{DeviceFeatures}. The driver
-    MUST write a value to \field{DeviceFeaturesSel} before
-    reading from \field{DeviceFeatures}.
+    accessible by reading from \field{DeviceFeatures}.
   }
   \hline 
   \mmioreg{DriverFeatures}{Flags representing device features understood and activated by the driver}{0x020}{W}{%
@@ -1779,8 +1769,6 @@ All register values are organized as Little Endian.
   \mmioreg{DriverFeaturesSel}{Activated (guest) features word selection}{0x024}{W}{%
     Writing to this register selects a set of 32 activated feature
     bits accessible by writing to \field{DriverFeatures}.
-    The driver MUST write a value to the \field{DriverFeaturesSel}
-    register before writing to the \field{DriverFeatures} register.
   }
   \hline 
   \mmioreg{QueueSel}{Virtual queue index}{0x030}{W}{%
@@ -1795,9 +1783,7 @@ All register values are organized as Little Endian.
     Reading from the register returns the maximum size (number of
     elements) of the queue the device is ready to process or
     zero (0x0) if the queue is not available. This applies to the
-    queue selected by writing to \field{QueueSel}. The driver MUST NOT
-    access this register when the queue is in use (so when \field{QueueReady}
-    is not zero).
+    queue selected by writing to \field{QueueSel}.
   }
   \hline 
   \mmioreg{QueueNum}{Virtual queue size}{0x038}{W}{%
@@ -1805,8 +1791,7 @@ All register values are organized as Little Endian.
     of the Descriptor Table and both Available and Used rings.
     Writing to this register notifies the device what size of the
     queue the driver will use. This applies to the queue selected by
-    writing to \field{QueueSel}. The driver MUST NOT access this register when
-    the queue is in use (so when \field{QueueReady} is not zero).
+    writing to \field{QueueSel}.
   }
   \hline 
   \mmioreg{QueueReady}{Virtual queue ready bit}{0x044}{RW}{%
@@ -1814,9 +1799,6 @@ All register values are organized as Little Endian.
     virtual queue is ready to be used. Reading from this register
     returns the last value written to it. Both read and write
     accesses apply to the queue selected by writing to \field{QueueSel}.
-    When the driver wants to stop using the queue it MUST write
-    zero (0x0) to this register and MUST read the value back to
-    ensure synchronization.
   }
   \hline 
   \mmioreg{QueueNotify}{Queue notifier}{0x050}{W}{%
@@ -1827,11 +1809,6 @@ All register values are organized as Little Endian.
   \mmioreg{InterruptStatus}{Interrupt status}{0x60}{R}{%
     Reading from this register returns a bit mask of events that
     caused the device interrupt to be asserted.
-    From a moment when any of these events takes place, the
-    device MUST be returning a value with the related
-    bits set, ie. equal one (1), and all other bits cleared, 
-    ie. equal zero (0), until the driver acknowledges the interrupt
-    by writing a corresponding bit mask to the InterruptACK register.
     The following events are possible:
     \begin{description}
       \item[Used Ring Update] - bit 0 - the interrupt was asserted
@@ -1840,17 +1817,11 @@ All register values are organized as Little Endian.
       \item [Configuration Change] - bit 1 - the interrupt was
         asserted because the configuration of the device has changed.
     \end{description}
-    Other bits of the value are reserved for future use and the
-    driver MUST ignore them.
   }
   \hline 
   \mmioreg{InterruptACK}{Interrupt acknowledge}{0x064}{W}{%
     Writing to this register notifies the device that the interrupt
-    has been handled.
-    When the driver finishes handling an interrupt, it MUST write
-    a value to this register with bits corresponding to the handled
-    events (as defined for \field{InterruptStatus}) set, ie.
-    equal one (1), and all other bits cleared, ie. equal zero (0).
+    has been handled, as per values for {InterruptStatus}.
   }
   \hline 
   \mmioreg{Status}{Device status}{0x070}{RW}{%
@@ -1858,9 +1829,7 @@ All register values are organized as Little Endian.
     flags.
     Writing non-zero values to this register sets the status flags,
     indicating the driver progress. Writing zero (0x0) to this
-    register triggers a device reset, including clearing all
-    bits in \field{InterruptStatus} and ready bits in the
-    \field{QueueReady} register for all queues in the device. 
+    register triggers a device reset. 
     See also p. \ref{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Device Initialization}~\nameref{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Device Initialization}.
   }
   \hline 
@@ -1868,34 +1837,25 @@ All register values are organized as Little Endian.
     Writing to these two registers (lower 32 bits of the address
     to \field{QueueDescLow}, higher 32 bits to \field{QueueDescHigh}) notifies
     the device about location of the Descriptor Table of the queue
-    selected by writing to \field{QueueSel} register. The driver MUST NOT
-    access this register when the queue is in use (so when \field{QueueReady}
-    is not zero).
+    selected by writing to \field{QueueSel} register.
   }
   \hline 
   \mmiodreg{QueueAvailLow}{QueueAvailHigh}{Virtual queue's Available Ring 64 bit long physical address}{0x090}{0x094}{W}{%
     Writing to these two registers (lower 32 bits of the address
     to \field{QueueAvailLow}, higher 32 bits to \field{QueueAvailHigh}) notifies
     the device about location of the Available Ring of the queue
-    selected by writing to \field{QueueSel}. The driver MUST NOT
-    access this register when the queue is in use (so when \field{QueueReady}
-    is not zero).
+    selected by writing to \field{QueueSel}.
   }
   \hline 
   \mmiodreg{QueueUsedLow}{QueueUsedHigh}{Virtual queue's Used Ring 64 bit long physical address}{0x0a0}{0x0a4}{W}{%
     Writing to these two registers (lower 32 bits of the address
     to \field{QueueUsedLow}, higher 32 bits to \field{QueueUsedHigh}) notifies
     the device about location of the Used Ring of the queue
-    selected by writing to \field{QueueSel}. The driver MUST NOT
-    access this register when the queue is in use (so when \field{QueueReady}
-    is not zero).
+    selected by writing to \field{QueueSel}.
   }
   \hline 
   \mmioreg{ConfigGeneration}{Configuration atomicity value}{0x0fc}{R}{
-    Changes every time the configuration noticeably changes. This
-    means the device may only change the value after a configuration
-    read operation, but it MUST change if there is any risk of a
-    device seeing an inconsistent configuration state.
+    Changes every time the configuration noticeably changes (see \ref {sec:Basic Facilities of a Virtio Device / Device Configuration Space}.
   }
   \hline 
   \mmioreg{Config}{Configuration space}{0x100+}{RW}{
@@ -1906,9 +1866,64 @@ All register values are organized as Little Endian.
   \hline
 \end{longtable}
 
+\devicenormative{Virtio Transport Options / Virtio Over MMIO / MMIO Device Register Layout}
+
+The device MUST return 0x74726976 in \field{MagicValue}.
+
+The device MUST return value 0x2 in \field{Version}.
+
+The device MUST present each event by setting the corresponding bit in \field{InterruptStatus} from the
+moment it takes place, until the driver acknowledges the interrupt
+by writing a corresponding bit mask to the InterruptACK register.  Bits which
+do not represent events which took place MUST be zero.
+
+Upon reset, the device MUST clear all bits in \field{InterruptStatus} and ready bits in the
+\field{QueueReady} register for all queues in the device.
+
+The device MUST change \field{ConfigGeneration} if there is any risk of a
+device seeing an inconsistent configuration state, but it MAY only change the value
+after a configuration read operation.
+
+\drivernormative{Virtio Transport Options / Virtio Over MMIO / MMIO Device Register Layout}
+The driver MUST NOT access memory locations not explicitly described in the
+table (or, in case of the configuration space, described in the device specification),
+MUST NOT write to the read-only registers (direction R) and
+MUST NOT read from the write-only registers (direction W).
+
+The driver MUST ignore a device with \field{MagicValue} which is not 0x74726976,
+although it MAY report an error.
+
+The driver MUST ignore a device with \field{Version} which is not 0x2,
+although it MAY report an error.
+
+The driver MUST ignore a device with \field{DeviceID} 0x0,
+but MUST NOT report any error.
+
+Before reading from \field{DeviceFeatures}, the driver MUST write a value to \field{DeviceFeaturesSel}.
+
+Before writing to the \field{DriverFeatures} register, the driver MUST write a value to the \field{DriverFeaturesSel} register.
+
+The driver MUST write a value to \field{QueueNum} which is less than
+or equal to the value presented by the device.
+
+When \field{QueueReady} is not zero, the driver MUST NOT access
+\field{QueueNum}, \field{QueueDescLow}, \field{QueueDescHigh},
+\field{QueueAvailLow}, \field{QueueAvailHigh}, \field{QueueUsedLow}, \field{QueueUsedHigh}
+
+To stop using the queue the driver MUST write zero (0x0) to this
+\field{QueueReady} and MUST read the value back to ensure
+synchronization.
+
+The driver MUST ignore undefined bits in \field{InterruptStatus}.
+
+The MUST write the events it handled into \field{InterruptACK} when
+it finishes handling an interrupt.
+
 \subsection{MMIO-specific Initialization And Device Operation}\label{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation}
 
 \subsubsection{Device Initialization}\label{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Device Initialization}
+
+\drivernormative{Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Device Initialization}
 
 The driver MUST start the device initialization by reading and
 checking values from \field{MagicValue} and \field{Version}.
@@ -1921,7 +1936,7 @@ Further initialization MUST follow the procedure described in
 
 \subsubsection{Virtqueue Configuration}\label{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Virtqueue Configuration}
 
-The driver MUST initialize the virtual queue in the following way:
+The driver will typically initialize the virtual queue in the following way:
 
 \begin{enumerate}
 \item Select the queue writing its index (first queue is 0) to
@@ -1937,8 +1952,6 @@ The driver MUST initialize the virtual queue in the following way:
 \item Allocate and zero the queue pages, making sure the memory
    is physically contiguous. It is recommended to align the
    Used Ring to an optimal boundary (usually the page size).
-   Size of the allocated queue MUST be smaller than or equal to
-   the maximum size returned by the device.
 
 \item Notify the device about the queue size by writing the size to
    \field{QueueNum}.
@@ -1954,7 +1967,7 @@ The driver MUST initialize the virtual queue in the following way:
 
 \subsubsection{Notifying The Device}\label{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Notifying The Device}
 
-The driver MUST notify the device about new buffers being available in
+The driver notifies the device about new buffers being available in
 a queue by writing the index of the updated queue to \field{QueueNotify}.
 
 \subsubsection{Notifications From The Device}\label{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Notifications From The Device}
@@ -1962,10 +1975,11 @@ a queue by writing the index of the updated queue to \field{QueueNotify}.
 The memory mapped virtio device is using a single, dedicated
 interrupt signal, which is asserted when at least one of the
 bits described in the description of \field{InterruptStatus}
-is set. This way the device may notify the
+is set. This is how the device notifies the
 driver about a new used buffer being available in the queue
 or about a change in the device configuration.
 
+\drivernormative{Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Notifications From The Device}
 After receiving an interrupt, the driver MUST read
 \field{InterruptStatus} to check what caused the interrupt
 (see the register description). After the interrupt is handled,
