@@ -350,8 +350,11 @@ struct vring {
 
 \subsection{Legacy Interfaces: A Note on Virtqueue Endianness}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Legacy Interfaces: A Note on Virtqueue Endianness}
 
-Note that the endian of fields and in the virtqueue is the native
-endian of the guest, not little-endian as specified by this standard.
+Note that when using the legacy interface, transitional
+devices and drivers MUST use the native
+endian of the guest as the endian of fields and in the virtqueue.
+This is opposed to little-endian for non-legacy interface as
+specified by this standard.
 It is assumed that the host is already aware of the guest endian.
 
 \subsection{Message Framing}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Message Framing}
