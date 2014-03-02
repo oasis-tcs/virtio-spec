@@ -1510,16 +1510,17 @@ capability list.
 
 Therefore:
 
-Transitional devices should expose the Legacy Interface in I/O
+Transitional devices MUST expose the Legacy Interface in I/O
 space in BAR0.
 
-Transitional drivers should look for the Virtio PCI
+Transitional drivers MUST look for the Virtio PCI
 Capabilities on the capability list.
-If these are not present, driver should assume a legacy device.
+If these are not present, driver MUST assume a legacy device,
+and use it through the legacy interface.
 
-Non-transitional drivers should look for the Virtio PCI
+Non-transitional drivers MUST look for the Virtio PCI
 Capabilities on the capability list.
-If these are not present, driver should assume a legacy device,
+If these are not present, driver MUST assume a legacy device,
 and fail gracefully.
 
 \paragraph{MSI-X Vector Configuration}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / MSI-X Vector Configuration}
