@@ -236,7 +236,11 @@ The correct endian-ness is documented explicitly for each device.
 
 Legacy devices did not have a configuration generation field, thus are
 susceptible to race conditions if configuration is updated.  This
-effects the block capacity and network mac fields; best practice is to
+effects the block \field{capacity} (see \ref{sec:Device Types /
+Block Device / Feature bits / Device configuration layout}) and
+network \field{mac} (see \ref{sec:Device Types / Network Device /
+Device configuration layout}) fields;
+when using the legacy interface, drivers SHOULD
 read these fields multiple times until two reads generate a consistent
 result.
 
