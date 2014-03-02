@@ -1396,13 +1396,16 @@ a multiple of \field{cap.length} (ie. all accesses must be aligned).
 
 \subsubsection{Legacy Interfaces: A Note on PCI Device Layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Legacy Interfaces: A Note on PCI Device Layout}
 
-Transitional devices should present part of configuration
+Transitional devices MUST present part of configuration
 registers in a legacy configuration structure in BAR0 in the first I/O
 region of the PCI device, as documented below.
+When using the legacy interface, transitional drivers
+MUST use the legacy configuration structure in BAR0 in the first
+I/O region of the PCI device, as documented below.
 
-When accessed through the legacy interface the driver MAY access
+When using the legacy interface the driver MAY access
 the device-specific region using any width accesses, and
-a transitional device MUST present it with the same results as
+a transitional device MUST present driver with the same results as
 when accessed using the “natural” access method (i.e.
 32-bit accesses for 32-bit fields, etc).
 
@@ -1459,7 +1462,7 @@ Purpose & Device Specific & \\
 
 Note that only Feature Bits 0 to 31 are accessible through the
 Legacy Interface. When used through the Legacy Interface,
-Transitional Devices must assume that Feature Bits 32 to 63
+Transitional Devices MUST assume that Feature Bits 32 to 63
 are not acknowledged by Driver.
 
 As legacy devices had no \field{config_generation} field,
