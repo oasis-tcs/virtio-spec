@@ -672,7 +672,8 @@ The driver MUST follow this sequence to initialize a device:
 
 \item Set the DRIVER status bit: the guest OS knows how to drive the device.
 
-\item Read device feature bits, and write the subset of feature bits
+\item\label{itm:General Initialization And Device Operation /
+Device Initialization / Read feature bits} Read device feature bits, and write the subset of feature bits
    understood by the OS and driver to the device.  During this step the
    driver MAY read (but MUST NOT write) the device-specific configuration fields to check that it can support the device before accepting it.
 
@@ -706,11 +707,40 @@ feature negotiation, which meant that devices finalized features on
 first-use, and no features could be introduced which radically changed
 the initial operation of the device.
 
-Legacy device implementations often used the device before setting the
-DRIVER_OK bit.
+Legacy driver implementations often used the device before setting the
+DRIVER_OK bit, and sometimes even before writing the feature bits
+to the device.
 
-The result was the steps \ref{itm:General Initialization And Device Operation / Device Initialization / Set FEATURES-OK} and \ref{itm:General Initialization And Device Operation / Device Initialization / Re-read FEATURES-OK} were omitted, and steps \ref{itm:General Initialization And Device Operation / Device Initialization / Device-specific Setup} and \ref{itm:General Initialization And Device Operation / Device Initialization / Set DRIVER-OK}
+The result was the steps \ref{itm:General Initialization And
+Device Operation / Device Initialization / Set FEATURES-OK} and
+\ref{itm:General Initialization And Device Operation / Device
+Initialization / Re-read FEATURES-OK} were omitted, and steps
+\ref{itm:General Initialization And Device Operation /
+Device Initialization / Read feature bits},
+\ref{itm:General Initialization And Device Operation / Device Initialization / Device-specific Setup} and \ref{itm:General Initialization And Device Operation / Device Initialization / Set DRIVER-OK}
 were conflated.
+
+Therefore, when using the legacy interface:
+\begin{itemize}
+\item
+The transitional driver MUST execute the initialization
+sequence as described in \ref{sec:General Initialization And Device
+Operation / Device Initialization}
+but omitting the steps \ref{itm:General Initialization And Device
+Operation / Device Initialization / Set FEATURES-OK} and
+\ref{itm:General Initialization And Device Operation / Device
+Initialization / Re-read FEATURES-OK}.
+
+\item
+The transitional device MUST support the driver
+writing device configuration fields
+before the step \ref{itm:General Initialization And Device Operation /
+Device Initialization / Read feature bits}.
+\item
+The transitional device MUST support the driver
+using the device before the step \ref{itm:General Initialization
+And Device Operation / Device Initialization / Set DRIVER-OK}.
+\end{itemize}
 
 \section{Device Operation}\label{sec:General Initialization And Device Operation / Device Operation}
 
