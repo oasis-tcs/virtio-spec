@@ -318,7 +318,11 @@ Descriptor Table & Available Ring (\ldots padding\ldots) & Used Ring \\
 \end{tabular}
 
 The bus-specific Queue Size field controls the total number of bytes
-required for the virtqueue according to the following formula:
+required for the virtqueue.
+When using the legacy interface, the transitional
+driver MUST retrieve the Queue Size field from the device
+and MUST allocate the total number of bytes for the virtuqueue
+according to the following formula:
 
 \begin{lstlisting}
 #define ALIGN(x) (((x) + PAGE_SIZE) & ~PAGE_SIZE)
@@ -330,7 +334,9 @@ static inline unsigned vring_size(unsigned int qsz)
 \end{lstlisting}
 
 This wastes some space with padding.
-The legacy virtqueue layout structure therefore looks like this:
+When using the legacy interface, both transitional
+devices and drivers MUST use the following virtqueue layout
+structure to locate elements of the virtqueue:
 
 \begin{lstlisting}
 struct vring {
