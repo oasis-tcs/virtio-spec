@@ -2921,8 +2921,11 @@ assume the link is active, otherwise it SHOULD read the link status from
 the bottom bit of \field{status}.
 
 \subsubsection{Legacy Interface: Device configuration layout}\label{sec:Device Types / Network Device / Device configuration layout / Legacy Interface: Device configuration layout}
-For legacy devices, \field{status} and \field{max_virtqueue_pairs} in struct virtio_net_config are the
-native endian of the guest rather than (necessarily) little-endian.
+When using the legacy interface, transitional devices and drivers
+MUST format \field{status} and
+\field{max_virtqueue_pairs} in struct virtio_net_config
+according to the native endian of the guest rather than
+(necessarily when not using the legacy interface) little-endian.
 
 
 \subsection{Device Initialization}\label{sec:Device Types / Network Device / Device Initialization}
@@ -3008,8 +3011,10 @@ The controlq is used to control device features such as
 filtering.
 
 \subsubsection{Legacy Interface: Device Operation}\label{sec:Device Types / Network Device / Device Operation / Legacy Interface: Device Operation}
-For legacy devices, the fields in struct virtio_net_hdr are the
-native endian of the guest rather than (necessarily) little-endian.
+When using the legacy interface, transitional devices and drivers
+MUST format the fields in struct virtio_net_hdr
+according to the native endian of the guest rather than
+(necessarily when not using the legacy interface) little-endian.
 
 \subsubsection{Packet Transmission}\label{sec:Device Types / Network Device / Device Operation / Packet Transmission}
 
@@ -3277,8 +3282,10 @@ MUST negotiate VIRTIO_NET_F_MAC_ADDR if they change
 mac address when device is accepting incoming packets.
 
 \subparagraph{Legacy Interface: Setting MAC Address Filtering}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Setting MAC Address Filtering / Legacy Interface: Setting MAC Address Filtering}
-For legacy devices, \field{entries} in struct virtio_net_ctrl_mac is the
-native endian of the guest rather than (necessarily) little-endian.
+When using the legacy interface, transitional devices and drivers
+MUST format \field{entries} in struct virtio_net_ctrl_mac
+according to the native endian of the guest rather than
+(necessarily when not using the legacy interface) little-endian.
 
 Legacy drivers that didn't negotiate VIRTIO_NET_F_MAC_ADDR
 changed \field{mac} in config space when NIC is accepting
@@ -3303,8 +3310,10 @@ Both the VIRTIO_NET_CTRL_VLAN_ADD and VIRTIO_NET_CTRL_VLAN_DEL
 command take a little-endian 16-bit VLAN id as the command-specific-data.
 
 \subparagraph{Legacy Interface: VLAN Filtering}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / VLAN Filtering / Legacy Interface: VLAN Filtering}
-For legacy devices, the VLAN id is in the
-native endian of the guest rather than (necessarily) little-endian.
+When using the legacy interface, transitional devices and drivers
+MUST format the VLAN id
+according to the native endian of the guest rather than
+(necessarily when not using the legacy interface) little-endian.
 
 \paragraph{Gratuitous Packet Sending}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Gratuitous Packet Sending}
 
@@ -3412,8 +3421,10 @@ The device MUST NOT queue packets on receive queues greater than
 \field{virtqueue_pairs} once it has placed the VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command in the used ring.
 
 \subparagraph{Legacy Interface: Automatic receive steering in multiqueue mode}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode / Legacy Interface: Automatic receive steering in multiqueue mode}
-For legacy devices, \field{virtqueue_pairs} is in the
-native endian of the guest rather than (necessarily) little-endian.
+When using the legacy interface, transitional devices and drivers
+MUST format \field{virtqueue_pairs}
+according to the native endian of the guest rather than
+(necessarily when not using the legacy interface) little-endian.
 
 \paragraph{Offloads State Configuration}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Offloads State Configuration}
 
@@ -3451,8 +3462,10 @@ A driver MUST NOT enable a offload for which the appropriate feature
 has not been negotiated.
 
 \subparagraph{Legacy Interface: Setting Offloads State}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Offloads State Configuration / Setting Offloads State / Legacy Interface: Setting Offloads State}
-For legacy devices, \field{offloads} is the
-native endian of the guest rather than (necessarily) little-endian.
+When using the legacy interface, transitional devices and drivers
+MUST format \field{offloads}
+according to the native endian of the guest rather than
+(necessarily when not using the legacy interface) little-endian.
 
 
 \section{Block Device}\label{sec:Device Types / Block Device}
@@ -3540,8 +3553,10 @@ struct virtio_blk_config {
 
 
 \paragraph{Legacy Interface: Device configuration layout}\label{sec:Device Types / Block Device / Feature bits / Device configuration layout / Legacy Interface: Device configuration layout}
-For legacy devices, the fields in struct virtio_blk_config are the
-native endian of the guest rather than (necessarily) little-endian.
+When using the legacy interface, transitional devices and drivers
+MUST format the fields in struct virtio_blk_config
+according to the native endian of the guest rather than
+(necessarily when not using the legacy interface) little-endian.
 
 
 \subsection{Device Initialization}\label{sec:Device Types / Block Device / Device Initialization}
@@ -3640,8 +3655,10 @@ Upon receipt of a VIRTIO_BLK_T_FLUSH request, the driver SHOULD ensure
 that any writes which were completed are committed to non-volatile storage.
 
 \subsubsection{Legacy Interface: Device Operation}\label{sec:Device Types / Block Device / Device Operation / Legacy Interface: Device Operation}
-For legacy devices, the fields in struct virtio_blk_req are the
-native endian of the guest rather than (necessarily) little-endian.
+When using the legacy interface, transitional devices and drivers
+MUST format the fields in struct virtio_blk_req
+according to the native endian of the guest rather than
+(necessarily when not using the legacy interface) little-endian.
 
 The \field{reserved} field was previously called \field{ioprio}.  \field{ioprio}
 is a hint about the relative priorities of requests to the device:
@@ -3795,8 +3812,10 @@ struct virtio_console_config {
 \end{lstlisting}
 
 \subsubsection{Legacy Interface: Device configuration layout}\label{sec:Device Types / Console Device / Device configuration layout / Legacy Interface: Device configuration layout}
-For legacy devices, the fields in struct virtio_console_config are the
-native endian of the guest rather than (necessarily) little-endian.
+When using the legacy interface, transitional devices and drivers
+MUST format the fields in struct virtio_console_config
+according to the native endian of the guest rather than
+(necessarily when not using the legacy interface) little-endian.
 
 \subsection{Device Initialization}\label{sec:Device Types / Console Device / Device Initialization}
 
@@ -3936,8 +3955,10 @@ and MUST respond with a VIRTIO_CONSOLE_PORT_OPEN message, which MUST
 have \field{value} set to 1.
 
 \subsubsection{Legacy Interface: Device Operation}\label{sec:Device Types / Console Device / Device Operation / Legacy Interface: Device Operation}
-For legacy devices, the fields in struct virtio_console_control are the
-native endian of the guest rather than (necessarily) little-endian.
+When using the legacy interface, transitional devices and drivers
+MUST format the fields in struct virtio_console_control
+according to the native endian of the guest rather than
+(necessarily when not using the legacy interface) little-endian.
 
 
 \section{Entropy Device}\label{sec:Device Types / Entropy Device}
@@ -4134,6 +4155,12 @@ struct virtio_balloon_stat {
 } __attribute__((packed));
 \end{lstlisting}
 
+\paragraph{Legacy Interface: Memory Statistics}\label{sec:Device Types / Memory Balloon Device / Device Operation / Memory Statistics / Legacy Interface: Memory Statistics}
+When using the legacy interface, transitional devices and drivers
+MUST format the fields in struct virtio_balloon_stat
+according to the native endian of the guest rather than
+(necessarily when not using the legacy interface) little-endian.
+
 \subsubsection{Memory Statistics Tags}\label{sec:Device Types / Memory Balloon Device / Device Operation / Memory Statistics Tags}
 
 \begin{description}
@@ -4271,8 +4298,10 @@ On reset, the device MUST set \field{sense_size} to 96 and
 \field{cdb_size} to 32.
 
 \subsubsection{Legacy Interface: Device configuration layout}\label{sec:Device Types / SCSI Host Device / Device configuration layout / Legacy Interface: Device configuration layout}
-For legacy devices, the fields in struct virtio_scsi_config are the
-native endian of the guest rather than (necessarily) little-endian.
+When using the legacy interface, transitional devices and drivers
+MUST format the fields in struct virtio_scsi_config
+according to the native endian of the guest rather than
+(necessarily when not using the legacy interface) little-endian.
 
 \subsection{Device Initialization}\label{sec:Device Types / SCSI Host Device / Device Initialization}
 
@@ -4423,8 +4452,10 @@ following:
 \field{task_attr}, \field{prio} and \field{crn} SHOULD be zero.
 
 \paragraph{Legacy Interface: Device Operation: Request Queues}\label{sec:Device Types / SCSI Host Device / Device Operation / Device Operation: Request Queues / Legacy Interface: Device Operation: Request Queues}
-For legacy devices, the fields in struct virtio_scsi_req_cmd are the
-native endian of the guest rather than (necessarily) little-endian.
+When using the legacy interface, transitional devices and drivers
+MUST format the fields in struct virtio_scsi_req_cmd
+according to the native endian of the guest rather than
+(necessarily when not using the legacy interface) little-endian.
 
 \subsubsection{Device Operation: controlq}\label{sec:Device Types / SCSI Host Device / Device Operation / Device Operation: controlq}
 
@@ -4567,10 +4598,12 @@ struct virtio_scsi_ctrl_an {
 
 \paragraph{Legacy Interface: Device Operation: controlq}\label{sec:Device Types / SCSI Host Device / Device Operation / Device Operation: controlq / Legacy Interface: Device Operation: controlq}
 
-For legacy devices, the fields in struct virtio_scsi_ctrl, struct
+When using the legacy interface, transitional devices and drivers
+MUST format the fields in struct virtio_scsi_ctrl, struct
 virtio_scsi_ctrl_tmf, struct virtio_scsi_ctrl_an and struct
-virtio_scsi_ctrl_an are the native endian of the guest rather than
-(necessarily) little-endian.
+virtio_scsi_ctrl_an
+according to the native endian of the guest rather than
+(necessarily when not using the legacy interface) little-endian.
 
 
 \subsubsection{Device Operation: eventq}\label{sec:Device Types / SCSI Host Device / Device Operation / Device Operation: eventq}
@@ -4756,8 +4789,10 @@ VIRTIO_SCSI_EVT_RESET_RESCAN unless VIRTIO_SCSI_F_HOTPLUG was negotiated.
 The device MUST NOT report VIRTIO_SCSI_T_PARAM_CHANGE for MMC devices.
 
 \paragraph{Legacy Interface: Device Operation: eventq}\label{sec:Device Types / SCSI Host Device / Device Operation / Device Operation: eventq / Legacy Interface: Device Operation: eventq}
-For legacy devices, the fields in struct virtio_scsi_event are the
-native endian of the guest rather than (necessarily) little-endian.
+When using the legacy interface, transitional devices and drivers
+MUST format the fields in struct virtio_scsi_event
+according to the native endian of the guest rather than
+(necessarily when not using the legacy interface) little-endian.
 
 \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
 
