@@ -52,7 +52,7 @@ initialization sequence specified in
 Initialization}.
 The driver MUST NOT clear a
 \field{device status} bit.  If the driver sets the FAILED bit,
-it MUST reset the device before attempting to re-initialize.
+the driver MUST later reset the device before attempting to re-initialize.
 
 \devicenormative{\subsection}{Device Status Field}{Basic Facilities of a Virtio Device / Device Status Field}
 The device MUST initialize \field{device status} to 0 upon reset.
