@@ -349,7 +349,6 @@ device type.  Most common is to begin the data with a header
 it with a status tailer for the device to write.
 
 \begin{lstlisting}
-/* Note: LEGACY version was not little endian! */
 struct vring_desc {
         /* Address (guest-physical). */
         le64 addr;
@@ -422,7 +421,6 @@ The device MUST ignore the write-only flag (\field{flags}\&VRING_DESC_F_WRITE) i
 \subsection{The Virtqueue Available Ring}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Available Ring}
 
 \begin{lstlisting}
-/* Note: LEGACY version was not little endian! */
 struct vring_avail {
 #define VRING_AVAIL_F_NO_INTERRUPT      1
         le16 flags;
@@ -501,7 +499,6 @@ For example, if \field{used_event} is 0, then a device using
 \subsection{The Virtqueue Used Ring}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Used Ring}
 
 \begin{lstlisting}
-/* Note: LEGACY version was not little endian! */
 struct vring_used {
 #define VRING_USED_F_NO_NOTIFY  1
         le16 flags;
@@ -510,7 +507,6 @@ struct vring_used {
         le16 avail_event; /* Only if VIRTIO_RING_F_EVENT_IDX */
 };
 
-/* Note: LEGACY version was not little endian! */
 /* le32 is used here for ids for padding reasons. */
 struct vring_used_elem {
         /* Index of start of used descriptor chain. */
@@ -2834,7 +2830,6 @@ and transmitq0..transmitqN respectively;
 is negotiated.
 
 \begin{lstlisting}
-/* Note: LEGACY version was not little endian! */
 struct virtio_net_config {
         u8 mac[6];
         le16 status;
@@ -2925,7 +2920,6 @@ placed in the receiveq0..receiveqN. In each case, the packet
 itself is preceeded by a header:
 
 \begin{lstlisting}
-/* Note: LEGACY version was not little endian! */
 struct virtio_net_hdr {
 #define VIRTIO_NET_HDR_F_NEEDS_CSUM    1
         u8 flags;
@@ -3301,7 +3295,6 @@ queue incoming packets into one of the multiple receiveq0..receiveqN
 depending on the packet flow.
 
 \begin{lstlisting}
-/* Note: LEGACY version was not little endian! */
 struct virtio_net_ctrl_mq {
         le16 virtqueue_pairs;
 };
@@ -3455,7 +3448,6 @@ present. The availability of the others all depend on various feature
 bits as indicated above.
 
 \begin{lstlisting}
-/* Note: LEGACY version was not little endian! */
 struct virtio_blk_config {
         le64 capacity;
         le32 size_max;
@@ -3728,7 +3720,6 @@ only exist if VIRTIO_CONSOLE_F_MULTIPORT is set.
   acknowledging the feature.
 
 \begin{lstlisting}
-/* Note: LEGACY version was not little endian! */
 struct virtio_console_config {
         le16 cols;
         le16 rows;
@@ -3818,7 +3809,6 @@ control sendq for driver-to-device messages.  The layout of the
 control messages is:
 
 \begin{lstlisting}
-/* Note: LEGACY version was not little endian! */
 struct virtio_console_control {
         le32 id;    /* Port number */
         le16 event; /* The kind of control event */
@@ -4153,7 +4143,6 @@ This section relies on definitions from \hyperref[intro:SAM]{SAM}.
   All fields of this configuration are always available.
 
 \begin{lstlisting}
-/* Note: LEGACY version was not little endian! */
 struct virtio_scsi_config {
         le32 num_queues;
         le32 seg_max;
@@ -4247,7 +4236,6 @@ consumed with no order constraints.
 Requests have the following format:
 
 \begin{lstlisting}
-/* Note: LEGACY version was not little endian! */
 struct virtio_scsi_req_cmd {
         // Device-readable part
         u8 lun[8];
@@ -4413,7 +4401,6 @@ The following commands are defined:
 #define VIRTIO_SCSI_T_TMF_QUERY_TASK           6
 #define VIRTIO_SCSI_T_TMF_QUERY_TASK_SET       7
 
-/* Note: LEGACY version was not little endian! */
 struct virtio_scsi_ctrl_tmf
 {
         // Device-readable part
