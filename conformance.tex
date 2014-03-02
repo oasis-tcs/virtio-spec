@@ -230,3 +230,62 @@ An SCSI host device MUST conform to the following normative statements:
 \item \ref{devicenormative:Device Types / SCSI Host Device / Device configuration layout}
 \item \ref{devicenormative:Device Types / SCSI Host Device / Device Operation / Device Operation: eventq}
 \end{itemize}
+
+\section{Legacy Interface: Transitional Device and
+Transitional Driver Conformance}\label{sec:Conformance / Legacy
+Interface: Transitional Device and 
+Transitional Driver Conformance}
+A conformant implementation MUST be either transitional or
+non-transitional, see \ref{sec:Basic Facilities of a Virtio
+Device / Feature Bits / Legacy Interface: A Note on transitions
+from earlier drafts}.
+
+A non-transitional implementation conforms to this specification
+if it satisfies all of the MUST or REQUIRED level requirements
+defined above.
+
+An implementation MAY choose to implement OPTIONAL support for the
+legacy interface, including support for legacy drivers
+or devices, by additionally conforming to all of the MUST or
+REQUIRED level requirements for the legacy interface
+for the transitional devices and drivers.
+
+The requirements for the legacy interface for transitional implementations
+are located in sections named "Legacy Interface" listed below:
+\begin{itemize}
+\item Section \ref{sec:Basic Facilities of a Virtio Device / Feature Bits / Legacy Interface: A Note on transitions from earlier drafts}
+\item Section \ref{sec:Basic Facilities of a Virtio Device / Device Configuration Space / Legacy Interface: A Note on Configuration Space endian-ness}
+\item Section \ref{sec:Basic Facilities of a Virtio Device / Device Configuration Space / Legacy Interface: Device Configuration Space}
+\item Section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Legacy Interfaces: A Note on Virtqueue Layout}
+\item Section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Legacy Interfaces: A Note on Virtqueue Endianness}
+\item Section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Message Framing / Legacy Interface: Message Framing}
+\item Section \ref{sec:General Initialization And Device Operation / Device Initialization / Legacy Interface: Device Initialization}
+\item Section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Discovery / Legacy Interfaces: A Note on PCI Device Discovery}
+\item Section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Legacy Interfaces: A Note on PCI Device Layout}
+\item Section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Virtio Device Configuration Layout Detection / Legacy Interface: A Note on Device Layout Detection}
+\item Section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Virtqueue Configuration / Legacy Interface: A Note on Virtqueue Configuration}
+\item Section \ref{sec:Virtio Transport Options / Virtio Over MMIO / Legacy interface}
+\item Section \ref{sec:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Setting the Virtio Revision / Legacy Interfaces: A Note on Setting the Virtio Revision}
+\item Section \ref{sec:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Configuring a Virtqueue / Legacy Interface: A Note on Configuring a Virtqueue}
+\item Section \ref{sec:Virtio Transport Options / Virtio over channel I/O / Device Operation / Host->Guest Notification / Legacy Interfaces: A Note on Host->Guest Notification}
+\item Section \ref{sec:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Setting Up Indicators / Legacy Interfaces: A Note on Setting Up Indicators}
+\item Section \ref{sec:Device Types / Network Device / Feature bits / Legacy Interface: Feature bits}
+\item Section \ref{sec:Device Types / Network Device / Device configuration layout / Legacy Interface: Device configuration layout}
+\item Section \ref{sec:Device Types / Network Device / Device Operation / Legacy Interface: Device Operation}
+\item Section \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Setting MAC Address Filtering / Legacy Interface: Setting MAC Address Filtering}
+\item Section \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue / VLAN Filtering / Legacy Interface: VLAN Filtering}
+\item Section \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode / Legacy Interface: Automatic receive steering in multiqueue mode}
+\item Section \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Offloads State Configuration / Setting Offloads State / Legacy Interface: Setting Offloads State}
+\item Section \ref{sec:Device Types / Block Device / Feature bits / Legacy Interface: Feature bits}
+\item Section \ref{sec:Device Types / Block Device / Feature bits / Device configuration layout / Legacy Interface: Device configuration layout}
+\item Section \ref{sec:Device Types / Block Device / Device Initialization / Legacy Interface: Device Initialization}
+\item Section \ref{sec:Device Types / Block Device / Device Operation / Legacy Interface: Device Operation}
+\item Section \ref{sec:Device Types / Console Device / Device configuration layout / Legacy Interface: Device configuration layout}
+\item Section \ref{sec:Device Types / Console Device / Device Operation / Legacy Interface: Device Operation}
+\item Section \ref{sec:Device Types / Memory Balloon Device / Device Operation / Memory Statistics / Legacy Interface: Memory Statistics}
+\item Section \ref{sec:Device Types / SCSI Host Device / Device configuration layout / Legacy Interface: Device configuration layout}
+\item Section \ref{sec:Device Types / SCSI Host Device / Device Operation / Device Operation: Request Queues / Legacy Interface: Device Operation: Request Queues}
+\item Section \ref{sec:Device Types / SCSI Host Device / Device Operation / Device Operation: controlq / Legacy Interface: Device Operation: controlq}
+\item Section \ref{sec:Device Types / SCSI Host Device / Device Operation / Device Operation: eventq / Legacy Interface: Device Operation: eventq}
+\item Section \ref{sec:Reserved Feature Bits / Legacy Interface: Reserved Feature Bits}
+\end{itemize}
