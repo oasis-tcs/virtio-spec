@@ -1447,8 +1447,10 @@ enabled, device specific configuration starts at byte offset 20 in virtio
 header.  ie. once you enable MSI-X on the device, the other fields move.
 If you turn it off again, they move back!
 
-Immediately following these general headers, there may be
-device-specific headers:
+When using the legacy interface, both transitional
+devices and drivers MUST assume that
+the device-specific configuration space
+immediately follows these general headers:
 
 \begin{tabular}{|l||l|l|}
 \hline
