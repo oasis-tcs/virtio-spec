@@ -962,7 +962,10 @@ The Subsystem Vendor ID SHOULD reflect
 the PCI Vendor ID of the environment (it's currently only used
 for informational purposes by the driver).
 
-Non-transitional devices MUST have a Revision ID of 1 or higher.
+Non-transitional devices SHOULD have a Revision ID of 1 or higher.
+
+This is to reduce the chance of a legacy driver attempting
+to drive the device.
 
 \drivernormative{\subsubsection}{PCI Device Discovery}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Discovery}
 All drivers MUST match devices with any Revision ID, this
@@ -971,8 +974,9 @@ is to allow devices to be versioned without breaking drivers.
 Drivers MUST match any Revision ID value. 
 
 \subsubsection{Legacy Interfaces: A Note on PCI Device Discovery}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Discovery / Legacy Interfaces: A Note on PCI Device Discovery}
-Transitional devices MUST have a Revision ID of 0 to match
-legacy drivers.
+Transitional devices MUST have a Revision ID of 0.
+
+This is to match legacy drivers.
 
 \subsection{PCI Device Layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout}
 
@@ -1507,6 +1511,23 @@ As legacy devices had no \field{config_generation} field,
 see \ref{sec:Basic Facilities of a Virtio Device / Device
 Configuration Space / Legacy Interface: Device Configuration
 Space}~\nameref{sec:Basic Facilities of a Virtio Device / Device Configuration Space / Legacy Interface: Device Configuration Space} for workarounds.
+
+\subsubsection{Non-transitional Device With Legacy Driver: A Note
+on PCI Device Layout}\label{sec:Virtio Transport Options / Virtio
+Over PCI Bus / PCI Device Layout / Non-transitional Device With
+Legacy Driver: A Note on PCI Device Layout}
+
+Non-transitional devices, on a platform where a legacy driver for
+a legacy device with the same ID might have previously existed,
+SHOULD take the following steps to fail gracefully when a legacy
+driver attempts to drive them:
+
+\begin{enumerate}
+\item Present an I/O BAR in BAR0, and
+\item Respond to a single-byte zero write to offset 18
+   (corresponding to Device Status register in the legacy layout)
+   of BAR0 by presenting zeroes on every BAR and ignoring writes.
+\end{enumerate}
 
 \subsection{PCI-specific Initialization And Device Operation}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation}
 
