@@ -13,12 +13,16 @@ device consists of the following parts:
 \end{itemize}
 
 \section{\field{Device Status} Field}\label{sec:Basic Facilities of a Virtio Device / Device Status Field}
+During device initialization by a driver,
+the driver follows the sequence of steps specified in
+\ref{sec:General Initialization And Device Operation / Device
+Initialization}.
 
 The \field{device status} field provides a simple low-level
-diagnostic: it's most useful to imagine them hooked up to traffic
+indication of the completed steps of this sequence.
+It's most useful to imagine it hooked up to traffic
 lights on the console indicating the status of each device.  The
 following bits are defined:
-
 \begin{description}
 \item[ACKNOWLEDGE (1)] Indicates that the guest OS has found the
   device and recognized it as a valid virtio device.
@@ -41,8 +45,12 @@ following bits are defined:
 \end{description}
 
 \drivernormative{\subsection}{Device Status Field}{Basic Facilities of a Virtio Device / Device Status Field}
-The driver MUST update \field{device status} in the order above to
-indicate the driver's progress.  The driver MUST NOT clear a
+The driver MUST update \field{device status},
+setting bits to indicate the completed steps of the driver
+initialization sequence specified in
+\ref{sec:General Initialization And Device Operation / Device
+Initialization}.
+The driver MUST NOT clear a
 \field{device status} bit.  If the driver sets the FAILED bit,
 it MUST reset the device before attempting to re-initialize.
 
