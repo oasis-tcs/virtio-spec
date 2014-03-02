@@ -4787,23 +4787,27 @@ if VIRTIO_F_VERSION_1 is not accepted.
 
 \section{Legacy Interface: Reserved Feature Bits}\label{sec:Reserved Feature Bits / Legacy Interface: Reserved Feature Bits}
 
-Legacy or transitional devices may offer the following:
-
+Transitional devices MAY offer the following:
 \begin{description}
-\item[VIRTIO_F_NOTIFY_ON_EMPTY (24)] Negotiating this feature
-  indicates that the driver wants an interrupt if the device runs
+\item[VIRTIO_F_NOTIFY_ON_EMPTY (24)] If this feature
+  has been negotiated by driver, the device MUST issue
+  an interrupt if the device runs
   out of available descriptors on a virtqueue, even though
   interrupts are suppressed using the VRING_AVAIL_F_NO_INTERRUPT
   flag or the \field{used_event} field.
 \begin{note}
-  An example of this is the
+  An example of a driver using this feature is the legacy
   networking driver: it doesn't need to know every time a packet
   is transmitted, but it does need to free the transmitted
   packets a finite time after they are transmitted. It can avoid
   using a timer if the device interrupts it when all the packets
   are transmitted.
 \end{note}
+\end{description}
 
+Transitional devices MUST offer, and if offered by the device
+traditional drivers MUST negotiate the following:
+\begin{description}
 \item[VIRTIO_F_ANY_LAYOUT (27)] This feature indicates that the device
   accepts arbitrary descriptor layouts, as described in Section
   \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Message Framing / Legacy Interface: Message Framing}~\nameref{sec:Basic Facilities of a Virtio Device / Virtqueues / Message Framing / Legacy Interface: Message Framing}.
