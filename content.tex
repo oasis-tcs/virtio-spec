@@ -1458,7 +1458,7 @@ immediately follows these general headers:
 
 \begin{tabular}{|l||l|l|}
 \hline
-Bits & Device Specific & \multirow{3}{*}{...} \\
+Bits & Device Specific & \multirow{3}{*}{\ldots} \\
 \cline{1-2}
 Read / Write & Device Specific & \\
 \cline{1-2}
@@ -2803,7 +2803,7 @@ features.
 \begin{description}
 \item[0] receiveq0
 \item[1] transmitq0
-\item[...]
+\item[\ldots]
 \item[2N] receiveqN
 \item[2N+1] transmitqN
 \item[2N+2] controlq
@@ -2911,8 +2911,8 @@ VIRTIO_NET_S_LINK_UP and VIRTIO_NET_S_ANNOUNCE.
 
 The following driver-read-only field, \field{max_virtqueue_pairs} only exists if
 VIRTIO_NET_F_MQ is set. This field specifies the maximum number
-of each of transmit and receive virtqueues (receiveq0..receiveqN
-and transmitq0..transmitqN respectively;
+of each of transmit and receive virtqueues (receiveq0\ldots receiveqN
+and transmitq0\ldots transmitqN respectively;
  N=\field{max_virtqueue_pairs} - 1) that can be configured once VIRTIO_NET_F_MQ
 is negotiated.
 
@@ -3005,8 +3005,8 @@ everything else.
 \subsection{Device Operation}\label{sec:Device Types / Network Device / Device Operation}
 
 Packets are transmitted by placing them in the
-transmitq0..transmitqN, and buffers for incoming packets are
-placed in the receiveq0..receiveqN. In each case, the packet
+transmitq0\ldots transmitqN, and buffers for incoming packets are
+placed in the receiveq0\ldots receiveqN. In each case, the packet
 itself is preceeded by a header:
 
 \begin{lstlisting}
@@ -3168,7 +3168,7 @@ making for 65562 or 1526 bytes.
 Obviously each buffer can be split across multiple descriptor elements.
 \end{note}
 
-If VIRTIO_NET_F_MQ is negotiated, each of receiveq0...receiveqN
+If VIRTIO_NET_F_MQ is negotiated, each of receiveq0\ldots receiveqN
 that will be used SHOULD be populated with receive buffers.
 
 \paragraph{Packet Receive Interrupt}\label{sec:Device Types / Network Device / Device Operation / Setting Up Receive Buffers / Packet Receive Interrupt}
@@ -3386,8 +3386,8 @@ before marking the buffer as used.
 
 If the driver negotiates the VIRTIO_NET_F_MQ feature bit (depends
 on VIRTIO_NET_F_CTRL_VQ), it MAY transmit outgoing packets on one
-of the multiple transmitq0..transmitqN and ask the device to
-queue incoming packets into one of the multiple receiveq0..receiveqN
+of the multiple transmitq0\ldots transmitqN and ask the device to
+queue incoming packets into one of the multiple receiveq0\ldots receiveqN
 depending on the packet flow.
 
 \begin{lstlisting}
@@ -3405,7 +3405,7 @@ Multiqueue is disabled by default. The driver enables multiqueue by
 executing the VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command, specifying
 the number of the transmit and receive queues to be used up to
 \field{max_virtqueue_pairs}; subsequently,
-transmitq0..transmitqn and receiveq0..receiveqn where
+transmitq0\ldots transmitqn and receiveq0\ldots receiveqn where
 n=virtqueue_pairs-1 MAY be used.
 
 When multiqueue is enabled, the device MUST use automatic receive steering
@@ -3414,7 +3414,7 @@ classificator is implicit. After the driver transmitted a packet of a specific
 flow on transmitqX, the device MUST cause incoming packets for this flow to
 be steered to receiveqX. For uni-directional protocols, or where
 no packets have been transmitted yet, the device MAY steer a packet
-to a random queue out of the specified receiveq0..receiveqn.
+to a random queue out of the specified receiveq0\ldots receiveqn.
 
 Multiqueue is disabled by setting \field{virtqueue_pairs} to 1 (this is
 the default) and waiting for the device to use the command buffer.
@@ -3774,7 +3774,7 @@ ports being opened and closed on either side of the connection,
 indication from the device about whether a particular port is a
 console port, adding new ports, port hot-plug/unplug, etc., and
 indication from the driver about whether a port or a device was
-successfully added, port open/close, etc.. For data IO, one or
+successfully added, port open/close, etc. For data IO, one or
 more empty buffers are placed in the receive queue for incoming
 data and outgoing characters are placed in the transmit queue.
 
@@ -4486,7 +4486,7 @@ Requests have the following format:
 \begin{lstlisting}
 struct virtio_scsi_ctrl {
         le32 type;
-...
+\ldots
         u8 response;
 };
 
@@ -4768,7 +4768,7 @@ contents of \field{event}. The following events are defined:
 
   The same event is also reported as a unit attention condition.
   \field{reason} contains the additional sense code and additional sense code qualifier,
-  respectively in bits 0..7 and 8..15.
+  respectively in bits 0\ldots 7 and 8\ldots 15.
   \begin{note}
   For example, a change in capacity will be reported as asc 0x2a, ascq 0x09
   (CAPACITY DATA HAS CHANGED).
