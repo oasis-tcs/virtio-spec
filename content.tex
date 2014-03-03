@@ -1231,6 +1231,8 @@ configuration, increment \field{config_generation} and clear the flag.
 
 The device MUST reset when 0 is written to \field{device_status}.
 
+The device MUST present a 0 in \field{queue_enable} on reset.
+
 The device MUST present a 0 in \field{queue_size} if the virtqueue
 corresponding to the current \field{queue_select} is unavailable.
 
@@ -1335,8 +1337,8 @@ is enabled.
 
 \subsubsection{Device specific structure}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Device specific structure}
 
-The device MAY present at least one VIRTIO_PCI_CAP_DEVICE_CFG capability (some
-devices may not have any device specific structure).
+The device MUST present at least one VIRTIO_PCI_CAP_DEVICE_CFG capability for
+any device type which has a device specific structure.
 
 \devicenormative{\paragraph}{Device specific structure}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Device specific structure}
 
