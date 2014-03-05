@@ -359,9 +359,11 @@ addition, the specification for virtio_blk SCSI commands required
 intuiting field lengths from frame boundaries (see
  \ref{sec:Device Types / Block Device / Device Operation / Legacy Interface: Device Operation}~\nameref{sec:Device Types / Block Device / Device Operation / Legacy Interface: Device Operation})
 
-It is thus RECOMMENDED that when using legacy interfaces, transitional
-drivers be conservative in their assumptions, unless the
-VIRTIO_F_ANY_LAYOUT feature is accepted.
+Thus when using the legacy interface, the VIRTIO_F_ANY_LAYOUT
+feature indicates to both the device and the driver that no
+assumptions were made about framing.  Requirements for
+transitional drivers when this is not negotiated are included in
+each device section.
 
 \subsection{The Virtqueue Descriptor Table}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table}
 
@@ -3494,6 +3496,36 @@ When using the legacy interface, transitional devices and drivers
 MUST format \field{offloads}
 according to the native endian of the guest rather than
 (necessarily when not using the legacy interface) little-endian.
+
+
+\subsubsection{Legacy Interface: Virtqueue}\label{sec:Device
+Types / Network Device / Legacy Interface: Framing Requirements}
+
+When using legacy interfaces, transitional drivers which have not
+negotiated VIRTIO_F_ANY_LAYOUT MUST use a single descriptor for the
+struct virtio_net_hdr on both transmit and receive, with the
+network data in the following descriptors.  See \ref{sec:Basic
+Facilities of a Virtio Device / Virtqueues / Message Framing}.
+Further, when using the control virtqueue (see \ref{sec:Device
+Types / Network Device / Device Operation / Control Virtqueue})
+, transitional drivers which have not
+negotiated VIRTIO_F_ANY_LAYOUT MUST:
+\begin{itemize}
+\item for all commands, use a single 2-byte descriptor including the first two
+fields: \field{class} and \field{command}
+\item for all commands except VIRTIO_NET_CTRL_MAC_TABLE_SET
+use a single descriptor including command-specific-data
+with no padding.
+\item for the VIRTIO_NET_CTRL_MAC_TABLE_SET command use exactly
+two descriptors including command-specific-data with no padding:
+the first of these descriptors MUST include the
+virtio_net_ctrl_mac table structure for the unicast addresses with no padding,
+the second of these descriptors MUST include the
+virtio_net_ctrl_mac table structure for the multicast addresses
+with no padding.
+\item for all commands, use a single 1-byte descriptor for the
+\field{ack} field
+\end{itemize}
 
 
 \section{Block Device}\label{sec:Device Types / Block Device}
