@@ -4876,6 +4876,17 @@ MUST format the fields in struct virtio_scsi_event
 according to the native endian of the guest rather than
 (necessarily when not using the legacy interface) little-endian.
 
+\subsubsection{Legacy Interface: Framing Requirements}\label{sec:Device
+Types / SCSI Host Device / Legacy Interface: Framing Requirements}
+
+When using legacy interfaces, transitional drivers which have not
+negotiated VIRTIO_F_ANY_LAYOUT MUST use a single descriptor for the
+\field{lun}, \field{id}, \field{task_attr}, \field{prio},
+\field{crn} and \field{cdb} fields, and MUST only use a single
+descriptor for the \field{sense_len}, \field{residual},
+\field{status_qualifier}, \field{status}, \field{response} and
+\field{sense} fields.
+
 \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
 
 Currently there are three device-independent feature bits defined:
