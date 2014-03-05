@@ -1451,10 +1451,8 @@ enabled, device specific configuration starts at byte offset 20 in virtio
 header.  ie. once you enable MSI-X on the device, the other fields move.
 If you turn it off again, they move back!
 
-When using the legacy interface, both transitional
-devices and drivers MUST assume that
-the device-specific configuration space
-immediately follows these general headers:
+Any device-specific configuration space immediately follows
+these general headers:
 
 \begin{tabular}{|l||l|l|}
 \hline
@@ -1465,6 +1463,15 @@ Read / Write & Device Specific & \\
 Purpose & Device Specific & \\
 \hline
 \end{tabular}
+
+When accessing the device-specific configuration space
+using the legacy interface, transitional
+drivers MUST access the device-specific configuration space
+at an offset immediately following the general headers.
+
+When using the legacy interface, transitional
+devices MUST present the device-specific configuration space
+if any at an offset immediately following the general headers.
 
 Note that only Feature Bits 0 to 31 are accessible through the
 Legacy Interface. When used through the Legacy Interface,
