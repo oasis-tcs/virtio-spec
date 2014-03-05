@@ -3498,15 +3498,15 @@ according to the native endian of the guest rather than
 (necessarily when not using the legacy interface) little-endian.
 
 
-\subsubsection{Legacy Interface: Virtqueue}\label{sec:Device
+\subsubsection{Legacy Interface: Framing Requirements}\label{sec:Device
 Types / Network Device / Legacy Interface: Framing Requirements}
 
 When using legacy interfaces, transitional drivers which have not
 negotiated VIRTIO_F_ANY_LAYOUT MUST use a single descriptor for the
 struct virtio_net_hdr on both transmit and receive, with the
-network data in the following descriptors.  See \ref{sec:Basic
-Facilities of a Virtio Device / Virtqueues / Message Framing}.
-Further, when using the control virtqueue (see \ref{sec:Device
+network data in the following descriptors.
+
+Additionally, when using the control virtqueue (see \ref{sec:Device
 Types / Network Device / Device Operation / Control Virtqueue})
 , transitional drivers which have not
 negotiated VIRTIO_F_ANY_LAYOUT MUST:
@@ -3527,6 +3527,8 @@ with no padding.
 \field{ack} field
 \end{itemize}
 
+See \ref{sec:Basic
+Facilities of a Virtio Device / Virtqueues / Message Framing}.
 
 \section{Block Device}\label{sec:Device Types / Block Device}
 
@@ -3792,15 +3794,29 @@ the \field{sense} buffer.
 requests and indicates the residual size, calculated as data
 length - number of bytes actually transferred.
 
-Historically, devices assumed that \field{type}, \field{ioprio} and
-\field{sector} reside in a single, separate device-readable buffer;
-\field{errors}, \field{data_len}, \field{sense_len} and residual reside in a single,
-separate device-writable buffer; \field{sense} in a separate
-device-writable buffer of size 96 bytes, by itself; \field{errors},
-\field{data_len}, \field{sense_len} and \field{residual} in a single device-writable buffer;
-and \field{status} is a separate device-writable buffer of size 1
-byte, by itself.
+\subsubsection{Legacy Interface: Framing Requirements}\label{sec:Device
+Types / Block Device / Legacy Interface: Framing Requirements}
 
+When using legacy interfaces, transitional drivers which have not
+negotiated VIRTIO_F_ANY_LAYOUT:
+
+\begin{itemize}
+\item MUST use a single 8-byte descriptor containing \field{type},
+  \field{reseved} and \field{sector}, followed by descriptors
+  for \field{data}, then finally a separate 1-byte descriptor
+  for \field{status}.
+
+\item For SCSI commands there are additional constraints.
+  \field{errors}, \field{data_len}, \field{sense_len} and
+  \field{residual} MUST reside in a single, separate
+  device-writable descriptor, \field{sense} MUST reside in a
+  single separate device-writable descriptor of size 96 bytes,
+  and \field{errors}, \field{data_len}, \field{sense_len} and
+  \field{residual} MUST reside a single separate
+  device-writable descriptor.
+\end{itemize}
+
+See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Message Framing}.
 
 \section{Console Device}\label{sec:Device Types / Console Device}
 
