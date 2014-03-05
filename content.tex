@@ -4036,6 +4036,12 @@ MUST format the fields in struct virtio_console_control
 according to the native endian of the guest rather than
 (necessarily when not using the legacy interface) little-endian.
 
+\subsubsection{Legacy Interface: Framing Requirements}\label{sec:Device
+Types / Console Device / Legacy Interface: Framing Requirements}
+
+When using legacy interfaces, transitional drivers which have not
+negotiated VIRTIO_F_ANY_LAYOUT MUST use only a single
+descriptor for all buffers in the control receiveq and control transmitq.
 
 \section{Entropy Device}\label{sec:Device Types / Entropy Device}
 
