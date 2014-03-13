@@ -194,7 +194,7 @@ by the device.
 
 Note that for legacy interfaces, device configuration space is generally the
 guest's native endian, rather than PCI's little-endian.
-The correct endian-ness is documented explicitly for each device.
+The correct endian-ness is documented for each device.
 
 \subsection{Legacy Interface: Device Configuration Space}\label{sec:Basic Facilities of a Virtio Device / Device Configuration Space / Legacy Interface: Device Configuration Space}
 
@@ -481,7 +481,7 @@ the device that it doesn't want interrupts when buffers are used.  Otherwise
 specifies how far the device can progress before interrupting.
 
 Neither of these interrupt suppression methods are reliable, as they
-are not explicitly synchronized with the device, but they serve as
+are not synchronized with the device, but they serve as
 useful optimizations.
 
 \drivernormative{\subsubsection}{Virtqueue Interrupt Suppression}{Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Interrupt Suppression}
@@ -1269,7 +1269,7 @@ struct virtio_pci_notify_cap {
 \end{lstlisting}
 
 \field{notify_off_multiplier} is combined with the \field{queue_notify_off} to
-derive the Queue Notify address within a BAR for a specific queue:
+derive the Queue Notify address within a BAR for a virtqueue:
 
 \begin{lstlisting}
         cap.offset + queue_notify_off * notify_off_multiplier
@@ -1307,7 +1307,7 @@ The VIRTIO_PCI_CAP_ISR_CFG capability
 refers to at least a single byte, which contains the 8-bit ISR status field
 to be used for INT\#x interrupt handling.
 
-The \field{offset} for the \field{ISR status} has no specific alignment requirements.
+The \field{offset} for the \field{ISR status} has no alignment requirements.
 
 The ISR bits allow the device to distinguish between device-specific configuration
 change interrupts and normal virtqueue interrupts:
@@ -1345,20 +1345,20 @@ The device MUST reset \field{ISR status} to 0 on driver read.
 The driver MUST NOT access the ISR field when MSI-X capability
 is enabled.
 
-\subsubsection{Device specific structure}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Device specific structure}
+\subsubsection{Device-specific configuration}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Device-specific configuration}
 
 The device MUST present at least one VIRTIO_PCI_CAP_DEVICE_CFG capability for
-any device type which has a device specific structure.
+any device type which has a device-specific configuration.
 
-\devicenormative{\paragraph}{Device specific structure}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Device specific structure}
+\devicenormative{\paragraph}{Device-specific configuration}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Device-specific configuration}
 
-The \field{offset} for the device specific structure MUST be 4-byte aligned.
+The \field{offset} for the device-specific configuration MUST be 4-byte aligned.
 
 \subsubsection{PCI configuration access capability}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / PCI configuration access capability}
 
 The VIRTIO_PCI_CAP_PCI_CFG capability
 creates an alternative (and likely suboptimal) access method to the
-common configuration, notification, ISR and device-specific regions.
+common configuration, notification, ISR and device-specific configuration regions.
 
 The capability is immediately followed by an additional field like so:
 
@@ -1418,14 +1418,14 @@ MUST use the legacy configuration structure in BAR0 in the first
 I/O region of the PCI device, as documented below.
 
 When using the legacy interface the driver MAY access
-the device-specific region using any width accesses, and
+the device-specific configuration region using any width accesses, and
 a transitional device MUST present driver with the same results as
 when accessed using the ``natural'' access method (i.e.
 32-bit accesses for 32-bit fields, etc).
 
 Note that this is possible because while the virtio common configuration structure is PCI
 (i.e. little) endian, when using the legacy interface the device-specific
-region is encoded in the native endian of the guest (where such distinction is
+configuration region is encoded in the native endian of the guest (where such distinction is
 applicable).
 
 When used through the legacy interface, the virtio common configuration structure looks as follows:
@@ -1455,9 +1455,9 @@ Purpose (MSI-X) & \field{config_msix_vector}  & \field{queue_msix_vector} \\
 \hline
 \end{tabular}
 
-Note: When MSI-X capability is enabled, device specific configuration starts at
+Note: When MSI-X capability is enabled, device-specific configuration starts at
 byte offset 24 in virtio common configuration structure structure. When MSI-X capability is not
-enabled, device specific configuration starts at byte offset 20 in virtio
+enabled, device-specific configuration starts at byte offset 20 in virtio
 header.  ie. once you enable MSI-X on the device, the other fields move.
 If you turn it off again, they move back!
 
@@ -1570,8 +1570,8 @@ interrupts to MSI-X vectors. In this case, the ISR Status is unused.
 Writing a valid MSI-X Table entry number, 0 to 0x7FF, to
 \field{config_msix_vector}/\field{queue_msix_vector} maps interrupts triggered
 by the configuration change/selected queue events respectively to
-the corresponding MSI-X vector. To disable interrupts for a
-specific event type, the driver unmaps this event by writing a special NO_VECTOR
+the corresponding MSI-X vector. To disable interrupts for an
+event type, the driver unmaps this event by writing a special NO_VECTOR
 value:
 
 \begin{lstlisting}
@@ -1701,7 +1701,7 @@ for that virtqueue.
 \subsubsection{Notification of Device Configuration Changes}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Notification of Device Configuration Changes}
 
 Some virtio PCI devices can change the device configuration
-state, as reflected in the device-specific region of the device. In this case:
+state, as reflected in the device-specific configuration region of the device. In this case:
 
 \begin{itemize}
   \item If MSI-X capability is disabled:
@@ -1752,7 +1752,7 @@ The driver interrupt handler would typically:
     \begin{itemize}
       \item
         Look through the used rings of
-        all virtqueues mapped to the specific MSI-X vector for the
+        all virtqueues mapped to that MSI-X vector for the
         device, to see if any progress has been made by the device
         which requires servicing.
       \item
@@ -1985,7 +1985,7 @@ device seeing an inconsistent configuration state, but it MAY only change the va
 after a configuration read operation.
 
 \drivernormative{\subsubsection}{MMIO Device Register Layout}{Virtio Transport Options / Virtio Over MMIO / MMIO Device Register Layout}
-The driver MUST NOT access memory locations not explicitly described in the
+The driver MUST NOT access memory locations not described in the
 table (or, in case of the configuration space, described in the device specification),
 MUST NOT write to the read-only registers (direction R) and
 MUST NOT read from the write-only registers (direction W).
@@ -2747,7 +2747,7 @@ CCW_CMD_VDEV_RESET command.
 \chapter{Device Types}\label{sec:Device Types}
 
 On top of the queues, config space and feature negotiation facilities
-built into virtio, several specific devices are defined.
+built into virtio, several devices are defined.
 
 The following device IDs are used to identify different types of virtio
 devices.  Some device IDs are reserved for devices which are not currently
@@ -3446,8 +3446,8 @@ n=virtqueue_pairs-1 MAY be used.
 
 When multiqueue is enabled, the device MUST use automatic receive steering
 based on packet flow. Programming of the receive steering
-classificator is implicit. After the driver transmitted a packet of a specific
-flow on transmitqX, the device MUST cause incoming packets for this flow to
+classificator is implicit. After the driver transmitted a packet of a
+flow on transmitqX, the device MUST cause incoming packets for that flow to
 be steered to receiveqX. For uni-directional protocols, or where
 no packets have been transmitted yet, the device MAY steer a packet
 to a random queue out of the specified receiveq0\ldots receiveqn.
