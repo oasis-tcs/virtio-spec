@@ -28,9 +28,11 @@ following bits are defined:
   device and recognized it as a valid virtio device.
 
 \item[DRIVER (2)] Indicates that the guest OS knows how to drive the
-  device. Under Linux, drivers can be loadable modules so there
-  may be a significant (or infinite) delay before setting this
-  bit.
+  device.
+  \begin{note}
+    There could be a significant (or infinite) delay before setting
+    this bit.  For example, under Linux, drivers can be loadable modules.
+  \end{note}
 
 \item[FEATURES_OK (8)] Indicates that the driver has acknowledged all the
   features it understands, and feature negotiation is complete.
@@ -1228,7 +1230,7 @@ changed since any part of the device-specific configuration was last
 read.
 \begin{note}
 As \field{config_generation} is an 8-bit value, simply incrementing it
-on every configuration change may violate this requirement due to wrap.
+on every configuration change could violate this requirement due to wrap.
 Better would be to set an internal flag when it has changed,
 and if that flag is set when the driver reads from the device-specific
 configuration, increment \field{config_generation} and clear the flag.
@@ -2217,8 +2219,8 @@ The virtual queue is configured as follows:
 
 \item Allocate and zero the queue pages in contiguous virtual
    memory, aligning the Used Ring to an optimal boundary (usually
-   page size). Size of the allocated queue may be smaller than or
-   equal to the maximum size returned by the device.
+   page size). The driver MUST choose a queue size smaller than or
+   equal to \field{QueueNumMax}.
 
 \item Notify the device about the queue size by writing the size to
    \field{QueueNum}.
@@ -2790,8 +2792,8 @@ Device ID  &  Virtio Device    \\
 
 Some of the devices above are unspecified by this document,
 because they are seen as immature or especially niche.  Be warned
-that they may only be specified by the sole existing implementation;
-they may become part of a future specification, be abandoned
+that some are only specified by the sole existing implementation;
+they could become part of a future specification, be abandoned
 entirely, or live on outside this standard.  We shall speak of
 them no further.
 
@@ -2999,10 +3001,9 @@ A driver would perform a typical initialization routine like so:
   (UDP fragmentation) features.
 
 \item The converse features are also available: a driver can save
-  the virtual device some work by negotiating these features.\footnote{For example, a network packet transported between two guests on
-the same system may not require checksumming at all, nor segmentation,
-if both guests are amenable.
-}
+  the virtual device some work by negotiating these features.\note{For example, a network packet transported between two guests on
+the same system might not need checksumming at all, nor segmentation,
+if both guests are amenable.}
    The VIRTIO_NET_F_GUEST_CSUM feature indicates that partially
   checksummed packets can be received, and if it can do that then
   the VIRTIO_NET_F_GUEST_TSO4, VIRTIO_NET_F_GUEST_TSO6,
@@ -3103,10 +3104,9 @@ as a guarantee of the transport header size.
     header (ie. MSS).
 
   \item If the driver negotiated the VIRTIO_NET_F_HOST_ECN feature,
-    the VIRTIO_NET_HDR_GSO_ECN bit may be set in \field{gso_type} as
-    well, indicating that the TCP packet has the ECN bit set.\footnote{This case is not handled by some older hardware, so is called out
-specifically in the protocol.
-}
+    the VIRTIO_NET_HDR_GSO_ECN bit in \field{gso_type}
+    indicates that the TCP packet has the ECN bit set.\footnote{This case is not handled by some older hardware, so is called out
+specifically in the protocol.}
    \end{itemize}
 
 \item If the driver negotiated the VIRTIO_NET_F_MRG_RXBUF feature,
@@ -3214,10 +3214,29 @@ Processing packet involves:
   it (see Packet Transmission point 1).
 
 \item If the VIRTIO_NET_F_GUEST_TSO4, TSO6 or UFO options were
-  negotiated, then \field{gso_type} may be something other than
+  negotiated, then \field{gso_type} MAY be something other than
   VIRTIO_NET_HDR_GSO_NONE, and \field{gso_size} field indicates the
   desired MSS (see Packet Transmission point 2).
 \end{enumerate}
+
+\devicenormative{\subparagraph}{Setting Up Receive Buffers}{Device Types / Network Device / Device Operation / Setting Up Receive Buffers}
+
+If VIRTIO_NET_F_CSUM is not negotiated, the device MUST set
+\field{flags} to zero and the packet MUST be fully checksummed.
+
+If VIRTIO_NET_F_GUEST_TSO4 is not negotiated, the device MUST NOT set
+\field{gso_type} to VIRTIO_NET_HDR_GSO_TCPV4.
+
+If VIRTIO_NET_F_GUEST_UDP is not negotiated, the device MUST NOT set
+\field{gso_type} to VIRTIO_NET_HDR_GSO_UDP.
+
+If VIRTIO_NET_F_GUEST_TSO6 is not negotiated, the device MUST NOT set
+\field{gso_type} to VIRTIO_NET_HDR_GSO_TCPV6.
+
+A device SHOULD NOT send TCP packets requiring segmentation offload
+which have the Explicit Congestion Notification bit set, unless the
+VIRTIO_NET_F_GUEST_ECN feature is negotiated, in which case it MUST set
+the VIRTIO_NET_HDR_GSO_ECN bit in \field{gso_type}.
 
 \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue}
 
@@ -3252,8 +3271,10 @@ If the VIRTIO_NET_F_CTRL_RX feature is negotiated, the driver can
 send control commands for promiscuous mode, multicast receiving,
 and filtering of MAC addresses.
 
-Note that in general, these commands are best-effort: unwanted
-packets may still arrive.
+\begin{note}
+In general, these commands are best-effort: unwanted
+packets could still arrive.
+\end{note}
 
 \paragraph{Setting Promiscuous Mode}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Setting Promiscuous Mode}
 
@@ -3827,7 +3848,7 @@ See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Message Framing}
 \section{Console Device}\label{sec:Device Types / Console Device}
 
 The virtio console device is a simple device for data input and
-output. A device may have one or more ports. Each port has a pair
+output. A device MAY have one or more ports. Each port has a pair
 of input and output virtqueues. Moreover, a device has a pair of
 control IO virtqueues. The control virtqueues are used to
 communicate information between the device and the driver about
@@ -3911,7 +3932,7 @@ according to the native endian of the guest rather than
   can read the console dimensions from \field{cols} and \field{rows}.
 
 \item If the VIRTIO_CONSOLE_F_MULTIPORT feature is negotiated, the
-  driver can spawn multiple ports, not all of which may be
+  driver can spawn multiple ports, not all of which are necessarily
   attached to a console. Some could be generic ports. In this
   case, the control virtqueues are enabled and according to
   \field{max_nr_ports}, the appropriate number
@@ -3953,7 +3974,7 @@ when a port is closed or hot-unplugged.
   with the virtqueue for which the notification was received.
 
 \item If the driver negotiated the VIRTIO_CONSOLE_F_SIZE feature, a
-  configuration change interrupt may occur. The updated size can
+  configuration change interrupt indicates that the updated size can
   be read from the configuration fields.  This size applies to port 0 only.
 
 \item If the driver negotiated the VIRTIO_CONSOLE_F_MULTIPORT
@@ -3997,7 +4018,7 @@ The values for \field{event} are:
   the port is ready to be used. A \field{value} of 1 indicates success, and 0
   indicates failure.
 \item [VIRTIO_CONSOLE_CONSOLE_PORT (4)] Sent by the device to nominate
-  a port as a console port.  There may be more than one console port.
+  a port as a console port.  There MAY be more than one console port.
 \item [VIRTIO_CONSOLE_RESIZE (5)] Sent by the device to indicate
   a console size change.  \field{value} is unused.  The buffer is followed by the number of columns and rows:
 \begin{lstlisting}
@@ -4241,7 +4262,7 @@ as follows:
 
   Each statistic consists of a 16 bit
   tag and a 64 bit value. All statistics are optional and the
-  driver may choose which ones to supply. To guarantee backwards
+  driver chooses which ones to supply. To guarantee backwards
   compatibility, unsupported statistics should be omitted.
 
 \begin{lstlisting}
@@ -4484,7 +4505,7 @@ target.
 
 \field{task_attr} defines
 the task attribute as in the table above, but all task attributes
-may be mapped to SIMPLE by the device; \field{crn} may also be provided
+MAY be mapped to SIMPLE by the device; \field{crn} may also be provided
 by clients, but is generally expected to be 0. The maximum CRN
 value defined by the protocol is 255, since CRN is stored in an
 8-bit integer.
@@ -4621,8 +4642,8 @@ struct virtio_scsi_ctrl_tmf
   task management function. All
   fields except \field{response} are filled by the driver.
 
-  Other fields may be irrelevant for the requested TMF; if so,
-  they are ignored but they are still present. \field{lun}
+  Other fields which are irrelevant for the requested TMF
+  are ignored but they are still present. \field{lun}
   is in the same format specified for request queues; the
   single level LUN is ignored when the task management function
   addresses a whole I_T nexus. When relevant, the value of \field{id}
