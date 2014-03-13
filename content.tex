@@ -212,8 +212,8 @@ result.
 
 The mechanism for bulk data transport on virtio devices is
 pretentiously called a virtqueue. Each device can have zero or more
-virtqueues: for example, the simplest network device has one for
-transmit and one for receive.  Each queue has a 16-bit queue size
+virtqueues\footnote{For example, the simplest network device has one virtqueue for
+transmit and one for receive}.  Each queue has a 16-bit queue size
 parameter, which sets the number of entries and implies the total size
 of the queue.
 
@@ -250,8 +250,8 @@ The Size column gives the total number of bytes for each
 part of the virtqueue.
 
 Queue Size corresponds to the maximum number of buffers in the
-virtqueue.  For example, if Queue Size is 4 then at most 4 buffers
-can be queued at any given time.  Queue Size value is always a
+virtqueue.\footnote{For example, if Queue Size is 4 then at most 4 buffers
+can be queued at any given time.}  Queue Size value is always a
 power of 2.  The maximum Queue Size value is 32768.  This value
 is specified in a bus-specific way.
 
@@ -714,13 +714,16 @@ And Device Operation / Device Initialization / Set DRIVER-OK}.
 \section{Device Operation}\label{sec:General Initialization And Device Operation / Device Operation}
 
 There are two parts to device operation: supplying new buffers to
-the device, and processing used buffers from the device. As an
+the device, and processing used buffers from the device.
+
+\begin{note} As an
 example, the simplest virtio network device has two virtqueues: the
 transmit virtqueue and the receive virtqueue. The driver adds
 outgoing (device-readable) packets to the transmit virtqueue, and then
 frees them after they are used. Similarly, incoming (device-writable)
 buffers are added to the receive virtqueue, and processed after
 they are used.
+\end{note}
 
 \subsection{Supplying Buffers to The Device}\label{sec:General Initialization And Device Operation / Device Operation / Supplying Buffers to The Device}
 
@@ -1630,7 +1633,7 @@ or report device failure.
 \paragraph{Virtqueue Configuration}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Virtqueue Configuration}
 
 As a device can have zero or more virtqueues for bulk data
-transport (for example, the simplest network device has two), the driver
+transport,\footnote{For example, the simplest network device has two virtqueues} the driver
 needs to configure them as part of the device-specific
 configuration.
 
@@ -4870,7 +4873,7 @@ contents of \field{event}. The following events are defined:
 \end{lstlisting}
 
   By sending this event, the device signals that the configuration parameters
-  (for example the capacity) of a logical unit have changed.
+  \footnote{for example the capacity} of a logical unit have changed.
   \field{event} is set to VIRTIO_SCSI_T_PARAM_CHANGE.
   \field{lun} addresses a logical unit in the SCSI host.
 
