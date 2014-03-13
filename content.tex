@@ -172,7 +172,7 @@ See section \ref{sec:General Initialization And Device Operation / Device Initia
 Drivers MUST
 NOT limit structure size and device configuration space size.  Instead,
 drivers SHOULD only check that device configuration space is {\em large enough} to
-contain the fields required for device operation.
+contain the fields necessary for device operation.
 
 \begin{note}
 For example, if the specification states that device configuration
@@ -244,7 +244,7 @@ Used Ring         & 4         & $6 + 4 * $(Queue Size) \\
 The Alignment column gives the minimum alignment for each part
 of the virtqueue.
 
-The Size column gives the total number of bytes required for each
+The Size column gives the total number of bytes for each
 part of the virtqueue.
 
 Queue Size corresponds to the maximum number of buffers in the
@@ -280,7 +280,7 @@ Descriptor Table & Available Ring (\ldots padding\ldots) & Used Ring \\
 \end{tabular}
 
 The bus-specific Queue Size field controls the total number of bytes
-required for the virtqueue.
+for the virtqueue.
 When using the legacy interface, the transitional
 driver MUST retrieve the Queue Size field from the device
 and MUST allocate the total number of bytes for the virtuqueue
@@ -487,13 +487,13 @@ If the VIRTIO_RING_F_EVENT_IDX feature bit is not negotiated:
 \begin{itemize}
 \item The driver MUST set \field{flags} to 0 or 1.
 \item The driver MAY set \field{flags} to 1 to advise
-the device that interrupts are not required.
+the device that interrupts are not needed.
 \end{itemize}
 
 Otherwise, if the VIRTIO_RING_F_EVENT_IDX feature bit is negotiated:
 \begin{itemize}
 \item The driver MUST set \field{flags} to 0.
-\item The driver MAY use \field{used_event} to advise the device that interrupts are not required until the device writes entry with an index specified by \field{used_event} into the used ring (equivalently, until \field{idx} in the
+\item The driver MAY use \field{used_event} to advise the device that interrupts are unnecessary until the device writes entry with an index specified by \field{used_event} into the used ring (equivalently, until \field{idx} in the
 used ring will reach the value \field{used_event} + 1).
 \end{itemize}
 
@@ -599,13 +599,13 @@ If the VIRTIO_RING_F_EVENT_IDX feature bit is not negotiated:
 \begin{itemize}
 \item The device MUST set \field{flags} to 0 or 1.
 \item The device MAY set \field{flags} to 1 to advise
-the driver that notifications are not required.
+the driver that notifications are not needed.
 \end{itemize}
 
 Otherwise, if the VIRTIO_RING_F_EVENT_IDX feature bit is negotiated:
 \begin{itemize}
 \item The device MUST set \field{flags} to 0.
-\item The device MAY use \field{avail_event} to advise the driver that notifications are not required until the driver writes entry with an index specified by \field{avail_event} into the available ring (equivalently, until \field{idx} in the
+\item The device MAY use \field{avail_event} to advise the driver that notifications are unnecessary until the driver writes entry with an index specified by \field{avail_event} into the available ring (equivalently, until \field{idx} in the
 available ring will reach the value \field{avail_event} + 1).
 \end{itemize}
 
@@ -835,7 +835,7 @@ value before checking if notifications are suppressed.
 
 \drivernormative{\paragraph}{Notifying The Device}{General Initialization And Device Operation / Device Operation / Supplying Buffers to The Device / Notifying The Device}
 The driver MUST perform a suitable memory barrier before reading \field{flags} or
-\field{avail_event}, to avoid missing a required notification.
+\field{avail_event}, to avoid missing a notification.
 
 \subsection{Receiving Used Buffers From The Device}\label{sec:General Initialization And Device Operation / Device Operation / Receiving Used Buffers From The Device}
 
@@ -2906,7 +2906,7 @@ Some networking feature bits require other networking feature bits
 
 This was supposed to indicate segmentation offload support, but
 upon further investigation it became clear that multiple bits
-were required.
+were needed.
 
 \subsection{Device configuration layout}\label{sec:Device Types / Network Device / Device configuration layout}
 
