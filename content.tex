@@ -2818,16 +2818,16 @@ features.
 \subsection{Virtqueues}\label{sec:Device Types / Network Device / Virtqueues}
 
 \begin{description}
-\item[0] receiveq0
-\item[1] transmitq0
+\item[0] receiveq1
+\item[1] transmitq1
 \item[\ldots]
 \item[2N] receiveqN
 \item[2N+1] transmitqN
 \item[2N+2] controlq
 \end{description}
 
- N=0 if VIRTIO_NET_F_MQ is not negotiated, otherwise N is derived
- from \field{max_virtqueue_pairs} control field.
+ N=1 if VIRTIO_NET_F_MQ is not negotiated, otherwise N is set by
+ \field{max_virtqueue_pairs}.
 
  controlq only exists if VIRTIO_NET_F_CTRL_VQ set.
 
@@ -2928,9 +2928,8 @@ VIRTIO_NET_S_LINK_UP and VIRTIO_NET_S_ANNOUNCE.
 
 The following driver-read-only field, \field{max_virtqueue_pairs} only exists if
 VIRTIO_NET_F_MQ is set. This field specifies the maximum number
-of each of transmit and receive virtqueues (receiveq0\ldots receiveqN
-and transmitq0\ldots transmitqN respectively;
- N=\field{max_virtqueue_pairs} - 1) that can be configured once VIRTIO_NET_F_MQ
+of each of transmit and receive virtqueues (receiveq1\ldots receiveqN
+and transmitq1\ldots transmitqN respectively) that can be configured once VIRTIO_NET_F_MQ
 is negotiated.
 
 \begin{lstlisting}
@@ -2972,16 +2971,16 @@ A driver would perform a typical initialization routine like so:
 
 \begin{enumerate}
 \item Identify and initialize the receive and
-  transmission virtqueues, up to N+1 of each kind. If
+  transmission virtqueues, up to N of each kind. If
   VIRTIO_NET_F_MQ feature bit is negotiated,
-  N=\field{max_virtqueue_pairs}-1, otherwise identify N=0.
+  N=\field{max_virtqueue_pairs}, otherwise identify N=1.
 
 \item If the VIRTIO_NET_F_CTRL_VQ feature bit is negotiated,
   identify the control virtqueue.
 
 \item Fill the receive queues with buffers: see \ref{sec:Device Types / Network Device / Device Operation / Setting Up Receive Buffers}.
 
-\item Even with VIRTIO_NET_F_MQ, only receiveq0, transmitq0 and
+\item Even with VIRTIO_NET_F_MQ, only receiveq1, transmitq1 and
   controlq are used by default.  The driver would send the
   VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command specifying the
   number of the transmit and receive queues to use.
@@ -3021,8 +3020,8 @@ everything else.
 \subsection{Device Operation}\label{sec:Device Types / Network Device / Device Operation}
 
 Packets are transmitted by placing them in the
-transmitq0\ldots transmitqN, and buffers for incoming packets are
-placed in the receiveq0\ldots receiveqN. In each case, the packet
+transmitq1\ldots transmitqN, and buffers for incoming packets are
+placed in the receiveq1\ldots receiveqN. In each case, the packet
 itself is preceeded by a header:
 
 \begin{lstlisting}
@@ -3176,14 +3175,14 @@ making for 65562 or 1526 bytes.
       with buffers of at least 1526 bytes.
   \end{itemize}
 \item If VIRTIO_NET_F_MRG_RXBUF is negotiated, each buffer MUST be at
-  least the size of the struct virtio_net_hdr.
+  greater than the size of the struct virtio_net_hdr.
 \end{itemize}
 
 \begin{note}
 Obviously each buffer can be split across multiple descriptor elements.
 \end{note}
 
-If VIRTIO_NET_F_MQ is negotiated, each of receiveq0\ldots receiveqN
+If VIRTIO_NET_F_MQ is negotiated, each of receiveq1\ldots receiveqN
 that will be used SHOULD be populated with receive buffers.
 
 \paragraph{Packet Receive Interrupt}\label{sec:Device Types / Network Device / Device Operation / Setting Up Receive Buffers / Packet Receive Interrupt}
@@ -3422,8 +3421,8 @@ before marking the buffer as used.
 
 If the driver negotiates the VIRTIO_NET_F_MQ feature bit (depends
 on VIRTIO_NET_F_CTRL_VQ), it MAY transmit outgoing packets on one
-of the multiple transmitq0\ldots transmitqN and ask the device to
-queue incoming packets into one of the multiple receiveq0\ldots receiveqN
+of the multiple transmitq1\ldots transmitqN and ask the device to
+queue incoming packets into one of the multiple receiveq1\ldots receiveqN
 depending on the packet flow.
 
 \begin{lstlisting}
@@ -3441,16 +3440,16 @@ Multiqueue is disabled by default. The driver enables multiqueue by
 executing the VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command, specifying
 the number of the transmit and receive queues to be used up to
 \field{max_virtqueue_pairs}; subsequently,
-transmitq0\ldots transmitqn and receiveq0\ldots receiveqn where
-n=virtqueue_pairs-1 MAY be used.
+transmitq1\ldots transmitqn and receiveq1\ldots receiveqn where
+n=\field{virtqueue_pairs} MAY be used.
 
 When multiqueue is enabled, the device MUST use automatic receive steering
 based on packet flow. Programming of the receive steering
 classificator is implicit. After the driver transmitted a packet of a
-flow on transmitqX, the device MUST cause incoming packets for that flow to
+flow on transmitqX, the device SHOULD cause incoming packets for that flow to
 be steered to receiveqX. For uni-directional protocols, or where
 no packets have been transmitted yet, the device MAY steer a packet
-to a random queue out of the specified receiveq0\ldots receiveqn.
+to a random queue out of the specified receiveq1\ldots receiveqn.
 
 Multiqueue is disabled by setting \field{virtqueue_pairs} to 1 (this is
 the default) and waiting for the device to use the command buffer.
@@ -3463,7 +3462,7 @@ VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command.
 The driver MUST NOT request a \field{virtqueue_pairs} of 0 or
 greater than \field{max_virtqueue_pairs} in the device configuration space.
 
-The driver MUST queue packets only on any transmitq0 before the 
+The driver MUST queue packets only on any transmitq1 before the 
 VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command.
 
 The driver MUST NOT queue packets on transmit queues greater than
@@ -3471,7 +3470,7 @@ The driver MUST NOT queue packets on transmit queues greater than
 
 \devicenormative{\subparagraph}{Automatic receive steering in multiqueue mode}{Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode}
 
-The device MUST queue packets only on any receiveq0 before the 
+The device MUST queue packets only on any receiveq1 before the 
 VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command.
 
 The device MUST NOT queue packets on receive queues greater than
