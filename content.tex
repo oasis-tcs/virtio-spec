@@ -3038,7 +3038,6 @@ struct virtio_net_hdr {
         le16 gso_size;
         le16 csum_start;
         le16 csum_offset;
-/* Only if VIRTIO_NET_F_MRG_RXBUF: */
         le16 num_buffers;
 };
 \end{lstlisting}
@@ -3051,6 +3050,10 @@ When using the legacy interface, transitional devices and drivers
 MUST format the fields in struct virtio_net_hdr
 according to the native endian of the guest rather than
 (necessarily when not using the legacy interface) little-endian.
+
+The legacy driver only presented \field{num_buffers} in the struct virtio_net_hdr
+when VIRTIO_NET_F_MRG_RXBUF was not negotiated; without that feature the
+structure was 2 bytes shorter.
 
 \subsubsection{Packet Transmission}\label{sec:Device Types / Network Device / Device Operation / Packet Transmission}
 
@@ -3111,14 +3114,11 @@ as a guarantee of the transport header size.
 specifically in the protocol.}
    \end{itemize}
 
-\item If the driver negotiated the VIRTIO_NET_F_MRG_RXBUF feature,
-  \field{num_buffers} is set to zero.  This field is unused on transmitted packets.
+\item \field{num_buffers} is set to zero.  This field is unused on transmitted packets.
 
 \item The header and packet are added as one output descriptor to the
   transmitq, and the device is notified of the new entry
-  (see \ref{sec:Device Types / Network Device / Device Initialization}~\nameref{sec:Device Types / Network Device / Device Initialization}).\footnote{Note that the header will be two bytes longer for the
-VIRTIO_NET_F_MRG_RXBUF case.
-}
+  (see \ref{sec:Device Types / Network Device / Device Initialization}~\nameref{sec:Device Types / Network Device / Device Initialization}).
 \end{enumerate}
 
 \drivernormative{\paragraph}{Packet Transmission}{Device Types / Network Device / Device Operation / Packet Transmission}
@@ -3126,13 +3126,7 @@ VIRTIO_NET_F_MRG_RXBUF case.
 If a driver has not negotiated VIRTIO_NET_F_CSUM, \field{flags} MUST be zero and
 the packet MUST be fully checksummed.
 
-If a driver negotiated the VIRTIO_NET_F_MRG_RXBUF feature, it MUST include
-\field{num_buffers} in the header, and it MUST set the value to zero.  If a driver
-did not negotiate VIRTIO_NET_F_MRG_RXBUF, it MUST NOT include \field{num_buffers} in the header.
-\begin{note}
-  ie. With VIRTIO_NET_F_MRG_RXBUF, both receive and transmit headers
-  are 12 bytes.  Without it, they're 10 bytes.
-\end{note}
+The driver MUST set \field{num_buffers} to zero.
 
 A driver SHOULD NOT send TCP packets requiring segmentation offload which have the Explicit Congestion Notification bit set, unless the VIRTIO_NET_F_HOST_ECN feature is
 negotiated\footnote{This is a common restriction in real, older network cards.}, in
@@ -3185,6 +3179,15 @@ Obviously each buffer can be split across multiple descriptor elements.
 If VIRTIO_NET_F_MQ is negotiated, each of receiveq1\ldots receiveqN
 that will be used SHOULD be populated with receive buffers.
 
+\devicenormative{\paragraph}{Setting Up Receive Buffers}{Device Types / Network Device / Device Operation / Setting Up Receive Buffers}
+
+The device MUST set \field{num_buffers} to the number of descriptors used to
+hold the incoming packet.
+
+The device MUST use only a single descriptor if VIRTIO_NET_F_MRG_RXBUF
+was not negotiated. \note{This means that \field{num_buffers} will always be 1 
+if VIRTIO_NET_F_MRG_RXBUF is not negotiated.}
+
 \paragraph{Packet Receive Interrupt}\label{sec:Device Types / Network Device / Device Operation / Setting Up Receive Buffers / Packet Receive Interrupt}
 
 When a packet is copied into a buffer in the receiveq, the
@@ -3195,16 +3198,16 @@ packets until no more are found, then re-enable them.
 Processing packet involves:
 
 \begin{enumerate}
-\item If the driver negotiated the VIRTIO_NET_F_MRG_RXBUF feature,
-  then \field{num_buffers} indicates how many descriptors
-  this packet is spread over (including this one). This allows
-  receipt of large packets without having to allocate large
+\item \field{num_buffers} indicates how many descriptors
+  this packet is spread over (including this one): this will
+  always be 1 if VIRTIO_NET_F_MRG_RXBUF was not negotiated.
+  This allows receipt of large packets without having to allocate large
   buffers. In this case, there will be at least \field{num_buffers} in
   the used ring, and the device chains them together to form a
   single packet. The other buffers will not begin with a struct
   virtio_net_hdr.
 
-\item If the VIRTIO_NET_F_MRG_RXBUF feature was not negotiated, or
+\item If
   \field{num_buffers} is one, then the entire packet will be
   contained within this buffer, immediately following the struct
   virtio_net_hdr.
