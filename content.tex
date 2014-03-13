@@ -348,6 +348,9 @@ of descriptors.  The device MAY have a reasonable limit of descriptors
 it will allow in a chain.
 
 \drivernormative{\subsubsection}{Message Framing}{Basic Facilities of a Virtio Device / Message Framing}
+The driver MUST place any device-writable descriptor elements after
+any device-readable descriptor elements.
+
 The driver SHOULD NOT use an excessive number of descriptors to
 describe a buffer.
 
@@ -750,7 +753,7 @@ available ring buffer wrapping around: this is not possible since
 the ring buffer is the same size as the descriptor table, so step
 (1) will prevent such a condition.
 
-In addition, the maximum queue size is 32768 (it must be a power
+In addition, the maximum queue size is 32768 (the highest power
 of 2 which fits in 16 bits), so the 16-bit \field{idx} value can always
 distinguish between a full and empty buffer.
 
@@ -760,7 +763,7 @@ What follows is the requirements of each stage in more detail.
 
 A buffer consists of zero or more device-readable physically-contiguous
 elements followed by zero or more physically-contiguous
-device-writable elements (it must have at least one element). This
+device-writable elements (each has at least one element). This
 algorithm maps it into the descriptor table to form a descriptor
 chain:
 
@@ -901,7 +904,7 @@ Virtio devices are commonly implemented as PCI devices.
 A Virtio device can be implemented as any kind of PCI device:
 a Conventional PCI device or a PCI Express
 device.  To assure designs meet the latest level
-requirements, designers of Virtio Over PCI devices must refer to
+requirements, see 
 the PCI-SIG home page at \url{http://www.pcisig.com} for any
 approved changes.
 
@@ -1279,7 +1282,7 @@ the same Queue Notify address for all queues.
 \devicenormative{\paragraph}{Notification capability}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability}
 The device MUST present at least one notification capability.
 
-The \field{cap.offset} must be 2-byte aligned.  
+The \field{cap.offset} MUST be 2-byte aligned.  
 
 The device MUST either present \field{notify_off_multiplier} as an even power of 2,
 or present \field{notify_off_multiplier} as 0.
@@ -1344,7 +1347,7 @@ any device type which has a device specific structure.
 
 \devicenormative{\paragraph}{Device specific structure}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Device specific structure}
 
-The \field{offset} for the device specific structure must be 4-byte aligned.
+The \field{offset} for the device specific structure MUST be 4-byte aligned.
 
 \subsubsection{PCI configuration access capability}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / PCI configuration access capability}
 
@@ -1398,7 +1401,7 @@ at BAR selected by \field{cap.bar} and store the first \field{cap.length} bytes 
 \drivernormative{\paragraph}{PCI configuration access capability}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / PCI configuration access capability}
 
 The driver MUST NOT write a \field{cap.offset} which is not
-a multiple of \field{cap.length} (ie. all accesses must be aligned).
+a multiple of \field{cap.length} (ie. all accesses MUST be aligned).
 
 \subsubsection{Legacy Interfaces: A Note on PCI Device Layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Legacy Interfaces: A Note on PCI Device Layout}
 
@@ -2193,7 +2196,7 @@ nor behaviour:
 \end{longtable}
 
 The virtual queue page size is defined by writing to \field{GuestPageSize},
-as written by the guest. This must be done before the
+as written by the guest. The driver MUST do this before the
 virtual queues are configured.
 
 The virtual queue layout follows
@@ -3119,7 +3122,7 @@ VIRTIO_NET_F_MRG_RXBUF case.
 \drivernormative{\paragraph}{Packet Transmission}{Device Types / Network Device / Device Operation / Packet Transmission}
 
 If a driver has not negotiated VIRTIO_NET_F_CSUM, \field{flags} MUST be zero and
-the packet must be fully checksummed.
+the packet MUST be fully checksummed.
 
 If a driver negotiated the VIRTIO_NET_F_MRG_RXBUF feature, it MUST include
 \field{num_buffers} in the header, and it MUST set the value to zero.  If a driver
@@ -3732,12 +3735,15 @@ higher numbers indicate more important requests.
 
 If the device has VIRTIO_BLK_F_BARRIER
 feature the high bit (VIRTIO_BLK_T_BARRIER) indicates that this
-request acts as a barrier and that all preceeding requests must be
-complete before this one, and all following requests must not be
-started until this is complete. Note that a barrier does not flush
+request acts as a barrier and that all preceeding requests SHOULD be
+complete before this one, and all following requests SHOULD NOT be
+started until this is complete.
+
+\begin{note} A barrier does not flush
 caches in the underlying backend device in host, and thus does not
-serve as data consistency guarantee. Driver must use FLUSH request to
-flush the host cache.
+serve as data consistency guarantee.  Only a VIRTIO_BLK_T_FLUSH request
+does that.
+\end{note}
 
 If the device has VIRTIO_BLK_F_SCSI feature, it can also support
 scsi packet command requests, each of these requests is of form:
@@ -3770,7 +3776,7 @@ does not distinguish between them:
 \end{lstlisting}
 
 The \field{cmd} field is only present for scsi packet command requests,
-and indicates the command to perform. This field must reside in a
+and indicates the command to perform. This field MUST reside in a
 single, separate device-readable buffer; command length can be derived
 from the length of this buffer.
 
@@ -4022,7 +4028,7 @@ which has not been created with a previous VIRTIO_CONSOLE_DEVICE_ADD.
 
 \drivernormative{\paragraph}{Multiport Device Operation}{Device Types / Console Device / Device Operation / Multiport Device Operation}
 
-The driver must send a VIRTIO_CONSOLE_DEVICE_READY message if
+The driver MUST send a VIRTIO_CONSOLE_DEVICE_READY message if
 VIRTIO_CONSOLE_F_MULTIPORT is negotiated.
 
 Upon receipt of a VIRTIO_CONSOLE_CONSOLE_PORT message, the driver
@@ -4115,7 +4121,7 @@ guest memory statistics to the host.
 
 \subsection{Feature bits}\label{sec:Device Types / Memory Balloon Device / Feature bits}
 \begin{description}
-\item[VIRTIO_BALLOON_F_MUST_TELL_HOST (0)] Host must be told before
+\item[VIRTIO_BALLOON_F_MUST_TELL_HOST (0)] Host MUST be told before
     pages from the balloon are used.
 
 \item[VIRTIO_BALLOON_F_STATS_VQ (1)] A virtqueue for reporting guest
@@ -4159,10 +4165,9 @@ configuration change interrupt.
 
 \begin{enumerate}
 \item \field{num_pages} configuration field is examined. If this is
-  greater than the \field{actual} number of pages, memory must be given
-  to the balloon. If it is less than \field{actual},
-  memory may be taken back from the balloon for general
-  use.
+  greater than the \field{actual} number of pages, the balloon wants
+  more memory from the guest.  If it is less than \field{actual},
+  the balloon doesn't need it all.
 
 \item To supply memory to the balloon (aka. inflate):
   \begin{enumerate}
@@ -4179,21 +4184,36 @@ configuration change interrupt.
     This descriptor is added to the deflateq.
 
   \item If the VIRTIO_BALLOON_F_MUST_TELL_HOST feature is negotiated, the
-    guest may not use these requested pages until that descriptor
-    in the deflateq has been used by the device.
+    guest informs the device of pages before it uses them.
 
-  \item Otherwise, the guest may begin to re-use pages previously
+  \item Otherwise, the guest MAY begin to re-use pages previously
     given to the balloon before the device has acknowledged their
     withdrawal.\footnote{In this case, deflation advice is merely a courtesy
 }
   \end{enumerate}
 
 \item In either case, once the device has completed the inflation or
-  deflation, \field{actual} should be
-  updated to reflect the new number of pages in the balloon.\footnote{As updates to device-specific configuration space are not atomic, this field
+  deflation, the driver updates \field{actual} to reflect the new number of pages in the balloon.\footnote{As updates to device-specific configuration space are not atomic, this field
 isn't particularly reliable, but can be used to diagnose buggy guests.
 }
 \end{enumerate}
+
+\drivernormative{\subsubsection}{Device Operation}{Device Types / Memory Balloon Device / Device Operation}
+The driver SHOULD supply pages to the balloon when \field{num_pages} is
+greater than \field{actual}.
+
+The driver MAY use pages from the balloon when \field{num_pages} is
+less than \field{actual}.
+
+The driver MUST use the deflateq to inform the device of pages that it
+wants to use from the balloon.
+
+If the VIRTIO_BALLOON_F_MUST_TELL_HOST feature is negotiated, the
+driver MUST wait until the device has used the deflateq descriptor
+before using the pages.
+
+The driver MUST update \field{actual} after changing the number
+of pages in the balloon.
 
 \subsubsection{Memory Statistics}\label{sec:Device Types / Memory Balloon Device / Device Operation / Memory Statistics}
 
