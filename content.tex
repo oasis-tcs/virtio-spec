@@ -290,10 +290,10 @@ according to the following formula:
 
 \begin{lstlisting}
 #define ALIGN(x) (((x) + PAGE_SIZE) & ~PAGE_SIZE)
-static inline unsigned vring_size(unsigned int qsz)
+static inline unsigned virtq_size(unsigned int qsz)
 {
-     return ALIGN(sizeof(struct vring_desc)*qsz + sizeof(u16)*(3 + qsz))
-          + ALIGN(sizeof(u16)*3 + sizeof(struct vring_used_elem)*qsz);
+     return ALIGN(sizeof(struct virtq_desc)*qsz + sizeof(u16)*(3 + qsz))
+          + ALIGN(sizeof(u16)*3 + sizeof(struct virtq_used_elem)*qsz);
 }
 \end{lstlisting}
 
@@ -303,18 +303,18 @@ devices and drivers MUST use the following virtqueue layout
 structure to locate elements of the virtqueue:
 
 \begin{lstlisting}
-struct vring {
+struct virtq {
         // The actual descriptors (16 bytes each)
-        struct vring_desc desc[ Queue Size ];
+        struct virtq_desc desc[ Queue Size ];
 
         // A ring of available descriptor heads with free-running index.
-        struct vring_avail avail;
+        struct virtq_avail avail;
 
         // Padding to the next PAGE_SIZE boundary.
         u8 pad[ Padding ];
 
         // A ring of used descriptor heads with free-running index.
-        struct vring_used used;
+        struct virtq_used used;
 };
 \end{lstlisting}
 
@@ -384,18 +384,18 @@ device type.  Most common is to begin the data with a header
 it with a status tailer for the device to write.
 
 \begin{lstlisting}
-struct vring_desc {
+struct virtq_desc {
         /* Address (guest-physical). */
         le64 addr;
         /* Length. */
         le32 len;
 
 /* This marks a buffer as continuing via the next field. */
-#define VRING_DESC_F_NEXT   1
+#define VIRTQ_DESC_F_NEXT   1
 /* This marks a buffer as device write-only (otherwise device read-only). */
-#define VRING_DESC_F_WRITE     2
+#define VIRTQ_DESC_F_WRITE     2
 /* This means the buffer contains a list of buffer descriptors. */
-#define VRING_DESC_F_INDIRECT   4
+#define VIRTQ_DESC_F_INDIRECT   4
         /* The flags as indicated above. */
         le16 flags;
         /* Next field if flags & NEXT */
@@ -405,6 +405,12 @@ struct vring_desc {
 
 The number of descriptors in the table is defined by the queue size
 for this virtqueue.
+
+\begin{note}
+The legacy \hyperref[intro:Virtio PCI Draft]{[Virtio PCI Draft]}
+referred to this structure as vring_desc, and the constants as
+VRING_DESC_F_NEXT, etc, but the layout and values were identical.
+\end{note}
 
 \devicenormative{\subsubsection}{The Virtqueue Descriptor Table}{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table}
 A device MUST NOT write to a device-readable buffer, and a device SHOULD NOT
@@ -418,10 +424,10 @@ this implies that loops in the descriptor chain are forbidden!
 \subsubsection{Indirect Descriptors}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}
 
 Some devices benefit by concurrently dispatching a large number
-of large requests. The VIRTIO_RING_F_INDIRECT_DESC feature allows this (see \ref{sec:virtio-ring.h}~\nameref{sec:virtio-ring.h}). To increase
+of large requests. The VIRTIO_F_INDIRECT_DESC feature allows this (see \ref{sec:virtio-ring.h}~\nameref{sec:virtio-ring.h}). To increase
 ring capacity the driver can store a table of indirect
 descriptors anywhere in memory, and insert a descriptor in main
-virtqueue (with \field{flags}\&VRING_DESC_F_INDIRECT on) that refers to memory buffer
+virtqueue (with \field{flags}\&VIRTQ_DESC_F_INDIRECT on) that refers to memory buffer
 containing this indirect descriptor table; \field{addr} and \field{len}
 refer to the indirect table address and length in bytes,
 respectively.
@@ -433,35 +439,35 @@ which is a variable, so this code won't compile):
 \begin{lstlisting}
 struct indirect_descriptor_table {
         /* The actual descriptors (16 bytes each) */
-        struct vring_desc desc[len / 16];
+        struct virtq_desc desc[len / 16];
 };
 \end{lstlisting}
 
 The first indirect descriptor is located at start of the indirect
 descriptor table (index 0), additional indirect descriptors are
 chained by \field{next}. An indirect descriptor without a valid \field{next}
-(with \field{flags}\&VRING_DESC_F_NEXT off) signals the end of the descriptor.
+(with \field{flags}\&VIRTQ_DESC_F_NEXT off) signals the end of the descriptor.
 A single indirect descriptor
 table can include both device-readable and device-writable descriptors.
 
 \drivernormative{\paragraph}{Indirect Descriptors}{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}
-The driver MUST NOT set the VRING_DESC_F_INDIRECT flag unless the
-VIRTIO_RING_F_INDIRECT_DESC feature was negotiated.   The driver MUST NOT
-set the VRING_DESC_F_INDIRECT flag within an indirect descriptor (ie. only
+The driver MUST NOT set the VIRTQ_DESC_F_INDIRECT flag unless the
+VIRTIO_F_INDIRECT_DESC feature was negotiated.   The driver MUST NOT
+set the VIRTQ_DESC_F_INDIRECT flag within an indirect descriptor (ie. only
 one table per descriptor).
 
 \devicenormative{\paragraph}{Indirect Descriptors}{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}
-The device MUST ignore the write-only flag (\field{flags}\&VRING_DESC_F_WRITE) in the descriptor that refers to an indirect table.
+The device MUST ignore the write-only flag (\field{flags}\&VIRTQ_DESC_F_WRITE) in the descriptor that refers to an indirect table.
 
 \subsection{The Virtqueue Available Ring}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Available Ring}
 
 \begin{lstlisting}
-struct vring_avail {
-#define VRING_AVAIL_F_NO_INTERRUPT      1
+struct virtq_avail {
+#define VIRTQ_AVAIL_F_NO_INTERRUPT      1
         le16 flags;
         le16 idx;
         le16 ring[ /* Queue Size */ ];
-        le16 used_event; /* Only if VIRTIO_RING_F_EVENT_IDX */
+        le16 used_event; /* Only if VIRTIO_F_EVENT_IDX */
 };
 \end{lstlisting}
 
@@ -472,9 +478,15 @@ written by the driver and read by the device.
 \field{idx} field indicates where the driver would put the next descriptor
 entry in the ring (modulo the queue size). This starts at 0, and increases.
 
+\begin{note}
+The legacy \hyperref[intro:Virtio PCI Draft]{[Virtio PCI Draft]}
+referred to this structure as vring_avail, and the constant as
+VRING_AVAIL_F_NO_INTERRUPT, but the layout and value were identical.
+\end{note}
+
 \subsection{Virtqueue Interrupt Suppression}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Interrupt Suppression}
 
-If the VIRTIO_RING_F_EVENT_IDX feature bit is not negotiated,
+If the VIRTIO_F_EVENT_IDX feature bit is not negotiated,
 the \field{flags} field in the available ring offers a crude mechanism for the driver to inform
 the device that it doesn't want interrupts when buffers are used.  Otherwise
 \field{used_event} is a more performant alterative where the driver
@@ -485,14 +497,14 @@ are not synchronized with the device, but they serve as
 useful optimizations.
 
 \drivernormative{\subsubsection}{Virtqueue Interrupt Suppression}{Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Interrupt Suppression}
-If the VIRTIO_RING_F_EVENT_IDX feature bit is not negotiated:
+If the VIRTIO_F_EVENT_IDX feature bit is not negotiated:
 \begin{itemize}
 \item The driver MUST set \field{flags} to 0 or 1.
 \item The driver MAY set \field{flags} to 1 to advise
 the device that interrupts are not needed.
 \end{itemize}
 
-Otherwise, if the VIRTIO_RING_F_EVENT_IDX feature bit is negotiated:
+Otherwise, if the VIRTIO_F_EVENT_IDX feature bit is negotiated:
 \begin{itemize}
 \item The driver MUST set \field{flags} to 0.
 \item The driver MAY use \field{used_event} to advise the device that interrupts are unnecessary until the device writes entry with an index specified by \field{used_event} into the used ring (equivalently, until \field{idx} in the
@@ -503,7 +515,7 @@ The driver MUST handle spurious interrupts from the device.
 
 \devicenormative{\subsubsection}{Virtqueue Interrupt Suppression}{Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Interrupt Suppression}
 
-If the VIRTIO_RING_F_EVENT_IDX feature bit is not negotiated:
+If the VIRTIO_F_EVENT_IDX feature bit is not negotiated:
 \begin{itemize}
 \item The device MUST ignore the \field{used_event} value.
 \item After the device writes a descriptor index into the used ring:
@@ -513,7 +525,7 @@ If the VIRTIO_RING_F_EVENT_IDX feature bit is not negotiated:
   \end{itemize}
 \end{itemize}
 
-Otherwise, if the VIRTIO_RING_F_EVENT_IDX feature bit is negotiated:
+Otherwise, if the VIRTIO_F_EVENT_IDX feature bit is negotiated:
 \begin{itemize}
 \item The device MUST ignore the lower bit of \field{flags}.
 \item After the device writes a descriptor index into the used ring:
@@ -527,23 +539,23 @@ Otherwise, if the VIRTIO_RING_F_EVENT_IDX feature bit is negotiated:
 
 \begin{note}
 For example, if \field{used_event} is 0, then a device using
-  VIRTIO_RING_F_EVENT_IDX would interrupt after the first buffer is
+  VIRTIO_F_EVENT_IDX would interrupt after the first buffer is
   used (and again after the 65536th buffer, etc).
 \end{note}
 
 \subsection{The Virtqueue Used Ring}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Used Ring}
 
 \begin{lstlisting}
-struct vring_used {
-#define VRING_USED_F_NO_NOTIFY  1
+struct virtq_used {
+#define VIRTQ_USED_F_NO_NOTIFY  1
         le16 flags;
         le16 idx;
-        struct vring_used_elem ring[ /* Queue Size */];
-        le16 avail_event; /* Only if VIRTIO_RING_F_EVENT_IDX */
+        struct virtq_used_elem ring[ /* Queue Size */];
+        le16 avail_event; /* Only if VIRTIO_F_EVENT_IDX */
 };
 
 /* le32 is used here for ids for padding reasons. */
-struct vring_used_elem {
+struct virtq_used_elem {
         /* Index of start of used descriptor chain. */
         le32 id;
         /* Total length of the descriptor chain which was used (written to) */
@@ -562,6 +574,13 @@ for drivers using untrusted buffers: if you do not know exactly
 how much has been written by the device, you usually have to zero
 the buffer to ensure no data leakage occurs.
 
+\begin{note}
+The legacy \hyperref[intro:Virtio PCI Draft]{[Virtio PCI Draft]}
+referred to these structures as vring_used and vring_used_elem, and
+the constant as VRING_USED_F_NO_NOTIFY, but the layout and value were
+identical.
+\end{note}
+
 \subsection{Virtqueue Notification Suppression}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Notification Suppression}
 
 The device can suppress notifications in a manner analogous to the way
@@ -574,7 +593,7 @@ same way the driver manipulates \field{flags} or \field{used_event} in the avail
 The driver MUST initialize \field{flags} in the used ring to 0 when
 allocating the used ring.
 
-If the VIRTIO_RING_F_EVENT_IDX feature bit is not negotiated:
+If the VIRTIO_F_EVENT_IDX feature bit is not negotiated:
 \begin{itemize}
 \item The driver MUST ignore the \field{avail_event} value.
 \item After the driver writes a descriptor index into the available ring:
@@ -584,7 +603,7 @@ If the VIRTIO_RING_F_EVENT_IDX feature bit is not negotiated:
   \end{itemize}
 \end{itemize}
 
-Otherwise, if the VIRTIO_RING_F_EVENT_IDX feature bit is negotiated:
+Otherwise, if the VIRTIO_F_EVENT_IDX feature bit is negotiated:
 \begin{itemize}
 \item The driver MUST ignore the lower bit of \field{flags}.
 \item After the driver writes a descriptor index into the available ring:
@@ -597,14 +616,14 @@ Otherwise, if the VIRTIO_RING_F_EVENT_IDX feature bit is negotiated:
 \end{itemize}
 
 \devicenormative{\subsubsection}{Virtqueue Notification Suppression}{Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Notification Suppression}
-If the VIRTIO_RING_F_EVENT_IDX feature bit is not negotiated:
+If the VIRTIO_F_EVENT_IDX feature bit is not negotiated:
 \begin{itemize}
 \item The device MUST set \field{flags} to 0 or 1.
 \item The device MAY set \field{flags} to 1 to advise
 the driver that notifications are not needed.
 \end{itemize}
 
-Otherwise, if the VIRTIO_RING_F_EVENT_IDX feature bit is negotiated:
+Otherwise, if the VIRTIO_F_EVENT_IDX feature bit is negotiated:
 \begin{itemize}
 \item The device MUST set \field{flags} to 0.
 \item The device MAY use \field{avail_event} to advise the driver that notifications are unnecessary until the driver writes entry with an index specified by \field{avail_event} into the available ring (equivalently, until \field{idx} in the
@@ -778,13 +797,13 @@ for each buffer element, b:
 \item Get the next free descriptor table entry, d
 \item Set \field{d.addr} to the physical address of the start of b
 \item Set \field{d.len} to the length of b.
-\item If b is device-writable, set \field{d.flags} to VRING_DESC_F_WRITE,
+\item If b is device-writable, set \field{d.flags} to VIRTQ_DESC_F_WRITE,
     otherwise 0.
 \item If there is a buffer element after this:
     \begin{enumerate}
     \item Set \field{d.next} to the index of the next free descriptor
       element.
-    \item Set the VRING_DESC_F_NEXT bit in \field{d.flags}.
+    \item Set the VIRTQ_DESC_F_NEXT bit in \field{d.flags}.
     \end{enumerate}
 \end{enumerate}
 
@@ -855,20 +874,20 @@ emptying the ring and reenabling interrupts.  This is usually handled by
 re-checking for more used buffers after interrups are re-enabled:
 
 \begin{lstlisting}
-vring_disable_interrupts(vq);
+virtq_disable_interrupts(vq);
 
 for (;;) {
-        if (vq->last_seen_used != le16_to_cpu(vring->used.idx)) {
-                vring_enable_interrupts(vq);
+        if (vq->last_seen_used != le16_to_cpu(virtq->used.idx)) {
+                virtq_enable_interrupts(vq);
                 mb();
 
-                if (vq->last_seen_used != le16_to_cpu(vring->used.idx))
+                if (vq->last_seen_used != le16_to_cpu(virtq->used.idx))
                         break;
 
-                vring_disable_interrupts(vq);
+                virtq_disable_interrupts(vq);
         }
 
-        struct vring_used_elem *e = vring.used->ring[vq->last_seen_used%vsz];
+        struct virtq_used_elem *e = virtq.used->ring[vq->last_seen_used%vsz];
         process_buffer(e);
         vq->last_seen_used++;
 }
@@ -2487,11 +2506,11 @@ The calculation for total size is as follows:
 
 \begin{lstlisting}
 #define ALIGN(x) (((x) + align) & ~align)
-static inline unsigned vring_size(unsigned int num)
+static inline unsigned virtq_size(unsigned int num)
 {
-     return ALIGN(sizeof(struct vring_desc)*num
+     return ALIGN(sizeof(struct virtq_desc)*num
                   + sizeof(u16)*(3 + num))
-          + ALIGN(sizeof(u16)*3 + sizeof(struct vring_used_elem)*num);
+          + ALIGN(sizeof(u16)*3 + sizeof(struct virtq_used_elem)*num);
 }
 \end{lstlisting}
 
@@ -3135,7 +3154,7 @@ which case it MUST set the VIRTIO_NET_HDR_GSO_ECN bit in \field{gso_type}.
 \paragraph{Packet Transmission Interrupt}\label{sec:Device Types / Network Device / Device Operation / Packet Transmission / Packet Transmission Interrupt}
 
 Often a driver will suppress transmission interrupts using the
-VRING_AVAIL_F_NO_INTERRUPT flag
+VIRTQ_AVAIL_F_NO_INTERRUPT flag
  (see \ref{sec:General Initialization And Device Operation / Device Operation / Receiving Used Buffers From The Device}~\nameref{sec:General Initialization And Device Operation / Device Operation / Receiving Used Buffers From The Device})
 and check for used packets in the transmit path of following
 packets.
@@ -4948,7 +4967,7 @@ Currently there are three device-independent feature bits defined:
 
 \begin{description}
   \item[VIRTIO_F_RING_INDIRECT_DESC (28)] Negotiating this feature indicates
-  that the driver can use descriptors with the VRING_DESC_F_INDIRECT
+  that the driver can use descriptors with the VIRTQ_DESC_F_INDIRECT
   flag set, as described in \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}~\nameref{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}.
 
   \item[VIRTIO_F_RING_EVENT_IDX(29)] This feature enables the \field{used_event}
@@ -4976,7 +4995,7 @@ Transitional devices MAY offer the following:
   has been negotiated by driver, the device MUST issue
   an interrupt if the device runs
   out of available descriptors on a virtqueue, even though
-  interrupts are suppressed using the VRING_AVAIL_F_NO_INTERRUPT
+  interrupts are suppressed using the VIRTQ_AVAIL_F_NO_INTERRUPT
   flag or the \field{used_event} field.
 \begin{note}
   An example of a driver using this feature is the legacy
