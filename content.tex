@@ -3697,16 +3697,12 @@ struct virtio_blk_req {
 \end{lstlisting}
 
 The type of the request is either a read (VIRTIO_BLK_T_IN), a write
-(VIRTIO_BLK_T_OUT), or a flush (VIRTIO_BLK_T_FLUSH or
-VIRTIO_BLK_T_FLUSH_OUT\footnote{The FLUSH and FLUSH_OUT types are equivalent, the device does not
-distinguish between them
-}).
+(VIRTIO_BLK_T_OUT), or a flush (VIRTIO_BLK_T_FLUSH).
 
 \begin{lstlisting}
 #define VIRTIO_BLK_T_IN           0
 #define VIRTIO_BLK_T_OUT          1
 #define VIRTIO_BLK_T_FLUSH        4
-#define VIRTIO_BLK_T_FLUSH_OUT    5
 \end{lstlisting}
 
 The \field{sector} number indicates the offset (multiplied by 512) where
@@ -3751,6 +3747,13 @@ according to the native endian of the guest rather than
 The \field{reserved} field was previously called \field{ioprio}.  \field{ioprio}
 is a hint about the relative priorities of requests to the device:
 higher numbers indicate more important requests.
+
+\begin{lstlisting}
+#define VIRTIO_BLK_T_FLUSH_OUT    5
+\end{lstlisting}
+
+The command VIRTIO_BLK_T_FLUSH_OUT was a synonym for VIRTIO_BLK_T_FLUSH;
+a driver MUST treat it as a VIRTIO_BLK_T_FLUSH command.
 
 \begin{lstlisting}
 #define VIRTIO_BLK_T_BARRIER     0x80000000
