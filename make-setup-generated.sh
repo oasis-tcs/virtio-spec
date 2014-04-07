@@ -10,7 +10,7 @@ fi
 case "$1" in
     *-wd*)
 	STAGE=wd
-	STAGENAME="Working Draft"
+	STAGENAME="OASIS Working Draft"
 	WORKINGDRAFT=`basename "$1" | sed 's/.*-wd//'`
 	;;
     *-os*)
@@ -21,18 +21,18 @@ case "$1" in
     *-csd*)
 	STAGE=csd
 	WORKINGDRAFT=`basename "$1" | sed 's/.*-csd//'`
-	STAGENAME="Committee Specification Draft $WORKINGDRAFT"
+	STAGENAME="OASIS Committee Specification Draft $WORKINGDRAFT"
 	;;
     *-csprd*)
 	STAGE=csprd
 	WORKINGDRAFT=`basename "$1" | sed 's/.*-csprd//'`
-	STAGENAME="Committee Specification Draft $WORKINGDRAFT"
+	STAGENAME="OASIS Committee Specification Draft $WORKINGDRAFT"
 	STAGEEXTRATITLE=" / \newline Public Review Draft $WORKINGDRAFT"
 	STAGEEXTRA=" / Public Review Draft $WORKINGDRAFT"
 	;;
     *-cs*)
 	STAGE=cs
-	STAGENAME="Committee Specification"
+	STAGENAME="OASIS Committee Specification"
 	WORKINGDRAFT=""
 	;;
     *)
