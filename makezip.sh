@@ -1,5 +1,5 @@
 export SPECDOC=${SPECDOC:-`cat REVISION`}
-rm -f $SPECDOC
+rm -f $SPECDOC.zip
 if test -d .git; then
 	git archive --format=zip --prefix=tex/ -o $SPECDOC.zip HEAD
 elif test -d .svn; then
