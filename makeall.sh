@@ -14,12 +14,12 @@ else
 	echo Falling back to generated list.
 fi
 zip -d $SPECDOC.zip tex/.gitattributes
-./makehtml.sh
-./makepdf.sh
-zip $SPECDOC.zip $SPECDOC.pdf
 mkdir -p listings
 cp virtio-ring.h listings/virtio_ring.h
 zip $SPECDOC.zip listings/virtio_ring.h
+./makehtml.sh
+./makepdf.sh
+zip $SPECDOC.zip $SPECDOC.pdf
 echo Generated file $SPECDOC.zip
 echo To change output file name, set SPECDOC environment variable
 echo Examples:
