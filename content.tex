@@ -3030,7 +3030,7 @@ if both guests are amenable.}
   the VIRTIO_NET_F_GUEST_TSO4, VIRTIO_NET_F_GUEST_TSO6,
   VIRTIO_NET_F_GUEST_UFO and VIRTIO_NET_F_GUEST_ECN are the input
   equivalents of the features described above.
-  See \ref{sec:Device Types / Network Device / Device Operation / Setting Up Receive Buffers}~\nameref{sec:Device Types / Network Device / Device Operation / Setting Up Receive Buffers} and \ref{sec:Device Types / Network Device / Device Operation / Setting Up Receive Buffers}~\nameref{sec:Device Types / Network Device / Device Operation / Setting Up Receive Buffers} below.
+  See \ref{sec:Device Types / Network Device / Device Operation / Setting Up Receive Buffers}~\nameref{sec:Device Types / Network Device / Device Operation / Setting Up Receive Buffers} and \ref{sec:Device Types / Network Device / Device Operation / Processing of Packets}~\nameref{sec:Device Types / Network Device / Device Operation / Processing of Packets} below.
 \end{enumerate}
 
 A truly minimal driver would only accept VIRTIO_NET_F_MAC and ignore
@@ -3207,7 +3207,7 @@ The device MUST use only a single descriptor if VIRTIO_NET_F_MRG_RXBUF
 was not negotiated. \note{This means that \field{num_buffers} will always be 1 
 if VIRTIO_NET_F_MRG_RXBUF is not negotiated.}
 
-\paragraph{Packet Receive Interrupt}\label{sec:Device Types / Network Device / Device Operation / Setting Up Receive Buffers / Packet Receive Interrupt}
+\subsubsection{Processing of Packets}\label{sec:Device Types / Network Device / Device Operation / Processing of Packets}
 
 When a packet is copied into a buffer in the receiveq, the
 optimal path is to disable further interrupts for the receiveq
@@ -3243,7 +3243,7 @@ Processing packet involves:
   desired MSS (see Packet Transmission point 2).
 \end{enumerate}
 
-\devicenormative{\subparagraph}{Setting Up Receive Buffers}{Device Types / Network Device / Device Operation / Setting Up Receive Buffers}
+\devicenormative{\paragraph}{Processing of Packets}{Device Types / Network Device / Device Operation / Processing of Packets}
 
 If VIRTIO_NET_F_CSUM is not negotiated, the device MUST set
 \field{flags} to zero and the packet MUST be fully checksummed.
