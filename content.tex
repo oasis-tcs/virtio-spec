@@ -1278,6 +1278,8 @@ with \field{queue_enable}.
 After writing 0 to \field{device_status}, the driver MUST wait for a read of
 \field{device_status} to return 0 before reinitializing the device.
 
+The driver MUST NOT write a 0 to \field{queue_enable}.
+
 \subsubsection{Notification structure layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability}
 
 The notification location is found using the VIRTIO_PCI_CAP_NOTIFY_CFG
