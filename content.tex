@@ -2962,7 +2962,7 @@ were needed.
 
 \subsection{Device configuration layout}\label{sec:Device Types / Network Device / Device configuration layout}
 
-Three configuration fields are currently defined. The \field{mac} address field
+Three driver-read-only configuration fields are currently defined. The \field{mac} address field
 always exists (though is only valid if VIRTIO_NET_F_MAC is set), and
 \field{status} only exists if VIRTIO_NET_F_STATUS is set. Two
 read-only bits (for the driver) are currently defined for the status field:
@@ -3011,6 +3011,9 @@ MUST format \field{status} and
 according to the native endian of the guest rather than
 (necessarily when not using the legacy interface) little-endian.
 
+When using the legacy interface, \field{mac} is driver-writable
+which provided a way for drivers to update the MAC without
+negotiating VIRTIO_NET_F_CTRL_MAC_ADDR.
 
 \subsection{Device Initialization}\label{sec:Device Types / Network Device / Device Initialization}
 
@@ -3367,12 +3370,9 @@ contains multicast addresses.
 
 The VIRTIO_NET_CTRL_MAC_ADDR_SET command is used to set the
 default MAC address which rx filtering
-accepts.
+accepts (and if VIRTIO_NET_F_MAC_ADDR has been negotiated,
+this will be reflected in \field{mac} in config space).
 
-Depending on whether VIRTIO_NET_F_MAC_ADDR has been negotiated,
-\field{mac} in config space or the VIRTIO_NET_CTRL_MAC_ADDR_SET
-is used to set the default MAC address which rx filtering
-accepts.
 The command-specific-data for VIRTIO_NET_CTRL_MAC_ADDR_SET is
 the 6-byte MAC address.
 
@@ -3393,15 +3393,6 @@ nor the MAC filtering table.
 
 \drivernormative{\subparagraph}{Setting MAC Address Filtering}{Device Types / Network Device / Device Operation / Control Virtqueue / Setting MAC Address Filtering}
 
-A driver MUST NOT write to the \field{mac} if VIRTIO_NET_F_MAC_ADDR is
-negotiated.
-
-The
-VIRTIO_NET_CTRL_MAC_ADDR_SET command is atomic whereas
-\field{mac} in config space is not, therefore drivers
-MUST negotiate VIRTIO_NET_F_MAC_ADDR if they change
-mac address when device is accepting incoming packets.
-
 The driver MUST follow the VIRTIO_NET_CTRL_MAC_TABLE_SET command
 by a le32 number, followed by that number of non-multicast
 MAC addresses, followed by another le32 number, followed by
@@ -3413,7 +3404,7 @@ MUST format \field{entries} in struct virtio_net_ctrl_mac
 according to the native endian of the guest rather than
 (necessarily when not using the legacy interface) little-endian.
 
-Legacy drivers that didn't negotiate VIRTIO_NET_F_MAC_ADDR
+Legacy drivers that didn't negotiate VIRTIO_NET_F_CTRL_MAC_ADDR
 changed \field{mac} in config space when NIC is accepting
 incoming packets. These drivers always wrote the mac value from
 first to last byte, therefore after detecting such drivers,
