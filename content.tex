@@ -404,7 +404,7 @@ struct virtq_desc {
 \end{lstlisting}
 
 The number of descriptors in the table is defined by the queue size
-for this virtqueue.
+for this virtqueue: this is the maximum possible descriptor chain length.
 
 \begin{note}
 The legacy \hyperref[intro:Virtio PCI Draft]{[Virtio PCI Draft]}
@@ -455,6 +455,9 @@ The driver MUST NOT set the VIRTQ_DESC_F_INDIRECT flag unless the
 VIRTIO_F_INDIRECT_DESC feature was negotiated.   The driver MUST NOT
 set the VIRTQ_DESC_F_INDIRECT flag within an indirect descriptor (ie. only
 one table per descriptor).
+
+A driver MUST NOT create a descriptor chain longer than the Queue Size of
+the device.
 
 \devicenormative{\paragraph}{Indirect Descriptors}{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}
 The device MUST ignore the write-only flag (\field{flags}\&VIRTQ_DESC_F_WRITE) in the descriptor that refers to an indirect table.
