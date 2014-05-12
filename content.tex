@@ -40,6 +40,9 @@ following bits are defined:
 \item[DRIVER_OK (4)] Indicates that the driver is set up and ready to
   drive the device.
 
+\item[DEVICE_NEEDS_RESET (64)] Indicates that the device has experienced
+  an error from which it can't recover.
+
 \item[FAILED (128)] Indicates that something went wrong in the guest,
   and it has given up on the device. This could be an internal
   error, or the driver didn't like the device for some reason, or
@@ -56,10 +59,23 @@ The driver MUST NOT clear a
 \field{device status} bit.  If the driver sets the FAILED bit,
 the driver MUST later reset the device before attempting to re-initialize.
 
+The driver SHOULD NOT rely on completion of operations of a
+device if DEVICE_NEEDS_RESET is set.
+\begin{note}
+For example, the driver can't assume requests in flight will be
+completed if DEVICE_NEEDS_RESET is set, nor can it assume that
+they have not been completed.  A good implementation will try to
+recover by issuing a reset.
+\end{note}
+
 \devicenormative{\subsection}{Device Status Field}{Basic Facilities of a Virtio Device / Device Status Field}
 The device MUST initialize \field{device status} to 0 upon reset.
 
 The device MUST NOT consume buffers or notify the driver before DRIVER_OK.
+
+\label{sec:Basic Facilities of a Virtio Device / Device Status Field / DEVICE_NEEDS_RESET}The device SHOULD set DEVICE_NEEDS_RESET when it enters an error state
+that a reset is needed.  After it sets DEVICE_NEEDS_RESET, the device
+MUST send a device configuration change notification to the driver.
 
 \section{Feature Bits}\label{sec:Basic Facilities of a Virtio Device / Feature Bits}
 
@@ -901,6 +917,9 @@ for (;;) {
 
 For devices where the device-specific configuration information can be changed, an
 interrupt is delivered when a device-specific configuration change occurs.
+
+In addition, this interrupt is triggered by the device setting
+DEVICE_NEEDS_RESET (see \ref{sec:Basic Facilities of a Virtio Device / Device Status Field / DEVICE_NEEDS_RESET}).
 
 \section{Device Cleanup}\label{sec:General Initialization And Device Operation / Device Cleanup}
 
