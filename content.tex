@@ -1258,7 +1258,8 @@ and if that flag is set when the driver reads from the device-specific
 configuration, increment \field{config_generation} and clear the flag.
 \end{note}
 
-The device MUST reset when 0 is written to \field{device_status}.
+The device MUST reset when 0 is written to \field{device_status}, and
+present a 0 in \field{device_status} once that is done.
 
 The device MUST present a 0 in \field{queue_enable} on reset.
 
@@ -1273,6 +1274,9 @@ The driver MUST NOT write a value which is not a power of 2 to \field{queue_size
 
 The driver MUST configure the other virtqueue fields before enabling the virtqueue
 with \field{queue_enable}.
+
+After writing 0 to \field{device_status}, the driver MUST wait for a read of
+\field{device_status} to return 0 before reinitializing the device.
 
 \subsubsection{Notification structure layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability}
 
