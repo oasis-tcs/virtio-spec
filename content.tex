@@ -3362,7 +3362,7 @@ many addresses.
 } This table is set using the class
 VIRTIO_NET_CTRL_MAC and the command VIRTIO_NET_CTRL_MAC_TABLE_SET. The
 command-specific-data is two variable length tables of 6-byte MAC
-addresses. The first table contains unicast addresses, and the second
+addresses (as described in struct virtio_net_ctrl_mac). The first table contains unicast addresses, and the second
 contains multicast addresses.
 
 The VIRTIO_NET_CTRL_MAC_ADDR_SET command is used to set the
@@ -3376,6 +3376,21 @@ accepts.
 The command-specific-data for VIRTIO_NET_CTRL_MAC_ADDR_SET is
 the 6-byte MAC address.
 
+\devicenormative{\subparagraph}{Setting MAC Address Filtering}{Device Types / Network Device / Device Operation / Control Virtqueue / Setting MAC Address Filtering}
+
+The device MUST have an empty MAC filtering table on reset.
+
+The device MUST update the MAC filtering table before it consumes
+the VIRTIO_NET_CTRL_MAC_TABLE_SET command.
+
+The device MUST update \field{mac} in config space before it consumes
+the VIRTIO_NET_CTRL_MAC_ADDR_SET command, if VIRTIO_NET_F_MAC_ADDR has
+been negotiated.
+
+The device SHOULD drop incoming packets which have a destination MAC which
+matches neither the \field{mac} (or that set with VIRTIO_NET_CTRL_MAC_ADDR_SET)
+nor the MAC filtering table.
+
 \drivernormative{\subparagraph}{Setting MAC Address Filtering}{Device Types / Network Device / Device Operation / Control Virtqueue / Setting MAC Address Filtering}
 
 A driver MUST NOT write to the \field{mac} if VIRTIO_NET_F_MAC_ADDR is
@@ -3386,6 +3401,11 @@ VIRTIO_NET_CTRL_MAC_ADDR_SET command is atomic whereas
 \field{mac} in config space is not, therefore drivers
 MUST negotiate VIRTIO_NET_F_MAC_ADDR if they change
 mac address when device is accepting incoming packets.
+
+The driver MUST follow the VIRTIO_NET_CTRL_MAC_TABLE_SET command
+by a le32 number, followed by that number of non-multicast
+MAC addresses, followed by another le32 number, followed by
+that number of multicast addresses.  Either number MAY be 0.
 
 \subparagraph{Legacy Interface: Setting MAC Address Filtering}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Setting MAC Address Filtering / Legacy Interface: Setting MAC Address Filtering}
 When using the legacy interface, transitional devices and drivers
