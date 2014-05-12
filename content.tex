@@ -3041,7 +3041,7 @@ everything else.
 Packets are transmitted by placing them in the
 transmitq1\ldots transmitqN, and buffers for incoming packets are
 placed in the receiveq1\ldots receiveqN. In each case, the packet
-itself is preceeded by a header:
+itself is preceded by a header:
 
 \begin{lstlisting}
 struct virtio_net_hdr {
@@ -3328,7 +3328,7 @@ struct virtio_net_ctrl_mac {
 \end{lstlisting}
 
 The device can filter incoming packets by any number of destination
-MAC addresses.\footnote{Since there are no guarentees, it can use a hash filter or
+MAC addresses.\footnote{Since there are no guarantees, it can use a hash filter or
 silently switch to allmulti or promiscuous mode if it is given too
 many addresses.
 } This table is set using the class
@@ -3783,7 +3783,7 @@ a driver MUST treat it as a VIRTIO_BLK_T_FLUSH command.
 
 If the device has VIRTIO_BLK_F_BARRIER
 feature the high bit (VIRTIO_BLK_T_BARRIER) indicates that this
-request acts as a barrier and that all preceeding requests SHOULD be
+request acts as a barrier and that all preceding requests SHOULD be
 complete before this one, and all following requests SHOULD NOT be
 started until this is complete.
 
