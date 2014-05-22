@@ -4415,11 +4415,13 @@ This section relies on definitions from \hyperref[intro:SAM]{SAM}.
 \item[VIRTIO_SCSI_F_INOUT (0)] A single request can include both
     device-readable and device-writable data buffers.
 
-\item[VIRTIO_SCSI_F_HOTPLUG (1)] The host SHOULD enable
-    hot-plug/hot-unplug of new LUNs and targets on the SCSI bus.
+\item[VIRTIO_SCSI_F_HOTPLUG (1)] The host SHOULD enable reporting of
+    hot-plug and hot-unplug events for LUNs and targets on the SCSI bus.
+    The guest SHOULD handle hot-plug and hot-unplug events.
 
 \item[VIRTIO_SCSI_F_CHANGE (2)] The host will report changes to LUN
-    parameters via a VIRTIO_SCSI_T_PARAM_CHANGE event.
+    parameters via a VIRTIO_SCSI_T_PARAM_CHANGE event; the guest
+    SHOULD handle them.
 
 \item[VIRTIO_SCSI_F_T10_PI (3)] The extended fields for T10 protection
     information (DIF/DIX) are included in the SCSI request header.
@@ -4466,17 +4468,20 @@ struct virtio_scsi_config {
 
 \item[\field{sense_size}] is the maximum size of the sense data that the
     device will write. The default value is written by the device
-    and will always be 96, but the driver can modify it. It is
+    and MUST be 96, but the driver can modify it. It is
     restored to the default when the device is reset.
 
 \item[\field{cdb_size}] is the maximum size of the CDB that the driver will
-    write. The default value is written by the device and will
-    always be 32, but the driver can likewise modify it. It is
+    write. The default value is written by the device and MUST
+    be 32, but the driver can likewise modify it. It is
     restored to the default when the device is reset.
 
-\item[\field{max_channel}, \field{max_target} and \field{max_lun}] can be used by the driver
-    as hints to constrain scanning the logical units on the
-    host.
+\item[\field{max_channel}, \field{max_target} and \field{max_lun}] can be
+    used by the driver as hints to constrain scanning the logical units
+    on the host to channel/target/logical unit numbers that are less than
+    or equal to the value of the fields.  \field{max_channel} SHOULD
+    be zero.  \field{max_target} SHOULD be less than or equal to 255.
+    \field{max_lun} SHOULD be less than or equal to 16383.
 \end{description}
 
 \drivernormative{\subsubsection}{Device configuration layout}{Device Types / SCSI Host Device / Device configuration layout}
@@ -4501,7 +4506,7 @@ according to the native endian of the guest rather than
 
 \devicenormative{\subsection}{Device Initialization}{Device Types / SCSI Host Device / Device Initialization}
 
-On initialization the device SHOULD first discover the
+On initialization the driver SHOULD first discover the
 device's virtqueues.
 
 If the driver uses the eventq, the driver SHOULD place at least one
@@ -4585,12 +4590,17 @@ target.
 
 \field{id} is the command identifier (``tag'').
 
-\field{task_attr} defines
-the task attribute as in the table above, but all task attributes
-MAY be mapped to SIMPLE by the device; \field{crn} may also be provided
-by clients, but is generally expected to be 0. The maximum CRN
-value defined by the protocol is 255, since CRN is stored in an
-8-bit integer.
+\field{task_attr} defines the task attribute as in the table above, but
+all task attributes MAY be mapped to SIMPLE by the device.  Some commands
+are defined by SCSI standards as "implicit head of queue"; for such
+commands, all task attributes MAY also be mapped to HEAD OF QUEUE.
+Drivers and applications SHOULD NOT send a command with the ORDERED
+task attribute if the command has an implicit HEAD OF QUEUE attribute,
+because whether the ORDERED task attribute is honored is vendor-specific.
+
+\field{crn} may also be provided by clients, but is generally expected
+to be 0. The maximum CRN value defined by the protocol is 255, since
+CRN is stored in an 8-bit integer.
 
 The CDB is included in \field{cdb} and its size, \field{cdb_size},
 is taken from the configuration space.
@@ -4642,8 +4652,9 @@ The device MUST write the \field{response} byte as one of the following:
   byte is filled with a SCSI status code (not necessarily
   ``GOOD'').
 
-\item[VIRTIO_SCSI_S_OVERRUN] if the content of the CDB requires
-  transferring more data than is available in the data buffers.
+\item[VIRTIO_SCSI_S_OVERRUN] if the content of the CDB (such as the
+  allocation length, parameter length or transfer size) requires
+  more data than is available in the datain and dataout buffers.
 
 \item[VIRTIO_SCSI_S_ABORTED] if the request was cancelled due to an
   ABORT TASK or ABORT TASK SET task management function.
@@ -4673,6 +4684,10 @@ The device MUST write the \field{response} byte as one of the following:
   request will be immediately returned with a response equal to
   VIRTIO_SCSI_S_FAILURE.
 \end{description}
+
+All commands must be completed before the virtio-scsi device is
+reset or unplugged.  The device MAY choose to abort them, or if
+it does not do so MUST pick the VIRTIO_SCSI_S_FAILURE response.
 
 \drivernormative{\paragraph}{Device Operation: Request Queues}{Device Types / SCSI Host Device / Device Operation / Device Operation: Request Queues}
 
@@ -4759,6 +4774,18 @@ struct virtio_scsi_ctrl_tmf
   The outcome of the task management function is written by the
   device in \field{response}. The command-specific response
   values map 1-to-1 with those defined in \hyperref[intro:SAM]{SAM}.
+
+  Task management function can affect the response value for commands that
+  are in the request queue and have not been completed yet.  For example,
+  the device MUST complete all active commands on a logical unit
+  or target (possibly with a VIRTIO_SCSI_S_RESET response code)
+  upon receiving a "logical unit reset" or "I_T nexus reset" TMF.
+  Similarly, the device MUST complete the selected commands (possibly
+  with a VIRTIO_SCSI_S_ABORTED response code) upon receiving an "abort
+  task" or "abort task set" TMF.  Such effects MUST take place before
+  the TMF itself is completed, and the device MUST use memory barriers
+  appropriately in order to ensure that the driver sees these writes
+  in the correct order.
 
 \item Asynchronous notification query.
 \begin{lstlisting}
