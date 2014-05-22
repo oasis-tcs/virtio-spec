@@ -73,7 +73,7 @@ The device MUST initialize \field{device status} to 0 upon reset.
 
 The device MUST NOT consume buffers or notify the driver before DRIVER_OK.
 
-\label{sec:Basic Facilities of a Virtio Device / Device Status Field / DEVICE_NEEDS_RESET}The device SHOULD set DEVICE_NEEDS_RESET when it enters an error state
+\label{sec:Basic Facilities of a Virtio Device / Device Status Field / DEVICENEEDSRESET}The device SHOULD set DEVICE_NEEDS_RESET when it enters an error state
 that a reset is needed.  After it sets DEVICE_NEEDS_RESET, the device
 MUST send a device configuration change notification to the driver.
 
@@ -919,7 +919,7 @@ For devices where the device-specific configuration information can be changed, 
 interrupt is delivered when a device-specific configuration change occurs.
 
 In addition, this interrupt is triggered by the device setting
-DEVICE_NEEDS_RESET (see \ref{sec:Basic Facilities of a Virtio Device / Device Status Field / DEVICE_NEEDS_RESET}).
+DEVICE_NEEDS_RESET (see \ref{sec:Basic Facilities of a Virtio Device / Device Status Field / DEVICENEEDSRESET}).
 
 \section{Device Cleanup}\label{sec:General Initialization And Device Operation / Device Cleanup}
 
