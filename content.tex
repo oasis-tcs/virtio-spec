@@ -74,7 +74,7 @@ The device MUST initialize \field{device status} to 0 upon reset.
 The device MUST NOT consume buffers or notify the driver before DRIVER_OK.
 
 \label{sec:Basic Facilities of a Virtio Device / Device Status Field / DEVICENEEDSRESET}The device SHOULD set DEVICE_NEEDS_RESET when it enters an error state
-that a reset is needed.  After it sets DEVICE_NEEDS_RESET, the device
+that a reset is needed.  If DRIVER_OK is set, after it sets DEVICE_NEEDS_RESET, the device
 MUST send a device configuration change notification to the driver.
 
 \section{Feature Bits}\label{sec:Basic Facilities of a Virtio Device / Feature Bits}
