@@ -963,31 +963,48 @@ respectively.
 
 \subsection{PCI Device Discovery}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Discovery}
 
-Any PCI device with Vendor ID 0x1AF4, and Device ID 0x1000 through
-0x103F inclusive is a virtio device\footnote{The actual value within this range is ignored
-}.
-
-The Subsystem Device ID indicates which virtio device is
-supported by the device, as indicated in section \ref{sec:Device Types}.
+Any PCI device with PCI Vendor ID 0x1AF4, and PCI Device ID 0x1000 through
+0x103F inclusive is a virtio device. The actual value within this range
+indicates which virtio device is supported by the device.
+The PCI Device ID is calculated by adding 0xFFF to the Virtio Device ID,
+as indicated in section \ref{sec:Device Types}.
 
 \devicenormative{\subsubsection}{PCI Device Discovery}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Discovery}
-The Subsystem Vendor ID SHOULD reflect
-the PCI Vendor ID of the environment (it's currently only used
-for informational purposes by the driver).
 
-Non-transitional devices SHOULD have a Revision ID of 1 or higher.
+Devices MUST have the PCI Vendor ID 0x1AF4.
+Devices MUST have the PCI Device ID calculated by adding 0xFFF
+to the Virtio Device ID,
+as indicated in section \ref{sec:Device Types}.
+For example, the network card device with the Virtio Device ID 1
+has the PCI Device ID 0x1000.
+
+The PCI Subsystem Vendor ID and the PCI Subsystem Device ID MAY reflect
+the PCI Vendor and Device ID of the environment (for informational purposes by the driver).
+
+Non-transitional devices SHOULD have a PCI Revision ID of 1 or higher.
+Non-transitional devices SHOULD have a PCI Subsystem Device ID of 0x40 or higher.
 
 This is to reduce the chance of a legacy driver attempting
 to drive the device.
 
 \drivernormative{\subsubsection}{PCI Device Discovery}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Discovery}
-All drivers MUST match devices with any Revision ID, this
-is to allow devices to be versioned without breaking drivers.
+Drivers MUST match devices with the PCI Vendor ID 0x1AF4 and
+the PCI Device ID calculated by adding 0xFFF to the Virtio Device ID,
+as indicated in section \ref{sec:Device Types}.
 
-Drivers MUST match any Revision ID value. 
+Drivers MUST match devices with any Revision ID, and
+MAY match devices with any Subsystem Vendor ID and
+Subsystem Device ID, this is to allow devices to be
+versioned without breaking drivers.
+
+Drivers MUST match any PCI Revision ID value.
+Drivers MAY match any PCI Subsystem Vendor ID and any
+PCI Subsystem Device ID value.
 
 \subsubsection{Legacy Interfaces: A Note on PCI Device Discovery}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Discovery / Legacy Interfaces: A Note on PCI Device Discovery}
-Transitional devices MUST have a Revision ID of 0.
+Transitional devices MUST have a PCI Revision ID of 0.
+Transitional devices MUST have the PCI Subsystem Device ID
+matching the Virtio Device ID, as indicated in section \ref{sec:Device Types}.
 
 This is to match legacy drivers.
 
