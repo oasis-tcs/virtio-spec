@@ -1379,6 +1379,14 @@ See sections \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-speci
 
 The device MUST present at least one VIRTIO_PCI_CAP_ISR_CFG capability.  
 
+The device MUST set the Device Configuration Interrupt bit
+in \field{ISR status} before sending a device configuration
+change notification to the driver.
+
+If MSI-X capability is disabled, the device MUST set the Queue
+Interrupt bit in \field{ISR status} before sending a virtqueue
+notification to the driver.
+
 If MSI-X capability is disabled, the device MUST set the Interrupt Status
 bit in the PCI Status register in the PCI Configuration Header of
 the device to the logical OR of all bits in \field{ISR status} of
@@ -1389,8 +1397,8 @@ The device MUST reset \field{ISR status} to 0 on driver read.
 
 \drivernormative{\paragraph}{ISR status capability}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / ISR status capability}
 
-The driver MUST NOT access the ISR field when MSI-X capability
-is enabled.
+If MSI-X capability is enabled, the driver SHOULD NOT access
+\field{ISR status} upon detecting a Queue Interrupt.
 
 \subsubsection{Device-specific configuration}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Device-specific configuration}
 
