@@ -4562,7 +4562,8 @@ struct virtio_scsi_req_cmd {
         u8 cdb[cdb_size];
         // The next two fields are only present if VIRTIO_SCSI_F_T10_PI
         // is negotiated.
-        u32 pi_bytesout;
+        le32 pi_bytesout;
+        le32 pi_bytesin;
         u8 pi_out[pi_bytesout];
         u8 dataout[];
 
@@ -4575,7 +4576,6 @@ struct virtio_scsi_req_cmd {
         u8 sense[sense_size];
         // The next two fields are only present if VIRTIO_SCSI_F_T10_PI
         // is negotiated
-        u32 pi_bytesin;
         u8 pi_in[pi_bytesin];
         u8 datain[];
 };
@@ -4630,8 +4630,9 @@ always device-readable.
 
 \field{pi_bytesout} determines the size of the \field{pi_out} field
 in bytes.  If it is nonzero, the \field{pi_out} field contains outgoing
-protection information for write operations.  Both fields are only
-present if VIRTIO_SCSI_F_T10_PI has been negotiated.
+protection information for write operations.  \field{pi_bytesin} determines
+the size of the \field{pi_in} field in the device-writable section, in bytes.
+All three fields are only present if VIRTIO_SCSI_F_T10_PI has been negotiated.
 
 The remainder of the device-readable part is the data output buffer,
 \field{dataout}.
@@ -4650,10 +4651,13 @@ exceeds the size of \field{datain} means that \field{dataout} was
 processed partially and \field{datain} was not processed at
 all.
 
-\field{pi_bytesin} determines the size of the \field{pi_in} field
-in bytes.  If it is nonzero, the \field{pi_in} field contains incoming
-protection information for read operations.  Both fields are only present
-if VIRTIO_SCSI_F_T10_PI has been negotiated.
+If the \field{pi_bytesin} is nonzero, the \field{pi_in} field contains
+incoming protection information for read operations.  \field{pi_in} is
+only present if VIRTIO_SCSI_F_T10_PI has been negotiated\footnote{There
+  is no separate residual size for \field{pi_bytesout} and
+  \field{pi_bytesin}.  It can be computed from the \field{residual} field,
+  the size of the data integrity information per sector, and the sizes
+  of \field{pi_out}, \field{pi_in}, \field{dataout} and \field{datain}.}.
 
 The remainder of the device-writable part is the data input buffer,
 \field{datain}.
