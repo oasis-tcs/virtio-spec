@@ -229,7 +229,7 @@ result.
 The mechanism for bulk data transport on virtio devices is
 pretentiously called a virtqueue. Each device can have zero or more
 virtqueues\footnote{For example, the simplest network device has one virtqueue for
-transmit and one for receive}.  Each queue has a 16-bit queue size
+transmit and one for receive.}.  Each queue has a 16-bit queue size
 parameter, which sets the number of entries and implies the total size
 of the queue.
 
@@ -266,8 +266,8 @@ The Size column gives the total number of bytes for each
 part of the virtqueue.
 
 Queue Size corresponds to the maximum number of buffers in the
-virtqueue.\footnote{For example, if Queue Size is 4 then at most 4 buffers
-can be queued at any given time.}  Queue Size value is always a
+virtqueue\footnote{For example, if Queue Size is 4 then at most 4 buffers
+can be queued at any given time.}.  Queue Size value is always a
 power of 2.  The maximum Queue Size value is 32768.  This value
 is specified in a bus-specific way.
 
@@ -1700,7 +1700,7 @@ or report device failure.
 \paragraph{Virtqueue Configuration}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Virtqueue Configuration}
 
 As a device can have zero or more virtqueues for bulk data
-transport,\footnote{For example, the simplest network device has two virtqueues} the driver
+transport\footnote{For example, the simplest network device has two virtqueues.}, the driver
 needs to configure them as part of the device-specific
 configuration.
 
@@ -3173,17 +3173,17 @@ checksum includes the header), and \field{csum_offset} will be 16.
   \begin{itemize}
   \item \field{hdr_len} is a hint to the device as to how much of the header
     needs to be kept to copy into each packet, usually set to the
-    length of the headers, including the transport header.\footnote{Due to various bugs in implementations, this field is not useful
+    length of the headers, including the transport header\footnote{Due to various bugs in implementations, this field is not useful
 as a guarantee of the transport header size.
-}
+}.
 
   \item \field{gso_size} is the maximum size of each packet beyond that
     header (ie. MSS).
 
   \item If the driver negotiated the VIRTIO_NET_F_HOST_ECN feature,
     the VIRTIO_NET_HDR_GSO_ECN bit in \field{gso_type}
-    indicates that the TCP packet has the ECN bit set.\footnote{This case is not handled by some older hardware, so is called out
-specifically in the protocol.}
+    indicates that the TCP packet has the ECN bit set\footnote{This case is not handled by some older hardware, so is called out
+specifically in the protocol.}.
    \end{itemize}
 
 \item \field{num_buffers} is set to zero.  This field is unused on transmitted packets.
@@ -3381,10 +3381,10 @@ struct virtio_net_ctrl_mac {
 \end{lstlisting}
 
 The device can filter incoming packets by any number of destination
-MAC addresses.\footnote{Since there are no guarantees, it can use a hash filter or
+MAC addresses\footnote{Since there are no guarantees, it can use a hash filter or
 silently switch to allmulti or promiscuous mode if it is given too
 many addresses.
-} This table is set using the class
+}. This table is set using the class
 VIRTIO_NET_CTRL_MAC and the command VIRTIO_NET_CTRL_MAC_TABLE_SET. The
 command-specific-data is two variable length tables of 6-byte MAC
 addresses (as described in struct virtio_net_ctrl_mac). The first table contains unicast addresses, and the second
@@ -4048,14 +4048,14 @@ an appropriate log or output method.
 
 \begin{enumerate}
 \item For output, a buffer containing the characters is placed in
-  the port's transmitq.\footnote{Because this is high importance and low bandwidth, the current
+  the port's transmitq\footnote{Because this is high importance and low bandwidth, the current
 Linux implementation polls for the buffer to be used, rather than
 waiting for an interrupt, simplifying the implementation
 significantly. However, for generic serial ports with the
 O_NONBLOCK flag set, the polling limitation is relaxed and the
 consumed buffers are freed upon the next write or poll call or
 when a port is closed or hot-unplugged.
-}
+}.
 
 \item When a buffer is used in the receiveq (signalled by an
   interrupt), the contents is the input to the port associated
@@ -4281,7 +4281,7 @@ configuration change interrupt.
 \item To supply memory to the balloon (aka. inflate):
   \begin{enumerate}
   \item The driver constructs an array of addresses of unused memory
-    pages. These addresses are divided by 4096\footnote{This is historical, and independent of the guest page size
+    pages. These addresses are divided by 4096\footnote{This is historical, and independent of the guest page size.
 } and the descriptor
     describing the resulting 32-bit array is added to the inflateq.
   \end{enumerate}
@@ -4297,14 +4297,14 @@ configuration change interrupt.
 
   \item Otherwise, the guest MAY begin to re-use pages previously
     given to the balloon before the device has acknowledged their
-    withdrawal.\footnote{In this case, deflation advice is merely a courtesy
-}
+    withdrawal\footnote{In this case, deflation advice is merely a courtesy.
+}.
   \end{enumerate}
 
 \item In either case, once the device has completed the inflation or
-  deflation, the driver updates \field{actual} to reflect the new number of pages in the balloon.\footnote{As updates to device-specific configuration space are not atomic, this field
+  deflation, the driver updates \field{actual} to reflect the new number of pages in the balloon\footnote{As updates to device-specific configuration space are not atomic, this field
 isn't particularly reliable, but can be used to diagnose buggy guests.
-}
+}.
 \end{enumerate}
 
 \drivernormative{\subsubsection}{Device Operation}{Device Types / Memory Balloon Device / Device Operation}
@@ -4533,8 +4533,8 @@ If the driver uses the eventq, the driver SHOULD place at least one
 buffer in the eventq.
 
 The driver MAY immediately issue requests\footnote{For example, INQUIRY
-or REPORT LUNS} or task management functions.\footnote{For example, I_T
-RESET}
+or REPORT LUNS.} or task management functions\footnote{For example, I_T
+RESET.}.
 
 \subsection{Device Operation}\label{sec:Device Types / SCSI Host Device / Device Operation}
 
@@ -5021,8 +5021,8 @@ contents of \field{event}. The following events are defined:
 #define VIRTIO_SCSI_T_PARAM_CHANGE  3
 \end{lstlisting}
 
-  By sending this event, the device signals that the configuration parameters
-  \footnote{for example the capacity} of a logical unit have changed.
+  By sending this event, the device signals a change in the configuration parameters
+  of a logical unit, for example the capacity or caching mode.
   \field{event} is set to VIRTIO_SCSI_T_PARAM_CHANGE.
   \field{lun} addresses a logical unit in the SCSI host.
 
