@@ -4600,13 +4600,18 @@ struct virtio_scsi_req_cmd {
 #define VIRTIO_SCSI_S_ACA               3
 \end{lstlisting}
 
-\field{lun} addresses a target and logical unit in the
-virtio-scsi device's SCSI domain. The only supported format for
-\field{lun} is: first byte set to 1, second byte set to target,
-third and fourth byte representing a single level LUN structure,
-followed by four zero bytes. With this representation, a
-virtio-scsi device can serve up to 256 targets and 16384 LUNs per
-target.
+\field{lun} addresses the REPORT LUNS well-known logical unit, or
+a target and logical unit in the virtio-scsi device's SCSI domain.
+When used to address the REPORT LUNS logical unit, \field{lun} is 0xC1,
+0x01 and six zero bytes.  The virtio-scsi device SHOULD implement the
+REPORT LUNS well-known logical unit.
+
+When used to address a target and logical unit, the only supported format
+for \field{lun} is: first byte set to 1, second byte set to target,
+third and fourth byte representing a single level LUN structure, followed
+by four zero bytes. With this representation, a virtio-scsi device can
+serve up to 256 targets and 16384 LUNs per target.  The device MAY also
+support having a well-known logical units in the third and fourth byte.
 
 \field{id} is the command identifier (``tag'').
 
