@@ -4811,9 +4811,9 @@ struct virtio_scsi_ctrl_tmf
   Similarly, the device MUST complete the selected commands (possibly
   with a VIRTIO_SCSI_S_ABORTED response code) upon receiving an "abort
   task" or "abort task set" TMF.  Such effects MUST take place before
-  the TMF itself is completed, and the device MUST use memory barriers
-  appropriately in order to ensure that the driver sees these writes
-  in the correct order.
+  the TMF itself is successfully completed, and the device MUST use
+  memory barriers appropriately in order to ensure that the driver sees
+  these writes in the correct order.
 
 \item Asynchronous notification query.
 \begin{lstlisting}
