@@ -964,23 +964,48 @@ respectively.
 \subsection{PCI Device Discovery}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Discovery}
 
 Any PCI device with PCI Vendor ID 0x1AF4, and PCI Device ID 0x1000 through
-0x103F inclusive is a virtio device. The actual value within this range
+0x107F inclusive is a virtio device. The actual value within this range
 indicates which virtio device is supported by the device.
-The PCI Device ID is calculated by adding 0xFFF to the Virtio Device ID,
+The PCI Device ID is calculated by adding 0x1040 to the Virtio Device ID,
 as indicated in section \ref{sec:Device Types}.
+Additionally, devices MAY utilize a Transitional PCI Device ID range,
+0x1000 to 0x103F depending on the device type.
 
 \devicenormative{\subsubsection}{PCI Device Discovery}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Discovery}
 
 Devices MUST have the PCI Vendor ID 0x1AF4.
-Devices MUST have the PCI Device ID calculated by adding 0xFFF
-to the Virtio Device ID,
-as indicated in section \ref{sec:Device Types}.
+Devices MUST either have the PCI Device ID calculated by adding 0x1040
+to the Virtio Device ID, as indicated in section \ref{sec:Device
+Types} or have the Transitional PCI Device ID depending on the device type,
+as follows:
+\begin{tabular} { |l|c| }
+\hline
+Transitional PCI Device ID  &  Virtio Device    \\
+\hline \hline
+0x1000      &   network card     \\
+\hline
+0x1001     &   block device     \\
+\hline
+0x1002     & memory ballooning (legacy)  \\
+\hline
+0x1003     &      console       \\
+\hline
+0x1004     &     SCSI host      \\
+\hline
+0x1005     &  entropy source    \\
+\hline
+0x1009     &   9P transport     \\
+\hline
+\end{tabular}
+
 For example, the network card device with the Virtio Device ID 1
-has the PCI Device ID 0x1000.
+has the PCI Device ID 0x1041 or the Transitional PCI Device ID 0x1000.
 
 The PCI Subsystem Vendor ID and the PCI Subsystem Device ID MAY reflect
 the PCI Vendor and Device ID of the environment (for informational purposes by the driver).
 
+Non-transitional devices SHOULD have a PCI Device ID in the range
+0x1040 to 0x107f.
 Non-transitional devices SHOULD have a PCI Revision ID of 1 or higher.
 Non-transitional devices SHOULD have a PCI Subsystem Device ID of 0x40 or higher.
 
@@ -989,8 +1014,15 @@ to drive the device.
 
 \drivernormative{\subsubsection}{PCI Device Discovery}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Discovery}
 Drivers MUST match devices with the PCI Vendor ID 0x1AF4 and
-the PCI Device ID calculated by adding 0xFFF to the Virtio Device ID,
+the PCI Device ID in the range 0x1040 to 0x107f,
+calculated by adding 0x1040 to the Virtio Device ID,
 as indicated in section \ref{sec:Device Types}.
+Drivers for device types listed in section \ref{sec:Virtio
+Transport Options / Virtio Over PCI Bus / PCI Device Discovery}
+MUST match devices with the PCI Vendor ID 0x1AF4 and
+the Transitional PCI Device ID indicated in section
+ \ref{sec:Virtio
+Transport Options / Virtio Over PCI Bus / PCI Device Discovery}.
 
 Drivers MUST match any PCI Revision ID value.
 Drivers MAY match any PCI Subsystem Vendor ID and any
@@ -1000,6 +1032,8 @@ PCI Subsystem Device ID value.
 Transitional devices MUST have a PCI Revision ID of 0.
 Transitional devices MUST have the PCI Subsystem Device ID
 matching the Virtio Device ID, as indicated in section \ref{sec:Device Types}.
+Transitional devices MUST have the Transitional PCI Device ID in
+the range 0x1000 to 0x103f.
 
 This is to match legacy drivers.
 
