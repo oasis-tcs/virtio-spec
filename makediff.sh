@@ -8,9 +8,9 @@ rm -fr old new
 git clone $PWD old
 cd "${cur}/old"
 git checkout ec1ffbf27a8f0a06ca65cd498a69c7f89bd97dc1
-mv specvars.tex specvars-orig.tex
+#mv specvars.tex specvars-orig.tex
 #make links green to avoid confusion
-sed s/blue/pinegreen/ specvars-orig.tex > specvars.tex
+#sed s/blue/pinegreen/ specvars-orig.tex > specvars.tex
 SPECDOC=${SPECDOC:-`cat REVISION`}
 ./make-setup-generated.sh "$SPECDOC"
 #wget http://www.ctan.org/pkg/latexpand
@@ -19,9 +19,9 @@ latexpand $MAIN -o flat.tex
 cd "${cur}"
 git clone $PWD new
 cd "${cur}/new"
-mv specvars.tex specvars-orig.tex
+#mv specvars.tex specvars-orig.tex
 #make links green to avoid confusion
-sed s/blue/pinegreen/ specvars-orig.tex > specvars.tex
+#sed s/blue/pinegreen/ specvars-orig.tex > specvars.tex
 SPECDOC=${SPECDOC:-`cat REVISION`}
 ./make-setup-generated.sh "$SPECDOC"
 latexpand $MAIN -o flat.tex
