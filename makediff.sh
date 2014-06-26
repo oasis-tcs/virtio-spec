@@ -35,5 +35,5 @@ sed 's/\\footnote{/\\footnote {/' new/flat.tex > new/flat-fixed.tex
 #cp new/flat.tex new/flat-fixed.tex
 #wget http://mirror.math.ku.edu/tex-archive/support/latexdiff/latexdiff-fast
 #chmod +x latexdiff-fast
-latexdiff-fast --append-safecmd=field --ignore-warnings -p diffpreamble.tex old/flat-fixed.tex new/flat-fixed.tex > virtio-diff.tex
-perl -pi fixupdiff.pl virtio-diff.tex
+latexdiff-fast --config "FLOATENV=(?:figure|table|tabular|plate)[\w\d*@]*" --append-safecmd=field --ignore-warnings -p diffpreamble.tex old/flat-fixed.tex new/flat-fixed.tex > virtio-diff.tex
+#perl -pi fixupdiff.pl virtio-diff.tex

@@ -4,16 +4,16 @@
 
 %DIF FONTSTRIKE PREAMBLE
 \RequirePackage[normalem]{ulem}
-\providecommand{\DIFadd}[1]{{\sf #1}}
-\providecommand{\DIFdel}[1]{{\footnotesize \sout{#1}}}
+\providecommand{\DIFadd}[1]{{\color{blue}\sf #1}}
+\providecommand{\DIFdel}[1]{{\color{red}\footnotesize \sout{#1}}}
 %DIF END FONTSTRIKE PREAMBLE
 
 %DIF COLOR PREAMBLE
 \RequirePackage{color}
-\providecommand{\DIFaddbegin}{\protect\color{blue}\hypersetup{linkcolor=blue,urlcolor=blue}}
-\providecommand{\DIFaddend}{\protect\color{black}\hypersetup{linkcolor=pinegreen,urlcolor=pinegreen}}
-\providecommand{\DIFdelbegin}{\protect\color{red}\hypersetup{linkcolor=red,urlcolor=red}}
-\providecommand{\DIFdelend}{\protect\color{black}\hypersetup{linkcolor=pinegreen,urlcolor=pinegreen}}
+\providecommand{\DIFaddbegin}{\begingroup\color{blue}\hypersetup{linkcolor=blue,urlcolor=blue}}
+\providecommand{\DIFaddend}{\hypersetup{linkcolor=pinegreen,urlcolor=pinegreen}\endgroup}
+\providecommand{\DIFdelbegin}{\begingroup\color{red}\hypersetup{linkcolor=red,urlcolor=red}}
+\providecommand{\DIFdelend}{\hypersetup{linkcolor=pinegreen,urlcolor=pinegreen}\endgroup}
 %DIF END COLOR PREAMBLE
 \providecommand{\DIFaddtext}[1]{\textcolor{blue}{\sf #1}}
 \providecommand{\DIFdeltext}[1]{\textcolor{red}{\footnotesize \sout{#1}}}
