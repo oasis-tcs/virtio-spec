@@ -1,0 +1,27 @@
+%DIF FONTSTRIKE PREAMBLE
+\RequirePackage[normalem]{ulem}
+\providecommand{\DIFaddtex}[1]{{\sf #1}}
+\providecommand{\DIFdeltex}[1]{{\footnotesize \sout{#1}}}
+%DIF END FONTSTRIKE PREAMBLE
+%DIF COLOR PREAMBLE
+\RequirePackage{color}
+\providecommand{\DIFaddbegin}{\protect\color{blue}}
+\providecommand{\DIFaddend}{\protect\color{black}}
+\providecommand{\DIFdelbegin}{\protect\color{red}}
+\providecommand{\DIFdelend}{\protect\color{black}}
+%DIF END COLOR PREAMBLE
+% Standard \DIFadd and \DIFdel are redefined as \DIFaddtex and \DIFdeltex
+% when hyperref package is included.
+%DIF HYPERREF PREAMBLE
+\providecommand{\DIFadd}[1]{\texorpdfstring{\DIFaddtex{#1}}{#1}}
+\providecommand{\DIFdel}[1]{\texorpdfstring{\DIFdeltex{#1}}{}}
+%DIF END HYPERREF PACKAGE
+
+%DIF FLOATSAFE PREAMBLE: SEEMS UNUSED BUT JUST IN CASE
+\providecommand{\DIFaddFL}[1]{\DIFadd{#1}}
+\providecommand{\DIFdelFL}[1]{\DIFdel{#1}}
+\providecommand{\DIFaddbeginFL}{}
+\providecommand{\DIFaddendFL}{}
+\providecommand{\DIFdelbeginFL}{}
+\providecommand{\DIFdelendFL}{}
+%DIF END FLOATSAFE PREAMBLE
