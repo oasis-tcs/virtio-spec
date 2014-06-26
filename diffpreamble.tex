@@ -8,10 +8,10 @@
 
 %DIF COLOR PREAMBLE
 \RequirePackage{color}
-\providecommand{\DIFaddbegin}{\protect\color{blue}}
-\providecommand{\DIFaddend}{\protect\color{black}}
-\providecommand{\DIFdelbegin}{\protect\color{red}}
-\providecommand{\DIFdelend}{\protect\color{black}}
+\providecommand{\DIFaddbegin}{\protect\color{blue}\hypersetup{linkcolor=blue,urlcolor=blue}}
+\providecommand{\DIFaddend}{\protect\color{black}\hypersetup{linkcolor=green,urlcolor=green}}
+\providecommand{\DIFdelbegin}{\protect\color{red}\hypersetup{linkcolor=red,urlcolor=red}}
+\providecommand{\DIFdelend}{\protect\color{black}\hypersetup{linkcolor=green,urlcolor=green}}
 %DIF END COLOR PREAMBLE
 \providecommand{\DIFaddtext}[1]{\textcolor{blue}{\sf #1}}
 \providecommand{\DIFdeltext}[1]{\textcolor{red}{\footnotesize \sout{#1}}}
