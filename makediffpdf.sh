@@ -28,6 +28,8 @@ cd "${cur}"
 #wget http://mirror.math.ku.edu/tex-archive/support/latexdiff/latexdiff-fast
 #chmod +x latexdiff-fast
 latexdiff-fast -p diffpreamble.tex old/flat.tex new/flat.tex > virtio-diff.tex
+perl -pi fixupdiff.pl virtio-diff.tex
+SPECDOC="${SPECDOC}-diff"
 rm $SPECDOC.aux $SPECDOC.pdf $SPECDOC.out
 xelatex --jobname $SPECDOC virtio-diff.tex
 xelatex --jobname $SPECDOC virtio-diff.tex
