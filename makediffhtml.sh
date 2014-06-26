@@ -28,7 +28,7 @@ sed 's/~</"</g' $SPECDOC.tmp4 >$SPECDOC.tmp5
 # This in not a valid HTML output, so detect this and warn user.
 # For detection, we rely on the fact that file utility
 # recognizes files with NULL characters as binary data.
-if test `file -b $SPECDOC.tmp5` = 'data';
+if test "$(file -b $SPECDOC.tmp5)" = 'data';
 then
 	echo 
 	echo WARNING!
