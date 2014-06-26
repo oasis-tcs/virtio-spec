@@ -1,5 +1,7 @@
 %% diffpreable.tex start
 
+\definecolor{pinegreen}{rgb}{0.0, 0.47, 0.44}
+
 %DIF FONTSTRIKE PREAMBLE
 \RequirePackage[normalem]{ulem}
 \providecommand{\DIFadd}[1]{{\sf #1}}
@@ -9,9 +11,9 @@
 %DIF COLOR PREAMBLE
 \RequirePackage{color}
 \providecommand{\DIFaddbegin}{\protect\color{blue}\hypersetup{linkcolor=blue,urlcolor=blue}}
-\providecommand{\DIFaddend}{\protect\color{black}\hypersetup{linkcolor=green,urlcolor=green}}
+\providecommand{\DIFaddend}{\protect\color{black}\hypersetup{linkcolor=pinegreen,urlcolor=pinegreen}}
 \providecommand{\DIFdelbegin}{\protect\color{red}\hypersetup{linkcolor=red,urlcolor=red}}
-\providecommand{\DIFdelend}{\protect\color{black}\hypersetup{linkcolor=green,urlcolor=green}}
+\providecommand{\DIFdelend}{\protect\color{black}\hypersetup{linkcolor=pinegreen,urlcolor=pinegreen}}
 %DIF END COLOR PREAMBLE
 \providecommand{\DIFaddtext}[1]{\textcolor{blue}{\sf #1}}
 \providecommand{\DIFdeltext}[1]{\textcolor{red}{\footnotesize \sout{#1}}}
