@@ -1,0 +1,1043 @@
+316 & 05 Mar 2014 & Michael S. Tsirkin & { legacy framing: scsi host
+ } \\
+\hline
+315 & 05 Mar 2014 & Michael S. Tsirkin & { legacy message framing: console device
+ } \\
+\hline
+314 & 05 Mar 2014 & Michael S. Tsirkin & { block: legacy message framing
+ } \\
+\hline
+313 & 05 Mar 2014 & Michael S. Tsirkin & { message framing: rusty's comments
+
+generic note on message framing
+
+specific requirements listed for net device only
+ } \\
+\hline
+312 & 05 Mar 2014 & Michael S. Tsirkin & { legacy devices: get rid of MUST assume
+
+as Rusty points out MUST assume is not very good requirement.
+
+clarify it.
+ } \\
+\hline
+311 & 05 Mar 2014 & Michael S. Tsirkin & { transitional driver features: fix typos noted by Rusty
+ } \\
+\hline
+310 & 03 Mar 2014 & Rusty Russell & { Formatting: use latex-style quoting everywhere.
+
+Doesn't look any different, but consistent.
+ } \\
+\hline
+309 & 03 Mar 2014 & Rusty Russell & { Use ellipsis (aka \textbackslash ldots) everywhere.
+
+And use the ellipsis package, which makes it symmetrical.
+ } \\
+\hline
+308 & 03 Mar 2014 & Rusty Russell & { PCI: Tighten requirements.
+
+1) make it clear that queue_enable is 0 on reset.
+
+2) device MUST present a  VIRTIO_PCI_CAP_DEVICE_CFG if needed for type.
+ } \\
+\hline
+307 & 02 Mar 2014 & Michael S. Tsirkin & { initialization: minor clarification
+
+Change accepted on Virtio TC Meeting Minutes: Feb 25, 2014
+
+"it" could refer to failed bit or the driver.
+
+clarify.
+ } \\
+\hline
+306 & 02 Mar 2014 & Michael S. Tsirkin & { fix rfc2119 reference
+
+Change accepted on Virtio TC Meeting Minutes: Feb 25, 2014
+
+VIRTIO-68
+
+Cc: Patrick Durusau <patrick@durusau.net>
+ } \\
+\hline
+305 & 02 Mar 2014 & Michael S. Tsirkin & { VIRTIO-67: fix html redirects
+
+Change accepted on Virtio TC Meeting Minutes: Feb 25, 2014
+
+1. oasis switched to https
+
+2. Red Hat  is www.redhat.com
+
+Cc: Patrick Durusau <patrick@durusau.net>
+ } \\
+\hline
+304 & 02 Mar 2014 & Michael S. Tsirkin & { feedback: clarify device status bits
+
+Change accepted on Virtio TC Meeting Minutes: Feb 25, 2014
+
+VIRTIO-70
+
+Cc: Patrick Durusau <patrick@durusau.net>
+ } \\
+\hline
+303 & 02 Mar 2014 & Michael S. Tsirkin & { legacy interface: move to terminology
+
+Change accepted on Virtio TC Meeting Minutes: Feb 25, 2014
+
+VIRTIO-64
+
+Cc: Patrick Durusau <patrick@durusau.net
+ } \\
+\hline
+302 & 02 Mar 2014 & Michael S. Tsirkin & { introduction: add link to 0.9.5 specification
+
+Change accepted on Virtio TC Meeting Minutes: Feb 25, 2014
+
+this version replaces it, so it's a non normative reference.
+
+VIRTIO-69
+
+note: the link is added here but isn't used yet: will be used
+
+when we cleanup terminology definitions, by
+
+addressing VIRTIO-64
+
+Cc: Patrick Durusau <patrick@durusau.net
+ } \\
+\hline
+301 & 02 Mar 2014 & Michael S. Tsirkin & { non-transitional devices with legacy drivers
+
+Change accepted on Virtio TC Meeting Minutes: Feb 25, 2014
+
+weaken hacky requirements helpful for graceful failure
+
+for non transitional PCI devices from MUST to SHOULD.
+
+It's nice to have but it's not like it makes things work, and you
+
+can avoid trouble simply by using the most recent drivers.
+
+also move them out to a separate section
+ } \\
+\hline
+300 & 02 Mar 2014 & Michael S. Tsirkin & { conformance: document two types of devices
+
+Change accepted on Virtio TC Meeting Minutes: Feb 25, 2014
+
+document that there are two conformance levels
+ } \\
+\hline
+299 & 02 Mar 2014 & Michael S. Tsirkin & { legacy device initialization: confirmance statements
+
+Change accepted on Virtio TC Meeting Minutes: Feb 25, 2014
+ } \\
+\hline
+298 & 02 Mar 2014 & Michael S. Tsirkin & { legacy virtqueue layout: confirmance
+
+Change accepted on Virtio TC Meeting Minutes: Feb 25, 2014
+ } \\
+\hline
+297 & 02 Mar 2014 & Michael S. Tsirkin & { legacy: make all notes on endian-ness confirmance clauses
+
+Change accepted on Virtio TC Meeting Minutes: Feb 25, 2014
+ } \\
+\hline
+296 & 02 Mar 2014 & Michael S. Tsirkin & { legacy feature bits: confirmance statements
+
+Change accepted on Virtio TC Meeting Minutes: Feb 25, 2014
+ } \\
+\hline
+295 & 02 Mar 2014 & Michael S. Tsirkin & { leacy: layout detection confirmance
+
+Change accepted on Virtio TC Meeting Minutes: Feb 25, 2014
+ } \\
+\hline
+294 & 02 Mar 2014 & Michael S. Tsirkin & { legacy pci layout: extra confirmance statement
+
+Change accepted on Virtio TC Meeting Minutes: Feb 25, 2014
+ } \\
+\hline
+293 & 02 Mar 2014 & Michael S. Tsirkin & { legacy pci layout: confirmance statements
+
+Change accepted on Virtio TC Meeting Minutes: Feb 25, 2014
+ } \\
+\hline
+292 & 02 Mar 2014 & Michael S. Tsirkin & { legacy: make message framing normative
+
+Change accepted on Virtio TC Meeting Minutes: Feb 25, 2014
+
+TODO: we really should be more specific
+ } \\
+\hline
+291 & 02 Mar 2014 & Michael S. Tsirkin & { legacy: make note on legacy VQ endian-ness normative
+
+Change accepted on Virtio TC Meeting Minutes: Feb 25, 2014
+ } \\
+\hline
+290 & 02 Mar 2014 & Michael S. Tsirkin & { Legacy Interface: Device Configuration Space
+
+Change accepted on Virtio TC Meeting Minutes: Feb 25, 2014
+
+legacy has no generation field.
+
+add SHOULD statement to document multi-byte field
+
+access rules.
+ } \\
+\hline
+289 & 02 Mar 2014 & Michael S. Tsirkin & { legacy: clarify general note on endian-ness
+
+Change accepted on Virtio TC Meeting Minutes: Feb 25, 2014
+
+this is a non normative section.
+
+we merely mention that details are given
+
+for each device.
+ } \\
+\hline
+288 & 02 Mar 2014 & Michael S. Tsirkin & { content: explain that legacy support is optional
+
+Change accepted on Virtio TC Meeting Minutes: Feb 25, 2014
+ } \\
+\hline
+287 & 02 Mar 2014 & Michael S. Tsirkin & { drop /* LEGACY version was not little endian */
+
+Two issues with the comment:
+
+	- it mixes legacy documentation in main part of the spec
+
+	- it says what format *isn't* - instead of what it *is*
+
+Now that we have documented that LE can mean
+
+legacy endian, there's no need for the comment.
+
+Resolves issues:
+
+	VIRTIO-58
+
+Change accepted on Virtio TC Meeting Minutes: Feb 25, 2014
+ } \\
+\hline
+286 & 27 Feb 2014 & Rusty Russell & { Fixed path of linux version of virtio_ring.h
+ } \\
+\hline
+285 & 26 Feb 2014 & Pawel Moll & { mmio: Clarify normative requirement on QueueNum
+
+Minor fix: add explicit reference to QueueNumMax in the
+
+normative paragraph describing QueueNum.
+ } \\
+\hline
+284 & 26 Feb 2014 & Pawel Moll & { mmio: Fix double register macro
+Minor fix: commit 238 wrapped register names in \textbackslash field\{\}s
+
+and modified one of the register table macros, but missed
+
+the other one.
+ } \\
+\hline
+283 & 26 Feb 2014 & Pawel Moll & { mmio: Fix Device Tree example
+
+Minor fix: the size of 0x100 was obviously wrong,
+
+as it didn't allow for configuration space.
+ } \\
+\hline
+282 & 26 Feb 2014 & Cornelia Huck & { introduction: typo in terminology section
+
+s/device/driver/ for the transitional driver description.
+ } \\
+\hline
+281 & 26 Feb 2014 & Rusty Russell & { ccw: Fix requirements for processing adapter interrupts.
+
+We currently mandate that the driver clears the summary indicator
+
+before processing the queue indicator; this is bogus, as the requirement
+
+for interrupt avoidance is rather that the driver unsets the summary
+
+indicator before before it stops looking at the queue indicator.
+
+In fact, the best way to get a race-free implementation of the interrupt
+
+handler is to process the queue indicators twice; let's add a recommondation
+
+to do that.
+ } \\
+\hline
+280 & 26 Feb 2014 & Rusty Russell & { VIRTIO-45: Add a reserved ID for Timer/Clock device
+
+Just add a reserved ID for Timer/Clock device. There is no work
+
+on it yet but it is nice to have the ID which could be used safely
+
+in preliminary implementations.
+ } \\
+\hline
+279 & 26 Feb 2014 & Rusty Russell & { VIRTIO-28: Deprecate balloon device, add number for new one.
+ } \\
+\hline
+278 & 26 Feb 2014 & Rusty Russell & { Feedback: VIRTIO-77 Conformance clause.
+
+Now we have grouped all the normative statements, the conformance
+
+clauses for drivers and devices can simply reference them.
+ } \\
+\hline
+277 & 26 Feb 2014 & Rusty Russell & { Feedback: Separate normative requirements for Reserved Feature Bits.
+ } \\
+\hline
+276 & 26 Feb 2014 & Rusty Russell & { Feedback: SCSI: Separate normative and descriptive texts.
+
+This could use some more rigour, I think: there are still many
+
+implied requirements which could be called out.
+ } \\
+\hline
+275 & 26 Feb 2014 & Rusty Russell & { Feedback: console \& entropy: separate normative and descriptive texts.
+ } \\
+\hline
+274 & 26 Feb 2014 & Rusty Russell & { Feedback: block: separate normative and descriptive text.
+ } \\
+\hline
+273 & 26 Feb 2014 & Rusty Russell & { Feedback: net: separate normative and instructional text.
+ } \\
+\hline
+272 & 26 Feb 2014 & Rusty Russell & { Feedback: CCW: Separate normative and descriptive sections.
+ } \\
+\hline
+271 & 26 Feb 2014 & Rusty Russell & { Feedback: MMIO: Separate normative and descriptive text.
+
+The section on initialization is now non-normative.
+ } \\
+\hline
+270 & 26 Feb 2014 & Rusty Russell & { Feedback: PCI: Separate explanatory and normative text.
+
+Rather than treat selectors 0 and 1 as special, the wording for features
+
+is made more general (though still the same effect).
+
+I split the interrupt handler into a separate subsection: it was
+
+misleading because it didn't handle configuration interrupts until
+
+the next section.  It's also non-normative.
+ } \\
+\hline
+269 & 26 Feb 2014 & Rusty Russell & { Feedback: Separate the rest of chapter 2 into normative vs explanatory.
+
+The big change here is in introducing new subsections for interrupt and notification
+
+suppression, and moving all requirements into them.
+
+The example processing loop is also moved into a note, to show clearly
+
+that it's not normative.
+ } \\
+\hline
+268 & 26 Feb 2014 & Rusty Russell & { Feedback: Normative split for Basic Facilities of a Virtio Device / Virtqueues / Message Framing
+ } \\
+\hline
+267 & 26 Feb 2014 & Rusty Russell & { Feedback: Normative split in Basic Facilities of a Virtio Device / Virtqueues
+ } \\
+\hline
+266 & 26 Feb 2014 & Rusty Russell & { Feedback: split Basic Facilities feature bits and config space into normative.
+
+Split text into descriptive and normative.
+ } \\
+\hline
+265 & 26 Feb 2014 & Rusty Russell & { Feedback: add normative marker.
+From \url{http://docs.oasis-open.org/templates/TCHandbook/ConformanceGuidelines.html:}
+
+   Normative statements MUST be referenceable so that a statement may be
+
+   referenced from another part of a specification, but more importantly
+
+   so they can be referenced from Conformance Clauses.
+ } \\
+\hline
+264 & 26 Feb 2014 & Rusty Russell & { Feedback: 2.1 Device Status field: Separate description from normative.
+
+Start with explanation, progress to normative requirements.
+ } \\
+\hline
+263 & 26 Feb 2014 & Rusty Russell & { Feedback: move legacy/transitional definitions into terminology.
+ } \\
+\hline
+262 & 26 Feb 2014 & Rusty Russell & { Feedback: hoist the one legacy-related requirement out of legacy section.
+
+This requirement applies to any system which *did* have legacy drivers.
+ } \\
+\hline
+261 & 26 Feb 2014 & Rusty Russell & { Feedback: add old draft to normative references (VIRTIO-77)
+ } \\
+\hline
+260 & 26 Feb 2014 & Rusty Russell & { Feedback: use proper list in introduction (VIRTIO-82)
+
+Also avoid extra spacing before footnote markers.
+ } \\
+\hline
+259 & 26 Feb 2014 & Rusty Russell & { Feedback: move new device design section to Appendix.
+
+It's non-normative.
+ } \\
+\hline
+258 & 26 Feb 2014 & Rusty Russell & { Feedback: Bug TAB-553 (VIRTIO-76)
+
+Haven't marked them non-normative yet, but it makes sense to put the header
+
+in an appendix.
+ } \\
+\hline
+257 & 26 Feb 2014 & Rusty Russell & { Feedback: TAB-555 Bad sub-sectioning (VIRTIO-80)
+ } \\
+\hline
+256 & 26 Feb 2014 & Rusty Russell & { Feedback: TAB-557 Spelling errors, etc (VIRTIO-75)
+ } \\
+\hline
+255 & 26 Feb 2014 & Rusty Russell & { PCI: better document driver and device requirements
+
+Feedback:
+
+10) 4.1.3.1.2 Queue Vector Configuration
+
+Some of the information from section 8.4 needs to be moved to
+
+here, for example that the device may have an MSI-X table size
+
+other than 2048.
+
+Otherwise, this reads as though the MSI-X table must always have
+
+2048 entries.
+
+11) Please explicitly describe the device behavior when writing
+
+a vector value beyond the MSI-X table size.
+
+Address these comments.
+
+Cc: Arun Subbarao <asubbarao@lnxw.com>
+ } \\
+\hline
+254 & 26 Feb 2014 & Rusty Russell & { feedback: minor wording cleanups
+
+We already mention requirement for natural width
+
+accesses for non device specific configuration.
+
+Don't repeat this in legacy section.
+
+Further, mention virtio pci structure in
+
+preamble to help link sections together.
+
+Cc: Arun Subbarao <asubbarao@lnxw.com>
+
+Conflicts:
+
+	content.tex
+ } \\
+\hline
+253 & 26 Feb 2014 & Rusty Russell & { SCSI: fix up more fields.
+Some missing \textbackslash field\{\} markings, and a few redundant "the XXX field".
+ } \\
+\hline
+252 & 20 Feb 2014 & Rusty Russell & { SCSI: missing space.
+ } \\
+\hline
+251 & 19 Feb 2014 & Rusty Russell & { Gratuitous Packet Sending: clarify wording.
+
+The device can ask, not the driver.
+ } \\
+\hline
+250 & 19 Feb 2014 & Rusty Russell & { net: fix incorrect reference.
+
+It pointed into the block section for some reason.
+ } \\
+\hline
+249 & 13 Feb 2014 & Cornelia Huck & { ccw: padding annotations
+
+Remove __packed__ annotation from all ccw structures that don't need it,
+
+and make the length requirements explicit for those that do.
+
+This is the part of the patch to resolve VIRTIO-56 that had been missed.
+ } \\
+\hline
+248 & 12 Feb 2014 & Michael S. Tsirkin & { PCI: minor wording change
+
+Since access width requirement is a confirmance clause, make it
+
+explicit that it applies to 4,2 and 1 byte fields.
+
+Also explain what happens to fields of other widths (such as
+
+the 6 byte MAC).
+ } \\
+\hline
+247 & 12 Feb 2014 & Michael S. Tsirkin & { content: more strict confirmance language
+
+Correct new language to explicitly use MAY/SHOULD/MUST
+
+in more places or simply drop the somewhat vague "can" where
+
+we are describing the only way to operate the device.
+
+Most of the changes are in the PCI section.
+ } \\
+\hline
+246 & 12 Feb 2014 & Michael S. Tsirkin & { introduction: address lnovich comments
+
+generally list of buses is out of date, list all supported buses.
+
+Drop explicit mention of lguest since it's not part of the spec.
+ } \\
+\hline
+245 & 12 Feb 2014 & Michael S. Tsirkin & { abstract: address lnovich comment
+
+lnovich@redhat.com suggested rewording abstract,
+
+making the following point:
+
+. from what point of view is virtio like a physical device?
+
+  it's very different from host POV
+
+. "the guest" appears out of nowhere. It's the guest that runs
+
+  in the vm of course.
+
+. "not all that different" means similar so there's not need to
+
+  be verbose
+
+Address this comment
+ } \\
+\hline
+244 & 12 Feb 2014 & Rusty Russell & { VIRTIO-55: Add a reserved ID for GPU devices
+
+As existing work on virtio-gpu is using device ID 16, reflect this in
+
+the spec. This closes out VIRTIO-55.
+
+As per minutes:
+        \url{https://lists.oasis-open.org/archives/virtio/201402/msg00121.html}
+ } \\
+\hline
+243 & 12 Feb 2014 & Rusty Russell & { Fix S390 normative references.
+
+As pointed out in TAB-539 and TAB-540:
+
+- Add an URL to the documents. (Unfortunately, there is no link that
+
+  always points to the latest version.)
+
+- State that we include any future revisions as well.
+
+As per minutes:
+        \url{https://lists.oasis-open.org/archives/virtio/201402/msg00121.html}
+ } \\
+\hline
+242 & 12 Feb 2014 & Rusty Russell & { ccw: Further use of RFC2119 language.
+
+Some more instances of MAY and SHOULD, as reported in TAB comments
+
+TAB-548 and TAB-550.
+
+As per minutes:
+        \url{https://lists.oasis-open.org/archives/virtio/201402/msg00121.html}
+ } \\
+\hline
+241 & 12 Feb 2014 & Rusty Russell & { PCI: explicitly document ISR status field
+
+Feedback on ISR status register:
+
+	It would be helpful if this section provided the meaning of each
+
+	bit in the register.
+
+ISR use is scattered all around the place.
+
+Add a section describing the format and semantics.
+
+[ Merged to combine with new ISR-specific section --RR ]
+
+As per minutes:
+        \url{https://lists.oasis-open.org/archives/virtio/201402/msg00121.html}
+
+Cc: Arun Subbarao <asubbarao@lnxw.com>
+ } \\
+\hline
+240 & 12 Feb 2014 & Rusty Russell & { PCI: consistent device/PCI configuration space
+
+Re section:
+
+4.1.3.4 Notification of Device Configuration Changes
+
+Feedback:
+
+	Please use "PCI configuration space" and "device configuration
+
+	state" consistently, without abbreviation. For example, from the
+
+	first sentence it looks like "device configuration state" can be
+
+	changed, but the first bullet claims it's "configuration space".
+
+	So, which one? Does "configuration space" mean "PCI configuration
+
+	space" or is it a synonym for "device configuration state"?
+
+	Because those are two different things; the driver needs to know
+
+	what exactly to rescan.
+
+As per minutes:
+        \url{https://lists.oasis-open.org/archives/virtio/201402/msg00121.html}
+
+Cc: Arun Subbarao <asubbarao@lnxw.com>
+ } \\
+\hline
+239 & 12 Feb 2014 & Rusty Russell & { Feedback \#8: Applied.
+
+[ Includes fixup! removing MSI-X ]
+
+As per minutes:
+        \url{https://lists.oasis-open.org/archives/virtio/201402/msg00121.html}
+ } \\
+\hline
+238 & 12 Feb 2014 & Rusty Russell & { Feedback \#7: Applied
+
+Some minor merging required.
+
+As per minutes:
+    \url{https://lists.oasis-open.org/archives/virtio/201402/msg00121.html}
+ } \\
+\hline
+237 & 12 Feb 2014 & Rusty Russell & { Feedback \#6: Applied
+
+As per minutes:
+	\url{https://lists.oasis-open.org/archives/virtio/201402/msg00121.html}
+ } \\
+\hline
+236 & 12 Feb 2014 & Rusty Russell & { Feedback \#5: Applied.
+
+As per minutes:
+	\url{https://lists.oasis-open.org/archives/virtio/201402/msg00121.html}
+ } \\
+\hline
+235 & 12 Feb 2014 & Rusty Russell & { Feedback \#4: applied.
+
+As per minutes:
+	\url{https://lists.oasis-open.org/archives/virtio/201402/msg00121.html}
+ } \\
+\hline
+234 & 12 Feb 2014 & Rusty Russell & { PCI: minor changes for previous patch.
+ } \\
+\hline
+233 & 12 Feb 2014 & Rusty Russell & { PCI: rearrange it all
+
+This is the re-arrangement originally suggested by Rusty,
+
+except I made some fixes and also tweaked a couple of places
+
+where behaviour changes where suggested - if we want these,
+
+they should go in separately.
+
+Rearrange discovery section to make it clearer what goes on.
+
+Wording changes MUST/MAY/etc.  Clarify cfg gateway use.  No
+
+behavioural changes.
+
+[ Merged "fixup! PCI: rearrange it all" --RR ]
+
+As per minutes:
+        \url{https://lists.oasis-open.org/archives/virtio/201402/msg00121.html}
+ } \\
+\hline
+232 & 12 Feb 2014 & Rusty Russell & { PCI: rearrange it all
+
+This is the re-arrangement originally suggested by Rusty,
+
+except I made some fixes and also tweaked a couple of places
+
+where behaviour changes where suggested - if we want these,
+
+they should go in separately.
+
+Rearrange discovery section to make it clearer what goes on.
+
+Wording changes MUST/MAY/etc.  Clarify cfg gateway use.  No
+
+behavioural changes.
+ } \\
+\hline
+231 & 12 Feb 2014 & Rusty Russell & { C struct specifications.
+
+Explicitly specify that our C struct specifications are without padding,
+
+and add some definitions for our integer data types.
+
+[ Rusty - added /* comments */ and removed redundant old le* explanation ]
+ } \\
+\hline
+225 & 10 Feb 2014 & Rusty Russell & { REVERT LAST 15 JUNK COMMITS.
+
+Back to r211.  It's been a long day.
+ } \\
+\hline
+224 & 10 Feb 2014 & Rusty Russell & { patch feedback-8-9.patch
+ } \\
+\hline
+223 & 10 Feb 2014 & Rusty Russell & { patch feedback-8-7.patch
+ } \\
+\hline
+222 & 10 Feb 2014 & Rusty Russell & { patch feedback-8-6.patch
+ } \\
+\hline
+221 & 10 Feb 2014 & Rusty Russell & { patch feedback-8-5.patch
+ } \\
+\hline
+220 & 10 Feb 2014 & Rusty Russell & { feedback: s/virtio header/virtio common configuration/
+
+While most places now sat virtio common configuration
+
+structure, some places still use the term virtio header.
+
+Since it's not necessarily before the
+
+common configuration anymore, rename it
+
+to virtio common configuration structure for consistency.
+
+Cc: Arun Subbarao <asubbarao@lnxw.com>
+ } \\
+\hline
+219 & 10 Feb 2014 & Rusty Russell & { We'll add more non-normative sections with hints for
+
+implementing registers such as PCI class, status
+
+and command registers.
+ } \\
+\hline
+218 & 10 Feb 2014 & Rusty Russell & { example code does not have to be optimal but it
+
+seems cleaner to disable interrupts after we
+
+recheck the ring empty state.
+ } \\
+\hline
+217 & 10 Feb 2014 & Rusty Russell & { patch feedback-7-orig.patch
+ } \\
+\hline
+216 & 10 Feb 2014 & Rusty Russell & { patch feedback-6.patch
+ } \\
+\hline
+215 & 10 Feb 2014 & Rusty Russell & { patch feedback-5.patch
+ } \\
+\hline
+214 & 10 Feb 2014 & Rusty Russell & { patch feedback-4.patch
+ } \\
+\hline
+213 & 10 Feb 2014 & Rusty Russell & { PCI Section Rework
+
+1) Minor changes from must to MUST etc.
+
+2) More references using \textbackslash ref.
+
+3) Move section on capabilities first, before we talk about the common
+
+   config layout.  The previous order made sense for legacy.
+
+4) Make explicit subsections for each type of capability and move more
+
+   information into them.
+
+5) Make it clear that there must be one or more.
+
+6) Include 'struct virtio_pci_cap cap;' in struct virtio_pci_cfg_cap to
+
+   match virtio_pci_notify_cap.
+
+7) Explicitly note there's no way to negotiate the queue size for a
+
+   legacy device.
+
+8) Fix old language on config change event: config is not in the pci
+
+   configuration space.
+
+9) Explicitly state what the driver should do to use virtio_pci_cfg_cap.
+ } \\
+\hline
+212 & 10 Feb 2014 & Rusty Russell & { C struct specifications.
+
+Explicitly specify that our C struct specifications are without padding,
+
+and add some definitions for our integer data types.
+
+[ Rusty - added /* comments */ and removed redundant old le* explanation ]
+ } \\
+\hline
+207 & 07 Feb 2014 & Rusty Russell & { Cleanup and setup clarifications
+
+1) Explicitly allow drivers to read config space during feature
+
+   negotiation.
+
+2) Add the concept of a "live" virtqueue, and explicitly disallow
+
+   moving it backwards or changing descriptors.
+ } \\
+\hline
+204 & 07 Feb 2014 & Rusty Russell & { block: legacy SCSI command fix.
+
+When describing the historical layout requirements, it says
+
+ "status field is a separate read-only buffer of size 1 byte, by itself."
+
+That's clearly wrong, as it says above "The final status byte is written by the device"
+ } \\
+\hline
+203 & 06 Feb 2014 & Rusty Russell & { whitespace: make all examples unindented, and avoid tabs.
+
+This makes the formatting far nicer.  Applying now as it touches almost
+
+all examples and layouts, so we can rebase future changes on top of
+
+common ground.
+
+(Based on feedback from Thomas Huth for one example, and generalized).
+ } \\
+\hline
+201 & 31 Jan 2014 & Rusty Russell & { 3.2.1: Language tightening.
+
+1) Lots of "we", replace with "the driver".
+
+2) Use MAY and MUST NOT for spurious notifications.
+
+3) Don't refer to PCI configuration space for notification.
+ } \\
+\hline
+198 & 29 Jan 2014 & Pawel Moll & { 4.1.2.5: Legacy: PCI Device Layout: fix PCI header fields order
+
+The order of the fields in the legacy PCI header seems to get
+
+messed up in the new spec, with the "Queue Address" moved
+
+behind "Queue Notify". According to the 0.9.5 version of the spec
+
+it should be:
+
+* Device Features 32
+
+* Driver Features 32
+
+* Queue Address 32
+
+* Queue Size 16
+
+* Queue Select 16
+
+* Queue Notify 16
+
+* Device Status 8
+
+* ISR Status 8
+
+--
+
+1.8.3.2
+ } \\
+\hline
+197 & 29 Jan 2014 & Rusty Russell & { Feedback \#3: Feedback from Pranavkumar Sawargaonkar (VIRTIO_CONSOLE_F_EMERG_WRITE)
+
+Document: virtio-v1.0-csprd01
+
+Number: 3
+
+Date: Tue, 21 Jan 2014 15:09:54 +0530
+Link to Mail: \url{https://lists.oasis-open.org/archives/virtio-comment/201401/msg00037.html}
+
+Commenter name: Pranavkumar Sawargaonkar <pranavkumar@linaro.org>
+
+Approved at meeting 2014-01-28:
+	\url{https://lists.oasis-open.org/archives/virtio/201401/msg00054.html}
+ } \\
+\hline
+196 & 29 Jan 2014 & Rusty Russell & { Feedback \#2: More feedback from  Thomas Huth
+
+Document: virtio-v1.0-csprd01
+
+Number: 2
+
+Date: Fri, 10 Jan 2014 13:49:49 +0100
+Link to Mail: \url{https://lists.oasis-open.org/archives/virtio-comment/201401/msg00001.html}
+
+Commenter name: Thomas Huth <thuth@linux.vnet.ibm.com>
+
+Approved at meeting 2014-01-28:
+	\url{https://lists.oasis-open.org/archives/virtio/201401/msg00054.html}
+ } \\
+\hline
+195 & 29 Jan 2014 & Rusty Russell & { Feedback \#1: fixes from Thomas Huth
+
+Document: virtio-v1.0-csprd01
+
+Number: 1
+
+Date: Fri, 10 Jan 2014 11:01:44 +0100
+Link to Mail: \url{https://lists.oasis-open.org/archives/virtio-comment/201401/msg00000.html}
+
+Commenter name: Thomas Huth <thuth@linux.vnet.ibm.com>
+
+Approved at meeting: 2014-01-28
+	\url{https://lists.oasis-open.org/archives/virtio/201401/msg00054.html}
+ } \\
+\hline
+194 & 28 Jan 2014 & Pawel Moll & { mmio: Move QueueReady register from offset 0x03c to 0x044
+
+Legacy devices have QueueAlign register at 0x03c. To stay
+
+on the safe side and avoid any potential clashes (also to
+
+be able to abort any wrong writes), move it to previously
+
+unused offset 0x044.
+ } \\
+\hline
+193 & 23 Jan 2014 & Cornelia Huck & { virtio-ccw: fix set_revision payload definition
+
+The members of struct virtio_rev_info are big endian: use be16 types.
+ } \\
+\hline
+191 & 23 Jan 2014 & Rusty Russell & { Formatting: fix feature bits for console device.
+
+Make them a description list like every other device.
+ } \\
+\hline
+190 & 23 Jan 2014 & Rusty Russell & { Michael's patch adding MQ support added some u16s; they are u16 in
+
+legacy mode but should be le16 for modern devices.
+ } \\
+\hline
+185 & 17 Jan 2014 & Rusty Russell & { net/multiqueue: tighten wording
+ } \\
+\hline
+184 & 17 Jan 2014 & Rusty Russell & { Fixes for first WD front page.
+
+Based on feedback from Paul Knight <paul.knight@oasis-open.org>.
+ } \\
+\hline
+179 & 03 Jan 2014 & Pawel Moll & { mmio: Obviously wrong notification register name
+
+The "4.2.3.3 Notifying The Device" section said "writing
+
+the index of the updated queue to the QueueNum". This
+
+is obviously wrong - should read "QueueNotify".
+ } \\
+\hline
+178 & 16 Dec 2013 & Pawel Moll & { title \& acknowledgements: Make ARM less limited
+
+... by removing the "Limited" bit of the name.
+ } \\
+\hline
+177 & 16 Dec 2013 & Pawel Moll & { 2.3.2 MMIO: Configuration space offset corrected
+
+The offset in the MMIO configuration space description
+
+(table 4.1) became wrong at some time (0x0fff). Fixed.
+ } \\
+\hline
+176 & 12 Dec 2013 & Pawel Moll & { 2.3.2 MMIO: Notifications \& interrupts clarifications
+
+(Hopefully) clarified the way notifications are being
+
+passed between the device and the driver and about
+
+the meaning of the interrupt registers.
+ } \\
+\hline
+175 & 12 Dec 2013 & Pawel Moll & { 1. Introduction: Removed left-over "PCI"
+
+The "Extensible" paragraph of the introduction still
+
+referred to "Virtio PCI devices". Changed to
+
+"Virtio devices".
+ } \\
+\hline
+174 & 12 Dec 2013 & Pawel Moll & { 2.3.2 MMIO: Further clarifications
+
+Clarified driver behaviour for out-of-spec MagicValue,
+
+Version and DeviceID values.
+ } \\
+\hline
+173 & 12 Dec 2013 & Cornelia Huck & { ccw: feature bit endianness
+
+In contrast to the other values transmitted in ccw payload, feature bits
+
+are little endian. Fix it in the structure definition.
+ } \\
+\hline
+172 & 12 Dec 2013 & Cornelia Huck & { ccw: clarify passing of subchannel id
+
+Make clear that the upper half of the register must be ignored, just
+
+like normal I/O instructions do.
+ } \\
+\hline
+171 & 12 Dec 2013 & Cornelia Huck & { ccw: Tighten specification language.
+
+must -> MUST changes, removed inappropriate mays.
+ } \\
+\hline
+170 & 09 Dec 2013 & Pawel Moll & { 2.3.2 MMIO: LaTeXisation
+
+Converter the register layout descriptions into
+
+tables.
+
+Also hardened the specification language, using
+
+MUSTs and MUST NOTs.
+ } \\
+\hline
+168 & 09 Dec 2013 & Michael S. Tsirkin & { commands-pdf.tex: align title page
+
+Section titles are currently misaligned on the title
+
+page. This patch aligns them back.
+ } \\
+\hline
+167 & 09 Dec 2013 & Michael S. Tsirkin & { net: document VIRTIO_NET_F_MAC_ADDR
+
+VIRTIO-50
+
+    virtio-spec: set mac address by a new vq command
+
+Approved Dec 3, 2013
+ } \\
+\hline
+166 & 09 Dec 2013 & Michael S. Tsirkin & { net: add _F_MQ support
+
+VIRTIO-49
+
+Includes git commits:
+
+    virtio-spec: fix two typos
+
+    virtio-spec: virtio network device multiqueue support
+
+    net: add note that you can defer rx queue init until mq enable.
+
+Approved Dec 3, 2013
+ } \\
+\hline

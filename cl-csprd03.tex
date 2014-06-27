@@ -1,0 +1,384 @@
+396 & 26 Jun 2014 & Michael S. Tsirkin & { diff: back to green for added text
+
+using blue does not work well for html
+
+ } \\
+\hline
+393 & 26 Jun 2014 & Michael S. Tsirkin & { makediff: cleanup using begingroup/endgroup
+
+Pawel Moll found a way to work around xetex bugs
+without mangling latexdiff output using perl:
+
+- define DIFbegin/DIFFend commands in preample
+
+- pass --config FLOATENV= to latexdiff
+
+Use this in preference to the fixupdiff perl script.
+
+ } \\
+\hline
+391 & 26 Jun 2014 & Michael S. Tsirkin & { more latexdiff hacks
+
+- change link color from green to pinegreen. Looks better to me.
+
+- split footnotes out from their text, so that latexdiff
+  does not consider them as a unit
+
+- mark field command as safe for latexdiff, otherwise it's not shown in red
+
+- hack adding DIFaddtext within footnotes could not handle
+  case where latexdiff inserted multiple DIFadd within the
+  footnote. Instead, detect when footnote is within
+  DIFaddbegin/DIFdelbegin, add an extra DIFaddbegin/DIFdelbegin
+  within the footnote.
+
+ } \\
+\hline
+390 & 26 Jun 2014 & Michael S. Tsirkin & { diffpreamble: fix colors for links within diff
+ } \\
+\hline
+389 & 26 Jun 2014 & Michael S. Tsirkin & { work around xetex bug
+
+Too many \textbackslash color directives produce corrupted output
+and this warning:
+
+WARNING ** Color stack overflow. Just ignore.
+
+Use script to reduce \# of these directives.
+
+ } \\
+\hline
+388 & 26 Jun 2014 & Michael S. Tsirkin & { diffpreamble: remove duplicate text
+
+latexdiff adds some
+
+ } \\
+\hline
+387 & 26 Jun 2014 & Michael S. Tsirkin & { makediffpdf.sh: tool to create marked-up diff
+
+make pdf diff using latexpand and latexdiff-fast
+styles are set in diffpreamble.tex
+in diff, links are coloured green instead of blue
+
+Must be run within a git-svn clone of the spec repository.
+
+Note: latexdiff has --flatten option, this and options
+to select diff style don't seem to work well.
+
+So flatten by script myself, and add our own preamble.
+
+ } \\
+\hline
+386 & 25 Jun 2014 & Michael S. Tsirkin & { pci: minor fomatting tweak
+
+Make table look better. Drop spaces that make
+latexdiff stumble.
+
+ } \\
+\hline
+385 & 25 Jun 2014 & Michael S. Tsirkin & { fixup pci: switch from subsystem id to device id
+
+Patch sent to list (and applied by Rusty in
+
+    pci: switch from subsystem id to device id
+
+) did not actually implement what commit log said
+it implements.
+
+The result is wrong for transitional devices:
+
+Adding 0xfff works for for net+block only;
+
+for transitional pci devices there is no fixed scheme:
+\~{}/projects/qemu/include \# grep VIRTIO_ID hw/virtio/*.h
+
+hw/virtio/virtio-balloon.h:\#define VIRTIO_ID_BALLOON 5
+
+hw/virtio/virtio-blk.h:\#define VIRTIO_ID_BLOCK 2
+
+hw/virtio/virtio-net.h:\#define VIRTIO_ID_NET   1
+
+hw/virtio/virtio-rng.h:\#define VIRTIO_ID_RNG    4
+
+hw/virtio/virtio-scsi.h:\#define VIRTIO_ID_SCSI  8
+
+hw/virtio/virtio-serial.h:\#define VIRTIO_ID_CONSOLE             3
+
+\~{}/projects/qemu/include \# grep VIRTIO hw/pci/*.h
+
+hw/pci/pci.h:\#define PCI_DEVICE_ID_VIRTIO_NET         0x1000
+
+hw/pci/pci.h:\#define PCI_DEVICE_ID_VIRTIO_BLOCK       0x1001
+
+hw/pci/pci.h:\#define PCI_DEVICE_ID_VIRTIO_BALLOON     0x1002
+
+hw/pci/pci.h:\#define PCI_DEVICE_ID_VIRTIO_CONSOLE     0x1003
+
+hw/pci/pci.h:\#define PCI_DEVICE_ID_VIRTIO_SCSI        0x1004
+
+hw/pci/pci.h:\#define PCI_DEVICE_ID_VIRTIO_RNG         0x1005
+
+hw/pci/pci.h:\#define PCI_DEVICE_ID_VIRTIO_9P          0x1009
+
+I am guessing TC went by commit log when it approved the change,
+so fixing it up directly.
+
+Cc: Andrew Thornton <andrewth@google.com>
+
+Cc: Rusty Russell <rusty@ozlabs.org>
+
+Cc: Gerd Hoffmann <kraxel@redhat.com>
+
+ } \\
+\hline
+384 & 17 Jun 2014 &  & { content.tex: VIRTIO-106: mention possibility of failing TMFs
+
+This completes the review of virtio-scsi based on observations
+from Google.
+
+ } \\
+\hline
+383 & 16 Jun 2014 &  & { fix erroneous reference to Subsystem Device ID
+
+Subsystem device ID only exists for PCI.
+
+ } \\
+\hline
+382 & 16 Jun 2014 & Rusty Russell & { small virtio-serial fix
+
+nr_ports does not exist in the spec.
+
+ } \\
+\hline
+381 & 09 Jun 2014 &  & { virtio-scsi: support well-known logical units
+
+The REPORT LUNS well-known logical unit is useful because it lets you
+retrieve information about all targets with a single command.  It
+also provides an easy way to send a no-op request.
+
+ } \\
+\hline
+380 & 09 Jun 2014 &  & { consistent formatting of footnotes
+
+Put the indicator before punctuation, and terminate the footnote with
+a period.
+
+ } \\
+\hline
+379 & 09 Jun 2014 &  & { virtio-scsi: additional SHOULDification
+
+ } \\
+\hline
+378 & 09 Jun 2014 &  & { virtio-scsi: fixes to protection information
+
+pi_bytesin is in the device-readable section.  Document lack of residual
+field.  Use le32 instead of u32.
+
+This matches the new patch series that Nicholas sent for vhost-scsi.
+
+Cc: <nab@daterainc.com>
+
+ } \\
+\hline
+377 & 05 Jun 2014 & Rusty Russell & { PCI: remove duplicate paragraph.
+
+I chose the one which used the full nomenclature.
+
+ } \\
+\hline
+376 & 05 Jun 2014 & Rusty Russell & { pci: switch from subsystem id to device id
+
+Switch virtio pci to use standard device id instead of using the
+subsystem id.
+
+Unfortunately, there's no system to the way KVM allocated
+device IDs to virtio devices, we'll just have to
+specify these using a table, and use a new range for
+future devices. For existing devices this results in
+two possible IDs that all drivers will need to match.
+Unfortunate, but the cost is small.
+
+As a nice side effect, this allows us to make non-transitional
+devices use IDs 0x40 and up, this reduces even further the
+chance that a non transitional device will match legacy drivers.
+
+And, it's probably a good idea to allow drivers to match
+specific subsystem IDs if they
+
+want to, so relax requirement for drivers to match all
+subsystem/vendor ID configurations, but allow them to do so.
+To avoid confusion, say "PCI Device ID" and
+"PCI Subsystem ID" everywhere, prefix "PCI"
+for other standard registers, for consistency.
+
+VIRTIO-102
+
+Note: issue reporter suggested 0x10XX where XX is the virtio
+device ID. This would conflict with legacy devices, which seem
+to have used 7 IDs in the range 0x1000 to 0x103f without any
+system. Let's use a new range 0x1040 to 0x107f for
+non-transitional devices, and add a table documenting the
+transitional IDs used by in practice.
+
+(Approved at 2014-06-04 meeting:
+
+  \url{https://lists.oasis-open.org/archives/virtio/201406/msg00013.html} )
+
+Cc: Andrew Thornton <andrewth@google.com>
+
+ } \\
+\hline
+375 & 05 Jun 2014 & Rusty Russell & { pci: set ISR bit on config change with MSI-X
+
+config changes are slow path anyway, so we
+can as well set ISR bit to help drivers detect changes.
+This allows sharing config interrupts which is what
+issue reporter seems to ask for.
+
+VIRTIO-104
+
+(Approved at 2014-06-04 meeting:
+
+  \url{https://lists.oasis-open.org/archives/virtio/201406/msg00013.html} )
+
+ } \\
+\hline
+374 & 01 Jun 2014 & Michael S. Tsirkin & { NEEDS_RESET: trivial clarification
+
+If device sets NEEDS_RESET before DRIVER_OK, it
+can't send notifications to driver.
+
+Make this clear.
+
+ } \\
+\hline
+373 & 22 May 2014 & Rusty Russell & { Fix build of document
+
+Error introduced in "VIRTIO-98: Add DEVICE_NEEDS_RESET":
+seems that underscores in labels are verboten:
+
+[133] [134] (./virtio-v1.0-csprd02.aux
+
+! Missing \textbackslash endcsname inserted.
+
+<to be read again>
+
+                   \textbackslash unhbox
+
+l.45 ...ts: Device Status Field\}\}\{subsection.1\}\{\}\}
+
+ } \\
+\hline
+372 & 22 May 2014 & Rusty Russell & { content.tex: virtio-scsi review (VIRTIO-106)
+
+As prompted by Rusty, add a few more MUST/SHOULD items for both devices
+and drivers.  Clarify semantics of max_channel/max_id/max_lun, task_attr
+and task management functions.
+
+(As per minutes of meeting 2014-05-20:
+
+    \url{https://lists.oasis-open.org/archives/virtio/201405/msg00034.html} )
+
+ } \\
+\hline
+371 & 22 May 2014 & Rusty Russell & { content.tex: add support for protection information (VIRTIO-108)
+
+This is a new feature that was suggested by Nicholas Bellinger, who
+
+also provided a prototype implementation for vhost-scsi.
+
+(As per minutes of meeting 2014-05-20:
+
+	\url{https://lists.oasis-open.org/archives/virtio/201405/msg00034.html} )
+
+ } \\
+\hline
+370 & 12 May 2014 & Rusty Russell & { VIRTIO-96: Assign device id to virtio input
+
+Assign device id to virtio input
+
+As passed at meeting 2014-05-06:
+
+	\url{https://lists.oasis-open.org/archives/virtio/201405/msg00016.html}
+
+ } \\
+\hline
+369 & 12 May 2014 & Rusty Russell & { VIRTIO-52: Make mac field read only.
+
+As passed at meeting 2014-05-06:
+
+	\url{https://lists.oasis-open.org/archives/virtio/201405/msg00016.html}
+
+ } \\
+\hline
+368 & 12 May 2014 & Rusty Russell & { VIRTIO-107: Clarify net mac commands.
+
+As passed at meeting 2014-05-06:
+
+    \url{https://lists.oasis-open.org/archives/virtio/201405/msg00016.html}
+
+ } \\
+\hline
+367 & 12 May 2014 & Rusty Russell & { VIRTIO-98: Add DEVICE_NEEDS_RESET.
+
+As passed at meeting 2014-05-06:
+
+        \url{https://lists.oasis-open.org/archives/virtio/201405/msg00016.html}
+
+ } \\
+\hline
+366 & 12 May 2014 & Rusty Russell & { VIRTIO-87: limit descriptor chain length even with INDIRECT.
+
+As passed at meeting 2014-05-06:
+
+        \url{https://lists.oasis-open.org/archives/virtio/201405/msg00016.html}
+
+ } \\
+\hline
+365 & 12 May 2014 & Rusty Russell & { VIRTIO-103: PCI: Note that turning off queue_enable is not supported.
+
+As passed at meeting 2014-05-06:
+
+        \url{https://lists.oasis-open.org/archives/virtio/201405/msg00016.html}
+
+ } \\
+\hline
+364 & 12 May 2014 & Rusty Russell & { VIRTIO-103: PCI: require read-after-write on device_status reset.
+
+As passed at meeting 2014-05-06:
+
+        \url{https://lists.oasis-open.org/archives/virtio/201405/msg00016.html}
+
+ } \\
+\hline
+363 & 12 May 2014 & Rusty Russell & { VIRTIO-99: Typo fixes.
+
+As passed at meeting 2014-05-06:
+
+	\url{https://lists.oasis-open.org/archives/virtio/201405/msg00016.html}
+
+ } \\
+\hline
+362 & 07 May 2014 & Cornelia Huck & { net: fix device conformance sections
+
+For the network device, we had two device normative sections both called
+"setting up receive buffers", neither of which was referenced in the
+conformance section.
+
+Let's rename the second one to "processing of packets" which seems to
+better match the actual contents and reference both of them from the
+conformance statement for network devices.
+
+Resolves VIRTIO-97.
+
+Agreed on the 2014/05/06 TC meeting.
+
+ } \\
+\hline
+361 & 07 Apr 2014 & Michael S. Tsirkin & { conformance.tex: fix references to mmio
+
+Both device and driver conformance referred to ccw twice; let's add the
+correct mmio references.
+
+ } \\
+\hline
