@@ -29,6 +29,11 @@ sub escapelatex {
 	$s =~ s/([&#%{}\$])/\\$1/go;
 	$s =~ s/[~]/\\~{}/go;
 	$s =~ s/(https?:\S*)/\\url{$1}/go;
+#1st line always on a separate paragraph
+	$s =~ s/\n/\n\n/o;
+#Guess where new paragraph starts
+	$s =~ s/\\.\n/.\n\n/go;
+	$s =~ s/\n-/\n\n-/go;
 	return $s;
 }
 
