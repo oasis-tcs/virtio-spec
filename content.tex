@@ -168,7 +168,7 @@ space.
 
 \drivernormative{\subsection}{Device Configuration Space}{Basic Facilities of a Virtio Device / Device Configuration Space}
 Drivers MUST NOT assume reads from
-fields greater than 32 bits wide are atomic, nor are reads from
+fields greater than 32 bits wide are atomic, nor reads from
 multiple fields: drivers SHOULD read device configuration space fields like so:
 
 \begin{lstlisting}
@@ -216,7 +216,7 @@ The correct endian-ness is documented for each device.
 
 Legacy devices did not have a configuration generation field, thus are
 susceptible to race conditions if configuration is updated.  This
-affects the block \field{capacity} (see \ref{sec:Device Types /
+effects the block \field{capacity} (see \ref{sec:Device Types /
 Block Device / Feature bits / Device configuration layout}) and
 network \field{mac} (see \ref{sec:Device Types / Network Device /
 Device configuration layout}) fields;
@@ -684,7 +684,7 @@ Device Initialization / Read feature bits} Read device feature bits, and write t
    understood by the OS and driver to the device.  During this step the
    driver MAY read (but MUST NOT write) the device-specific configuration fields to check that it can support the device before accepting it.
 
-\item\label{itm:General Initialization And Device Operation / Device Initialization / Set FEATURES-OK} Set the FEATURES_OK status bit.  The driver MUST NOT accept
+\item\label{itm:General Initialization And Device Operation / Device Initialization / Set FEATURES-OK} Set the FEATURES_OK status bit.  The driver MUST not accept
    new feature bits after this step.
 
 \item\label{itm:General Initialization And Device Operation / Device Initialization / Re-read FEATURES-OK} Re-read \field{device status} to ensure the FEATURES_OK bit is still
@@ -3632,7 +3632,7 @@ compartibility.
 
 \drivernormative{\subparagraph}{Setting Offloads State}{Device Types / Network Device / Device Operation / Control Virtqueue / Offloads State Configuration / Setting Offloads State}
 
-A driver MUST NOT enable an offload for which the appropriate feature
+A driver MUST NOT enable a offload for which the appropriate feature
 has not been negotiated.
 
 \subparagraph{Legacy Interface: Setting Offloads State}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Offloads State Configuration / Setting Offloads State / Legacy Interface: Setting Offloads State}
