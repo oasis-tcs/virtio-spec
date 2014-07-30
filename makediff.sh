@@ -8,6 +8,8 @@ rm -fr old new
 git clone $PWD old
 cd "${cur}/old"
 git checkout ec1ffbf27a8f0a06ca65cd498a69c7f89bd97dc1
+#suppress diff of list of chairs, output is ugly
+git cherry-pick d8bce4c50e5851fe45ad735e3ccd1afe46448a5d
 #mv specvars.tex specvars-orig.tex
 #make links green to avoid confusion
 #sed s/blue/pinegreen/ specvars-orig.tex > specvars.tex
@@ -35,5 +37,7 @@ sed 's/\\footnote{/\\footnote {/' new/flat.tex > new/flat-fixed.tex
 #cp new/flat.tex new/flat-fixed.tex
 #wget http://mirror.math.ku.edu/tex-archive/support/latexdiff/latexdiff-fast
 #chmod +x latexdiff-fast
-latexdiff-fast --config "FLOATENV=(?:figure|longtable|table|tabular|plate)[\w\d*@]*" --append-safecmd=field --ignore-warnings -p diffpreamble.tex old/flat-fixed.tex new/flat-fixed.tex > virtio-diff.tex
+latexdiff-fast --config \
+"FLOATENV=(?:figure|longtable|table|tabular|plate)[\w\d*@]*" \
+ --append-safecmd=field --ignore-warnings -p diffpreamble.tex old/flat-fixed.tex new/flat-fixed.tex > virtio-diff.tex
 #perl -pi fixupdiff.pl virtio-diff.tex
