@@ -709,7 +709,7 @@ The driver MUST NOT notify the device before setting DRIVER_OK.
 \subsection{Legacy Interface: Device Initialization}\label{sec:General Initialization And Device Operation / Device Initialization / Legacy Interface: Device Initialization}
 Legacy devices did not support the FEATURES_OK status bit, and thus did
 not have a graceful way for the device to indicate unsupported feature
-combinations.  It also did not provide a clear mechanism to end
+combinations.  They also did not provide a clear mechanism to end
 feature negotiation, which meant that devices finalized features on
 first-use, and no features could be introduced which radically changed
 the initial operation of the device.
