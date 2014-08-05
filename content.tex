@@ -2218,7 +2218,7 @@ nor behaviour:
   \endlastfoot
   \mmioreg{MagicValue}{Magic value}{0x000}{R}{}
   \hline
-  \mmioreg{Version}{Device version number}{0x004}{R}{Legacy device MUST return value 0x1.}
+  \mmioreg{Version}{Device version number}{0x004}{R}{Legacy device returns value 0x1.}
   \hline
   \mmioreg{DeviceID}{Virtio Subsystem Device ID}{0x008}{R}{}
   \hline
@@ -2233,9 +2233,9 @@ nor behaviour:
   \mmioreg{GuestFeaturesSel}{Activated (guest) features word selection}{0x024}{W}{}
   \hline 
   \mmioreg{GuestPageSize}{Guest page size}{0x028}{W}{%
-    The driver MUST write the guest page size in bytes to the
+    The driver writes the guest page size in bytes to the
     register during initialization, before any queues are used.
-    This value MUST be a power of 2 and is used by the device to
+    This value should be a power of 2 and is used by the device to
     calculate the Guest address of the first queue page
     (see QueuePFN).
   }
@@ -2266,7 +2266,7 @@ nor behaviour:
   \hline
   \mmioreg{QueueAlign}{Used Ring alignment in the virtual queue}{0x03c}{W}{%
     Writing to this register notifies the device about alignment
-    boundary of the Used Ring in bytes. This value MUST be a power
+    boundary of the Used Ring in bytes. This value should be a power
     of 2 and applies to the queue selected by writing to \field{QueueSel}.
   }
   \hline
@@ -2276,7 +2276,7 @@ nor behaviour:
     is the index number of a page starting with the queue
     Descriptor Table. Value zero (0x0) means physical address zero
     (0x00000000) and is illegal. When the driver stops using the
-    queue it MUST write zero (0x0) to this register.
+    queue it writes zero (0x0) to this register.
     Reading from this register returns the currently used page
     number of the queue, therefore a value other than zero (0x0)
     means that the queue is in use.
@@ -2295,8 +2295,8 @@ nor behaviour:
     flags.
     Writing non-zero values to this register sets the status flags,
     indicating the OS/driver progress. Writing zero (0x0) to this
-    register triggers a device reset. The device MUST
-    set \field{QueuePFN} to zero (0x0) for all queues in the device.
+    register triggers a device reset. The device
+    sets \field{QueuePFN} to zero (0x0) for all queues in the device.
     Also see \ref{sec:General Initialization And Device Operation / Device Initialization}~\nameref{sec:General Initialization And Device Operation / Device Initialization}.
   }
   \hline
@@ -2305,7 +2305,7 @@ nor behaviour:
 \end{longtable}
 
 The virtual queue page size is defined by writing to \field{GuestPageSize},
-as written by the guest. The driver MUST do this before the
+as written by the guest. The driver does this before the
 virtual queues are configured.
 
 The virtual queue layout follows
@@ -2326,7 +2326,7 @@ The virtual queue is configured as follows:
 
 \item Allocate and zero the queue pages in contiguous virtual
    memory, aligning the Used Ring to an optimal boundary (usually
-   page size). The driver MUST choose a queue size smaller than or
+   page size). The driver should choose a queue size smaller than or
    equal to \field{QueueNumMax}.
 
 \item Notify the device about the queue size by writing the size to
