@@ -1870,14 +1870,14 @@ embedded devices models) might use simple memory mapped device
 (``virtio-mmio'') instead of the PCI device.
 
 The memory mapped virtio device behaviour is based on the PCI
-device specification. Therefore most of operations like device
+device specification. Therefore most operations including device
 initialization, queues configuration and buffer transfers are
 nearly identical. Existing differences are described in the
 following sections.
 
 \subsection{MMIO Device Discovery}\label{sec:Virtio Transport Options / Virtio Over MMIO / MMIO Device Discovery}
 
-Unlike PCI, MMIO provides no generic device discovery.  For each
+Unlike PCI, MMIO provides no generic device discovery mechanism.  For each
 device, the guest OS will need to know the location of the registers
 and interrupt(s) used.  The suggested binding for systems using
 flattened device trees is shown in this example:
@@ -1893,7 +1893,7 @@ virtio_block@1e000 {
 
 \subsection{MMIO Device Register Layout}\label{sec:Virtio Transport Options / Virtio Over MMIO / MMIO Device Register Layout}
 
-MMIO virtio devices provides a set of memory mapped control
+MMIO virtio devices provide a set of memory mapped control
 registers followed by a device-specific configuration space,
 described in the table~\ref{tab:Virtio Trasport Options / Virtio Over MMIO / MMIO Device Register Layout}.
 
@@ -1946,7 +1946,7 @@ All register values are organized as Little Endian.
   \hline 
   \mmioreg{DeviceFeatures}{Flags representing features the device supports}{0x010}{R}{%
     Reading from this register returns 32 consecutive flag bits,
-    first bit depending on the last value written to
+    the least significant bit depending on the last value written to
     \field{DeviceFeaturesSel}. Access to this register returns
     bits $\field{DeviceFeaturesSel}*32$ to $(\field{DeviceFeaturesSel}*32)+31$, eg.
     feature bits 0 to 31 if \field{DeviceFeaturesSel} is set to 0 and
@@ -1960,7 +1960,7 @@ All register values are organized as Little Endian.
   }
   \hline 
   \mmioreg{DriverFeatures}{Flags representing device features understood and activated by the driver}{0x020}{W}{%
-    Writing to this register sets 32 consecutive flag bits, first
+    Writing to this register sets 32 consecutive flag bits, the least significant
     bit depending on the last value written to \field{DriverFeaturesSel}.
      Access to this register sets bits $\field{DriverFeaturesSel}*32$
     to $(\field{DriverFeaturesSel}*32)+31$, eg. feature bits 0 to 31 if
@@ -1989,8 +1989,8 @@ All register values are organized as Little Endian.
   }
   \hline 
   \mmioreg{QueueNum}{Virtual queue size}{0x038}{W}{%
-    Queue size is the number of elements in the queue, therefore size
-    of the Descriptor Table and both Available and Used rings.
+    Queue size is the number of elements in the queue, therefore in each
+    of the Descriptor Table, the Available Ring and the Used Ring.
     Writing to this register notifies the device what size of the
     queue the driver will use. This applies to the queue selected by
     writing to \field{QueueSel}.
@@ -2022,8 +2022,9 @@ All register values are organized as Little Endian.
   }
   \hline 
   \mmioreg{InterruptACK}{Interrupt acknowledge}{0x064}{W}{%
-    Writing to this register notifies the device that the interrupt
-    has been handled, as per values for {InterruptStatus}.
+    Writing a value with bits set as defined in \field{InterruptStatus}
+    to this register notifies the device that events causing
+    the interrupt have been handled.
   }
   \hline 
   \mmioreg{Status}{Device status}{0x070}{RW}{%
@@ -2076,7 +2077,7 @@ The device MUST return value 0x2 in \field{Version}.
 
 The device MUST present each event by setting the corresponding bit in \field{InterruptStatus} from the
 moment it takes place, until the driver acknowledges the interrupt
-by writing a corresponding bit mask to the InterruptACK register.  Bits which
+by writing a corresponding bit mask to the \field{InterruptACK} register.  Bits which
 do not represent events which took place MUST be zero.
 
 Upon reset, the device MUST clear all bits in \field{InterruptStatus} and ready bits in the
@@ -2088,7 +2089,8 @@ after a configuration read operation.
 
 \drivernormative{\subsubsection}{MMIO Device Register Layout}{Virtio Transport Options / Virtio Over MMIO / MMIO Device Register Layout}
 The driver MUST NOT access memory locations not described in the
-table (or, in case of the configuration space, described in the device specification),
+table \ref{tab:Virtio Trasport Options / Virtio Over MMIO / MMIO Device Register Layout}
+(or, in case of the configuration space, described in the device specification),
 MUST NOT write to the read-only registers (direction R) and
 MUST NOT read from the write-only registers (direction W).
 
@@ -2110,7 +2112,7 @@ or equal to the value presented by the device in \field{QueueNumMax}.
 
 When \field{QueueReady} is not zero, the driver MUST NOT access
 \field{QueueNum}, \field{QueueDescLow}, \field{QueueDescHigh},
-\field{QueueAvailLow}, \field{QueueAvailHigh}, \field{QueueUsedLow}, \field{QueueUsedHigh}
+\field{QueueAvailLow}, \field{QueueAvailHigh}, \field{QueueUsedLow}, \field{QueueUsedHigh}.
 
 To stop using the queue the driver MUST write zero (0x0) to this
 \field{QueueReady} and MUST read the value back to ensure
@@ -2118,8 +2120,8 @@ synchronization.
 
 The driver MUST ignore undefined bits in \field{InterruptStatus}.
 
-The MUST write the events it handled into \field{InterruptACK} when
-it finishes handling an interrupt.
+The driver MUST write a value with a bit mask describing events it handled into \field{InterruptACK} when
+it finishes handling an interrupt and MUST NOT set any of the undefined bits in the value.
 
 \subsection{MMIO-specific Initialization And Device Operation}\label{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation}
 
