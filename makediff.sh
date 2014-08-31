@@ -7,9 +7,9 @@ cur="$PWD"
 rm -fr old new
 git clone $PWD old
 cd "${cur}/old"
-git checkout ec1ffbf27a8f0a06ca65cd498a69c7f89bd97dc1
+git checkout 40ba29870a685004fc4d4458778bcd038f200524
 #suppress diff of list of chairs, output is ugly
-git cherry-pick d8bce4c50e5851fe45ad735e3ccd1afe46448a5d
+#git cherry-pick d8bce4c50e5851fe45ad735e3ccd1afe46448a5d
 #mv specvars.tex specvars-orig.tex
 #make links green to avoid confusion
 #sed s/blue/pinegreen/ specvars-orig.tex > specvars.tex
