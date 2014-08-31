@@ -2,6 +2,9 @@
 
 Make it clear that the legacy section is non-normative,
 removing all MUSTs.
+
+See \ref{sec:Virtio Transport Options / Virtio Over MMIO / Legacy
+interface}.
  } \\
 \hline
 415 & 05 Aug 2014 & Pawel Moll & { VIRTIO-110: ARM's feedback for MMIO chapter, trivial changes
@@ -14,6 +17,9 @@ removing all MUSTs.
 414 & 04 Aug 2014 & Michael S. Tsirkin & { legacy: grammar fixup
 
 Legacy devices are "they" not "it".
+
+See \ref{sec:General Initialization And Device Operation / Device
+Initialization / Legacy Interface: Device Initialization}
 
 Resolves VIRTIO-113
  } \\
@@ -33,13 +39,27 @@ that current spec does not attempt to fully describe the legacy
 device/driver behaviour: this text is only here to serve as
 motivation for the transitional device/driver requirements.
 
+See \ref{sec:General Initialization And Device Operation / Device
+Initialization / Legacy Interface: Device Initialization}
+
 Resolves VIRTIO-112
  } \\
 \hline
 412 & 30 Jul 2014 & Michael S. Tsirkin & { VIRTIO-111: Fix minor typos
 
 Fix minor typos as reported in ARM's feedback.
- } \\
+
+See \ref{drivernormative:Basic Facilities of a Virtio Device /
+Device Configuration Space}, \ref{sec:Basic Facilities of a
+Virtio Device / Device Configuration Space / Legacy Interface:
+Device Configuration Space}, \ref{sec:General Initialization And
+Device Operation / Device Operation / Supplying Buffers to The
+Device} and
+\ref{drivernormative:Device Types / Network Device / Device
+Operation / Control Virtqueue / Offloads State Configuration /
+Setting Offloads State}
+ }
+ \\
 \hline
 413 & 11 Aug 2014 & Pawel Moll & {  VIRTIO-110: ARM's feedback for MMIO chapter, clarifications
 
@@ -50,5 +70,12 @@ Fix minor typos as reported in ARM's feedback.
     \item Added alignment requirement section, to formalise
       hidden assumptions about register accesses
 \end{itemize}
-} \\
+
+See \ref{sec:Virtio Transport Options / Virtio Over MMIO / MMIO
+Device Register Layout}, \ref{devicenormative:Virtio Transport
+Options / Virtio Over MMIO / MMIO Device Register Layout} and
+\ref{drivernormative:Virtio Transport
+Options / Virtio Over MMIO / MMIO Device Register Layout}
+}
+ \\
 \hline
