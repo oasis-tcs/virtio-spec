@@ -1,0 +1,54 @@
+416 & 05 Aug 2014 & Pawel Moll & { VIRTIO-110: ARM's feedback for MMIO chapter, legacy section
+
+Make it clear that the legacy section is non-normative,
+removing all MUSTs.
+ } \\
+\hline
+415 & 05 Aug 2014 & Pawel Moll & { VIRTIO-110: ARM's feedback for MMIO chapter, trivial changes
+\begin{itemize}
+\item Typos and language mistakes in 4.2, 4.2.1, 4.2.2 and 4.2.2.2.
+\item Extra clarifications for InterruptACK.
+\end{itemize}
+ } \\
+\hline
+414 & 04 Aug 2014 & Michael S. Tsirkin & { legacy: grammar fixup
+
+Legacy devices are "they" not "it".
+
+Resolves VIRTIO-113
+ } \\
+\hline
+413 & 04 Aug 2014 & Michael S. Tsirkin & { legacy: consistently use past tense
+
+Paragraph with general description of feature negotiation
+for legacy devices mixed present and past tense.
+As rest of legacy sections all use past tense,
+fix the only instance of the present tense:
+s/do/did/ for consistency.
+
+It might be argued that legacy devices still have these
+properties so present tense is more appropriate, on the
+other hand, using the past tense helps stress the fact
+that current spec does not attempt to fully describe the legacy
+device/driver behaviour: this text is only here to serve as
+motivation for the transitional device/driver requirements.
+
+Resolves VIRTIO-112
+ } \\
+\hline
+412 & 30 Jul 2014 & Michael S. Tsirkin & { VIRTIO-111: Fix minor typos
+
+Fix minor typos as reported in ARM's feedback.
+ } \\
+\hline
+413 & 11 Aug 2014 & Pawel Moll & {  VIRTIO-110: ARM's feedback for MMIO chapter, clarifications
+
+    Those changes do not add nor remove any features and constitutes
+    only error correction and editorial changes.
+\begin{itemize}
+    \item Extra clarifications for QueueReady and ConfigGeneration
+    \item Added alignment requirement section, to formalise
+      hidden assumptions about register accesses
+\end{itemize}
+} \\
+\hline
