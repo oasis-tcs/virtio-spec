@@ -1997,8 +1997,8 @@ All register values are organized as Little Endian.
   }
   \hline 
   \mmioreg{QueueReady}{Virtual queue ready bit}{0x044}{RW}{%
-    Writing one (0x1) to this register notifies the device that the
-    virtual queue is ready to be used. Reading from this register
+    Writing one (0x1) to this register notifies the device that it can
+    execute requests from this virtual queue. Reading from this register
     returns the last value written to it. Both read and write
     accesses apply to the queue selected by writing to \field{QueueSel}.
   }
@@ -2058,7 +2058,11 @@ All register values are organized as Little Endian.
   }
   \hline 
   \mmioreg{ConfigGeneration}{Configuration atomicity value}{0x0fc}{R}{
-    Changes every time the configuration noticeably changes (see \ref {sec:Basic Facilities of a Virtio Device / Device Configuration Space}.
+    Reading from this register returns a value describing a version of the device-specific configuration space (see \field{Config}).
+    The driver can then access the configuration space and, when finished, read \field{ConfigGeneration} again.
+    If no part of the configuration space has changed between these two \field{ConfigGeneration} reads, the returned values are identical.
+    If the values are different, the configuration space accesses were not atomic and the driver has to perform the operations again.
+    See also \ref {sec:Basic Facilities of a Virtio Device / Device Configuration Space}.
   }
   \hline 
   \mmioreg{Config}{Configuration space}{0x100+}{RW}{
@@ -2083,9 +2087,10 @@ do not represent events which took place MUST be zero.
 Upon reset, the device MUST clear all bits in \field{InterruptStatus} and ready bits in the
 \field{QueueReady} register for all queues in the device.
 
-The device MUST change \field{ConfigGeneration} if there is any risk of a
-device seeing an inconsistent configuration state, but it MAY only change the value
-after a configuration read operation.
+The device MUST change value returned in \field{ConfigGeneration} if there is any risk of a
+driver seeing an inconsistent configuration state.
+
+The device MUST NOT access virtual queue contents when \field{QueueReady} is zero (0x0).
 
 \drivernormative{\subsubsection}{MMIO Device Register Layout}{Virtio Transport Options / Virtio Over MMIO / MMIO Device Register Layout}
 The driver MUST NOT access memory locations not described in the
@@ -2093,6 +2098,12 @@ table \ref{tab:Virtio Trasport Options / Virtio Over MMIO / MMIO Device Register
 (or, in case of the configuration space, described in the device specification),
 MUST NOT write to the read-only registers (direction R) and
 MUST NOT read from the write-only registers (direction W).
+
+The driver MUST only use 32 bit wide and aligned reads and writes to access the control registers
+described in table \ref{tab:Virtio Trasport Options / Virtio Over MMIO / MMIO Device Register Layout}.
+For the device-specific configuration space, the driver MUST use 8 bit wide accesses for
+8 bit wide fields, 16 bit wide and aligned accesses for 16 bit wide fields and 32 bit wide and
+aligned accesses for 32 and 64 bit wide fields.
 
 The driver MUST ignore a device with \field{MagicValue} which is not 0x74726976,
 although it MAY report an error.
