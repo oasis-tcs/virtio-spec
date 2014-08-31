@@ -13,6 +13,9 @@ git cherry-pick 42ef1dd895681a9b387d2c624771f1784c42a3d8
 #suppress diff of changelog
 git cherry-pick 2cf864d5659977040fdbc7a60f5e0530611f71da
 git cherry-pick 523d7d957f4cd93c8b58a24f6bb6a3b4d64d0b99
+git cherry-pick de0a207286c4a53cc687e1c1a3409000d38be937
+git cherry-pick a279f7f7fcce55a00c4e419114f5171912ab17ae
+
 
 #mv specvars.tex specvars-orig.tex
 #make links green to avoid confusion
