@@ -32,8 +32,8 @@ case "$1" in
 	;;
     *-cs*)
 	STAGE=cs
-	STAGENAME="Committee Specification"
-	WORKINGDRAFT=""
+	WORKINGDRAFT=`basename "$1" | sed 's/.*-cs//'`
+	STAGENAME="Committee Specification $WORKINGDRAFT"
 	;;
     *)
 	echo Unknown doc type >&2
