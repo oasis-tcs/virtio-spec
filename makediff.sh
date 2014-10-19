@@ -1,3 +1,8 @@
+#force revision and date in environment
+#this way they don't appear in the diff
+export SPECDOC=${SPECDOC:-`cat REVISION`}
+export DATESTR=${DATESTR:-`cat REVISION-DATE`}
+
 #make pdf diff using latexpand and latexdiff-fast
 #preamble in diffpreamble.tex
 #in diff, links are coloured green instead of blue
