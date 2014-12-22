@@ -2742,8 +2742,11 @@ command reject to any subsequent CCW_CMD_SET_IND_ADAPTER command.
 
 \paragraph{Legacy Interfaces: A Note on Setting Up Indicators}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Setting Up Indicators / Legacy Interfaces: A Note on Setting Up Indicators}
 
-Legacy devices will only support classic queue indicators; they will
-reject CCW_CMD_SET_IND_ADAPTER as they don't know that command.
+In some cases, legacy devices will only support classic queue indicators;
+in that case, they will reject CCW_CMD_SET_IND_ADAPTER as they don't know that
+command. Some legacy devices will support two-stage queue indicators, though,
+and a driver will be able to successfully use CCW_CMD_SET_IND_ADAPTER to set
+them up.
 
 \subsection{Device Operation}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Operation}
 
