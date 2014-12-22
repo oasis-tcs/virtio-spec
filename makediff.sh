@@ -14,13 +14,13 @@ git clone $PWD old
 cd "${cur}/old"
 git checkout 40ba29870a685004fc4d4458778bcd038f200524
 #suppress diff of title
-git cherry-pick 42ef1dd895681a9b387d2c624771f1784c42a3d8
+git cherry-pick 0adee486ab987c3e98c5f31b51cc963d8bb6fff4
 #suppress diff of changelog
-git cherry-pick 2cf864d5659977040fdbc7a60f5e0530611f71da
-git cherry-pick 523d7d957f4cd93c8b58a24f6bb6a3b4d64d0b99
-git cherry-pick de0a207286c4a53cc687e1c1a3409000d38be937
-git cherry-pick a279f7f7fcce55a00c4e419114f5171912ab17ae
-git cherry-pick 94670c0396844e21dfbe1d8d9d43c60b81ae9790
+git cherry-pick a41f3813a748e7d279cb6eb82f3c0afde4a3243a
+git cherry-pick fbfb402e69cdd9279c44b7684612e6f81df99e6d
+git cherry-pick 9f240fe0e718bf9b1e502e02916db9d8fede304b
+git cherry-pick a02605f9945f450ecaadf86736741de2e2c2e788
+git cherry-pick 175e797beede8aea840102bee9b70bb08190153d
 
 
 #mv specvars.tex specvars-orig.tex
