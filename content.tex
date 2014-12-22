@@ -217,7 +217,7 @@ The correct endian-ness is documented for each device.
 Legacy devices did not have a configuration generation field, thus are
 susceptible to race conditions if configuration is updated.  This
 affects the block \field{capacity} (see \ref{sec:Device Types /
-Block Device / Feature bits / Device configuration layout}) and
+Block Device / Device configuration layout}) and
 network \field{mac} (see \ref{sec:Device Types / Network Device /
 Device configuration layout}) fields;
 when using the legacy interface, drivers SHOULD
@@ -3739,7 +3739,7 @@ VIRTIO_BLK_F_FLUSH was also called VIRTIO_BLK_F_WCE: Legacy drivers
 MUST only negotiate this feature if they are capable of sending
 VIRTIO_BLK_T_FLUSH commands.
 
-\subsubsection{Device configuration layout}\label{sec:Device Types / Block Device / Feature bits / Device configuration layout}
+\subsection{Device configuration layout}\label{sec:Device Types / Block Device / Device configuration layout}
 
 The \field{capacity} of the device (expressed in 512-byte sectors) is always
 present. The availability of the others all depend on various feature
@@ -3771,7 +3771,7 @@ struct virtio_blk_config {
 \end{lstlisting}
 
 
-\paragraph{Legacy Interface: Device configuration layout}\label{sec:Device Types / Block Device / Feature bits / Device configuration layout / Legacy Interface: Device configuration layout}
+\subsubsection{Legacy Interface: Device configuration layout}\label{sec:Device Types / Block Device / Device configuration layout / Legacy Interface: Device configuration layout}
 When using the legacy interface, transitional devices and drivers
 MUST format the fields in struct virtio_blk_config
 according to the native endian of the guest rather than
@@ -3850,7 +3850,7 @@ error or VIRTIO_BLK_S_UNSUPP for a request unsupported by device:
 #define VIRTIO_BLK_S_UNSUPP    2
 \end{lstlisting}
 
-\drivernormative{\subsection}{Device Operation}{Device Types / Block Device / Device Operation}
+\drivernormative{\subsubsection}{Device Operation}{Device Types / Block Device / Device Operation}
 
 A driver MUST NOT submit a request which would cause a read or write
 beyond \field{capacity}.
@@ -3860,7 +3860,7 @@ A driver SHOULD accept the VIRTIO_BLK_F_RO feature if offered.
 A driver MUST set \field{sector} to 0 for a VIRTIO_BLK_T_FLUSH request.
 A driver SHOULD NOT include any data in a VIRTIO_BLK_T_FLUSH request.
 
-\devicenormative{\subsection}{Device Operation}{Device Types / Block Device / Device Operation}
+\devicenormative{\subsubsection}{Device Operation}{Device Types / Block Device / Device Operation}
 
 A device MUST set the \field{status} byte to VIRTIO_BLK_S_IOERR
 for a write request if the VIRTIO_BLK_F_RO feature if offered, and MUST NOT
