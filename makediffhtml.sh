@@ -1,6 +1,6 @@
 #!/bin/sh
 
-./makediff.sh virtio-html.tex
+./makediff.sh virtio-html.tex || exit 3
 
 SPECDOC=${SPECDOC:-`cat REVISION`}
 SPECDOC="${SPECDOC}-diff"

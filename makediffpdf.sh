@@ -1,5 +1,5 @@
 #make pdf diff using latexpand and latexdiff-fast
-./makediff.sh virtio.tex
+./makediff.sh virtio.tex || exit 3
 SPECDOC=${SPECDOC:-`cat REVISION`}
 SPECDOC="${SPECDOC}-diff"
 rm $SPECDOC.aux $SPECDOC.pdf $SPECDOC.out
