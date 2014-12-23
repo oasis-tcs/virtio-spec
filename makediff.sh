@@ -10,6 +10,7 @@ MAIN=$1
 PATH=.:${PATH}
 cur="$PWD"
 oldrev=`git rev-list -1 origin/tags/v1.0-cs01`
+newrev=`git rev-list -1 HEAD`
 rm -fr old new
 git clone $PWD old
 cd "${cur}/old"
@@ -22,12 +23,15 @@ git checkout $oldrev
 #git cherry-pick 9f240fe0e718bf9b1e502e02916db9d8fede304b
 #git cherry-pick a02605f9945f450ecaadf86736741de2e2c2e788
 #git cherry-pick 175e797beede8aea840102bee9b70bb08190153d
-git cherry-pick d858fdbad24c7e8c90552ecc1f4e963c378dadf2
-git cherry-pick fc666b6f4b9152c9eb62c48ae8a402d4223de2c4
-git cherry-pick 7f85bbb585e0d63f7ac8ff1a3ac22fc3370c50ac
-git cherry-pick ae8f2dd
-git cherry-pick bf266a7
-
+while read -r rev; do
+	echo "Applying $rev"
+	git cherry-pick `git rev-list -1 -F --grep "$rev" $newrev` || exit 1
+done << 'EOF'
+formatting: escape \ldots in lstlisting
+formatting: mark change manually as changed in cs02
+cl: remove changelog for cs01
+cl-os: prepare changelog for v1.0 cs02
+EOF
 
 #mv specvars.tex specvars-orig.tex
 #make links green to avoid confusion
