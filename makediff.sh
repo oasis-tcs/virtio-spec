@@ -9,18 +9,24 @@ export DATESTR=${DATESTR:-`cat REVISION-DATE`}
 MAIN=$1
 PATH=.:${PATH}
 cur="$PWD"
+oldrev=`git rev-list -1 origin/tags/v1.0-cs01`
 rm -fr old new
 git clone $PWD old
 cd "${cur}/old"
-git checkout 40ba29870a685004fc4d4458778bcd038f200524
-#suppress diff of title
-git cherry-pick 0adee486ab987c3e98c5f31b51cc963d8bb6fff4
-#suppress diff of changelog
-git cherry-pick a41f3813a748e7d279cb6eb82f3c0afde4a3243a
-git cherry-pick fbfb402e69cdd9279c44b7684612e6f81df99e6d
-git cherry-pick 9f240fe0e718bf9b1e502e02916db9d8fede304b
-git cherry-pick a02605f9945f450ecaadf86736741de2e2c2e788
-git cherry-pick 175e797beede8aea840102bee9b70bb08190153d
+git checkout $oldrev
+##suppress diff of title
+#git cherry-pick 0adee486ab987c3e98c5f31b51cc963d8bb6fff4
+##suppress diff of changelog
+#git cherry-pick a41f3813a748e7d279cb6eb82f3c0afde4a3243a
+#git cherry-pick fbfb402e69cdd9279c44b7684612e6f81df99e6d
+#git cherry-pick 9f240fe0e718bf9b1e502e02916db9d8fede304b
+#git cherry-pick a02605f9945f450ecaadf86736741de2e2c2e788
+#git cherry-pick 175e797beede8aea840102bee9b70bb08190153d
+git cherry-pick d858fdbad24c7e8c90552ecc1f4e963c378dadf2
+git cherry-pick fc666b6f4b9152c9eb62c48ae8a402d4223de2c4
+git cherry-pick 7f85bbb585e0d63f7ac8ff1a3ac22fc3370c50ac
+git cherry-pick ae8f2dd
+git cherry-pick bf266a7
 
 
 #mv specvars.tex specvars-orig.tex
