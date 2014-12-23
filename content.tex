@@ -3034,6 +3034,7 @@ upon further investigation it became clear that multiple bits
 were needed.
 
 \subsection{Device configuration layout}\label{sec:Device Types / Network Device / Device configuration layout}
+\label{sec:Device Types / Block Device / Feature bits / Device configuration layout}
 
 Three driver-read-only configuration fields are currently defined. The \field{mac} address field
 always exists (though is only valid if VIRTIO_NET_F_MAC is set), and
@@ -3078,6 +3079,7 @@ assume the link is active, otherwise it SHOULD read the link status from
 the bottom bit of \field{status}.
 
 \subsubsection{Legacy Interface: Device configuration layout}\label{sec:Device Types / Network Device / Device configuration layout / Legacy Interface: Device configuration layout}
+\label{sec:Device Types / Block Device / Feature bits / Device configuration layout / Legacy Interface: Device configuration layout}
 When using the legacy interface, transitional devices and drivers
 MUST format \field{status} and
 \field{max_virtqueue_pairs} in struct virtio_net_config
