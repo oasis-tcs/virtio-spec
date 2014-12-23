@@ -31,6 +31,7 @@ formatting: escape \ldots in lstlisting
 formatting: mark change manually as changed in cs02
 cl: remove changelog for cs01
 cl-os: prepare changelog for v1.0 cs02
+title: update previous version to cs01
 EOF
 
 #mv specvars.tex specvars-orig.tex
