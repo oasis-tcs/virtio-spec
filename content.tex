@@ -4786,10 +4786,12 @@ according to the native endian of the guest rather than
 The controlq is used for other SCSI transport operations.
 Requests have the following format:
 
+{
+\lstset{escapechar=\$}
 \begin{lstlisting}
 struct virtio_scsi_ctrl {
         le32 type;
-\ldots
+$\ldots$
         u8 response;
 };
 
@@ -4803,6 +4805,7 @@ struct virtio_scsi_ctrl {
 #define VIRTIO_SCSI_S_FAILURE                  9
 #define VIRTIO_SCSI_S_INCORRECT_LUN            12
 \end{lstlisting}
+}
 
 The \field{type} identifies the remaining fields.
 
