@@ -55,7 +55,11 @@
 \titleformat{\paragraph}[hang]{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
 \titleformat{\subparagraph}[hang]{\normalfont\normalsize\bfseries}{\thesubparagraph}{1em}{}
 
-
+%Using texlive on Fedora 21, \url for some reason replaces
+%hypen - with -_ in html output only.
+%This seems to go away if we override - within urls inserting an
+%mbox around it.
+\makeatletter \g@addto@macro\UrlSpecials{\do\-{\mbox{-}}}
 
 % main document
 \input{main.tex}

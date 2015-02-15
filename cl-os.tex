@@ -1,86 +1,52 @@
-418 & 11 Aug 2014 & Michael S. Tsirkin & { Acknowledge input from
-Brian Foley
+448 & 22 Dec 2014 & Michael S. Tsirkin & {VIRTIO-120: virtio:
+fix used element size
 
-See \ref{chap:Acknowledgements}
-}
- \\
-417 & 11 Aug 2014 & Pawel Moll & {  VIRTIO-110: ARM's feedback for MMIO chapter, clarifications
+General ring description lists size for
+used ring elements as 4, it must be 8.
 
-\begin{itemize}
-    \item Extra clarifications for QueueReady and ConfigGeneration
-    \item Added alignment requirement section, to formalise
-      hidden assumptions about register accesses
-\end{itemize}
-
-See \ref{sec:Virtio Transport Options / Virtio Over MMIO / MMIO
-Device Register Layout}, \ref{devicenormative:Virtio Transport
-Options / Virtio Over MMIO / MMIO Device Register Layout} and
-\ref{drivernormative:Virtio Transport
-Options / Virtio Over MMIO / MMIO Device Register Layout}
-}
- \\
-\hline
-\hline
-416 & 05 Aug 2014 & Pawel Moll & { VIRTIO-110: ARM's feedback for MMIO chapter, legacy section
-
-Make it clear that the legacy section is non-normative,
-removing all MUSTs.
-
-See \ref{sec:Virtio Transport Options / Virtio Over MMIO / Legacy
-interface}.
+See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues}.
  } \\
 \hline
-415 & 05 Aug 2014 & Pawel Moll & { VIRTIO-110: ARM's feedback for MMIO chapter, trivial changes
-\begin{itemize}
-\item Typos and language mistakes in 4.2, 4.2.1, 4.2.2 and 4.2.2.2.
-\item Extra clarifications for InterruptACK.
-\end{itemize}
+449 & 22 Doc 2014 & Cornelia Huck & {VIRTIO-125: block: fixup section levels
+    The specification for the configuration layout for block devices
+    should be its own subsection as for all other devices and not be
+    hidden beneath "Feature bits".
+    
+    The normative sections for device operation should appear under
+    the device operation section.
+See \ref{sec:Device Types / Block Device / Device configuration
+layout}.
  } \\
 \hline
-414 & 04 Aug 2014 & Michael S. Tsirkin & { legacy: grammar fixup
+450 & 22 Dec 2014 & Cornelia Huck & {VIRTIO-127: ccw: two-stage
+indicators for legacy devices
 
-Legacy devices are "they" not "it".
+    Some legacy devices will support two-stage queue indicators
+and therefore
+    won't reject CCW_CMD_SET_IND_ADAPTER. Note this.
 
-See \ref{sec:General Initialization And Device Operation / Device
-Initialization / Legacy Interface: Device Initialization}
-
-Resolves VIRTIO-113
+See \ref{sec:Virtio Transport Options / Virtio over channel I/O /
+Device Initialization / Setting Up Indicators / Legacy
+Interfaces: A Note on Setting Up Indicators}.
  } \\
 \hline
-413 & 04 Aug 2014 & Michael S. Tsirkin & { legacy: consistently use past tense
+452 & 22 Dec 2014 & Michael S. Tsirkin & {VIRTIO-115:
+formatting: escape {\textbackslash}ldots in lstlisting
 
-Paragraph with general description of feature negotiation
-for legacy devices mixed present and past tense.
-As rest of legacy sections all use past tense,
-fix the only instance of the present tense:
-s/do/did/ for consistency.
+    {\textbackslash}ldots does not work within lstlisting, the result is
+    {\textbackslash}ldots verbatim in the PDF output.
 
-It might be argued that legacy devices still have these
-properties so present tense is more appropriate, on the
-other hand, using the past tense helps stress the fact
-that current spec does not attempt to fully describe the legacy
-device/driver behaviour: this text is only here to serve as
-motivation for the transitional device/driver requirements.
+    To fix, make \$ an escape character, and escape the sequence:
+    \${\textbackslash}ldots\$
 
-See \ref{sec:General Initialization And Device Operation / Device
-Initialization / Legacy Interface: Device Initialization}
-
-Resolves VIRTIO-112
- } \\
+See \ref{sec:Device Types / SCSI Host Device / Device Operation /
+Device Operation: controlq}.
+} \\
 \hline
-412 & 30 Jul 2014 & Michael S. Tsirkin & { VIRTIO-111: Fix minor typos
+455,457 & 23 Dec 2014 & Michael S. Tsirkin & {acknowledgements: acknowledge dgilbert
+    
+    Acknowledge David Alan Gilbert for reporting VIRTIO-120.
 
-Fix minor typos as reported in ARM's feedback.
-
-See \ref{drivernormative:Basic Facilities of a Virtio Device /
-Device Configuration Space}, \ref{sec:Basic Facilities of a
-Virtio Device / Device Configuration Space / Legacy Interface:
-Device Configuration Space}, \ref{sec:General Initialization And
-Device Operation / Device Operation / Supplying Buffers to The
-Device} and
-\ref{drivernormative:Device Types / Network Device / Device
-Operation / Control Virtqueue / Offloads State Configuration /
-Setting Offloads State}
- }
- \\
+See \ref{chap:Acknowledgements}.
+} \\
 \hline
