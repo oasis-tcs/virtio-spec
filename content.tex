@@ -288,7 +288,8 @@ For Legacy Interfaces, several additional
 restrictions are placed on the virtqueue layout:
 
 Each virtqueue occupies two or more physically-contiguous pages
-(usually defined as 4096 bytes, but depending on the transport)
+(usually defined as 4096 bytes, but depending on the transport;
+henceforth referred to as Queue Align)
 and consists of three parts:
 
 \begin{tabular}{|l|l|l|}
@@ -301,11 +302,12 @@ The bus-specific Queue Size field controls the total number of bytes
 for the virtqueue.
 When using the legacy interface, the transitional
 driver MUST retrieve the Queue Size field from the device
-and MUST allocate the total number of bytes for the virtuqueue
-according to the following formula:
+and MUST allocate the total number of bytes for the virtqueue
+according to the following formula (Queue Align given in qalign and
+Queue Size given in qsz):
 
 \begin{lstlisting}
-#define ALIGN(x) (((x) + PAGE_SIZE) & ~PAGE_SIZE)
+#define ALIGN(x) (((x) + qalign) & ~qalign)
 static inline unsigned virtq_size(unsigned int qsz)
 {
      return ALIGN(sizeof(struct virtq_desc)*qsz + sizeof(u16)*(3 + qsz))
@@ -326,7 +328,7 @@ struct virtq {
         // A ring of available descriptor heads with free-running index.
         struct virtq_avail avail;
 
-        // Padding to the next PAGE_SIZE boundary.
+        // Padding to the next Queue Align boundary.
         u8 pad[ Padding ];
 
         // A ring of used descriptor heads with free-running index.
@@ -1761,8 +1763,8 @@ The driver typically does this as follows, for each virtqueue a device has:
 \end{enumerate}
 
 \subparagraph{Legacy Interface: A Note on Virtqueue Configuration}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Virtqueue Configuration / Legacy Interface: A Note on Virtqueue Configuration}
-When using the legacy interface, the page size for a virtqueue on a PCI virtio
-device is defined as 4096 bytes.  Driver writes the physical address, divided
+When using the legacy interface, the queue layout follows \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Legacy Interfaces: A Note on Virtqueue Layout}~\nameref{sec:Basic Facilities of a Virtio Device / Virtqueues / Legacy Interfaces: A Note on Virtqueue Layout} with an alignment of 4096.
+Driver writes the physical address, divided
 by 4096 to the Queue Address field\footnote{The 4096 is based on the x86 page size, but it's also large
 enough to ensure that the separate parts of the virtqueue are on
 separate cache lines.
@@ -2585,30 +2587,7 @@ struct vq_info_block_legacy {
 \end{lstlisting}
 
 \field{queue} contains the guest address for queue \field{index}, \field{num} the number of buffers
-and \field{align} the alignment.
-
-\subsubsection{Virtqueue Layout}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Virtqueue Layout}
-
-The virtqueue is physically contiguous, with padding added to make the
-used ring meet the align value:
-
-\begin{tabular}{|l|l|l|}
-\hline
-Descriptor Table & Available Ring (\ldots padding\ldots) & Used Ring \\
-\hline
-\end{tabular}
-
-The calculation for total size is as follows:
-
-\begin{lstlisting}
-#define ALIGN(x) (((x) + align) & ~align)
-static inline unsigned virtq_size(unsigned int num)
-{
-     return ALIGN(sizeof(struct virtq_desc)*num
-                  + sizeof(u16)*(3 + num))
-          + ALIGN(sizeof(u16)*3 + sizeof(struct virtq_used_elem)*num);
-}
-\end{lstlisting}
+and \field{align} the alignment. The queue layout follows \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Legacy Interfaces: A Note on Virtqueue Layout}~\nameref{sec:Basic Facilities of a Virtio Device / Virtqueues / Legacy Interfaces: A Note on Virtqueue Layout}.
 
 \subsubsection{Communicating Status Information}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Communicating Status Information}
 
