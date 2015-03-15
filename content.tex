@@ -2595,6 +2595,23 @@ The driver changes the status of a device via the
 CCW_CMD_WRITE_STATUS command, which transmits an 8 bit status
 value.
 
+As described in
+\ref{devicenormative:Basic Facilities of a Virtio Device / Feature Bits},
+a device sometimes fails to set the \field{status} field: For example, it
+might fail to accept the FEATURES_OK status bit during device initialization.
+
+\drivernormative{\paragraph}{Communicating Status Information}{Virtio Transport Options / Virtio over channel I/O / Device Initialization / Communicating Status Information}
+
+If the device posts a unit check with command reject in response to the
+CCW_CMD_WRITE_STATUS command, the driver MUST assume that the device failed
+to set the status and the \field{status} field retained its previous value.
+
+\devicenormative{\paragraph}{Communicating Status Information}{Virtio Transport Options / Virtio over channel I/O / Device Initialization / Communicating Status Information}
+
+If the device fails to set the \field{status} field to the value written by
+the driver, the device MUST assure that the \field{status} field is left
+unchanged and MUST post a unit check with command reject.
+
 \subsubsection{Handling Device Features}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Handling Device Features}
 
 Feature bits are arranged in an array of 32 bit values, making
