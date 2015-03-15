@@ -2381,8 +2381,14 @@ model corresponding to the attached virtio device's subsystem
 device ID, accessed via a virtual I/O subchannel and a virtual
 channel path of type 0x32. This proxy device is discoverable via
 normal channel subsystem device discovery (usually a STORE
-SUBCHANNEL loop) and answers to the basic channel commands, most
-importantly SENSE ID.
+SUBCHANNEL loop) and answers to the basic channel commands:
+
+\begin{itemize}
+\item NO-OPERATION (0x03)
+\item BASIC SENSE (0x04)
+\item TRANSFER IN CHANNEL (0x08)
+\item SENSE ID (0xe4)
+\end{itemize}
 
 For a virtio-ccw proxy device, SENSE ID will return the following
 information:
