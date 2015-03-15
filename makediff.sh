@@ -50,6 +50,8 @@ sed 's/\\footnote{/\\footnote {/' new/flat.tex > new/flat-fixed.tex
 #wget http://mirror.math.ku.edu/tex-archive/support/latexdiff/latexdiff-fast
 #chmod +x latexdiff-fast
 latexdiff-fast --config \
-"FLOATENV=(?:figure|longtable|table|tabular|plate)[\w\d*@]*" \
- --append-safecmd=field --append-textcmd=mmioreg --ignore-warnings -p diffpreamble.tex old/flat-fixed.tex new/flat-fixed.tex > virtio-diff.tex
-#perl -pi fixupdiff.pl virtio-diff.tex
+"FLOATENV=(?:figure|longtable|table|tabular|plate|lstlisting)[\w\d*@]*,PICTUREENV=(?:picture|DIFnomarkup|lstlisting)[\w\d*@]*" \
+ --append-safecmd=field --append-textcmd=mmioreg \
+--ignore-warnings -p diffpreamble.tex old/flat-fixed.tex \
+new/flat-fixed.tex > virtio-diff-tofix.tex
+perl fixupdiff.pl virtio-diff-tofix.tex > virtio-diff.tex
