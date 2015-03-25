@@ -8,3 +8,13 @@ alignment (which referred to legacy, but was not tagged as such) from
 the ccw section.
  } \\
 \hline
+479 & 15 Mar 2015 & Cornelia Huck & {VIRTIO-116:
+ccw: allow WRITE_STATUS to fail
+    
+We want to be able to fail setting a status on the device
+(e.g.  FEATURES_OK if the device can't work with the features
+negotiated).
+The easiest way to do that is to allow the device to fail the
+WRITE_STATUS command by posting a command reject.
+ } \\
+\hline
