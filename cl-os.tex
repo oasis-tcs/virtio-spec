@@ -56,3 +56,17 @@ See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues /
 The Virtqueue Used Ring}.
  } \\
 \hline
+486 & 15 Mar 2015 & Rusty Russell & {VIRTIO-130:
+ISR status: Fix incorrect diagram
+
+ISR status capability diagram has the "Device Configuration
+Interrupt " as bit 0, and the "Queue Interrupt" as bit 1. This is
+the wrong way around: it disagrees with the legacy
+implementations, as well as the spec elsewhere.
+
+All current guests correctly follow the text, fix
+up the diagram to match.
+See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI
+Device Layout / ISR status capability}.
+ } \\
+\hline
