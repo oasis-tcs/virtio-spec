@@ -595,6 +595,9 @@ for drivers using untrusted buffers: if you do not know exactly
 how much has been written by the device, you usually have to zero
 the buffer to ensure no data leakage occurs.
 
+\field{idx} field indicates where the driver would put the next descriptor
+entry in the ring (modulo the queue size). This starts at 0, and increases.
+
 \begin{note}
 The legacy \hyperref[intro:Virtio PCI Draft]{[Virtio PCI Draft]}
 referred to these structures as vring_used and vring_used_elem, and
