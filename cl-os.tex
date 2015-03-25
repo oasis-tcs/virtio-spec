@@ -6,8 +6,14 @@ for different alignment requirements. Have pci and ccw refer to that
 section for legacy devices. Remove the double definition of virtqueue
 alignment (which referred to legacy, but was not tagged as such) from
 the ccw section.
-See \ref{
-}.
+See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues /
+Legacy Interfaces: A Note on Virtqueue Layout}, \ref{sec:Virtio
+Transport Options / Virtio Over PCI Bus / PCI-specific
+Initialization And Device Operation / Device Initialization /
+Virtqueue Configuration / Legacy Interface: A Note on Virtqueue
+Configuration} and \ref{sec:Virtio Transport Options / Virtio
+over channel I/O / Device Initialization / Configuring a
+Virtqueue / Legacy Interface: A Note on Configuring a Virtqueue}.
  } \\
 \hline
 479 & 15 Mar 2015 & Cornelia Huck & {VIRTIO-116:
@@ -18,8 +24,8 @@ We want to be able to fail setting a status on the device
 negotiated).
 The easiest way to do that is to allow the device to fail the
 WRITE_STATUS command by posting a command reject.
-See \ref{
-}.
+See \ref{sec:Virtio Transport Options / Virtio over channel I/O /
+Device Initialization / Communicating Status Information}.
  } \\
 \hline
 485 & 15 Mar 2015 & Jason Wang & {VIRTIO-135:
@@ -28,16 +34,16 @@ virtio-ring: comment fixup
 virtio_ring.h included with spec has this text:
 /* Support for avail_idx and used_idx fields */
 it should really refer to avail_event and used_event.
-See \ref{
-}.
+See \ref{sec:virtio-ring.h}.
  } \\
 \hline
 486 & 15 Mar 2015 & Jason Wang & {VIRTIO-136:
 document idx field in virtqueue used ring
 
-Section 2.4.8 The Virtqueue Used Ring
-lists the idx field, but never documents it.
-See \ref{
-}.
+Section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues
+/ The Virtqueue Used Ring} The Virtqueue Used Ring
+listed the idx field, but never documented it.
+See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues /
+The Virtqueue Used Ring}.
  } \\
 \hline
