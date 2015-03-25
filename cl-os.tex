@@ -1,0 +1,10 @@
+478 & 15 Mar 2015 & Cornelia Huck & {VIRTIO-129: legacy:
+clean up virtqueue layout definitions
+
+Generalize "Legacy Interfaces: A Note on Virtqueue Layout" to allow
+for different alignment requirements. Have pci and ccw refer to that
+section for legacy devices. Remove the double definition of virtqueue
+alignment (which referred to legacy, but was not tagged as such) from
+the ccw section.
+ } \\
+\hline
