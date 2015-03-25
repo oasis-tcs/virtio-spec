@@ -20,6 +20,8 @@ while read -r rev; do
 	git cherry-pick `git rev-list -1 -F --grep "$rev" $newrev` || exit 1
 done << 'EOF'
 Revert: formatting: mark change manually as changed in cs02
+cl: move out cs02 changelog
+cl: drop contents temporarily
 EOF
 
 #mv specvars.tex specvars-orig.tex
