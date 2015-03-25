@@ -53,7 +53,7 @@
 /* Support for indirect descriptors */
 #define VIRTIO_F_INDIRECT_DESC    28
 
-/* Support for avail_idx and used_idx fields */
+/* Support for avail_event and used_event fields */
 #define VIRTIO_F_EVENT_IDX        29
 
 /* Arbitrary descriptor layouts. */
