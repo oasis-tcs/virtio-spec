@@ -6,6 +6,8 @@ for different alignment requirements. Have pci and ccw refer to that
 section for legacy devices. Remove the double definition of virtqueue
 alignment (which referred to legacy, but was not tagged as such) from
 the ccw section.
+See \ref{
+}.
  } \\
 \hline
 479 & 15 Mar 2015 & Cornelia Huck & {VIRTIO-116:
@@ -16,5 +18,26 @@ We want to be able to fail setting a status on the device
 negotiated).
 The easiest way to do that is to allow the device to fail the
 WRITE_STATUS command by posting a command reject.
+See \ref{
+}.
+ } \\
+\hline
+485 & 15 Mar 2015 & Jason Wang & {VIRTIO-135:
+virtio-ring: comment fixup
+    
+virtio_ring.h included with spec has this text:
+/* Support for avail_idx and used_idx fields */
+it should really refer to avail_event and used_event.
+See \ref{
+}.
+ } \\
+\hline
+486 & 15 Mar 2015 & Jason Wang & {VIRTIO-136:
+document idx field in virtqueue used ring
+
+Section 2.4.8 The Virtqueue Used Ring
+lists the idx field, but never documents it.
+See \ref{
+}.
  } \\
 \hline
