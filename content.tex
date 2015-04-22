@@ -590,10 +590,19 @@ them: it is only written to by the device, and read by the driver.
 Each entry in the ring is a pair: \field{id} indicates the head entry of the
 descriptor chain describing the buffer (this matches an entry
 placed in the available ring by the guest earlier), and \field{len} the total
-of bytes written into the buffer. The latter is extremely useful
-for drivers using untrusted buffers: if you do not know exactly
-how much has been written by the device, you usually have to zero
-the buffer to ensure no data leakage occurs.
+of bytes written into the buffer.
+
+\begin{note}
+\field{len} is particularly useful
+for drivers using untrusted buffers: if a driver does not know exactly
+how much has been written by the device, the driver would have to zero
+the buffer in advance to ensure no data leakage occurs.
+
+For example, a network driver may hand a received buffer directly to
+an unprivileged userspace application.  If the network device has not
+overwritten the bytes which were in that buffer, this could leak the
+contents of freed memory from other processes to the application.
+\end{note}
 
 \field{idx} field indicates where the driver would put the next descriptor
 entry in the ring (modulo the queue size). This starts at 0, and increases.
@@ -604,6 +613,28 @@ referred to these structures as vring_used and vring_used_elem, and
 the constant as VRING_USED_F_NO_NOTIFY, but the layout and value were
 identical.
 \end{note}
+
+\devicenormative{\subsubsection}{The Virtqueue Used Ring}{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Used Ring}
+
+The device MUST set \field{len} prior to updating the used \field{idx}.
+
+The device MUST write at least \field{len} bytes to descriptor,
+beginning at the first device-writable buffer,
+prior to updating the used \field{idx}.
+
+The device MAY write more than \field{len} bytes to descriptor.
+
+\begin{note}
+There are potential error cases where a device might not know what
+parts of the buffers have been written.  This is why \field{len} is
+permitted to be an underestimate: that's preferable to the driver believing
+that uninitialized memory has been overwritten when it has not.
+\end{note}
+
+\drivernormative{\subsubsection}{The Virtqueue Used Ring}{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Used Ring}
+
+The driver MUST NOT make assumptions about data in device-writable buffers
+beyond the first \field{len} bytes, and SHOULD ignore this data.
 
 \subsection{Virtqueue Notification Suppression}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Notification Suppression}
 
