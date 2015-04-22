@@ -99,6 +99,26 @@ of a Virtio Device / Virtqueues / The Virtqueue Used Ring} and
 Virtqueue Used Ring}.
  } \\
 \hline
+508 & 22 Apr 2015 & Michael Tsirkin & {VIRTIO-139:
+pci: missing documentation for dealing with 64 bit config fields
+    
+pci spec says what width access to use for 32, 16 and 8
+bit fields, but does not explicitly say what to do for
+32 bit fields. As we have text that says driver must
+treat 64 bit accesses as non-atomic, this seems
+to imply driver should always do two 32 bit wide accesses.
+
+Let's make this an explicit requirement, and require
+devices to support this.
+
+See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI
+Device Layout}, \ref{drivernormative:Virtio Transport Options /
+Virtio Over PCI Bus / PCI Device Layout},
+\ref{devicenormative:Virtio Transport Options / Virtio Over PCI
+Bus / PCI Device Layout} and \ref{sec:Conformance / Driver
+Conformance / PCI Driver Conformance}.
+ } \\
+\hline
 510 & 22 Apr 2015 & Michael Tsirkin & {conformance:
 add VIRTIO-137 statement links
 
