@@ -99,6 +99,38 @@ of a Virtio Device / Virtqueues / The Virtqueue Used Ring} and
 Virtqueue Used Ring}.
  } \\
 \hline
+506 & 22 Apr 2015 & Michael Tsirkin & {VIRTIO-138:
+multiple errors: Non-transitional With Legacy
+
+virtio 1.0 has two sections titled "Non-transitional Device With
+Legacy Driver" the first says devices SHOULD fail, the second
+says devices MUST fail.  Clearly a mistake.
+
+Other issues: devices don't really fail - they cause drivers to
+fail. second section seems to be in the wrong place, and also
+have a section followed by subsection with no explanatory text in
+between, which is ugly.
+Finally, this text was originally ritten to handle buggy windows
+drivers gracefully, but later we changed device IDs so it's not
+really required there. Might be handy for some other buggy legacy
+drivers, though no such drivers are known.
+
+To fix, drop the duplicate section variant, add some explanatory
+text, clarify what does "same ID" mean here, and clarify
+that the work-around is only needed if a buggy driver
+is known to bind to a transitional device.
+
+See \ref{sec:Virtio Transport Options / Virtio
+Over PCI Bus / PCI Device Layout / Non-transitional Device With
+Legacy Driver: A Note on PCI Device Layout},
+\ref{devicenormative:Virtio Transport Options / Virtio Over PCI
+Bus / PCI-specific Initialization And Device Operation / Device
+Initialization / Non-transitional Device With Legacy Driver} and
+\ref{sec:Virtio Transport Options / Virtio Over PCI Bus /
+PCI-specific Initialization And Device Operation / Device
+Initialization}.
+} \\
+\hline
 508 & 22 Apr 2015 & Michael Tsirkin & {VIRTIO-139:
 pci: missing documentation for dealing with 64 bit config fields
     
