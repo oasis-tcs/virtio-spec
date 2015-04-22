@@ -83,3 +83,29 @@ Initialization And Device Operation / Device Initialization /
 Non-transitional Device With Legacy Driver}.
  } \\
 \hline
+504 & 22 Apr 2015 & Rusty Russell & {VIRTIO-137:
+define the meaning and requirements of the len field.
+    
+We said what it was for, and noted why.  We didn't place any
+requirements on it, nor clearly spell out the implications of its use.
+    
+This clarification comes particularly from noticing that QEMU
+didn't set len correctly, and philosophising over the correct value
+when an error has occurred.
+See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues /
+The Virtqueue Used Ring}, \ref{devicenormative:Basic Facilities
+of a Virtio Device / Virtqueues / The Virtqueue Used Ring} and
+\ref{sec:Basic Facilities of a Virtio Device / Virtqueues / The
+Virtqueue Used Ring}.
+ } \\
+\hline
+510 & 22 Apr 2015 & Michael Tsirkin & {conformance:
+add VIRTIO-137 statement links
+
+Add links to new conformance statements added to
+resolve VIRTIO-137 (describing used ring entry len usage).
+
+See \ref{sec:Conformance / Device Conformance}
+and \ref{sec:Conformance / Driver Conformance}.
+ } \\
+\hline
