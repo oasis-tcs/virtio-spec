@@ -1636,10 +1636,25 @@ on PCI Device Layout}\label{sec:Virtio Transport Options / Virtio
 Over PCI Bus / PCI Device Layout / Non-transitional Device With
 Legacy Driver: A Note on PCI Device Layout}
 
+All known legacy drivers check either the PCI Revision or the
+Device and Vendor IDs, and thus won't attempt to drive a
+non-transitional device.
+
+A buggy legacy driver might mistakenly attempt to drive a
+non-transitional device. If support for such drivers is required
+(as opposed to fixing the bug), the following would be the
+recommended way to detect and handle them.
+\begin{note}
+Such buggy drivers are not currently known to be used in
+production.
+\end{note}
+
+\devicenormative{\paragraph}{Non-transitional Device With Legacy Driver}{Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Non-transitional Device With Legacy Driver}
 Non-transitional devices, on a platform where a legacy driver for
-a legacy device with the same ID might have previously existed,
-SHOULD take the following steps to fail gracefully when a legacy
-driver attempts to drive them:
+a legacy device with the same ID (including PCI Revision, Device
+and Vendor IDs) is known to have previously existed,
+SHOULD take the following steps to cause the legacy driver to
+fail gracefully when it attempts to drive them:
 
 \begin{enumerate}
 \item Present an I/O BAR in BAR0, and
@@ -1659,22 +1674,6 @@ This documents PCI-specific steps executed during Device Initialization.
 As a prerequisite to device initialization, the driver scans the
 PCI capability list, detecting virtio configuration layout using Virtio
 Structure PCI capabilities as detailed in \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / Virtio Structure PCI Capabilities}
-
-\paragraph{Non-transitional Device With Legacy Driver}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Non-transitional Device With Legacy Driver}
-
-\devicenormative{\subparagraph}{Non-transitional Device With Legacy Driver}{Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Non-transitional Device With Legacy Driver}
-
-Non-transitional devices, on a platform where a legacy driver for
-a legacy device with the same ID might have previously existed,
-MUST take the following steps to fail gracefully when a legacy
-driver attempts to drive them:
-
-\begin{enumerate}
-\item Present an I/O BAR in BAR0, and
-\item Respond to a single-byte zero write to offset 18
-   (corresponding to Device Status register in the legacy layout)
-   of BAR0 by presenting zeroes on every BAR and ignoring writes.
-\end{enumerate}
 
 \subparagraph{Legacy Interface: A Note on Device Layout Detection}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Virtio Device Configuration Layout Detection / Legacy Interface: A Note on Device Layout Detection}
 
