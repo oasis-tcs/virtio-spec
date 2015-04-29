@@ -22,8 +22,9 @@ configuration information (the network device does this for filtering,
 otherwise the table in the config space could potentially be very
 large).
 
-Remember that configuration fields over 32 bits wide might not be
-atomically writable by the driver.
+Remember that configuration fields over 32 bits wide might not be atomically
+writable by the driver.  Therefore, no writeable field which triggers an
+action ought to be wider than 32 bits.
 
 \section{What Device Number?}\label{sec:Creating New Device Types / What Device Number?}
 
