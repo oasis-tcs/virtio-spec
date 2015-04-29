@@ -477,8 +477,20 @@ one table per descriptor).
 A driver MUST NOT create a descriptor chain longer than the Queue Size of
 the device.
 
+A driver MUST NOT set both VIRTQ_DESC_F_INDIRECT and VIRTQ_DESC_F_NEXT
+in \field{flags}.
+
 \devicenormative{\paragraph}{Indirect Descriptors}{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}
 The device MUST ignore the write-only flag (\field{flags}\&VIRTQ_DESC_F_WRITE) in the descriptor that refers to an indirect table.
+
+The device MUST handle the case of zero or more normal chained
+descriptors followed by a single descriptor with \field{flags}\&VIRTQ_DESC_F_INDIRECT.
+
+\begin{note}
+While unusual (most implementations either create a chain solely using
+non-indirect descriptors, or use a single indirect element), such a
+layout is valid.
+\end{note}
 
 \subsection{The Virtqueue Available Ring}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Available Ring}
 
