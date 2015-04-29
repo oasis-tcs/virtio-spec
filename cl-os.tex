@@ -180,3 +180,63 @@ joined the TC, sort acknowledged reviewers alphabetically.
 See \ref{chap:Acknowledgements}.
 } \\
 \hline
+520 & 30 Apr 2015 & James Bottomley & {VIRTIO-140:
+give explicit guidance on the use of 64 bit fields
+
+Just saying 64 bit fields may not be atomic is true, but less
+helpful than it might be.  Add explicit guidance about what the
+consequences of non-atomicity are.
+
+See \ref{sec:Creating New Device Types / What Device
+Configuration Space Layout?}
+} \\
+\hline
+521 & 30 Apr 2015 & Rusty Russell & {VIRTIO-134:
+Spell out details of indirect elements in chains
+    
+1) It's implied that a chain terminates with an indirect descriptor (since
+VIRTIO-15) but we didn't spell out that a device MUST NOT
+continue it.
+    
+2) We allow [direct]->[direct]->[indirect], and qemu and
+bhyve both accept it.  Make it clear that this is valid, thus devices MUST
+handle it.
+
+See \ref{drivernormative:Basic Facilities of a Virtio Device /
+Virtqueues / The Virtqueue Descriptor Table / Indirect
+Descriptors} and \ref{devicenormative:Basic Facilities of a
+Virtio Device / Virtqueues / The Virtqueue Descriptor Table /
+Indirect Descriptors}
+} \\
+\hline
+522 & 30 Apr 2015 & Michael S. Tsirkin & {VIRTIO-141:
+used ring: specify legacy behaviour for len field
+
+many hypervisors implemented len field incorrectly.
+Document existing bugs in the legacy sections.
+
+See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues
+/ The Virtqueue Used Ring/ Legacy Interface: The Virtqueue Used
+Ring}, \ref{sec:Device Types / Network Device / Device Operation
+/ Legacy Interface: Device Operation}, \ref{sec:Device Types /
+Block Device / Device Operation / Legacy Interface: Device
+Operation}, \ref{sec:Device Types / Console Device / Device
+Operation / Legacy Interface: Device Operation}, \ref{sec:Device
+Types / Memory Balloon Device / Device Operation / Legacy
+Interface: Device Operation}, \ref{sec:Device
+Types / SCSI Host Device / Device Operation / Legacy
+Interface: Device Operation} and \ref{sec:Conformance / Legacy
+Interface: Transitional Device and Transitional Driver
+Conformance}.
+} \\
+\hline
+523 & 30 Apr 2015 & Michael S. Tsirkin & {VIRTIO-142:
+entropy device: typo fix
+
+Current text: "The driver MUST examine the length written by the
+driver" makes no sense. length is written by the device.
+
+See \ref{drivernormative:Device Types / Entropy Device / Device
+Operation}.
+} \\
+\hline
