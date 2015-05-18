@@ -4390,6 +4390,9 @@ guest memory statistics to the host.
 
 \item[VIRTIO_BALLOON_F_STATS_VQ (1)] A virtqueue for reporting guest
     memory statistics is present.
+\item[VIRTIO_BALLOON_F_DEFLATE_ON_OOM (2) ] Deflate balloon on
+    guest out of memory condition.
+
 \end{description}
 
 \drivernormative{\subsubsection}{Feature bits}{Device Types / Memory Balloon Device / Feature bits}
@@ -4449,8 +4452,10 @@ The device initialization process is outlined below:
 
 \subsection{Device Operation}\label{sec:Device Types / Memory Balloon Device / Device Operation}
 
-The device is driven by the receipt of a
-configuration change interrupt.
+The device is driven either by the receipt of a configuration
+change interrupt, or by changing guest memory needs, such as
+performing memory compaction or responding to out of memory
+conditions.
 
 \begin{enumerate}
 \item \field{num_pages} configuration field is examined. If this is
@@ -4489,10 +4494,25 @@ requests by using the descriptor.
 
 \drivernormative{\subsubsection}{Device Operation}{Device Types / Memory Balloon Device / Device Operation}
 The driver SHOULD supply pages to the balloon when \field{num_pages} is
-greater than \field{actual}.
+greater than the actual number of pages in the balloon.
 
 The driver MAY use pages from the balloon when \field{num_pages} is
-less than \field{actual}.
+less than the actual number of pages in the balloon.
+
+The driver MAY supply pages to the balloon when \field{num_pages} is
+greater than or equal to the actual number of pages in the balloon.
+
+If VIRTIO_BALLOON_F_DEFLATE_ON_OOM has not been negotiated, the
+driver MUST NOT use pages from the balloon when \field{num_pages}
+is less than or equal to the actual number of pages in the
+balloon.
+
+If VIRTIO_BALLOON_F_DEFLATE_ON_OOM has been negotiated, the
+driver MAY use pages from the balloon when \field{num_pages}
+is less than or equal to the actual number of pages in the
+balloon if this is required for system stability
+(e.g. if memory is required by applications running within
+ the guest).
 
 The driver MUST use the deflateq to inform the device of pages that it
 wants to use from the balloon.
@@ -4516,6 +4536,9 @@ request.
 
 The driver MUST update \field{actual} after changing the number
 of pages in the balloon.
+
+The driver MAY update \field{actual} once after multiple
+inflate and deflate operations.
 
 \devicenormative{\subsubsection}{Device Operation}{Device Types / Memory Balloon Device / Device Operation}
 
