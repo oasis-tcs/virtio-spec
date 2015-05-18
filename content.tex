@@ -3643,31 +3643,92 @@ do except issue a diagnostic if \field{ack} is not
 VIRTIO_NET_OK.
 
 \paragraph{Packet Receive Filtering}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Packet Receive Filtering}
+\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Setting Promiscuous Mode}%old label for latexdiff
 
-If the VIRTIO_NET_F_CTRL_RX feature is negotiated, the driver can
-send control commands for promiscuous mode, multicast receiving,
-and filtering of MAC addresses.
+If the VIRTIO_NET_F_CTRL_RX and VIRTIO_NET_F_CTRL_RX_EXTRA
+features are negotiated, the driver can send control commands for
+promiscuous mode, multicast, unicast and broadcast receiving.
 
 \begin{note}
 In general, these commands are best-effort: unwanted
 packets could still arrive.
 \end{note}
 
-\paragraph{Setting Promiscuous Mode}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Setting Promiscuous Mode}
-
 \begin{lstlisting}
 #define VIRTIO_NET_CTRL_RX    0
  #define VIRTIO_NET_CTRL_RX_PROMISC      0
  #define VIRTIO_NET_CTRL_RX_ALLMULTI     1
+ #define VIRTIO_NET_CTRL_RX_ALLUNI       2
+ #define VIRTIO_NET_CTRL_RX_NOMULTI      3
+ #define VIRTIO_NET_CTRL_RX_NOUNI        4
+ #define VIRTIO_NET_CTRL_RX_NOBCAST      5
 \end{lstlisting}
 
-The class VIRTIO_NET_CTRL_RX has two commands:
-VIRTIO_NET_CTRL_RX_PROMISC turns promiscuous mode on and off, and
-VIRTIO_NET_CTRL_RX_ALLMULTI turns all-multicast receive on and
+
+\devicenormative{\subparagraph}{Packet Receive Filtering}{Device Types / Network Device / Device Operation / Control Virtqueue / Packet Receive Filtering}
+
+If the VIRTIO_NET_F_CTRL_RX feature has been negotiated,
+the device MUST support the following VIRTIO_NET_CTRL_RX class
+commands:
+\begin{itemize}
+\item VIRTIO_NET_CTRL_RX_PROMISC turns promiscuous mode on and
 off. The command-specific-data is one byte containing 0 (off) or
-1 (on).
+1 (on). If promiscous mode is on, the device SHOULD receive all
+incoming packets.
+This SHOULD take effect even if one of the other modes set by
+a VIRTIO_NET_CTRL_RX class command is on.
+\item VIRTIO_NET_CTRL_RX_ALLMULTI turns all-multicast receive on and
+off. The command-specific-data is one byte containing 0 (off) or
+1 (on). When all-multicast receive is on the device SHOULD allow
+all incoming multicast packets.
+\end{itemize}
+
+If the VIRTIO_NET_F_CTRL_RX_EXTRA feature has been negotiated,
+the device MUST support the following VIRTIO_NET_CTRL_RX class
+commands:
+\begin{itemize}
+\item VIRTIO_NET_CTRL_RX_ALLUNI turns all-unicast receive on and
+off. The command-specific-data is one byte containing 0 (off) or
+1 (on). When all-unicast receive is on the device SHOULD allow
+all incoming unicast packets.
+\item VIRTIO_NET_CTRL_RX_NOMULTI suppresses multicast receive.
+The command-specific-data is one byte containing 0 (multicast
+receive allowed) or 1 (multicast receive suppressed).
+When multicast receive is suppressed, the device SHOULD NOT
+send multicast packets to the driver.
+This SHOULD take effect even if VIRTIO_NET_CTRL_RX_ALLMULTI is on.
+This filter SHOULD NOT apply to broadcast packets.
+\item VIRTIO_NET_CTRL_RX_NOUNI suppresses unicast receive.
+The command-specific-data is one byte containing 0 (unicast
+receive allowed) or 1 (unicast receive suppressed).
+When unicast receive is suppressed, the device SHOULD NOT
+send unicast packets to the driver.
+This SHOULD take effect even if VIRTIO_NET_CTRL_RX_ALLUNI is on.
+\item VIRTIO_NET_CTRL_RX_NOBCAST suppresses broadcast receive.
+The command-specific-data is one byte containing 0 (broadcast
+receive allowed) or 1 (broadcast receive suppressed).
+When broadcast receive is suppressed, the device SHOULD NOT
+send broadcast packets to the driver.
+This SHOULD take effect even if VIRTIO_NET_CTRL_RX_ALLMULTI is on.
+\end{itemize}
+
+\drivernormative{\subparagraph}{Packet Receive Filtering}{Device Types / Network Device / Device Operation / Control Virtqueue / Packet Receive Filtering}
+
+If the VIRTIO_NET_F_CTRL_RX feature has not been negotiated,
+the driver MUST NOT issue commands VIRTIO_NET_CTRL_RX_PROMISC or
+VIRTIO_NET_CTRL_RX_ALLMULTI.
+
+If the VIRTIO_NET_F_CTRL_RX_EXTRA feature has not been negotiated,
+the driver MUST NOT issue commands
+ VIRTIO_NET_CTRL_RX_ALLUNI,
+ VIRTIO_NET_CTRL_RX_NOMULTI,
+ VIRTIO_NET_CTRL_RX_NOUNI or
+ VIRTIO_NET_CTRL_RX_NOBCAST.
 
 \paragraph{Setting MAC Address Filtering}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Setting MAC Address Filtering}
+
+If the VIRTIO_NET_F_CTRL_RX feature is negotiated, the driver can
+send control commands for MAC address filtering.
 
 \begin{lstlisting}
 struct virtio_net_ctrl_mac {
@@ -3714,6 +3775,13 @@ matches neither the \field{mac} (or that set with VIRTIO_NET_CTRL_MAC_ADDR_SET)
 nor the MAC filtering table.
 
 \drivernormative{\subparagraph}{Setting MAC Address Filtering}{Device Types / Network Device / Device Operation / Control Virtqueue / Setting MAC Address Filtering}
+
+If VIRTIO_NET_F_CTRL_RX has not been negotiated,
+the driver MUST NOT issue VIRTIO_NET_CTRL_MAC class commands.
+
+If VIRTIO_NET_F_CTRL_RX has been negotiated,
+the driver SHOULD issue VIRTIO_NET_CTRL_MAC_ADDR_SET
+to set the default mac if it is different from \field{mac}.
 
 The driver MUST follow the VIRTIO_NET_CTRL_MAC_TABLE_SET command
 by a le32 number, followed by that number of non-multicast
