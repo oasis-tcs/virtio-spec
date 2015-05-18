@@ -15,13 +15,13 @@ Conformance targets:
   \begin{itemize}
     \item Clause \ref{sec:Conformance / Driver Conformance},
     \item One of clauses \ref{sec:Conformance / Driver Conformance / PCI Driver Conformance}, \ref{sec:Conformance / Driver Conformance / MMIO Driver Conformance} or \ref{sec:Conformance / Driver Conformance / Channel I/O Driver Conformance}.
-    \item One of clauses \ref{sec:Conformance / Driver Conformance / Network Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Block Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Console Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Entropy Driver Conformance} or \ref{sec:Conformance / Driver Conformance / SCSI Host Driver Conformance}.
+    \item One of clauses \ref{sec:Conformance / Driver Conformance / Network Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Block Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Console Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Entropy Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Traditional Memory Balloon Driver Conformance} or \ref{sec:Conformance / Driver Conformance / SCSI Host Driver Conformance}.
   \end{itemize}
 \item[Device] A device MUST conform to three conformance clauses:
   \begin{itemize}
     \item Clause \ref{sec:Conformance / Device Conformance},
     \item One of clauses \ref{sec:Conformance / Device Conformance / PCI Device Conformance}, \ref{sec:Conformance / Device Conformance / MMIO Device Conformance} or \ref{sec:Conformance / Device Conformance / Channel I/O Device Conformance}.
-    \item One of clauses \ref{sec:Conformance / Device Conformance / Network Device Conformance}, \ref{sec:Conformance / Device Conformance / Block Device Conformance}, \ref{sec:Conformance / Device Conformance / Console Device Conformance}, \ref{sec:Conformance / Device Conformance / Entropy Device Conformance} or \ref{sec:Conformance / Device Conformance / SCSI Host Device Conformance}.
+    \item One of clauses \ref{sec:Conformance / Device Conformance / Network Device Conformance}, \ref{sec:Conformance / Device Conformance / Block Device Conformance}, \ref{sec:Conformance / Device Conformance / Console Device Conformance}, \ref{sec:Conformance / Device Conformance / Entropy Device Conformance}, \ref{sec:Conformance / Device Conformance / Traditional Memory Balloon Device Conformance} or \ref{sec:Conformance / Device Conformance / SCSI Host Device Conformance}.
   \end{itemize}
 \end{description}
 
@@ -121,6 +121,16 @@ An entropy driver MUST conform to the following normative statements:
 
 \begin{itemize}
 \item \ref{drivernormative:Device Types / Entropy Device / Device Operation}
+\end{itemize}
+
+\subsection{Traditional Memory Balloon Driver Conformance}\label{sec:Conformance / Driver Conformance / Traditional Memory Balloon Driver Conformance}
+
+A traditional memory balloon driver MUST conform to the following normative statements:
+
+\begin{itemize}
+\item \ref{drivernormative:Device Types / Memory Balloon Device / Feature bits}
+\item \ref{drivernormative:Device Types / Memory Balloon Device / Device Operation}
+\item \ref{drivernormative:Device Types / Memory Balloon Device / Device Operation / Memory Statistics}
 \end{itemize}
 
 \subsection{SCSI Host Driver Conformance}\label{sec:Conformance / Driver Conformance / SCSI Host Driver Conformance}
@@ -230,6 +240,16 @@ An entropy device MUST conform to the following normative statements:
 \item \ref{devicenormative:Device Types / Entropy Device / Device Operation}
 \end{itemize}
 
+\subsection{Traditional Memory Balloon Device Conformance}\label{sec:Conformance / Device Conformance / Traditional Memory Balloon Device Conformance}
+
+A traditional memory balloon device MUST conform to the following normative statements:
+
+\begin{itemize}
+\item \ref{devicenormative:Device Types / Memory Balloon Device / Feature bits}
+\item \ref{devicenormative:Device Types / Memory Balloon Device / Device Operation}
+\item \ref{devicenormative:Device Types / Memory Balloon Device / Device Operation / Memory Statistics}
+\end{itemize}
+
 \subsection{SCSI Host Device Conformance}\label{sec:Conformance / Device Conformance / SCSI Host Device Conformance}
 
 An SCSI host device MUST conform to the following normative statements:
@@ -292,7 +312,7 @@ Feature Bits / Legacy Interface: A Note on Feature Bits}
 \item Section \ref{sec:Device Types / Block Device / Device Operation / Legacy Interface: Device Operation}
 \item Section \ref{sec:Device Types / Console Device / Device configuration layout / Legacy Interface: Device configuration layout}
 \item Section \ref{sec:Device Types / Console Device / Device Operation / Legacy Interface: Device Operation}
-\item Section \ref{drivernormative:Device Types / Memory Balloon Device / Device Operation}
+\item Section \ref{sec:Device Types / Memory Balloon Device / Feature bits / Legacy Interface: Feature bits}
 \item Section \ref{sec:Device Types / Memory Balloon Device / Device Operation / Legacy Interface: Device Operation}
 \item Section \ref{sec:Device Types / Memory Balloon Device / Device Operation / Memory Statistics / Legacy Interface: Memory Statistics}
 \item Section \ref{sec:Device Types / SCSI Host Device / Device configuration layout / Legacy Interface: Device configuration layout}
