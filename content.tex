@@ -3215,7 +3215,12 @@ if both guests are amenable.}
   the VIRTIO_NET_F_GUEST_TSO4, VIRTIO_NET_F_GUEST_TSO6,
   VIRTIO_NET_F_GUEST_UFO and VIRTIO_NET_F_GUEST_ECN are the input
   equivalents of the features described above.
-  See \ref{sec:Device Types / Network Device / Device Operation / Setting Up Receive Buffers}~\nameref{sec:Device Types / Network Device / Device Operation / Setting Up Receive Buffers} and \ref{sec:Device Types / Network Device / Device Operation / Processing of Packets}~\nameref{sec:Device Types / Network Device / Device Operation / Processing of Packets} below.
+  See \ref{sec:Device Types / Network Device / Device Operation /
+Setting Up Receive Buffers}~\nameref{sec:Device Types / Network
+Device / Device Operation / Setting Up Receive Buffers} and
+\ref{sec:Device Types / Network Device / Device Operation /
+Processing of Incoming Packets}~\nameref{sec:Device Types /
+Network Device / Device Operation / Processing of Incoming Packets} below.
 \end{enumerate}
 
 A truly minimal driver would only accept VIRTIO_NET_F_MAC and ignore
@@ -3274,10 +3279,10 @@ Transmitting a single packet is simple, but varies depending on
 the different features the driver negotiated.
 
 \begin{enumerate}
-\item The driver MAY send a completely checksummed packet.  In this case,
+\item The driver can send a completely checksummed packet.  In this case,
   \field{flags} will be zero, and \field{gso_type} will be VIRTIO_NET_HDR_GSO_NONE.
 
-\item If the driver negotiated VIRTIO_NET_F_CSUM, it MAY skip
+\item If the driver negotiated VIRTIO_NET_F_CSUM, it can skip
   checksumming the packet:
   \begin{itemize}
   \item \field{flags} has the VIRTIO_NET_HDR_F_NEEDS_CSUM set,
@@ -3336,15 +3341,83 @@ specifically in the protocol.}.
 
 \drivernormative{\paragraph}{Packet Transmission}{Device Types / Network Device / Device Operation / Packet Transmission}
 
-If a driver has not negotiated VIRTIO_NET_F_CSUM, \field{flags} MUST be zero and
-the packet MUST be fully checksummed.
-
 The driver MUST set \field{num_buffers} to zero.
 
-A driver SHOULD NOT send TCP packets requiring segmentation offload which have the Explicit Congestion Notification bit set, unless the VIRTIO_NET_F_HOST_ECN feature is
-negotiated\footnote{This is a common restriction in real, older network cards.}, in
-which case it MUST set the VIRTIO_NET_HDR_GSO_ECN bit in \field{gso_type}.
+If VIRTIO_NET_F_CSUM is not negotiated, the driver MUST set
+\field{flags} to zero and SHOULD supply a fully checksummed
+packet to the device.
 
+If VIRTIO_NET_F_HOST_TSO4 is negotiated, the driver MAY set
+\field{gso_type} to VIRTIO_NET_HDR_GSO_TCPV4 to request TCPv4
+segmentation, otherwise the driver MUST NOT set
+\field{gso_type} to VIRTIO_NET_HDR_GSO_TCPV4.
+
+If VIRTIO_NET_F_HOST_TSO6 is negotiated, the driver MAY set
+\field{gso_type} to VIRTIO_NET_HDR_GSO_TCPV6 to request TCPv6
+segmentation, otherwise the driver MUST NOT set
+\field{gso_type} to VIRTIO_NET_HDR_GSO_TCPV6.
+
+If VIRTIO_NET_F_HOST_UFO is negotiated, the driver MAY set
+\field{gso_type} to VIRTIO_NET_HDR_GSO_UDP to request UDP
+segmentation, otherwise the driver MUST NOT set
+\field{gso_type} to VIRTIO_NET_HDR_GSO_UDP.
+
+The driver SHOULD NOT send to the device TCP packets requiring segmentation offload
+which have the Explicit Congestion Notification bit set, unless the
+VIRTIO_NET_F_HOST_ECN feature is negotiated, in which case the
+driver MUST set the VIRTIO_NET_HDR_GSO_ECN bit in
+\field{gso_type}.
+
+If the VIRTIO_NET_F_CSUM feature has been negotiated, the
+driver MAY set the VIRTIO_NET_HDR_F_NEEDS_CSUM bit in
+\field{flags}, if so:
+\begin{enumerate}
+\item the driver MUST validate the packet checksum at
+	offset \field{csum_offset} from \field{csum_start} as well as all
+	preceding offsets;
+\item the driver MUST set the packet checksum stored in the
+	buffer to the TCP/UDP pseudo header;
+\item the driver MUST set \field{csum_start} and
+	\field{csum_offset} such that calculating a ones'
+	complement checksum from \field{csum_start} up until the end of
+	the packet and storing the result at offset \field{csum_offset}
+	from  \field{csum_start} will result in a fully checksummed
+	packet;
+\end{enumerate}
+
+If none of the VIRTIO_NET_F_HOST_TSO4, TSO6 or UFO options have
+been negotiated, the driver MUST set \field{gso_type} to
+VIRTIO_NET_HDR_GSO_NONE.
+
+If \field{gso_type} differs from VIRTIO_NET_HDR_GSO_NONE, then
+the driver MUST also set the VIRTIO_NET_HDR_F_NEEDS_CSUM bit in
+\field{flags} and MUST set \field{gso_size} to indicate the
+desired MSS.
+
+If one of the VIRTIO_NET_F_HOST_TSO4, TSO6 or UFO options have
+been negotiated, the driver SHOULD set \field{hdr_len} to a value
+not less than the length of the headers, including the transport
+header.
+
+The driver MUST NOT set the VIRTIO_NET_HDR_F_DATA_VALID bit in
+\field{flags}.
+
+\devicenormative{\paragraph}{Packet Transmission}{Device Types / Network Device / Device Operation / Packet Transmission}
+The device MUST ignore \field{flag} bits that it does not recognize.
+
+If VIRTIO_NET_HDR_F_NEEDS_CSUM bit in \field{flags} is not set, the
+device MUST NOT use the \field{csum_start} and \field{csum_offset}.
+
+If one of the VIRTIO_NET_F_HOST_TSO4, TSO6 or UFO options have
+been negotiated, the device MAY use \field{hdr_len} only as a hint about the
+transport header size.
+The device MUST NOT rely on \field{hdr_len} to be correct.
+\begin{note}
+This is due to various bugs in implementations.
+\end{note}
+
+If VIRTIO_NET_HDR_F_NEEDS_CSUM is not set, the device MUST NOT
+rely on the packet checksum being correct.
 \paragraph{Packet Transmission Interrupt}\label{sec:Device Types / Network Device / Device Operation / Packet Transmission / Packet Transmission Interrupt}
 
 Often a driver will suppress transmission interrupts using the
@@ -3401,14 +3474,15 @@ The device MUST use only a single descriptor if VIRTIO_NET_F_MRG_RXBUF
 was not negotiated. \note{This means that \field{num_buffers} will always be 1 
 if VIRTIO_NET_F_MRG_RXBUF is not negotiated.}
 
-\subsubsection{Processing of Packets}\label{sec:Device Types / Network Device / Device Operation / Processing of Packets}
+\subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets}
+\label{sec:Device Types / Network Device / Device Operation / Processing of Packets}%old label for latexdiff
 
 When a packet is copied into a buffer in the receiveq, the
 optimal path is to disable further interrupts for the receiveq
 (see \ref{sec:General Initialization And Device Operation / Device Operation / Receiving Used Buffers From The Device}~\nameref{sec:General Initialization And Device Operation / Device Operation / Receiving Used Buffers From The Device}) and process
 packets until no more are found, then re-enable them.
 
-Processing packet involves:
+Processing incoming packets involves:
 
 \begin{enumerate}
 \item \field{num_buffers} indicates how many descriptors
@@ -3424,10 +3498,25 @@ Processing packet involves:
   \field{num_buffers} is one, then the entire packet will be
   contained within this buffer, immediately following the struct
   virtio_net_hdr.
-
 \item If the VIRTIO_NET_F_GUEST_CSUM feature was negotiated, the
-  VIRTIO_NET_HDR_F_NEEDS_CSUM bit in \field{flags} MAY be
-  set: if so, the checksum on the packet is incomplete and
+  VIRTIO_NET_HDR_F_DATA_VALID bit in \field{flags} can be
+  set: if so, device has validated the packet checksum.
+  In case of multiple encapsulated protocols, one level of checksums
+  has been validated.
+\end{enumerate}
+
+Additionally, VIRTIO_NET_F_GUEST_CSUM, TSO4, TSO6, UDP and ECN
+features enable receive checksum, large receive offload and ECN
+support which are the input equivalents of the transmit checksum,
+transmit segmentation offloading and ECN features, as described
+in \ref{sec:Device Types / Network Device / Device Operation /
+Packet Transmission}:
+\begin{enumerate}
+\item If the VIRTIO_NET_F_GUEST_CSUM feature was negotiated, the
+  VIRTIO_NET_HDR_F_NEEDS_CSUM bit in \field{flags} can be
+  set: if so, the packet checksum at offset \field{csum_offset}
+  from \field{csum_start} and any preceding checksums
+  have been validated.  The checksum on the packet is incomplete and
   \field{csum_start} and \field{csum_offset} indicate how to calculate
   it (see Packet Transmission point 1).
 
@@ -3437,10 +3526,23 @@ Processing packet involves:
   desired MSS (see Packet Transmission point 2).
 \end{enumerate}
 
-\devicenormative{\paragraph}{Processing of Packets}{Device Types / Network Device / Device Operation / Processing of Packets}
+\devicenormative{\paragraph}{Processing of Incoming Packets}{Device Types / Network Device / Device Operation / Processing of Incoming Packets}
+\label{devicenormative:Device Types / Network Device / Device Operation / Processing of Packets}%old label for latexdiff
 
-If VIRTIO_NET_F_CSUM is not negotiated, the device MUST set
-\field{flags} to zero and the packet MUST be fully checksummed.
+If VIRTIO_NET_F_MRG_RXBUF has not been negotiated, the device MUST set
+\field{num_buffers} to 1.
+
+If VIRTIO_NET_F_MRG_RXBUF has been negotiated, the device MUST set
+\field{num_buffers} to indicate the number of descriptors
+the packet (including the header) is spread over.
+
+The device MUST use all descriptors used by a single receive
+packet together, by atomically incrementing \field{idx} in the
+used ring by the \field{num_buffers} value.
+
+If VIRTIO_NET_F_GUEST_CSUM is not negotiated, the device MUST set
+\field{flags} to zero and SHOULD supply a fully checksummed
+packet to the driver.
 
 If VIRTIO_NET_F_GUEST_TSO4 is not negotiated, the device MUST NOT set
 \field{gso_type} to VIRTIO_NET_HDR_GSO_TCPV4.
@@ -3451,11 +3553,68 @@ If VIRTIO_NET_F_GUEST_UDP is not negotiated, the device MUST NOT set
 If VIRTIO_NET_F_GUEST_TSO6 is not negotiated, the device MUST NOT set
 \field{gso_type} to VIRTIO_NET_HDR_GSO_TCPV6.
 
-A device SHOULD NOT send TCP packets requiring segmentation offload
+The device SHOULD NOT send to the driver TCP packets requiring segmentation offload
 which have the Explicit Congestion Notification bit set, unless the
-VIRTIO_NET_F_GUEST_ECN feature is negotiated, in which case it MUST set
-the VIRTIO_NET_HDR_GSO_ECN bit in \field{gso_type}.
+VIRTIO_NET_F_GUEST_ECN feature is negotiated, in which case the
+device MUST set the VIRTIO_NET_HDR_GSO_ECN bit in
+\field{gso_type}.
 
+If the VIRTIO_NET_F_GUEST_CSUM feature has been negotiated, the
+device MAY set the VIRTIO_NET_HDR_F_NEEDS_CSUM bit in
+\field{flags}, if so:
+\begin{enumerate}
+\item the device MUST validate the packet checksum at
+	offset \field{csum_offset} from \field{csum_start} as well as all
+	preceding offsets;
+\item the device MUST set the packet checksum stored in the
+	receive buffer to the TCP/UDP pseudo header;
+\item the device MUST set \field{csum_start} and
+	\field{csum_offset} such that calculating a ones'
+	complement checksum from \field{csum_start} up until the
+	end of the packet and storing the result at offset
+	\field{csum_offset} from  \field{csum_start} will result in a
+	fully checksummed packet;
+\end{enumerate}
+
+If none of the VIRTIO_NET_F_GUEST_TSO4, TSO6 or UFO options have
+been negotiated, the device MUST set \field{gso_type} to
+VIRTIO_NET_HDR_GSO_NONE.
+
+If \field{gso_type} differs from VIRTIO_NET_HDR_GSO_NONE, then
+the device MUST also set the VIRTIO_NET_HDR_F_NEEDS_CSUM bit in
+\field{flags} MUST set \field{gso_size} to indicate the desired MSS.
+
+If one of the VIRTIO_NET_F_GUEST_TSO4, TSO6 or UFO options have
+been negotiated, the device SHOULD set \field{hdr_len} to a value
+not less than the length of the headers, including the transport
+header.
+
+If the VIRTIO_NET_F_GUEST_CSUM feature has been negotiated, the
+device MAY set the VIRTIO_NET_HDR_F_DATA_VALID bit in
+\field{flags}, if so, the device MUST validate the packet
+checksum (in case of multiple encapsulated protocols, one level
+of checksums is validated).
+
+\drivernormative{\paragraph}{Processing of Incoming
+Packets}{Device Types / Network Device / Device Operation /
+Processing of Incoming Packets}
+
+The driver MUST ignore \field{flag} bits that it does not recognize.
+
+If VIRTIO_NET_HDR_F_NEEDS_CSUM bit in \field{flags} is not set, the
+driver MUST NOT use the \field{csum_start} and \field{csum_offset}.
+
+If one of the VIRTIO_NET_F_GUEST_TSO4, TSO6 or UFO options have
+been negotiated, the driver MAY use \field{hdr_len} only as a hint about the
+transport header size.
+The driver MUST NOT rely on \field{hdr_len} to be correct.
+\begin{note}
+This is due to various bugs in implementations.
+\end{note}
+
+If neither VIRTIO_NET_HDR_F_NEEDS_CSUM nor
+VIRTIO_NET_HDR_F_DATA_VALID is set, the driver MUST NOT
+rely on the packet checksum being correct.
 \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue}
 
 The driver uses the control virtqueue (if VIRTIO_NET_F_CTRL_VQ is
