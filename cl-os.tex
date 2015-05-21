@@ -240,3 +240,89 @@ See \ref{drivernormative:Device Types / Entropy Device / Device
 Operation}.
 } \\
 \hline
+526 & 18 May 2015 & Michael S. Tsirkin & {VIRTIO-143:
+balloon: transitional device support
+
+Support a transitional balloon device: this has the advantage of supporting
+existing drivers, transparently, as well as transports that don't allow mixing
+virtio 0 and virtio 1 devices. And balloon is an easy device to test, so it's
+also useful for people to test virtio core handling of transitional devices.
+
+Three issues with legacy hypervisors have been identified:
+\begin{enumerate}
+\item
+Actual value is actually used, and is necessary for management
+to work. Luckily 4 byte config space writes are now atomic.
+When using old guests, hypervisors can detect access to the last byte.
+When using old hypervisors, drivers can use atomic 4-byte accesses.
+\item Hypervisors actually didn't ignore the stats from the first
+buffer supplied. This means the values there would be
+incorrect until hypervisor resends the request.
+Add a note suggesting hypervisors ignore the 1st buffer.
+\item QEMU simply over-writes stats from each buffer it gets.
+Thus if driver supplies a different subset of stats
+on each request, stale values will be there.
+Require drivers to supply the same subset on each
+request. This also gives us a simple way to figure out
+which stats are supported.
+\end{enumerate}
+
+See
+\ref{sec:Device Types / Memory Balloon Device},
+\ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Discovery},
+\ref{sec:Conformance / Driver Conformance / Traditional Memory Balloon Driver Conformance},
+\ref{sec:Conformance / Device Conformance / Traditional Memory Balloon Device Conformance},
+\ref{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance},
+\ref{sec:Conformance / Device Conformance} and \ref{sec:Conformance / Driver Conformance}.
+} \\
+\hline
+527 & 18 May 2015 & Michael S. Tsirkin & {VIRTIO-126:
+document deflate on oom
+
+Document the new option, and also clarify behaviour
+without it.
+
+In particular, actual field is not the
+actual number of pages in the balloon as
+driver might do inflate followed by deflate.
+
+Also, device isn't always driven by interrupts,
+driver can inflate/deflate in response to e.g.
+memory compaction.
+
+See \ref{sec:Device Types / Memory Balloon Device / Feature bits},
+\ref{sec:Device Types / Memory Balloon Device / Device Operation} and
+\ref{drivernormative:Device Types / Memory Balloon Device / Device Operation}.
+} \\
+\hline
+528 & 18 May 2015 & Michael S. Tsirkin & {VIRTIO-123:
+network device: xmit/receive cleanup
+
+Fix up multiple issues in xmit/receive sections:
+\begin{itemize}
+   \item drop MAY/MUST/SHOULD outside normative statements
+   \item spell out conformance requirements for both drivers and
+      devices, for xmit and receive paths
+   \item document the missing VIRTIO_NET_HDR_F_DATA_VALID
+   \item document handling of unrecognized flag bits so we can extend
+      flags in the future, similar to VIRTIO_NET_HDR_F_DATA_VALID
+\end{itemize}
+
+\ref{sec:Device Types / Network Device / Device Initialization},
+\ref{drivernormative:Device Types / Network Device / Device Operation / Packet Transmission},
+\ref{devicenormative:Device Types / Network Device / Device Operation / Packet Transmission},
+\ref{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets},
+\ref{sec:Conformance / Driver Conformance / Network Driver Conformance} and
+\ref{sec:Conformance / Device Conformance / Network Device Conformance}.
+} \\
+\hline
+529 & 18 May 2015 & Michael S. Tsirkin & {VIRTIO-124:
+network device: document VIRTIO_NET_F_CTRL_RX_EXTRA
+
+See
+\ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Packet Receive Filtering},
+\ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Setting MAC Address Filtering},
+\ref{sec:Conformance / Driver Conformance / Network Driver Conformance} and
+\ref{sec:Conformance / Device Conformance / Network Device Conformance}.
+} \\
+\hline
