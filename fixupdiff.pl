@@ -1,14 +1,18 @@
 my $bufferdiff="";
 my $diff="";
 my $buffer="";
-my $lstlisting=0;
 while (<>) {
 	my $line = $_;
 	if (m/%DIFDELCMD\s+<\s+\\begin{lstlisting}/) {
 		$lstlisting=1;
+		$line =~s/%DIFDELCMD\s+</{\\lstset{escapechar=\\\$} /;
 	}
 	if ($lstlisting) {
-		$line =~ s/%DIFDELCMD\s+<\s+//;
+		$line =~ s/%DIFDELCMD\s+< //;
+		if (not $line =~ m/\\(?:begin|end){lstlisting}/) {
+			$line =~ s/([#&{} ])/\\$1/g;
+			$line =~ s/(.*)/\$\\DIFdel{$1}\$/;
+		}
 		#print "%FIXED BY RULE 1\n";
 	}
 	#In section headings, replace begin/end with begin/endFL,
@@ -67,6 +71,7 @@ while (<>) {
 	}
 	print $line;
 	if (m/%DIFDELCMD\s+<\s+\\end{lstlisting}/) {
+		print "}\n";
 		$lstlisting=0;
 	}
 }
