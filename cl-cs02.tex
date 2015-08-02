@@ -1,0 +1,52 @@
+448 & 22 Dec 2014 & Michael S. Tsirkin & {VIRTIO-120: virtio:
+fix used element size
+
+General ring description lists size for
+used ring elements as 4, it must be 8.
+
+See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues}.
+ } \\
+\hline
+449 & 22 Doc 2014 & Cornelia Huck & {VIRTIO-125: block: fixup section levels
+    The specification for the configuration layout for block devices
+    should be its own subsection as for all other devices and not be
+    hidden beneath "Feature bits".
+    
+    The normative sections for device operation should appear under
+    the device operation section.
+See \ref{sec:Device Types / Block Device / Device configuration
+layout}.
+ } \\
+\hline
+450 & 22 Dec 2014 & Cornelia Huck & {VIRTIO-127: ccw: two-stage
+indicators for legacy devices
+
+    Some legacy devices will support two-stage queue indicators
+and therefore
+    won't reject CCW_CMD_SET_IND_ADAPTER. Note this.
+
+See \ref{sec:Virtio Transport Options / Virtio over channel I/O /
+Device Initialization / Setting Up Indicators / Legacy
+Interfaces: A Note on Setting Up Indicators}.
+ } \\
+\hline
+452 & 22 Dec 2014 & Michael S. Tsirkin & {VIRTIO-115:
+formatting: escape {\textbackslash}ldots in lstlisting
+
+    {\textbackslash}ldots does not work within lstlisting, the result is
+    {\textbackslash}ldots verbatim in the PDF output.
+
+    To fix, make \$ an escape character, and escape the sequence:
+    \${\textbackslash}ldots\$
+
+See \ref{sec:Device Types / SCSI Host Device / Device Operation /
+Device Operation: controlq}.
+} \\
+\hline
+455,457 & 23 Dec 2014 & Michael S. Tsirkin & {acknowledgements: acknowledge dgilbert
+    
+    Acknowledge David Alan Gilbert for reporting VIRTIO-120.
+
+See \ref{chap:Acknowledgements}.
+} \\
+\hline

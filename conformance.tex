@@ -15,13 +15,13 @@ Conformance targets:
   \begin{itemize}
     \item Clause \ref{sec:Conformance / Driver Conformance},
     \item One of clauses \ref{sec:Conformance / Driver Conformance / PCI Driver Conformance}, \ref{sec:Conformance / Driver Conformance / MMIO Driver Conformance} or \ref{sec:Conformance / Driver Conformance / Channel I/O Driver Conformance}.
-    \item One of clauses \ref{sec:Conformance / Driver Conformance / Network Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Block Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Console Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Entropy Driver Conformance} or \ref{sec:Conformance / Driver Conformance / SCSI Host Driver Conformance}.
+    \item One of clauses \ref{sec:Conformance / Driver Conformance / Network Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Block Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Console Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Entropy Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Traditional Memory Balloon Driver Conformance} or \ref{sec:Conformance / Driver Conformance / SCSI Host Driver Conformance}.
   \end{itemize}
 \item[Device] A device MUST conform to three conformance clauses:
   \begin{itemize}
     \item Clause \ref{sec:Conformance / Device Conformance},
     \item One of clauses \ref{sec:Conformance / Device Conformance / PCI Device Conformance}, \ref{sec:Conformance / Device Conformance / MMIO Device Conformance} or \ref{sec:Conformance / Device Conformance / Channel I/O Device Conformance}.
-    \item One of clauses \ref{sec:Conformance / Device Conformance / Network Device Conformance}, \ref{sec:Conformance / Device Conformance / Block Device Conformance}, \ref{sec:Conformance / Device Conformance / Console Device Conformance}, \ref{sec:Conformance / Device Conformance / Entropy Device Conformance} or \ref{sec:Conformance / Device Conformance / SCSI Host Device Conformance}.
+    \item One of clauses \ref{sec:Conformance / Device Conformance / Network Device Conformance}, \ref{sec:Conformance / Device Conformance / Block Device Conformance}, \ref{sec:Conformance / Device Conformance / Console Device Conformance}, \ref{sec:Conformance / Device Conformance / Entropy Device Conformance}, \ref{sec:Conformance / Device Conformance / Traditional Memory Balloon Device Conformance} or \ref{sec:Conformance / Device Conformance / SCSI Host Device Conformance}.
   \end{itemize}
 \end{description}
 
@@ -38,6 +38,7 @@ A driver MUST conform to the following normative statements:
 \item \ref{drivernormative:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table}
 \item \ref{drivernormative:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}
 \item \ref{drivernormative:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Interrupt Suppression}
+\item \ref{drivernormative:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Used Ring}
 \item \ref{drivernormative:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Notification Suppression}
 \item \ref{drivernormative:General Initialization And Device Operation / Device Initialization}
 \item \ref{drivernormative:General Initialization And Device Operation / Device Operation / Supplying Buffers to The Device / Updating idx}
@@ -57,7 +58,6 @@ A PCI driver MUST conform to the following normative statements:
 \item \ref{drivernormative:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common configuration structure layout}
 \item \ref{drivernormative:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / ISR status capability}
 \item \ref{drivernormative:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / PCI configuration access capability}
-\item \ref{drivernormative:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Non-transitional Device With Legacy Driver}
 \item \ref{drivernormative:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / MSI-X Vector Configuration}
 \item \ref{drivernormative:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Notification of Device Configuration Changes}
 \end{itemize}
@@ -79,6 +79,7 @@ A Channel I/O driver MUST conform to the following normative statements:
 \begin{itemize}
 \item \ref{drivernormative:Virtio Transport Options / Virtio over channel I/O / Basic Concepts}
 \item \ref{drivernormative:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Setting the Virtio Revision}
+\item \ref{drivernormative:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Communicating Status Information}
 \item \ref{drivernormative:Virtio Transport Options / Virtio over channel I/O / Device Operation / Host->Guest Notification / Notification via Adapter I/O Interrupts}
 \item \ref{drivernormative:Virtio Transport Options / Virtio over channel I/O / Device Operation / Guest->Host Notification}
 \end{itemize}
@@ -91,6 +92,8 @@ A network driver MUST conform to the following normative statements:
 \item \ref{drivernormative:Device Types / Network Device / Device configuration layout}
 \item \ref{drivernormative:Device Types / Network Device / Device Operation / Packet Transmission}
 \item \ref{drivernormative:Device Types / Network Device / Device Operation / Setting Up Receive Buffers}
+\item \ref{drivernormative:Device Types / Network Device / Device Operation / Processing of Incoming Packets}
+\item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Packet Receive Filtering}
 \item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Setting MAC Address Filtering}
 \item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Gratuitous Packet Sending}
 \item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode}
@@ -122,6 +125,16 @@ An entropy driver MUST conform to the following normative statements:
 \item \ref{drivernormative:Device Types / Entropy Device / Device Operation}
 \end{itemize}
 
+\subsection{Traditional Memory Balloon Driver Conformance}\label{sec:Conformance / Driver Conformance / Traditional Memory Balloon Driver Conformance}
+
+A traditional memory balloon driver MUST conform to the following normative statements:
+
+\begin{itemize}
+\item \ref{drivernormative:Device Types / Memory Balloon Device / Feature bits}
+\item \ref{drivernormative:Device Types / Memory Balloon Device / Device Operation}
+\item \ref{drivernormative:Device Types / Memory Balloon Device / Device Operation / Memory Statistics}
+\end{itemize}
+
 \subsection{SCSI Host Driver Conformance}\label{sec:Conformance / Driver Conformance / SCSI Host Driver Conformance}
 
 An SCSI host driver MUST conform to the following normative statements:
@@ -144,6 +157,7 @@ A device MUST conform to the following normative statements:
 \item \ref{devicenormative:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table}
 \item \ref{devicenormative:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}
 \item \ref{devicenormative:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Interrupt Suppression}
+\item \ref{devicenormative:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Used Ring}
 \item \ref{devicenormative:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Notification Suppression}
 \item \ref{devicenormative:Reserved Feature Bits}
 \end{itemize}
@@ -155,12 +169,14 @@ A PCI device MUST conform to the following normative statements:
 \begin{itemize}
 \item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus}
 \item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Discovery}
+\item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout}
 \item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / Virtio Structure PCI Capabilities}
 \item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common configuration structure layout}
 \item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability}
 \item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / ISR status capability}
 \item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Device-specific configuration}
 \item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / PCI configuration access capability}
+\item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Non-transitional Device With Legacy Driver}
 \item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / MSI-X Vector Configuration}
 \item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Virtqueue Interrupts From The Device}
 \item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Notification of Device Configuration Changes}
@@ -182,6 +198,7 @@ A Channel I/O device MUST conform to the following normative statements:
 \item \ref{devicenormative:Virtio Transport Options / Virtio over channel I/O / Basic Concepts}
 \item \ref{devicenormative:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Setting the Virtio Revision}
 \item \ref{devicenormative:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Configuring a Virtqueue}
+\item \ref{devicenormative:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Communicating Status Information}
 \item \ref{devicenormative:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Setting Up Indicators / Setting Up Two-Stage Queue Indicators}
 \item \ref{devicenormative:Virtio Transport Options / Virtio over channel I/O / Device Operation / Host->Guest Notification / Notification via Adapter I/O Interrupts}
 \item \ref{devicenormative:Virtio Transport Options / Virtio over channel I/O / Device Operation / Guest->Host Notification}
@@ -193,8 +210,10 @@ A network device MUST conform to the following normative statements:
 
 \begin{itemize}
 \item \ref{devicenormative:Device Types / Network Device / Device configuration layout}
+\item \ref{devicenormative:Device Types / Network Device / Device Operation / Packet Transmission}
 \item \ref{devicenormative:Device Types / Network Device / Device Operation / Setting Up Receive Buffers}
-\item \ref{devicenormative:Device Types / Network Device / Device Operation / Processing of Packets}
+\item \ref{devicenormative:Device Types / Network Device / Device Operation / Processing of Incoming Packets}
+\item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Packet Receive Filtering}
 \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Setting MAC Address Filtering}
 \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Gratuitous Packet Sending}
 \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode}
@@ -223,6 +242,16 @@ An entropy device MUST conform to the following normative statements:
 
 \begin{itemize}
 \item \ref{devicenormative:Device Types / Entropy Device / Device Operation}
+\end{itemize}
+
+\subsection{Traditional Memory Balloon Device Conformance}\label{sec:Conformance / Device Conformance / Traditional Memory Balloon Device Conformance}
+
+A traditional memory balloon device MUST conform to the following normative statements:
+
+\begin{itemize}
+\item \ref{devicenormative:Device Types / Memory Balloon Device / Feature bits}
+\item \ref{devicenormative:Device Types / Memory Balloon Device / Device Operation}
+\item \ref{devicenormative:Device Types / Memory Balloon Device / Device Operation / Memory Statistics}
 \end{itemize}
 
 \subsection{SCSI Host Device Conformance}\label{sec:Conformance / Device Conformance / SCSI Host Device Conformance}
@@ -287,9 +316,11 @@ Feature Bits / Legacy Interface: A Note on Feature Bits}
 \item Section \ref{sec:Device Types / Block Device / Device Operation / Legacy Interface: Device Operation}
 \item Section \ref{sec:Device Types / Console Device / Device configuration layout / Legacy Interface: Device configuration layout}
 \item Section \ref{sec:Device Types / Console Device / Device Operation / Legacy Interface: Device Operation}
-\item Section \ref{drivernormative:Device Types / Memory Balloon Device / Device Operation}
+\item Section \ref{sec:Device Types / Memory Balloon Device / Feature bits / Legacy Interface: Feature bits}
+\item Section \ref{sec:Device Types / Memory Balloon Device / Device Operation / Legacy Interface: Device Operation}
 \item Section \ref{sec:Device Types / Memory Balloon Device / Device Operation / Memory Statistics / Legacy Interface: Memory Statistics}
 \item Section \ref{sec:Device Types / SCSI Host Device / Device configuration layout / Legacy Interface: Device configuration layout}
+\item Section \ref{sec:Device Types / SCSI Host Device / Device Operation / Legacy Interface: Device Operation}
 \item Section \ref{sec:Device Types / SCSI Host Device / Device Operation / Device Operation: Request Queues / Legacy Interface: Device Operation: Request Queues}
 \item Section \ref{sec:Device Types / SCSI Host Device / Device Operation / Device Operation: controlq / Legacy Interface: Device Operation: controlq}
 \item Section \ref{sec:Device Types / SCSI Host Device / Device Operation / Device Operation: eventq / Legacy Interface: Device Operation: eventq}

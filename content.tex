@@ -288,7 +288,8 @@ For Legacy Interfaces, several additional
 restrictions are placed on the virtqueue layout:
 
 Each virtqueue occupies two or more physically-contiguous pages
-(usually defined as 4096 bytes, but depending on the transport)
+(usually defined as 4096 bytes, but depending on the transport;
+henceforth referred to as Queue Align)
 and consists of three parts:
 
 \begin{tabular}{|l|l|l|}
@@ -301,11 +302,12 @@ The bus-specific Queue Size field controls the total number of bytes
 for the virtqueue.
 When using the legacy interface, the transitional
 driver MUST retrieve the Queue Size field from the device
-and MUST allocate the total number of bytes for the virtuqueue
-according to the following formula:
+and MUST allocate the total number of bytes for the virtqueue
+according to the following formula (Queue Align given in qalign and
+Queue Size given in qsz):
 
 \begin{lstlisting}
-#define ALIGN(x) (((x) + PAGE_SIZE) & ~PAGE_SIZE)
+#define ALIGN(x) (((x) + qalign) & ~qalign)
 static inline unsigned virtq_size(unsigned int qsz)
 {
      return ALIGN(sizeof(struct virtq_desc)*qsz + sizeof(u16)*(3 + qsz))
@@ -326,7 +328,7 @@ struct virtq {
         // A ring of available descriptor heads with free-running index.
         struct virtq_avail avail;
 
-        // Padding to the next PAGE_SIZE boundary.
+        // Padding to the next Queue Align boundary.
         u8 pad[ Padding ];
 
         // A ring of used descriptor heads with free-running index.
@@ -475,8 +477,20 @@ one table per descriptor).
 A driver MUST NOT create a descriptor chain longer than the Queue Size of
 the device.
 
+A driver MUST NOT set both VIRTQ_DESC_F_INDIRECT and VIRTQ_DESC_F_NEXT
+in \field{flags}.
+
 \devicenormative{\paragraph}{Indirect Descriptors}{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}
 The device MUST ignore the write-only flag (\field{flags}\&VIRTQ_DESC_F_WRITE) in the descriptor that refers to an indirect table.
+
+The device MUST handle the case of zero or more normal chained
+descriptors followed by a single descriptor with \field{flags}\&VIRTQ_DESC_F_INDIRECT.
+
+\begin{note}
+While unusual (most implementations either create a chain solely using
+non-indirect descriptors, or use a single indirect element), such a
+layout is valid.
+\end{note}
 
 \subsection{The Virtqueue Available Ring}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Available Ring}
 
@@ -588,10 +602,22 @@ them: it is only written to by the device, and read by the driver.
 Each entry in the ring is a pair: \field{id} indicates the head entry of the
 descriptor chain describing the buffer (this matches an entry
 placed in the available ring by the guest earlier), and \field{len} the total
-of bytes written into the buffer. The latter is extremely useful
-for drivers using untrusted buffers: if you do not know exactly
-how much has been written by the device, you usually have to zero
-the buffer to ensure no data leakage occurs.
+of bytes written into the buffer.
+
+\begin{note}
+\field{len} is particularly useful
+for drivers using untrusted buffers: if a driver does not know exactly
+how much has been written by the device, the driver would have to zero
+the buffer in advance to ensure no data leakage occurs.
+
+For example, a network driver may hand a received buffer directly to
+an unprivileged userspace application.  If the network device has not
+overwritten the bytes which were in that buffer, this could leak the
+contents of freed memory from other processes to the application.
+\end{note}
+
+\field{idx} field indicates where the driver would put the next descriptor
+entry in the ring (modulo the queue size). This starts at 0, and increases.
 
 \begin{note}
 The legacy \hyperref[intro:Virtio PCI Draft]{[Virtio PCI Draft]}
@@ -599,6 +625,39 @@ referred to these structures as vring_used and vring_used_elem, and
 the constant as VRING_USED_F_NO_NOTIFY, but the layout and value were
 identical.
 \end{note}
+
+\subsubsection{Legacy Interface: The Virtqueue Used
+Ring}\label{sec:Basic Facilities of a Virtio Device / Virtqueues
+/ The Virtqueue Used Ring/ Legacy Interface: The Virtqueue Used
+Ring}
+
+Historically, many drivers ignored the \field{len} value, as a
+result, many devices set \field{len} incorrectly.  Thus, when
+using the legacy interface, it is generally a good idea to ignore
+the \field{len} value in used ring entries if possible.  Specific
+known issues are listed per device type.
+
+\devicenormative{\subsubsection}{The Virtqueue Used Ring}{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Used Ring}
+
+The device MUST set \field{len} prior to updating the used \field{idx}.
+
+The device MUST write at least \field{len} bytes to descriptor,
+beginning at the first device-writable buffer,
+prior to updating the used \field{idx}.
+
+The device MAY write more than \field{len} bytes to descriptor.
+
+\begin{note}
+There are potential error cases where a device might not know what
+parts of the buffers have been written.  This is why \field{len} is
+permitted to be an underestimate: that's preferable to the driver believing
+that uninitialized memory has been overwritten when it has not.
+\end{note}
+
+\drivernormative{\subsubsection}{The Virtqueue Used Ring}{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Used Ring}
+
+The driver MUST NOT make assumptions about data in device-writable buffers
+beyond the first \field{len} bytes, and SHOULD ignore this data.
 
 \subsection{Virtqueue Notification Suppression}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Notification Suppression}
 
@@ -987,7 +1046,7 @@ Transitional PCI Device ID  &  Virtio Device    \\
 \hline
 0x1001     &   block device     \\
 \hline
-0x1002     & memory ballooning (legacy)  \\
+0x1002     & memory ballooning (traditional)  \\
 \hline
 0x1003     &      console       \\
 \hline
@@ -1047,14 +1106,23 @@ Structure PCI Capabilities.
 
 Fields of different sizes are present in the device
 configuration regions.
-All 32-bit and 16-bit fields are little-endian.
+All 64-bit, 32-bit and 16-bit fields are little-endian.
+64-bit fields are to be treated as two 32-bit fields,
+with low 32 bit part followed by the high 32 bit part.
 
 \drivernormative{\subsubsection}{PCI Device Layout}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout}
 
-The driver
-MUST access each field using the ``natural'' access method, i.e.
-32-bit accesses for 32-bit fields, 16-bit accesses for 16-bit
-fields and 8-bit accesses for 8-bit fields.
+For device configuration access, the driver MUST use 8-bit wide
+accesses for 8-bit wide fields, 16-bit wide and aligned accesses
+for 16-bit wide fields and 32-bit wide and aligned accesses for
+32-bit and 64-bit wide fields. For 64-bit fields, the driver MAY
+access each of the high and low 32-bit parts of the field
+independently.
+
+\devicenormative{\subsubsection}{PCI Device Layout}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout}
+
+For 64-bit device configuration fields, the device MUST allow driver
+independent access to high and low 32-bit parts of the field.
 
 \subsection{Virtio Structure PCI Capabilities}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / Virtio Structure PCI Capabilities}
 
@@ -1410,7 +1478,7 @@ change interrupts and normal virtqueue interrupts:
 \hline
 Bits       & 0                               & 1               &  2 to 31 \\
 \hline
-Purpose    & Device Configuration Interrupt  & Queue Interrupt & Reserved \\
+Purpose    & Queue Interrupt  & Device Configuration Interrupt & Reserved \\
 \hline
 \end{tabular}
 
@@ -1600,10 +1668,37 @@ on PCI Device Layout}\label{sec:Virtio Transport Options / Virtio
 Over PCI Bus / PCI Device Layout / Non-transitional Device With
 Legacy Driver: A Note on PCI Device Layout}
 
+All known legacy drivers check either the PCI Revision or the
+Device and Vendor IDs, and thus won't attempt to drive a
+non-transitional device.
+
+A buggy legacy driver might mistakenly attempt to drive a
+non-transitional device. If support for such drivers is required
+(as opposed to fixing the bug), the following would be the
+recommended way to detect and handle them.
+\begin{note}
+Such buggy drivers are not currently known to be used in
+production.
+\end{note}
+
+\subparagraph{
+\DIFdeltextcstwo{Driver Requirements: Non-transitional Device With Legacy Driver}
+\DIFaddtextcstwo{Device Requirements: Non-transitional Device With Legacy Driver}
+}
+\label{drivernormative:Virtio Transport Options / Virtio Over PCI
+Bus / PCI-specific Initialization And Device Operation /
+Device Initialization / Non-transitional Device With Legacy
+Driver}
+\label{devicenormative:Virtio Transport Options / Virtio Over PCI
+Bus / PCI-specific Initialization And Device Operation /
+Device Initialization / Non-transitional Device With Legacy
+Driver}
+
 Non-transitional devices, on a platform where a legacy driver for
-a legacy device with the same ID might have previously existed,
-SHOULD take the following steps to fail gracefully when a legacy
-driver attempts to drive them:
+a legacy device with the same ID (including PCI Revision, Device
+and Vendor IDs) is known to have previously existed,
+SHOULD take the following steps to cause the legacy driver to
+fail gracefully when it attempts to drive them:
 
 \begin{enumerate}
 \item Present an I/O BAR in BAR0, and
@@ -1623,22 +1718,6 @@ This documents PCI-specific steps executed during Device Initialization.
 As a prerequisite to device initialization, the driver scans the
 PCI capability list, detecting virtio configuration layout using Virtio
 Structure PCI capabilities as detailed in \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / Virtio Structure PCI Capabilities}
-
-\paragraph{Non-transitional Device With Legacy Driver}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Non-transitional Device With Legacy Driver}
-
-\drivernormative{\subparagraph}{Non-transitional Device With Legacy Driver}{Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Non-transitional Device With Legacy Driver}
-
-Non-transitional devices, on a platform where a legacy driver for
-a legacy device with the same ID might have previously existed,
-MUST take the following steps to fail gracefully when a legacy
-driver attempts to drive them:
-
-\begin{enumerate}
-\item Present an I/O BAR in BAR0, and
-\item Respond to a single-byte zero write to offset 18
-   (corresponding to Device Status register in the legacy layout)
-   of BAR0 by presenting zeroes on every BAR and ignoring writes.
-\end{enumerate}
 
 \subparagraph{Legacy Interface: A Note on Device Layout Detection}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Virtio Device Configuration Layout Detection / Legacy Interface: A Note on Device Layout Detection}
 
@@ -1761,8 +1840,8 @@ The driver typically does this as follows, for each virtqueue a device has:
 \end{enumerate}
 
 \subparagraph{Legacy Interface: A Note on Virtqueue Configuration}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Virtqueue Configuration / Legacy Interface: A Note on Virtqueue Configuration}
-When using the legacy interface, the page size for a virtqueue on a PCI virtio
-device is defined as 4096 bytes.  Driver writes the physical address, divided
+When using the legacy interface, the queue layout follows \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Legacy Interfaces: A Note on Virtqueue Layout}~\nameref{sec:Basic Facilities of a Virtio Device / Virtqueues / Legacy Interfaces: A Note on Virtqueue Layout} with an alignment of 4096.
+Driver writes the physical address, divided
 by 4096 to the Queue Address field\footnote{The 4096 is based on the x86 page size, but it's also large
 enough to ensure that the separate parts of the virtqueue are on
 separate cache lines.
@@ -2379,8 +2458,14 @@ model corresponding to the attached virtio device's subsystem
 device ID, accessed via a virtual I/O subchannel and a virtual
 channel path of type 0x32. This proxy device is discoverable via
 normal channel subsystem device discovery (usually a STORE
-SUBCHANNEL loop) and answers to the basic channel commands, most
-importantly SENSE ID.
+SUBCHANNEL loop) and answers to the basic channel commands:
+
+\begin{itemize}
+\item NO-OPERATION (0x03)
+\item BASIC SENSE (0x04)
+\item TRANSFER IN CHANNEL (0x08)
+\item SENSE ID (0xe4)
+\end{itemize}
 
 For a virtio-ccw proxy device, SENSE ID will return the following
 information:
@@ -2585,36 +2670,30 @@ struct vq_info_block_legacy {
 \end{lstlisting}
 
 \field{queue} contains the guest address for queue \field{index}, \field{num} the number of buffers
-and \field{align} the alignment.
-
-\subsubsection{Virtqueue Layout}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Virtqueue Layout}
-
-The virtqueue is physically contiguous, with padding added to make the
-used ring meet the align value:
-
-\begin{tabular}{|l|l|l|}
-\hline
-Descriptor Table & Available Ring (\ldots padding\ldots) & Used Ring \\
-\hline
-\end{tabular}
-
-The calculation for total size is as follows:
-
-\begin{lstlisting}
-#define ALIGN(x) (((x) + align) & ~align)
-static inline unsigned virtq_size(unsigned int num)
-{
-     return ALIGN(sizeof(struct virtq_desc)*num
-                  + sizeof(u16)*(3 + num))
-          + ALIGN(sizeof(u16)*3 + sizeof(struct virtq_used_elem)*num);
-}
-\end{lstlisting}
+and \field{align} the alignment. The queue layout follows \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Legacy Interfaces: A Note on Virtqueue Layout}~\nameref{sec:Basic Facilities of a Virtio Device / Virtqueues / Legacy Interfaces: A Note on Virtqueue Layout}.
 
 \subsubsection{Communicating Status Information}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Communicating Status Information}
 
 The driver changes the status of a device via the
 CCW_CMD_WRITE_STATUS command, which transmits an 8 bit status
 value.
+
+As described in
+\ref{devicenormative:Basic Facilities of a Virtio Device / Feature Bits},
+a device sometimes fails to set the \field{status} field: For example, it
+might fail to accept the FEATURES_OK status bit during device initialization.
+
+\drivernormative{\paragraph}{Communicating Status Information}{Virtio Transport Options / Virtio over channel I/O / Device Initialization / Communicating Status Information}
+
+If the device posts a unit check with command reject in response to the
+CCW_CMD_WRITE_STATUS command, the driver MUST assume that the device failed
+to set the status and the \field{status} field retained its previous value.
+
+\devicenormative{\paragraph}{Communicating Status Information}{Virtio Transport Options / Virtio over channel I/O / Device Initialization / Communicating Status Information}
+
+If the device fails to set the \field{status} field to the value written by
+the driver, the device MUST assure that the \field{status} field is left
+unchanged and MUST post a unit check with command reject.
 
 \subsubsection{Handling Device Features}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Handling Device Features}
 
@@ -2887,7 +2966,7 @@ Device ID  &  Virtio Device    \\
 \hline
 4          &  entropy source    \\
 \hline
-5          & memory ballooning (legacy)  \\
+5          & memory ballooning (traditional)  \\
 \hline
 6          &     ioMemory       \\
 \hline
@@ -3136,7 +3215,12 @@ if both guests are amenable.}
   the VIRTIO_NET_F_GUEST_TSO4, VIRTIO_NET_F_GUEST_TSO6,
   VIRTIO_NET_F_GUEST_UFO and VIRTIO_NET_F_GUEST_ECN are the input
   equivalents of the features described above.
-  See \ref{sec:Device Types / Network Device / Device Operation / Setting Up Receive Buffers}~\nameref{sec:Device Types / Network Device / Device Operation / Setting Up Receive Buffers} and \ref{sec:Device Types / Network Device / Device Operation / Processing of Packets}~\nameref{sec:Device Types / Network Device / Device Operation / Processing of Packets} below.
+  See \ref{sec:Device Types / Network Device / Device Operation /
+Setting Up Receive Buffers}~\nameref{sec:Device Types / Network
+Device / Device Operation / Setting Up Receive Buffers} and
+\ref{sec:Device Types / Network Device / Device Operation /
+Processing of Incoming Packets}~\nameref{sec:Device Types /
+Network Device / Device Operation / Processing of Incoming Packets} below.
 \end{enumerate}
 
 A truly minimal driver would only accept VIRTIO_NET_F_MAC and ignore
@@ -3180,16 +3264,25 @@ The legacy driver only presented \field{num_buffers} in the struct virtio_net_hd
 when VIRTIO_NET_F_MRG_RXBUF was not negotiated; without that feature the
 structure was 2 bytes shorter.
 
+When using the legacy interface, the driver SHOULD ignore the
+\field{len} value in used ring entries for the transmit queues
+and the controlq queue.
+\begin{note}
+Historically, some devices put
+the total descriptor length there, even though no data was
+actually written.
+\end{note}
+
 \subsubsection{Packet Transmission}\label{sec:Device Types / Network Device / Device Operation / Packet Transmission}
 
 Transmitting a single packet is simple, but varies depending on
 the different features the driver negotiated.
 
 \begin{enumerate}
-\item The driver MAY send a completely checksummed packet.  In this case,
+\item The driver can send a completely checksummed packet.  In this case,
   \field{flags} will be zero, and \field{gso_type} will be VIRTIO_NET_HDR_GSO_NONE.
 
-\item If the driver negotiated VIRTIO_NET_F_CSUM, it MAY skip
+\item If the driver negotiated VIRTIO_NET_F_CSUM, it can skip
   checksumming the packet:
   \begin{itemize}
   \item \field{flags} has the VIRTIO_NET_HDR_F_NEEDS_CSUM set,
@@ -3248,15 +3341,83 @@ specifically in the protocol.}.
 
 \drivernormative{\paragraph}{Packet Transmission}{Device Types / Network Device / Device Operation / Packet Transmission}
 
-If a driver has not negotiated VIRTIO_NET_F_CSUM, \field{flags} MUST be zero and
-the packet MUST be fully checksummed.
-
 The driver MUST set \field{num_buffers} to zero.
 
-A driver SHOULD NOT send TCP packets requiring segmentation offload which have the Explicit Congestion Notification bit set, unless the VIRTIO_NET_F_HOST_ECN feature is
-negotiated\footnote{This is a common restriction in real, older network cards.}, in
-which case it MUST set the VIRTIO_NET_HDR_GSO_ECN bit in \field{gso_type}.
+If VIRTIO_NET_F_CSUM is not negotiated, the driver MUST set
+\field{flags} to zero and SHOULD supply a fully checksummed
+packet to the device.
 
+If VIRTIO_NET_F_HOST_TSO4 is negotiated, the driver MAY set
+\field{gso_type} to VIRTIO_NET_HDR_GSO_TCPV4 to request TCPv4
+segmentation, otherwise the driver MUST NOT set
+\field{gso_type} to VIRTIO_NET_HDR_GSO_TCPV4.
+
+If VIRTIO_NET_F_HOST_TSO6 is negotiated, the driver MAY set
+\field{gso_type} to VIRTIO_NET_HDR_GSO_TCPV6 to request TCPv6
+segmentation, otherwise the driver MUST NOT set
+\field{gso_type} to VIRTIO_NET_HDR_GSO_TCPV6.
+
+If VIRTIO_NET_F_HOST_UFO is negotiated, the driver MAY set
+\field{gso_type} to VIRTIO_NET_HDR_GSO_UDP to request UDP
+segmentation, otherwise the driver MUST NOT set
+\field{gso_type} to VIRTIO_NET_HDR_GSO_UDP.
+
+The driver SHOULD NOT send to the device TCP packets requiring segmentation offload
+which have the Explicit Congestion Notification bit set, unless the
+VIRTIO_NET_F_HOST_ECN feature is negotiated, in which case the
+driver MUST set the VIRTIO_NET_HDR_GSO_ECN bit in
+\field{gso_type}.
+
+If the VIRTIO_NET_F_CSUM feature has been negotiated, the
+driver MAY set the VIRTIO_NET_HDR_F_NEEDS_CSUM bit in
+\field{flags}, if so:
+\begin{enumerate}
+\item the driver MUST validate the packet checksum at
+	offset \field{csum_offset} from \field{csum_start} as well as all
+	preceding offsets;
+\item the driver MUST set the packet checksum stored in the
+	buffer to the TCP/UDP pseudo header;
+\item the driver MUST set \field{csum_start} and
+	\field{csum_offset} such that calculating a ones'
+	complement checksum from \field{csum_start} up until the end of
+	the packet and storing the result at offset \field{csum_offset}
+	from  \field{csum_start} will result in a fully checksummed
+	packet;
+\end{enumerate}
+
+If none of the VIRTIO_NET_F_HOST_TSO4, TSO6 or UFO options have
+been negotiated, the driver MUST set \field{gso_type} to
+VIRTIO_NET_HDR_GSO_NONE.
+
+If \field{gso_type} differs from VIRTIO_NET_HDR_GSO_NONE, then
+the driver MUST also set the VIRTIO_NET_HDR_F_NEEDS_CSUM bit in
+\field{flags} and MUST set \field{gso_size} to indicate the
+desired MSS.
+
+If one of the VIRTIO_NET_F_HOST_TSO4, TSO6 or UFO options have
+been negotiated, the driver SHOULD set \field{hdr_len} to a value
+not less than the length of the headers, including the transport
+header.
+
+The driver MUST NOT set the VIRTIO_NET_HDR_F_DATA_VALID bit in
+\field{flags}.
+
+\devicenormative{\paragraph}{Packet Transmission}{Device Types / Network Device / Device Operation / Packet Transmission}
+The device MUST ignore \field{flag} bits that it does not recognize.
+
+If VIRTIO_NET_HDR_F_NEEDS_CSUM bit in \field{flags} is not set, the
+device MUST NOT use the \field{csum_start} and \field{csum_offset}.
+
+If one of the VIRTIO_NET_F_HOST_TSO4, TSO6 or UFO options have
+been negotiated, the device MAY use \field{hdr_len} only as a hint about the
+transport header size.
+The device MUST NOT rely on \field{hdr_len} to be correct.
+\begin{note}
+This is due to various bugs in implementations.
+\end{note}
+
+If VIRTIO_NET_HDR_F_NEEDS_CSUM is not set, the device MUST NOT
+rely on the packet checksum being correct.
 \paragraph{Packet Transmission Interrupt}\label{sec:Device Types / Network Device / Device Operation / Packet Transmission / Packet Transmission Interrupt}
 
 Often a driver will suppress transmission interrupts using the
@@ -3310,17 +3471,21 @@ The device MUST set \field{num_buffers} to the number of descriptors used to
 hold the incoming packet.
 
 The device MUST use only a single descriptor if VIRTIO_NET_F_MRG_RXBUF
-was not negotiated. \note{This means that \field{num_buffers} will always be 1 
+was not negotiated.
+\begin{note}
+{This means that \field{num_buffers} will always be 1
 if VIRTIO_NET_F_MRG_RXBUF is not negotiated.}
+\end{note}
 
-\subsubsection{Processing of Packets}\label{sec:Device Types / Network Device / Device Operation / Processing of Packets}
+\subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets}
+\label{sec:Device Types / Network Device / Device Operation / Processing of Packets}%old label for latexdiff
 
 When a packet is copied into a buffer in the receiveq, the
 optimal path is to disable further interrupts for the receiveq
 (see \ref{sec:General Initialization And Device Operation / Device Operation / Receiving Used Buffers From The Device}~\nameref{sec:General Initialization And Device Operation / Device Operation / Receiving Used Buffers From The Device}) and process
 packets until no more are found, then re-enable them.
 
-Processing packet involves:
+Processing incoming packets involves:
 
 \begin{enumerate}
 \item \field{num_buffers} indicates how many descriptors
@@ -3336,10 +3501,25 @@ Processing packet involves:
   \field{num_buffers} is one, then the entire packet will be
   contained within this buffer, immediately following the struct
   virtio_net_hdr.
-
 \item If the VIRTIO_NET_F_GUEST_CSUM feature was negotiated, the
-  VIRTIO_NET_HDR_F_NEEDS_CSUM bit in \field{flags} MAY be
-  set: if so, the checksum on the packet is incomplete and
+  VIRTIO_NET_HDR_F_DATA_VALID bit in \field{flags} can be
+  set: if so, device has validated the packet checksum.
+  In case of multiple encapsulated protocols, one level of checksums
+  has been validated.
+\end{enumerate}
+
+Additionally, VIRTIO_NET_F_GUEST_CSUM, TSO4, TSO6, UDP and ECN
+features enable receive checksum, large receive offload and ECN
+support which are the input equivalents of the transmit checksum,
+transmit segmentation offloading and ECN features, as described
+in \ref{sec:Device Types / Network Device / Device Operation /
+Packet Transmission}:
+\begin{enumerate}
+\item If the VIRTIO_NET_F_GUEST_CSUM feature was negotiated, the
+  VIRTIO_NET_HDR_F_NEEDS_CSUM bit in \field{flags} can be
+  set: if so, the packet checksum at offset \field{csum_offset}
+  from \field{csum_start} and any preceding checksums
+  have been validated.  The checksum on the packet is incomplete and
   \field{csum_start} and \field{csum_offset} indicate how to calculate
   it (see Packet Transmission point 1).
 
@@ -3349,10 +3529,23 @@ Processing packet involves:
   desired MSS (see Packet Transmission point 2).
 \end{enumerate}
 
-\devicenormative{\paragraph}{Processing of Packets}{Device Types / Network Device / Device Operation / Processing of Packets}
+\devicenormative{\paragraph}{Processing of Incoming Packets}{Device Types / Network Device / Device Operation / Processing of Incoming Packets}
+\label{devicenormative:Device Types / Network Device / Device Operation / Processing of Packets}%old label for latexdiff
 
-If VIRTIO_NET_F_CSUM is not negotiated, the device MUST set
-\field{flags} to zero and the packet MUST be fully checksummed.
+If VIRTIO_NET_F_MRG_RXBUF has not been negotiated, the device MUST set
+\field{num_buffers} to 1.
+
+If VIRTIO_NET_F_MRG_RXBUF has been negotiated, the device MUST set
+\field{num_buffers} to indicate the number of descriptors
+the packet (including the header) is spread over.
+
+The device MUST use all descriptors used by a single receive
+packet together, by atomically incrementing \field{idx} in the
+used ring by the \field{num_buffers} value.
+
+If VIRTIO_NET_F_GUEST_CSUM is not negotiated, the device MUST set
+\field{flags} to zero and SHOULD supply a fully checksummed
+packet to the driver.
 
 If VIRTIO_NET_F_GUEST_TSO4 is not negotiated, the device MUST NOT set
 \field{gso_type} to VIRTIO_NET_HDR_GSO_TCPV4.
@@ -3363,11 +3556,68 @@ If VIRTIO_NET_F_GUEST_UDP is not negotiated, the device MUST NOT set
 If VIRTIO_NET_F_GUEST_TSO6 is not negotiated, the device MUST NOT set
 \field{gso_type} to VIRTIO_NET_HDR_GSO_TCPV6.
 
-A device SHOULD NOT send TCP packets requiring segmentation offload
+The device SHOULD NOT send to the driver TCP packets requiring segmentation offload
 which have the Explicit Congestion Notification bit set, unless the
-VIRTIO_NET_F_GUEST_ECN feature is negotiated, in which case it MUST set
-the VIRTIO_NET_HDR_GSO_ECN bit in \field{gso_type}.
+VIRTIO_NET_F_GUEST_ECN feature is negotiated, in which case the
+device MUST set the VIRTIO_NET_HDR_GSO_ECN bit in
+\field{gso_type}.
 
+If the VIRTIO_NET_F_GUEST_CSUM feature has been negotiated, the
+device MAY set the VIRTIO_NET_HDR_F_NEEDS_CSUM bit in
+\field{flags}, if so:
+\begin{enumerate}
+\item the device MUST validate the packet checksum at
+	offset \field{csum_offset} from \field{csum_start} as well as all
+	preceding offsets;
+\item the device MUST set the packet checksum stored in the
+	receive buffer to the TCP/UDP pseudo header;
+\item the device MUST set \field{csum_start} and
+	\field{csum_offset} such that calculating a ones'
+	complement checksum from \field{csum_start} up until the
+	end of the packet and storing the result at offset
+	\field{csum_offset} from  \field{csum_start} will result in a
+	fully checksummed packet;
+\end{enumerate}
+
+If none of the VIRTIO_NET_F_GUEST_TSO4, TSO6 or UFO options have
+been negotiated, the device MUST set \field{gso_type} to
+VIRTIO_NET_HDR_GSO_NONE.
+
+If \field{gso_type} differs from VIRTIO_NET_HDR_GSO_NONE, then
+the device MUST also set the VIRTIO_NET_HDR_F_NEEDS_CSUM bit in
+\field{flags} MUST set \field{gso_size} to indicate the desired MSS.
+
+If one of the VIRTIO_NET_F_GUEST_TSO4, TSO6 or UFO options have
+been negotiated, the device SHOULD set \field{hdr_len} to a value
+not less than the length of the headers, including the transport
+header.
+
+If the VIRTIO_NET_F_GUEST_CSUM feature has been negotiated, the
+device MAY set the VIRTIO_NET_HDR_F_DATA_VALID bit in
+\field{flags}, if so, the device MUST validate the packet
+checksum (in case of multiple encapsulated protocols, one level
+of checksums is validated).
+
+\drivernormative{\paragraph}{Processing of Incoming
+Packets}{Device Types / Network Device / Device Operation /
+Processing of Incoming Packets}
+
+The driver MUST ignore \field{flag} bits that it does not recognize.
+
+If VIRTIO_NET_HDR_F_NEEDS_CSUM bit in \field{flags} is not set, the
+driver MUST NOT use the \field{csum_start} and \field{csum_offset}.
+
+If one of the VIRTIO_NET_F_GUEST_TSO4, TSO6 or UFO options have
+been negotiated, the driver MAY use \field{hdr_len} only as a hint about the
+transport header size.
+The driver MUST NOT rely on \field{hdr_len} to be correct.
+\begin{note}
+This is due to various bugs in implementations.
+\end{note}
+
+If neither VIRTIO_NET_HDR_F_NEEDS_CSUM nor
+VIRTIO_NET_HDR_F_DATA_VALID is set, the driver MUST NOT
+rely on the packet checksum being correct.
 \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue}
 
 The driver uses the control virtqueue (if VIRTIO_NET_F_CTRL_VQ is
@@ -3396,31 +3646,92 @@ do except issue a diagnostic if \field{ack} is not
 VIRTIO_NET_OK.
 
 \paragraph{Packet Receive Filtering}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Packet Receive Filtering}
+\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Setting Promiscuous Mode}%old label for latexdiff
 
-If the VIRTIO_NET_F_CTRL_RX feature is negotiated, the driver can
-send control commands for promiscuous mode, multicast receiving,
-and filtering of MAC addresses.
+If the VIRTIO_NET_F_CTRL_RX and VIRTIO_NET_F_CTRL_RX_EXTRA
+features are negotiated, the driver can send control commands for
+promiscuous mode, multicast, unicast and broadcast receiving.
 
 \begin{note}
 In general, these commands are best-effort: unwanted
 packets could still arrive.
 \end{note}
 
-\paragraph{Setting Promiscuous Mode}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Setting Promiscuous Mode}
-
 \begin{lstlisting}
 #define VIRTIO_NET_CTRL_RX    0
  #define VIRTIO_NET_CTRL_RX_PROMISC      0
  #define VIRTIO_NET_CTRL_RX_ALLMULTI     1
+ #define VIRTIO_NET_CTRL_RX_ALLUNI       2
+ #define VIRTIO_NET_CTRL_RX_NOMULTI      3
+ #define VIRTIO_NET_CTRL_RX_NOUNI        4
+ #define VIRTIO_NET_CTRL_RX_NOBCAST      5
 \end{lstlisting}
 
-The class VIRTIO_NET_CTRL_RX has two commands:
-VIRTIO_NET_CTRL_RX_PROMISC turns promiscuous mode on and off, and
-VIRTIO_NET_CTRL_RX_ALLMULTI turns all-multicast receive on and
+
+\devicenormative{\subparagraph}{Packet Receive Filtering}{Device Types / Network Device / Device Operation / Control Virtqueue / Packet Receive Filtering}
+
+If the VIRTIO_NET_F_CTRL_RX feature has been negotiated,
+the device MUST support the following VIRTIO_NET_CTRL_RX class
+commands:
+\begin{itemize}
+\item VIRTIO_NET_CTRL_RX_PROMISC turns promiscuous mode on and
 off. The command-specific-data is one byte containing 0 (off) or
-1 (on).
+1 (on). If promiscous mode is on, the device SHOULD receive all
+incoming packets.
+This SHOULD take effect even if one of the other modes set by
+a VIRTIO_NET_CTRL_RX class command is on.
+\item VIRTIO_NET_CTRL_RX_ALLMULTI turns all-multicast receive on and
+off. The command-specific-data is one byte containing 0 (off) or
+1 (on). When all-multicast receive is on the device SHOULD allow
+all incoming multicast packets.
+\end{itemize}
+
+If the VIRTIO_NET_F_CTRL_RX_EXTRA feature has been negotiated,
+the device MUST support the following VIRTIO_NET_CTRL_RX class
+commands:
+\begin{itemize}
+\item VIRTIO_NET_CTRL_RX_ALLUNI turns all-unicast receive on and
+off. The command-specific-data is one byte containing 0 (off) or
+1 (on). When all-unicast receive is on the device SHOULD allow
+all incoming unicast packets.
+\item VIRTIO_NET_CTRL_RX_NOMULTI suppresses multicast receive.
+The command-specific-data is one byte containing 0 (multicast
+receive allowed) or 1 (multicast receive suppressed).
+When multicast receive is suppressed, the device SHOULD NOT
+send multicast packets to the driver.
+This SHOULD take effect even if VIRTIO_NET_CTRL_RX_ALLMULTI is on.
+This filter SHOULD NOT apply to broadcast packets.
+\item VIRTIO_NET_CTRL_RX_NOUNI suppresses unicast receive.
+The command-specific-data is one byte containing 0 (unicast
+receive allowed) or 1 (unicast receive suppressed).
+When unicast receive is suppressed, the device SHOULD NOT
+send unicast packets to the driver.
+This SHOULD take effect even if VIRTIO_NET_CTRL_RX_ALLUNI is on.
+\item VIRTIO_NET_CTRL_RX_NOBCAST suppresses broadcast receive.
+The command-specific-data is one byte containing 0 (broadcast
+receive allowed) or 1 (broadcast receive suppressed).
+When broadcast receive is suppressed, the device SHOULD NOT
+send broadcast packets to the driver.
+This SHOULD take effect even if VIRTIO_NET_CTRL_RX_ALLMULTI is on.
+\end{itemize}
+
+\drivernormative{\subparagraph}{Packet Receive Filtering}{Device Types / Network Device / Device Operation / Control Virtqueue / Packet Receive Filtering}
+
+If the VIRTIO_NET_F_CTRL_RX feature has not been negotiated,
+the driver MUST NOT issue commands VIRTIO_NET_CTRL_RX_PROMISC or
+VIRTIO_NET_CTRL_RX_ALLMULTI.
+
+If the VIRTIO_NET_F_CTRL_RX_EXTRA feature has not been negotiated,
+the driver MUST NOT issue commands
+ VIRTIO_NET_CTRL_RX_ALLUNI,
+ VIRTIO_NET_CTRL_RX_NOMULTI,
+ VIRTIO_NET_CTRL_RX_NOUNI or
+ VIRTIO_NET_CTRL_RX_NOBCAST.
 
 \paragraph{Setting MAC Address Filtering}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Setting MAC Address Filtering}
+
+If the VIRTIO_NET_F_CTRL_RX feature is negotiated, the driver can
+send control commands for MAC address filtering.
 
 \begin{lstlisting}
 struct virtio_net_ctrl_mac {
@@ -3467,6 +3778,13 @@ matches neither the \field{mac} (or that set with VIRTIO_NET_CTRL_MAC_ADDR_SET)
 nor the MAC filtering table.
 
 \drivernormative{\subparagraph}{Setting MAC Address Filtering}{Device Types / Network Device / Device Operation / Control Virtqueue / Setting MAC Address Filtering}
+
+If VIRTIO_NET_F_CTRL_RX has not been negotiated,
+the driver MUST NOT issue VIRTIO_NET_CTRL_MAC class commands.
+
+If VIRTIO_NET_F_CTRL_RX has been negotiated,
+the driver SHOULD issue VIRTIO_NET_CTRL_MAC_ADDR_SET
+to set the default mac if it is different from \field{mac}.
 
 The driver MUST follow the VIRTIO_NET_CTRL_MAC_TABLE_SET command
 by a le32 number, followed by that number of non-multicast
@@ -3880,6 +4198,14 @@ MUST format the fields in struct virtio_blk_req
 according to the native endian of the guest rather than
 (necessarily when not using the legacy interface) little-endian.
 
+When using the legacy interface, transitional drivers
+SHOULD ignore the \field{len} value in used ring entries.
+\begin{note}
+Historically, some devices put the total descriptor length,
+or the total length of device-writable buffers there,
+even when only the status byte was actually written.
+\end{note}
+
 The \field{reserved} field was previously called \field{ioprio}.  \field{ioprio}
 is a hint about the relative priorities of requests to the device:
 higher numbers indicate more important requests.
@@ -4203,6 +4529,14 @@ MUST format the fields in struct virtio_console_control
 according to the native endian of the guest rather than
 (necessarily when not using the legacy interface) little-endian.
 
+When using the legacy interface, the driver SHOULD ignore the
+\field{len} value in used ring entries for the transmit queues
+and the control transmitq.
+\begin{note}
+Historically, some devices put the total descriptor length there,
+even though no data was actually written.
+\end{note}
+
 \subsubsection{Legacy Interface: Framing Requirements}\label{sec:Device
 Types / Console Device / Legacy Interface: Framing Requirements}
 
@@ -4245,7 +4579,7 @@ by random data by the device.
 
 The driver MUST NOT place driver-readable buffers into the queue.
 
-The driver MUST examine the length written by the driver to determine
+The driver MUST examine the length written by the device to determine
 how many random bytes were received.
 
 \devicenormative{\subsubsection}{Device Operation}{Device Types / Entropy Device / Device Operation}
@@ -4253,14 +4587,13 @@ how many random bytes were received.
 The device MUST place one or more random bytes into the buffer, but it
 MAY use less than the entire buffer length.
 
-\section{Legacy Interface: Memory Balloon Device}\label{sec:Device Types / Memory Balloon Device}
+\section{Traditional Memory Balloon Device}\label{sec:Device Types / Memory Balloon Device}
 
-This device is deprecated, and thus only exists as a legacy device
-illustrated here for reference.  The device number 13 is reserved for
-a new memory balloon interface which is expected in a future version
-of the standard.
+This is the traditional balloon device.  The device number 13 is
+reserved for a new memory balloon interface, with different
+semantics, which is expected in a future version of the standard.
 
-The virtio memory balloon device is a primitive device for
+The traditional virtio memory balloon device is a primitive device for
 managing guest memory: the device asks for a certain amount of
 memory, and the driver supplies it (or withdraws it, if the device
 has more than it asks for). This allows the guest to adapt to
@@ -4282,12 +4615,34 @@ guest memory statistics to the host.
 
 \subsection{Feature bits}\label{sec:Device Types / Memory Balloon Device / Feature bits}
 \begin{description}
-\item[VIRTIO_BALLOON_F_MUST_TELL_HOST (0)] Host MUST be told before
+\item[VIRTIO_BALLOON_F_MUST_TELL_HOST (0)] Host has to be told before
     pages from the balloon are used.
 
 \item[VIRTIO_BALLOON_F_STATS_VQ (1)] A virtqueue for reporting guest
     memory statistics is present.
+\item[VIRTIO_BALLOON_F_DEFLATE_ON_OOM (2) ] Deflate balloon on
+    guest out of memory condition.
+
 \end{description}
+
+\drivernormative{\subsubsection}{Feature bits}{Device Types / Memory Balloon Device / Feature bits}
+The driver SHOULD accept the VIRTIO_BALLOON_F_MUST_TELL_HOST
+feature if offered by the device.
+
+\devicenormative{\subsubsection}{Feature bits}{Device Types / Memory Balloon Device / Feature bits}
+If the device offers the VIRTIO_BALLOON_F_MUST_TELL_HOST feature
+bit, and if the driver did not accept this feature bit, the
+device MAY signal failure by failing to set FEATURES_OK
+\field{device status} bit when the driver writes it.
+\subparagraph{Legacy Interface: Feature bits}\label{sec:Device
+Types / Memory Balloon Device / Feature bits / Legacy Interface:
+Feature bits}
+As the legacy interface does not have a way to gracefully report feature
+negotiation failure, when using the legacy interface,
+transitional devices MUST support guests which do not negotiate
+VIRTIO_BALLOON_F_MUST_TELL_HOST feature, and SHOULD
+allow guest to use memory before notifying host if
+VIRTIO_BALLOON_F_MUST_TELL_HOST is not negotiated.
 
 \subsection{Device configuration layout}\label{sec:Device Types / Memory Balloon Device / Device configuration layout}
   Both fields of this configuration
@@ -4300,10 +4655,18 @@ struct virtio_balloon_config {
 };
 \end{lstlisting}
 
-Note that these fields are always little endian, despite convention
-that legacy device fields are guest endian.
+\subparagraph{Legacy Interface: Device configuration layout}\label{sec:Device Types / Memory Balloon Device / Device
+configuration layout / Legacy Interface: Device configuration layout}
+When using the legacy interface, transitional devices and drivers
+MUST format the fields in struct virtio_balloon_config
+according to the little-endian format.
+\begin{note}
+This is unlike the usual convention that legacy device fields are guest endian.
+\end{note}
 
 \subsection{Device Initialization}\label{sec:Device Types / Memory Balloon Device / Device Initialization}
+
+The device initialization process is outlined below:
 
 \begin{enumerate}
 \item The inflate and deflate virtqueues are identified.
@@ -4311,18 +4674,18 @@ that legacy device fields are guest endian.
 \item If the VIRTIO_BALLOON_F_STATS_VQ feature bit is negotiated:
   \begin{enumerate}
   \item Identify the stats virtqueue.
-
-  \item Add one empty buffer to the stats virtqueue and notify the
-    device.
+  \item Add one empty buffer to the stats virtqueue.
+  \item DRIVER_OK is set: device operation begins.
+  \item Notify the device about the stats virtqueue buffer.
   \end{enumerate}
 \end{enumerate}
 
-Device operation begins immediately.
-
 \subsection{Device Operation}\label{sec:Device Types / Memory Balloon Device / Device Operation}
 
-The device is driven by the receipt of a
-configuration change interrupt.
+The device is driven either by the receipt of a configuration
+change interrupt, or by changing guest memory needs, such as
+performing memory compaction or responding to out of memory
+conditions.
 
 \begin{enumerate}
 \item \field{num_pages} configuration field is examined. If this is
@@ -4347,35 +4710,106 @@ configuration change interrupt.
   \item If the VIRTIO_BALLOON_F_MUST_TELL_HOST feature is negotiated, the
     guest informs the device of pages before it uses them.
 
-  \item Otherwise, the guest MAY begin to re-use pages previously
+  \item Otherwise, the guest is allowed to re-use pages previously
     given to the balloon before the device has acknowledged their
     withdrawal\footnote{In this case, deflation advice is merely a courtesy.
 }.
   \end{enumerate}
 
-\item In either case, once the device has completed the inflation or
-  deflation, the driver updates \field{actual} to reflect the new number of pages in the balloon\footnote{As updates to device-specific configuration space are not atomic, this field
-isn't particularly reliable, but can be used to diagnose buggy guests.
-}.
+\item In either case, the device acknowledges inflate and deflate
+requests by using the descriptor.
+\item Once the device has acknowledged the inflation or
+  deflation, the driver updates \field{actual} to reflect the new number of pages in the balloon.
 \end{enumerate}
 
 \drivernormative{\subsubsection}{Device Operation}{Device Types / Memory Balloon Device / Device Operation}
 The driver SHOULD supply pages to the balloon when \field{num_pages} is
-greater than \field{actual}.
+greater than the actual number of pages in the balloon.
 
 The driver MAY use pages from the balloon when \field{num_pages} is
-less than \field{actual}.
+less than the actual number of pages in the balloon.
+
+The driver MAY supply pages to the balloon when \field{num_pages} is
+greater than or equal to the actual number of pages in the balloon.
+
+If VIRTIO_BALLOON_F_DEFLATE_ON_OOM has not been negotiated, the
+driver MUST NOT use pages from the balloon when \field{num_pages}
+is less than or equal to the actual number of pages in the
+balloon.
+
+If VIRTIO_BALLOON_F_DEFLATE_ON_OOM has been negotiated, the
+driver MAY use pages from the balloon when \field{num_pages}
+is less than or equal to the actual number of pages in the
+balloon if this is required for system stability
+(e.g. if memory is required by applications running within
+ the guest).
 
 The driver MUST use the deflateq to inform the device of pages that it
 wants to use from the balloon.
 
 If the VIRTIO_BALLOON_F_MUST_TELL_HOST feature is negotiated, the
-driver MUST wait until the device has used the deflateq descriptor
-before using the pages.
+driver MUST NOT use pages from the balloon until
+the device has acknowledged the deflate request.
+
+Otherwise, if the VIRTIO_BALLOON_F_MUST_TELL_HOST feature is not
+negotiated, the driver MAY begin to re-use pages previously
+given to the balloon before the device has acknowledged the
+deflate request.
+
+In any case, the driver MUST NOT use pages from the balloon
+after adding the pages to the balloon, but before the device has
+acknowledged the inflate request.
+
+The driver MUST NOT request deflation of pages in
+the balloon before the device has acknowledged the inflate
+request.
 
 The driver MUST update \field{actual} after changing the number
 of pages in the balloon.
 
+The driver MAY update \field{actual} once after multiple
+inflate and deflate operations.
+
+\devicenormative{\subsubsection}{Device Operation}{Device Types / Memory Balloon Device / Device Operation}
+
+The device MAY modify the contents of a page in the balloon
+after detecting its physical number in an inflate request
+and before acknowledging the inflate request by using the inflateq
+descriptor.
+
+If the VIRTIO_BALLOON_F_MUST_TELL_HOST feature is negotiated, the
+device MAY modify the contents of a page in the balloon
+after detecting its physical number in an inflate request
+and before detecting its physical number in a deflate request
+and acknowledging the deflate request.
+
+\paragraph{Legacy Interface: Device Operation}\label{sec:Device
+Types / Memory Balloon Device / Device Operation / Legacy
+Interface: Device Operation}
+When using the legacy interface, the driver SHOULD ignore the \field{len} value in used ring entries.
+\begin{note}
+Historically, some devices put the total descriptor length there,
+even though no data was actually written.
+\end{note}
+When using the legacy interface, the driver MUST write out all
+4 bytes each time it updates the \field{actual} value in the
+configuration space, using a single atomic operation.
+
+When using the legacy interface, the device SHOULD NOT use the
+\field{actual} value written by the driver in the configuration
+space, until the last, most-significant byte of the value has been
+written.
+\begin{note}
+Historically, devices used the \field{actual} value, even though
+when using Virtio Over PCI Bus the device-specific configuration
+space was not guaranteed to be atomic. Using intermediate
+values during update by driver is best avoided, except for
+debugging.
+
+Historically, drivers using Virtio Over PCI Bus wrote the
+\field{actual} value by using multiple single-byte writes in
+order, from the least-significant to the most-significant value.
+\end{note}
 \subsubsection{Memory Statistics}\label{sec:Device Types / Memory Balloon Device / Device Operation / Memory Statistics}
 
 The stats virtqueue is atypical because communication is driven
@@ -4400,10 +4834,11 @@ as follows:
   subsequent request) and consumes the statistics.
 \end{enumerate}
 
+  Within the buffer, statistics are an array of 6-byte entries.
   Each statistic consists of a 16 bit
   tag and a 64 bit value. All statistics are optional and the
   driver chooses which ones to supply. To guarantee backwards
-  compatibility, the driver SHOULD omit unsupported statistics.
+  compatibility, devices omit unsupported statistics.
 
 \begin{lstlisting}
 struct virtio_balloon_stat {
@@ -4413,16 +4848,66 @@ struct virtio_balloon_stat {
 #define VIRTIO_BALLOON_S_MINFLT   3
 #define VIRTIO_BALLOON_S_MEMFREE  4
 #define VIRTIO_BALLOON_S_MEMTOT   5
-        u16 tag;
-        u64 val;
+        le16 tag;
+        le64 val;
 } __attribute__((packed));
 \end{lstlisting}
 
+\drivernormative{\paragraph}{Memory Statistics}{Device Types / Memory Balloon Device / Device Operation / Memory Statistics}
+Normative statements in this section apply if and only if the
+VIRTIO_BALLOON_F_STATS_VQ feature has been negotiated.
+
+The driver MUST make at most one buffer available to the device
+in the statsq, at all times.
+
+After initializing the device, the driver MUST make an output
+buffer available in the statsq.
+
+Upon detecting that device has used a buffer in the statsq, the
+driver MUST make an output buffer available in the statsq.
+
+Before making an output buffer available in the statsq, the
+driver MUST initialize it, including one struct
+virtio_balloon_stat entry for each statistic that it supports.
+
+Driver MUST use an output buffer size which is a multiple of 6
+bytes for all buffers submitted to the statsq.
+
+Driver MAY supply struct virtio_balloon_stat entries in the
+output buffer submitted to the statsq in any order, without
+regard to \field{tag} values.
+
+Driver MAY supply a subset of all statistics in the output buffer
+submitted to the statsq.
+
+Driver MUST supply the same subset of statistics in all buffers
+submitted to the statsq.
+
+\devicenormative{\paragraph}{Memory Statistics}{Device Types / Memory Balloon Device / Device Operation / Memory Statistics}
+Normative statements in this section apply if and only if  the
+VIRTIO_BALLOON_F_STATS_VQ feature has been negotiated.
+
+Within an output buffer submitted to the statsq,
+the device MUST ignore entries with \field{tag} values that it does not recognize.
+
+Within an output buffer submitted to the statsq,
+the device MUST accept struct virtio_balloon_stat entries in any
+order without regard to \field{tag} values.
+
 \paragraph{Legacy Interface: Memory Statistics}\label{sec:Device Types / Memory Balloon Device / Device Operation / Memory Statistics / Legacy Interface: Memory Statistics}
+
 When using the legacy interface, transitional devices and drivers
 MUST format the fields in struct virtio_balloon_stat
 according to the native endian of the guest rather than
 (necessarily when not using the legacy interface) little-endian.
+
+When using the legacy interface,
+the device SHOULD ignore all values in the first buffer in the
+statsq supplied by the driver after device initialization.
+\begin{note}
+Historically, drivers supplied an uninitialized buffer in the
+first buffer.
+\end{note}
 
 \subsubsection{Memory Statistics Tags}\label{sec:Device Types / Memory Balloon Device / Device Operation / Memory Statistics Tags}
 
@@ -4592,6 +5077,16 @@ RESET.}.
 
 Device operation consists of operating request queues, the control
 queue and the event queue.
+
+\paragraph{Legacy Interface: Device Operation}\label{sec:Device
+Types / SCSI Host Device / Device Operation / Legacy
+Interface: Device Operation}
+When using the legacy interface, the driver SHOULD ignore the \field{len} value in used ring entries.
+\begin{note}
+Historically, devices put the total descriptor length,
+or the total length of device-writable buffers there,
+even when only part of the buffers were actually written.
+\end{note}
 
 \subsubsection{Device Operation: Request Queues}\label{sec:Device Types / SCSI Host Device / Device Operation / Device Operation: Request Queues}
 
@@ -4793,7 +5288,7 @@ Requests have the following format:
 \begin{lstlisting}
 struct virtio_scsi_ctrl {
         le32 type;
-$\DIFdeltextcstwo{{\textbackslash}ldots}\DIFaddtextcstwo{\ldots}$
+$\ldots$
         u8 response;
 };
 
