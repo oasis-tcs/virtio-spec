@@ -522,7 +522,7 @@ VRING_AVAIL_F_NO_INTERRUPT, but the layout and value were identical.
 If the VIRTIO_F_EVENT_IDX feature bit is not negotiated,
 the \field{flags} field in the available ring offers a crude mechanism for the driver to inform
 the device that it doesn't want interrupts when buffers are used.  Otherwise
-\field{used_event} is a more performant alterative where the driver
+\field{used_event} is a more performant alternative where the driver
 specifies how far the device can progress before interrupting.
 
 Neither of these interrupt suppression methods are reliable, as they
