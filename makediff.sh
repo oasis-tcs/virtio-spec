@@ -9,7 +9,7 @@ export DATESTR=${DATESTR:-`cat REVISION-DATE`}
 MAIN=$1
 PATH=.:${PATH}
 cur="$PWD"
-oldrev=`git rev-list -1 origin/tags/v1.0-cs02`
+oldrev=`git rev-list -1 origin/tags/v1.0-cs03`
 newrev=`git rev-list -1 HEAD`
 rm -fr old new
 git clone $PWD old
@@ -19,11 +19,6 @@ while read -r rev; do
 	echo "Applying $rev"
 	git cherry-pick `git rev-list -1 -F --grep "$rev" $newrev` || exit 1
 done << 'EOF'
-Revert: formatting: mark change manually as changed in cs02
-cl: move out cs02 changelog
-cl: drop contents temporarily
-changelog: comment out header
-changelog: disable markup
 EOF
 
 #mv specvars.tex specvars-orig.tex
