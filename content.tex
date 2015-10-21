@@ -1132,6 +1132,7 @@ The virtio device configuration layout includes several structures:
 \item Notifications
 \item ISR Status
 \item Device-specific configuration (optional)
+\item PCI configuration access
 \end{itemize}
 
 Each structure can be mapped by a Base Address register (BAR) belonging to
@@ -1577,6 +1578,12 @@ at BAR selected by \field{cap.bar} and store the first \field{cap.length} bytes 
 
 The driver MUST NOT write a \field{cap.offset} which is not
 a multiple of \field{cap.length} (ie. all accesses MUST be aligned).
+
+The driver MUST NOT read or write \field{pci_cfg_data}
+unless \field{cap.bar}, \field{cap.length} and \field{cap.offset}
+address \field{cap.length} bytes within a BAR range
+specified by some other Virtio Structure PCI Capability
+of type other than \field{VIRTIO_PCI_CAP_PCI_CFG}.
 
 \subsubsection{Legacy Interfaces: A Note on PCI Device Layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Legacy Interfaces: A Note on PCI Device Layout}
 
