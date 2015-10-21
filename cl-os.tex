@@ -50,3 +50,19 @@ See \ref{sec:Device Types / Block Device},
 \ref{sec:Conformance / Device Conformance / Block Device Conformance}.
 } \\
 \hline
+546 & 18 Oct 2015 & Michael S. Tsirkin & {pci: clarify configuration access capability rules
+
+The point of the configuration access capability is to enable
+access to other capabilities.  The intent never was to allow
+writes to a random place within device BARs.
+Limiting drivers simplifies devices - and devices can always
+add another capability if drivers ever want to access
+some other range.
+
+This resolves VIRTIO-145.
+
+See \ref{drivernormative:Virtio Transport Options / Virtio Over
+PCI Bus / PCI Device Layout / PCI configuration access
+capability}.
+} \\
+\hline
