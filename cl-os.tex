@@ -12,12 +12,41 @@ See
 \ref{sec:Device Types / Block Device / Legacy Interface: Framing Requirements}.
 } \\
 \hline
-542 & 11 Oct 2015 & Paolo Bonzini & {virtio-blk: flush:
-Fix driver vs. device typo
+545 & 18 Oct 2015 & Paolo Bonzini & {virtio-blk: restore VIRTIO_BLK_F_FLUSH and VIRTIO_BLK_F_CONFIG_WCE
 
-This is a simple non-material change.
+VIRTIO_BLK_F_CONFIG_WCE is important in order to achieve good performance
+(up to 2x, though more realistically +30-40\%) in latency-bound workloads.
+However, it was removed by mistake together with VIRTIO_BLK_F_FLUSH.
 
-See
-\ref{devicenormative:Device Types / Block Device / Device Operation}.
+In addition, even removing VIRTIO_BLK_F_FLUSH was probably not a great
+idea, because it simplifies simple drivers (e.g. firmware) that are okay
+with a writethrough cache but still need data to persist after power loss.
+What really should have been removed is just the possibility that devices
+not propose VIRTIO_BLK_F_FLUSH, but even that only deserves a "SHOULD" in
+the new world of conformance statements.
+
+Restore these, with the following changes:
+
+* clarify and use conformance statements in order to define writeback
+and writethrough caching according to what is commonly done by high-end
+storage.
+
+* clarify (with conformance statements) the influence of the
+VIRTIO_BLK_F_FLUSH feature on caching and how to proceed if only one of
+VIRTIO_BLK_F_FLUSH and VIRTIO_BLK_F_CONFIG_WCE is negotiated.
+
+* strengthen the requirement for persisting writes to MUST after
+a VIRTIO_BLK_T_FLUSH request (and in other cases too involving the
+new features).
+
+The suggested behavior upon feature negotiation is okay for the Linux
+implementation of virtio1, even after the implementation is modified to
+support the two new features.
+
+This fixes VIRTIO-144.
+
+See \ref{sec:Device Types / Block Device},
+\ref{sec:Conformance / Driver Conformance / Block Driver Conformance} and
+\ref{sec:Conformance / Device Conformance / Block Device Conformance}.
 } \\
 \hline
