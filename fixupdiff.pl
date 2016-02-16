@@ -26,8 +26,8 @@ while (<>) {
 	# As a result, number of \color directives goes does sufficiently
 	# enough to avoid the overflow error.
 
-	s/\\DIFdelbegin \\DIFdel\{([^}]*)\}\\DIFdelend/\\DIFdeltext{$1}/;
-	s/\\DIFaddbegin \\DIFadd\{([^}]*)\}\\DIFaddend/\\DIFaddtext{$1}/;
+	$line =~ s/\\DIFdelbegin \\DIFdel\{([^}]*)\}\\DIFdelend/\\DIFdeltext{$1}/;
+	$line =~ s/\\DIFaddbegin \\DIFadd\{([^}]*)\}\\DIFaddend/\\DIFaddtext{$1}/;
 
 	print $line;
 	if (m/%DIFDELCMD\s+<\s+\\end\{lstlisting\}/) {
