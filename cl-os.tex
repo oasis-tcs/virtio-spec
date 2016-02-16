@@ -76,3 +76,59 @@ This resolves VIRTIO-146.
 See \ref{sec:Transition from earlier specification drafts}.
 } \\
 \hline
+554 & 16 Feb 2016 & Thomas Huth & {virtio-net: fix inconsistent legacy header size
+
+    Current text says:
+    	The legacy driver only presented num_buffers in the struct
+    	virtio_net_hdr when VIRTIO_NET_F_MRG_RXBUF was not negotiated;
+
+    Should be:
+    	"\dots was negotiated \dots" instead of "\dots was not negotiated \dots"
+
+    To be consistent with the following:
+    	without that feature the structure was 2 bytes shorter.
+
+See \ref{sec:Device Types / Network Device / Device Operation / Legacy Interface: Device Operation}.
+} \\
+\hline
+555 & 16 Feb 2016 & Michael S. Tsirkin & {virtio header: tweak
+change motivation
+
+    The changes are not just to remove Linux assumptions,
+    we have also renamed ring->queue.
+    Tweak the header description accordingly.
+
+See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Helpers for Operating Virtqueues}.
+} \\
+\hline
+558 & 16 Feb 2016 & Michael S. Tsirkin & {rename virtio_ring.h to virtio_queue.h
+
+    Since vring* and VRING* have been replaced with virtq* and VIRTQ*
+    respectively, rename the header virtio_ring.h to virtio_queue.h.
+
+See \ref{sec:virtio-queue.h}.
+} \\
+\hline
+559 & 16 Feb 2016 & Michael S. Tsirkin & {init: sort status bits
+
+    Status bit order is inconsistent: they are neither in increasing
+    order nor in the order they are likely to be used.
+
+    The second approach seems more useful since there aren't
+    that many bits, so the numerical order does not help much.
+
+    A typical order of use would be:
+
+\begin{itemize}   
+\item    ACKNOWLEDGE
+\item    DRIVER
+\item    then either FAILED or FEATURES_OK
+\item    then either FAILED or DRIVER_OK
+\item    then DEVICE_NEEDS_RESET (if device detects an error)
+\end{itemize}
+    
+    Sort the bits accordingly.
+
+See \ref{sec:Basic Facilities of a Virtio Device / Device Status Field}.
+} \\
+\hline
