@@ -4,15 +4,15 @@ my $lstlisting=0;
 
 while (<>) {
 	my $line = $_;
-	if (m/%DIFDELCMD\s+<\s+\\begin{lstlisting}/) {
+	if (m/%DIFDELCMD\s+<\s+\\begin\{lstlisting\}/) {
 		$lstlisting=1;
 		$line =~s/%DIFDELCMD\s+</{\\lstset{escapechar=\\\$} /;
 	}
 	if ($lstlisting) {
 		$line =~ s/%DIFDELCMD\s+< //;
-		if (not $line =~ m/\\(?:begin|end){lstlisting}/) {
+		if (not $line =~ m/\\(?:begin|end)\{lstlisting\}/) {
 			$line =~ s/([#&{} ])/\\$1/g;
-			$line =~ s/(.*)/\$\\DIFdel{$1}\$/;
+			$line =~ s/(.*)/\$\\DIFdel\{$1\}\$/;
 		}
 		#print "%FIXED BY RULE 1\n";
 	}
@@ -26,11 +26,11 @@ while (<>) {
 	# As a result, number of \color directives goes does sufficiently
 	# enough to avoid the overflow error.
 
-	s/\\DIFdelbegin \\DIFdel{([^}]*)}\\DIFdelend/\\DIFdeltext{$1}/;
-	s/\\DIFaddbegin \\DIFadd{([^}]*)}\\DIFaddend/\\DIFaddtext{$1}/;
+	s/\\DIFdelbegin \\DIFdel\{([^}]*)\}\\DIFdelend/\\DIFdeltext{$1}/;
+	s/\\DIFaddbegin \\DIFadd\{([^}]*)\}\\DIFaddend/\\DIFaddtext{$1}/;
 
 	print $line;
-	if (m/%DIFDELCMD\s+<\s+\\end{lstlisting}/) {
+	if (m/%DIFDELCMD\s+<\s+\\end\{lstlisting\}/) {
 		print "}\n";
 		$lstlisting=0;
 	}
