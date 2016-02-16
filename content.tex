@@ -442,7 +442,7 @@ this implies that loops in the descriptor chain are forbidden!
 \subsubsection{Indirect Descriptors}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}
 
 Some devices benefit by concurrently dispatching a large number
-of large requests. The VIRTIO_F_INDIRECT_DESC feature allows this (see \ref{sec:virtio-ring.h}~\nameref{sec:virtio-ring.h}). To increase
+of large requests. The VIRTIO_F_INDIRECT_DESC feature allows this (see \ref{sec:virtio-queue.h}~\nameref{sec:virtio-queue.h}). To increase
 ring capacity the driver can store a table of indirect
 descriptors anywhere in memory, and insert a descriptor in main
 virtqueue (with \field{flags}\&VIRTQ_DESC_F_INDIRECT on) that refers to memory buffer
@@ -717,7 +717,7 @@ helper routines in a more usable form, in
 include/uapi/linux/virtio_ring.h. This was explicitly licensed by IBM
 and Red Hat under the (3-clause) BSD license so that it can be
 freely used by all other projects, and is reproduced (with slight
-variation) in \ref{sec:virtio-ring.h}~\nameref{sec:virtio-ring.h}.
+variation) in \ref{sec:virtio-queue.h}~\nameref{sec:virtio-queue.h}.
 
 \chapter{General Initialization And Device Operation}\label{sec:General Initialization And Device Operation}
 
