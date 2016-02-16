@@ -19,6 +19,7 @@ while read -r rev; do
 	echo "Applying $rev"
 	git cherry-pick `git rev-list -1 -F --grep "$rev" $newrev` || exit 1
 done << 'EOF'
+headerfile: rename virtio_ring to virtio queue
 EOF
 
 #mv specvars.tex specvars-orig.tex
