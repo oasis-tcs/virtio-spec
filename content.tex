@@ -22,7 +22,8 @@ The \field{device status} field provides a simple low-level
 indication of the completed steps of this sequence.
 It's most useful to imagine it hooked up to traffic
 lights on the console indicating the status of each device.  The
-following bits are defined:
+following bits are defined (listed below in the order in which
+they would be typically set):
 \begin{description}
 \item[ACKNOWLEDGE (1)] Indicates that the guest OS has found the
   device and recognized it as a valid virtio device.
@@ -34,6 +35,11 @@ following bits are defined:
     this bit.  For example, under Linux, drivers can be loadable modules.
   \end{note}
 
+\item[FAILED (128)] Indicates that something went wrong in the guest,
+  and it has given up on the device. This could be an internal
+  error, or the driver didn't like the device for some reason, or
+  even a fatal error during device operation.
+
 \item[FEATURES_OK (8)] Indicates that the driver has acknowledged all the
   features it understands, and feature negotiation is complete.
 
@@ -42,11 +48,6 @@ following bits are defined:
 
 \item[DEVICE_NEEDS_RESET (64)] Indicates that the device has experienced
   an error from which it can't recover.
-
-\item[FAILED (128)] Indicates that something went wrong in the guest,
-  and it has given up on the device. This could be an internal
-  error, or the driver didn't like the device for some reason, or
-  even a fatal error during device operation.
 \end{description}
 
 \drivernormative{\subsection}{Device Status Field}{Basic Facilities of a Virtio Device / Device Status Field}
