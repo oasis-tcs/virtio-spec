@@ -52,6 +52,7 @@ sed 's/\\footnote{/\\footnote {/' new/flat.tex > new/flat-fixed.tex
 latexdiff-fast --config \
 "FLOATENV=(?:figure|longtable|table|tabular|plate|lstlisting|note|enumerate|itemize)[\w\d*@]*,PICTUREENV=(?:picture|DIFdeltextcstwo|DIFnomarkup|lstlisting)[\w\d*@]*" \
  --append-safecmd=field --append-textcmd=mmioreg \
+ --exclude-textcmd=chapter \
 --ignore-warnings -p diffpreamble.tex old/flat-fixed.tex \
 new/flat-fixed.tex > virtio-diff-tofix.tex
 perl fixupdiff.pl virtio-diff-tofix.tex > virtio-diff.tex
