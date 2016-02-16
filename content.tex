@@ -3268,7 +3268,7 @@ according to the native endian of the guest rather than
 (necessarily when not using the legacy interface) little-endian.
 
 The legacy driver only presented \field{num_buffers} in the struct virtio_net_hdr
-when VIRTIO_NET_F_MRG_RXBUF was not negotiated; without that feature the
+when VIRTIO_NET_F_MRG_RXBUF was negotiated; without that feature the
 structure was 2 bytes shorter.
 
 When using the legacy interface, the driver SHOULD ignore the
