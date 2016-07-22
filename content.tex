@@ -22,7 +22,8 @@ The \field{device status} field provides a simple low-level
 indication of the completed steps of this sequence.
 It's most useful to imagine it hooked up to traffic
 lights on the console indicating the status of each device.  The
-following bits are defined:
+following bits are defined (listed below in the order in which
+they would be typically set):
 \begin{description}
 \item[ACKNOWLEDGE (1)] Indicates that the guest OS has found the
   device and recognized it as a valid virtio device.
@@ -34,6 +35,11 @@ following bits are defined:
     this bit.  For example, under Linux, drivers can be loadable modules.
   \end{note}
 
+\item[FAILED (128)] Indicates that something went wrong in the guest,
+  and it has given up on the device. This could be an internal
+  error, or the driver didn't like the device for some reason, or
+  even a fatal error during device operation.
+
 \item[FEATURES_OK (8)] Indicates that the driver has acknowledged all the
   features it understands, and feature negotiation is complete.
 
@@ -42,11 +48,6 @@ following bits are defined:
 
 \item[DEVICE_NEEDS_RESET (64)] Indicates that the device has experienced
   an error from which it can't recover.
-
-\item[FAILED (128)] Indicates that something went wrong in the guest,
-  and it has given up on the device. This could be an internal
-  error, or the driver didn't like the device for some reason, or
-  even a fatal error during device operation.
 \end{description}
 
 \drivernormative{\subsection}{Device Status Field}{Basic Facilities of a Virtio Device / Device Status Field}
@@ -442,7 +443,7 @@ this implies that loops in the descriptor chain are forbidden!
 \subsubsection{Indirect Descriptors}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}
 
 Some devices benefit by concurrently dispatching a large number
-of large requests. The VIRTIO_F_INDIRECT_DESC feature allows this (see \ref{sec:virtio-ring.h}~\nameref{sec:virtio-ring.h}). To increase
+of large requests. The VIRTIO_F_INDIRECT_DESC feature allows this (see \ref{sec:virtio-queue.h}~\nameref{sec:virtio-queue.h}). To increase
 ring capacity the driver can store a table of indirect
 descriptors anywhere in memory, and insert a descriptor in main
 virtqueue (with \field{flags}\&VIRTQ_DESC_F_INDIRECT on) that refers to memory buffer
@@ -522,7 +523,7 @@ VRING_AVAIL_F_NO_INTERRUPT, but the layout and value were identical.
 If the VIRTIO_F_EVENT_IDX feature bit is not negotiated,
 the \field{flags} field in the available ring offers a crude mechanism for the driver to inform
 the device that it doesn't want interrupts when buffers are used.  Otherwise
-\field{used_event} is a more performant alterative where the driver
+\field{used_event} is a more performant alternative where the driver
 specifies how far the device can progress before interrupting.
 
 Neither of these interrupt suppression methods are reliable, as they
@@ -717,7 +718,7 @@ helper routines in a more usable form, in
 include/uapi/linux/virtio_ring.h. This was explicitly licensed by IBM
 and Red Hat under the (3-clause) BSD license so that it can be
 freely used by all other projects, and is reproduced (with slight
-variation to remove Linux assumptions) in \ref{sec:virtio-ring.h}~\nameref{sec:virtio-ring.h}.
+variation) in \ref{sec:virtio-queue.h}~\nameref{sec:virtio-queue.h}.
 
 \chapter{General Initialization And Device Operation}\label{sec:General Initialization And Device Operation}
 
@@ -1132,6 +1133,7 @@ The virtio device configuration layout includes several structures:
 \item Notifications
 \item ISR Status
 \item Device-specific configuration (optional)
+\item PCI configuration access
 \end{itemize}
 
 Each structure can be mapped by a Base Address register (BAR) belonging to
@@ -1577,6 +1579,12 @@ at BAR selected by \field{cap.bar} and store the first \field{cap.length} bytes 
 
 The driver MUST NOT write a \field{cap.offset} which is not
 a multiple of \field{cap.length} (ie. all accesses MUST be aligned).
+
+The driver MUST NOT read or write \field{pci_cfg_data}
+unless \field{cap.bar}, \field{cap.length} and \field{cap.offset}
+address \field{cap.length} bytes within a BAR range
+specified by some other Virtio Structure PCI Capability
+of type other than \field{VIRTIO_PCI_CAP_PCI_CFG}.
 
 \subsubsection{Legacy Interfaces: A Note on PCI Device Layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Legacy Interfaces: A Note on PCI Device Layout}
 
@@ -3261,7 +3269,7 @@ according to the native endian of the guest rather than
 (necessarily when not using the legacy interface) little-endian.
 
 The legacy driver only presented \field{num_buffers} in the struct virtio_net_hdr
-when VIRTIO_NET_F_MRG_RXBUF was not negotiated; without that feature the
+when VIRTIO_NET_F_MRG_RXBUF was negotiated; without that feature the
 structure was 2 bytes shorter.
 
 When using the legacy interface, the driver SHOULD ignore the
@@ -4041,8 +4049,13 @@ device except where noted.
 
 \item[VIRTIO_BLK_F_BLK_SIZE (6)] Block size of disk is in \field{blk_size}.
 
+\item[VIRTIO_BLK_F_FLUSH (9)] Cache flush command support.
+
 \item[VIRTIO_BLK_F_TOPOLOGY (10)] Device exports information on optimal I/O
     alignment.
+
+\item[VIRTIO_BLK_F_CONFIG_WCE (11)] Device can toggle its cache between writeback
+    and writethrough modes.
 \end{description}
 
 \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Block Device / Feature bits / Legacy Interface: Feature bits}
@@ -4051,16 +4064,12 @@ device except where noted.
 \item[VIRTIO_BLK_F_BARRIER (0)] Device supports request barriers.
 
 \item[VIRTIO_BLK_F_SCSI (7)] Device supports scsi packet commands.
-
-\item[VIRTIO_BLK_F_FLUSH (9)] Cache flush command support.
-
-\item[VIRTIO_BLK_F_CONFIG_WCE (11)] Device can toggle its cache between writeback
-    and writethrough modes.
 \end{description}
 
-VIRTIO_BLK_F_FLUSH was also called VIRTIO_BLK_F_WCE: Legacy drivers
-MUST only negotiate this feature if they are capable of sending
-VIRTIO_BLK_T_FLUSH commands.
+\begin{note}
+  In the legacy interface, VIRTIO_BLK_F_FLUSH was also
+  called VIRTIO_BLK_F_WCE.
+\end{note}
 
 \subsection{Device configuration layout}\label{sec:Device Types / Block Device / Device configuration layout}
 
@@ -4089,7 +4098,7 @@ struct virtio_blk_config {
                 // optimal (suggested maximum) I/O size in blocks
                 le32 opt_io_size;
         } topology;
-        u8 reserved;
+        u8 writeback;
 };
 \end{lstlisting}
 
@@ -4119,21 +4128,63 @@ according to the native endian of the guest rather than
   \field{topology} struct can be read to determine the physical block size and optimal
   I/O lengths for the driver to use. This also does not affect the units
   in the protocol, only performance.
+
+\item If the VIRTIO_BLK_F_CONFIG_WCE feature is negotiated, the cache
+  mode can be read or set through the \field{writeback} field.  0 corresponds
+  to a writethrough cache, 1 to a writeback cache\footnote{Consistent with
+    \ref{devicenormative:Device Types / Block Device / Device Operation},
+    a writethrough cache can be defined broadly as a cache that commits
+    writes to persistent device backend storage before reporting their
+    completion. For example, a battery-backed writeback cache actually
+    counts as writethrough according to this definition.}.  The cache mode
+  after reset can be either writeback or writethrough.  The actual
+  mode can be determined by reading \field{writeback} after feature
+  negotiation.
 \end{enumerate}
+
+\drivernormative{\subsubsection}{Device Initialization}{Device Types / Block Device / Device Initialization}
+
+Drivers SHOULD NOT negotiate VIRTIO_BLK_F_FLUSH if they are incapable of
+sending VIRTIO_BLK_T_FLUSH commands.
+
+If neither VIRTIO_BLK_F_CONFIG_WCE nor VIRTIO_BLK_F_FLUSH are
+negotiated, the driver MAY deduce the presence of a writethrough cache.
+If VIRTIO_BLK_F_CONFIG_WCE was not negotiated but VIRTIO_BLK_F_FLUSH was,
+the driver SHOULD assume presence of a writeback cache.
+
+The driver MUST NOT read \field{writeback} before setting
+the FEATURES_OK \field{status} bit.
+
+\devicenormative{\subsubsection}{Device Initialization}{Device Types / Block Device / Device Initialization}
+
+Devices SHOULD always offer VIRTIO_BLK_F_FLUSH, and MUST offer it
+if they offer VIRTIO_BLK_F_CONFIG_WCE.
+
+If VIRTIO_BLK_F_CONFIG_WCE is negotiated but VIRTIO_BLK_F_FLUSH
+is not, the device MUST initialize \field{writeback} to 0.
 
 \subsubsection{Legacy Interface: Device Initialization}\label{sec:Device Types / Block Device / Device Initialization / Legacy Interface: Device Initialization}
 
-The \field{reserved} field used to be called \field{writeback}.  If the
-VIRTIO_BLK_F_CONFIG_WCE feature is offered, the cache mode can be
-read from \field{writeback}; the
-driver can also write to the field in order to toggle the cache
-between writethrough (0) and writeback (1) mode.  If the feature is
-not available, the driver can instead look at the result of
-negotiating VIRTIO_BLK_F_FLUSH: the cache will be in writeback mode
-after reset if and only if VIRTIO_BLK_F_FLUSH is negotiated.
+Because legacy devices do not have FEATURES_OK, transitional devices
+MUST implement slightly different behavior around feature negotiation
+when used through the legacy interface.  In particular, when using the
+legacy interface:
 
-Some older legacy devices did not operate in writethrough mode even
-after a driver announced lack of support for VIRTIO_BLK_F_FLUSH.
+\begin{itemize}
+\item the driver MAY read or write \field{writeback} before setting
+  the DRIVER or DRIVER_OK \field{status} bit
+
+\item the device MUST NOT modify the cache mode (and \field{writeback})
+  as a result of a driver setting a status bit, unless
+  the DRIVER_OK bit is being set and the driver has not set the
+  VIRTIO_BLK_F_CONFIG_WCE driver feature bit.
+
+\item the device MUST NOT modify the cache mode (and \field{writeback})
+  as a result of a driver modifying the driver feature bits, for example
+  if the driver sets the VIRTIO_BLK_F_CONFIG_WCE driver feature bit but
+  does not set the VIRTIO_BLK_F_FLUSH bit.
+\end{itemize}
+
 
 \subsection{Device Operation}\label{sec:Device Types / Block Device / Device Operation}
 
@@ -4183,14 +4234,66 @@ A driver SHOULD accept the VIRTIO_BLK_F_RO feature if offered.
 A driver MUST set \field{sector} to 0 for a VIRTIO_BLK_T_FLUSH request.
 A driver SHOULD NOT include any data in a VIRTIO_BLK_T_FLUSH request.
 
+If the VIRTIO_BLK_F_CONFIG_WCE feature is negotiated, the driver MAY
+switch to writethrough or writeback mode by writing respectively 0 and
+1 to the \field{writeback} field.  After writing a 0 to \field{writeback},
+the driver MUST NOT assume that any volatile writes have been committed
+to persistent device backend storage.
+
 \devicenormative{\subsubsection}{Device Operation}{Device Types / Block Device / Device Operation}
 
 A device MUST set the \field{status} byte to VIRTIO_BLK_S_IOERR
 for a write request if the VIRTIO_BLK_F_RO feature if offered, and MUST NOT
 write any data.
 
-Upon receipt of a VIRTIO_BLK_T_FLUSH request, the driver SHOULD ensure
-that any writes which were completed are committed to non-volatile storage.
+A write is considered volatile when it is submitted; the contents of
+sectors covered by a volatile write are undefined in persistent device
+backend storage until the write becomes stable.  A write becomes stable
+once it is completed and one or more of the following conditions is true:
+
+\begin{enumerate}
+\item\label{item:flush1} neither VIRTIO_BLK_F_CONFIG_WCE nor
+  VIRTIO_BLK_F_FLUSH feature were negotiated, but VIRTIO_BLK_F_FLUSH was
+  offered by the device;
+
+\item\label{item:flush2} the VIRTIO_BLK_F_CONFIG_WCE feature was negotiated and the
+  \field{writeback} field in configuration space was 0 \textbf{all the time between
+  the submission of the write and its completion};
+
+\item\label{item:flush3} a VIRTIO_BLK_T_FLUSH request is sent \textbf{after the write is
+  completed} and is completed itself.
+\end{enumerate}
+
+If the device is backed by persistent storage, the device MUST ensure that
+stable writes are committed to it, before reporting completion of the write
+(cases~\ref{item:flush1} and~\ref{item:flush2}) or the flush
+(case~\ref{item:flush3}).  Failure to do so can cause data loss
+in case of a crash.
+
+If the driver changes \field{writeback} between the submission of the write
+and its completion, the write could be either volatile or stable when
+its completion is reported; in other words, the exact behavior is undefined.
+
+% According to the device requirements for device initialization:
+%   Offer(CONFIG_WCE) => Offer(FLUSH).
+%
+% After reversing the implication:
+%   not Offer(FLUSH) => not Offer(CONFIG_WCE).
+
+If VIRTIO_BLK_F_FLUSH was not offered by the
+  device\footnote{Note that in this case, according to
+  \ref{devicenormative:Device Types / Block Device / Device Initialization},
+  the device will not have offered VIRTIO_BLK_F_CONFIG_WCE either.}, the
+device MAY also commit writes to persistent device backend storage before
+reporting their completion.  Unlike case~\ref{item:flush1}, however, this
+is not an absolute requirement of the specification.
+
+\begin{note}
+  An implementation that does not offer VIRTIO_BLK_F_FLUSH and does not commit
+  completed writes will not be resilient to data loss in case of crashes.
+  Not offering VIRTIO_BLK_F_FLUSH is an absolute requirement
+  for implementations that do not wish to be safe against such data losses.
+\end{note}
 
 \subsubsection{Legacy Interface: Device Operation}\label{sec:Device Types / Block Device / Device Operation / Legacy Interface: Device Operation}
 When using the legacy interface, transitional devices and drivers
@@ -4232,6 +4335,12 @@ caches in the underlying backend device in host, and thus does not
 serve as data consistency guarantee.  Only a VIRTIO_BLK_T_FLUSH request
 does that.
 \end{note}
+
+Some older legacy devices did not commit completed writes to persistent
+device backend storage when VIRTIO_BLK_F_FLUSH was offered but not
+negotiated.  In order to work around this, the driver MAY set the
+\field{writeback} to 0 (if available) or it MAY send an explicit flush
+request after every completed write.
 
 If the device has VIRTIO_BLK_F_SCSI feature, it can also support
 scsi packet command requests, each of these requests is of form:
@@ -4296,7 +4405,7 @@ negotiated VIRTIO_F_ANY_LAYOUT:
 
 \begin{itemize}
 \item MUST use a single 8-byte descriptor containing \field{type},
-  \field{reseved} and \field{sector}, followed by descriptors
+  \field{reserved} and \field{sector}, followed by descriptors
   for \field{data}, then finally a separate 1-byte descriptor
   for \field{status}.
 
@@ -5577,7 +5686,7 @@ contents of \field{event}. The following events are defined:
 \end{lstlisting}
 
   By sending this event, the device signals a change in the configuration parameters
-  of a logical unit, for example the capacity or caching mode.
+  of a logical unit, for example the capacity or cache mode.
   \field{event} is set to VIRTIO_SCSI_T_PARAM_CHANGE.
   \field{lun} addresses a logical unit in the SCSI host.
 

@@ -9,7 +9,7 @@ export DATESTR=${DATESTR:-`cat REVISION-DATE`}
 MAIN=$1
 PATH=.:${PATH}
 cur="$PWD"
-oldrev=`git rev-list -1 origin/tags/v1.0-cs02`
+oldrev=`git rev-list -1 origin/tags/v1.0-cs03`
 newrev=`git rev-list -1 HEAD`
 rm -fr old new
 git clone $PWD old
@@ -19,11 +19,7 @@ while read -r rev; do
 	echo "Applying $rev"
 	git cherry-pick `git rev-list -1 -F --grep "$rev" $newrev` || exit 1
 done << 'EOF'
-Revert: formatting: mark change manually as changed in cs02
-cl: move out cs02 changelog
-cl: drop contents temporarily
-changelog: comment out header
-changelog: disable markup
+headerfile: rename virtio_ring to virtio queue
 EOF
 
 #mv specvars.tex specvars-orig.tex
@@ -56,6 +52,7 @@ sed 's/\\footnote{/\\footnote {/' new/flat.tex > new/flat-fixed.tex
 latexdiff-fast --config \
 "FLOATENV=(?:figure|longtable|table|tabular|plate|lstlisting|note|enumerate|itemize)[\w\d*@]*,PICTUREENV=(?:picture|DIFdeltextcstwo|DIFnomarkup|lstlisting)[\w\d*@]*" \
  --append-safecmd=field --append-textcmd=mmioreg \
+ --exclude-textcmd=chapter \
 --ignore-warnings -p diffpreamble.tex old/flat-fixed.tex \
 new/flat-fixed.tex > virtio-diff-tofix.tex
 perl fixupdiff.pl virtio-diff-tofix.tex > virtio-diff.tex

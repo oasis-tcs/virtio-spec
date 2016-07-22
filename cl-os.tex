@@ -1,328 +1,134 @@
-478 & 15 Mar 2015 & Cornelia Huck & {VIRTIO-129: legacy:
-clean up virtqueue layout definitions
-
-Generalize "Legacy Interfaces: A Note on Virtqueue Layout" to allow
-for different alignment requirements. Have pci and ccw refer to that
-section for legacy devices. Remove the double definition of virtqueue
-alignment (which referred to legacy, but was not tagged as such) from
-the ccw section.
-See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues /
-Legacy Interfaces: A Note on Virtqueue Layout}, \ref{sec:Virtio
-Transport Options / Virtio Over PCI Bus / PCI-specific
-Initialization And Device Operation / Device Initialization /
-Virtqueue Configuration / Legacy Interface: A Note on Virtqueue
-Configuration} and \ref{sec:Virtio Transport Options / Virtio
-over channel I/O / Device Initialization / Configuring a
-Virtqueue / Legacy Interface: A Note on Configuring a Virtqueue}.
- } \\
-\hline
-479 & 15 Mar 2015 & Cornelia Huck & {VIRTIO-118:
-ccw: clarify basic channel commands
-
-"Basic channel commands" seems to be not as clear as it
-could, so let's spell out which channel commands we refer to.
-See \ref{sec:Virtio Transport Options / Virtio over channel I/O /
-Basic Concepts}.
-} \\
-\hline
-479 & 15 Mar 2015 & Cornelia Huck & {VIRTIO-116:
-ccw: allow WRITE_STATUS to fail
-    
-We want to be able to fail setting a status on the device
-(e.g.  FEATURES_OK if the device can't work with the features
-negotiated).
-The easiest way to do that is to allow the device to fail the
-WRITE_STATUS command by posting a command reject.
-See \ref{sec:Virtio Transport Options / Virtio over channel I/O /
-Device Initialization / Communicating Status Information}.
- } \\
-\hline
-485 & 15 Mar 2015 & Jason Wang & {VIRTIO-135:
-virtio-ring: comment fixup
-    
-virtio_ring.h included with spec has this text:
-/* Support for avail_idx and used_idx fields */
-it should really refer to avail_event and used_event.
-See Appendix \ref{sec:virtio-ring.h}.
- } \\
-\hline
-486 & 15 Mar 2015 & Jason Wang & {VIRTIO-136:
-document idx field in virtqueue used ring
-
-Section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues
-/ The Virtqueue Used Ring} The Virtqueue Used Ring
-listed the idx field, but never documented it.
-See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues /
-The Virtqueue Used Ring}.
- } \\
-\hline
-487 & 15 Mar 2015 & Rusty Russell & {VIRTIO-130:
-ISR status: Fix incorrect diagram
-
-ISR status capability diagram has the "Device Configuration
-Interrupt " as bit 0, and the "Queue Interrupt" as bit 1. This is
-the wrong way around: it disagrees with the legacy
-implementations, as well as the spec elsewhere.
-
-All current guests correctly follow the text, fix
-up the diagram to match.
-See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI
-Device Layout / ISR status capability}.
- } \\
-\hline
-488 & 15 Mar 2015 & Rusty Russell & {VIRTIO-133:
-Change 4.1.5.1.2.1 to device requirement
-
-4.1.5.1.2.1 is incorrectly labelled as a driver requirement; it's
-self-evidently referring to the device.
-See \ref{sec:Conformance / Driver Conformance / PCI Driver
-Conformance}, \ref{sec:Conformance / Device Conformance / PCI
-Device Conformance} and \ref{devicenormative:Virtio
-Transport Options / Virtio Over PCI Bus / PCI-specific
-Initialization And Device Operation / Device Initialization /
-Non-transitional Device With Legacy Driver}.
- } \\
-\hline
-504 & 22 Apr 2015 & Rusty Russell & {VIRTIO-137:
-define the meaning and requirements of the len field.
-    
-We said what it was for, and noted why.  We didn't place any
-requirements on it, nor clearly spell out the implications of its use.
-    
-This clarification comes particularly from noticing that QEMU
-didn't set len correctly, and philosophising over the correct value
-when an error has occurred.
-See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues /
-The Virtqueue Used Ring}, \ref{devicenormative:Basic Facilities
-of a Virtio Device / Virtqueues / The Virtqueue Used Ring} and
-\ref{sec:Basic Facilities of a Virtio Device / Virtqueues / The
-Virtqueue Used Ring}.
- } \\
-\hline
-506 & 22 Apr 2015 & Michael S. Tsirkin & {VIRTIO-138:
-multiple errors: Non-transitional With Legacy
-
-virtio 1.0 has two sections titled "Non-transitional Device With
-Legacy Driver" the first says devices SHOULD fail, the second
-says devices MUST fail.  Clearly a mistake.
-
-Other issues: devices don't really fail - they cause drivers to
-fail. second section seems to be in the wrong place, and also
-have a section followed by subsection with no explanatory text in
-between, which is ugly.
-Finally, this text was originally ritten to handle buggy windows
-drivers gracefully, but later we changed device IDs so it's not
-really required there. Might be handy for some other buggy legacy
-drivers, though no such drivers are known.
-
-To fix, drop the duplicate section variant, add some explanatory
-text, clarify what does "same ID" mean here, and clarify
-that the work-around is only needed if a buggy driver
-is known to bind to a transitional device.
-
-See \ref{sec:Virtio Transport Options / Virtio
-Over PCI Bus / PCI Device Layout / Non-transitional Device With
-Legacy Driver: A Note on PCI Device Layout},
-\ref{devicenormative:Virtio Transport Options / Virtio Over PCI
-Bus / PCI-specific Initialization And Device Operation / Device
-Initialization / Non-transitional Device With Legacy Driver} and
-\ref{sec:Virtio Transport Options / Virtio Over PCI Bus /
-PCI-specific Initialization And Device Operation / Device
-Initialization}.
-} \\
-\hline
-508 & 22 Apr 2015 & Michael S. Tsirkin & {VIRTIO-139:
-pci: missing documentation for dealing with 64 bit config fields
-    
-pci spec says what width access to use for 32, 16 and 8
-bit fields, but does not explicitly say what to do for
-32 bit fields. As we have text that says driver must
-treat 64 bit accesses as non-atomic, this seems
-to imply driver should always do two 32 bit wide accesses.
-
-Let's make this an explicit requirement, and require
-devices to support this.
-
-See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI
-Device Layout}, \ref{drivernormative:Virtio Transport Options /
-Virtio Over PCI Bus / PCI Device Layout},
-\ref{devicenormative:Virtio Transport Options / Virtio Over PCI
-Bus / PCI Device Layout} and \ref{sec:Conformance / Driver
-Conformance / PCI Driver Conformance}.
- } \\
-\hline
-509 & 22 Apr 2015 & Michael S. Tsirkin & {balloon:
-MUST -> has to
-
-MUST shouldn't be used outside normative statements,
-that's confusing. Replace with "has to".
-
-See \ref{sec:Device Types / Memory Balloon Device / Feature
-bits}.
- } \\
-\hline
-510 & 22 Apr 2015 & Michael S. Tsirkin & {conformance:
-add VIRTIO-137 statement links
-
-Add links to new conformance statements added to
-resolve VIRTIO-137 (describing used ring entry len usage).
-
-See \ref{sec:Conformance / Device Conformance}
-and \ref{sec:Conformance / Driver Conformance}.
- } \\
-\hline
-517 & 22 Apr 2015 & Michael S. Tsirkin & {acknowledgements:
-contributors+minor fixup
-
-acknowledge feedback by Jason Wang, add Richard Sohn who
-joined the TC, sort acknowledged reviewers alphabetically.
-
-See \ref{chap:Acknowledgements}.
-} \\
-\hline
-520 & 30 Apr 2015 & James Bottomley & {VIRTIO-140:
-give explicit guidance on the use of 64 bit fields
-
-Just saying 64 bit fields may not be atomic is true, but less
-helpful than it might be.  Add explicit guidance about what the
-consequences of non-atomicity are.
-
-See \ref{sec:Creating New Device Types / What Device
-Configuration Space Layout?}
-} \\
-\hline
-521 & 30 Apr 2015 & Rusty Russell & {VIRTIO-134:
-Spell out details of indirect elements in chains
-    
-1) It's implied that a chain terminates with an indirect descriptor (since
-VIRTIO-15) but we didn't spell out that a device MUST NOT
-continue it.
-    
-2) We allow [direct]->[direct]->[indirect], and qemu and
-bhyve both accept it.  Make it clear that this is valid, thus devices MUST
-handle it.
-
-See \ref{drivernormative:Basic Facilities of a Virtio Device /
-Virtqueues / The Virtqueue Descriptor Table / Indirect
-Descriptors} and \ref{devicenormative:Basic Facilities of a
-Virtio Device / Virtqueues / The Virtqueue Descriptor Table /
-Indirect Descriptors}
-} \\
-\hline
-522 & 30 Apr 2015 & Michael S. Tsirkin & {VIRTIO-141:
-used ring: specify legacy behaviour for len field
-
-many hypervisors implemented len field incorrectly.
-Document existing bugs in the legacy sections.
-
-See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues
-/ The Virtqueue Used Ring/ Legacy Interface: The Virtqueue Used
-Ring}, \ref{sec:Device Types / Network Device / Device Operation
-/ Legacy Interface: Device Operation}, \ref{sec:Device Types /
-Block Device / Device Operation / Legacy Interface: Device
-Operation}, \ref{sec:Device Types / Console Device / Device
-Operation / Legacy Interface: Device Operation}, \ref{sec:Device
-Types / Memory Balloon Device / Device Operation / Legacy
-Interface: Device Operation}, \ref{sec:Device
-Types / SCSI Host Device / Device Operation / Legacy
-Interface: Device Operation} and \ref{sec:Conformance / Legacy
-Interface: Transitional Device and Transitional Driver
-Conformance}.
-} \\
-\hline
-523 & 30 Apr 2015 & Michael S. Tsirkin & {VIRTIO-142:
-entropy device: typo fix
-
-Current text: "The driver MUST examine the length written by the
-driver" makes no sense. length is written by the device.
-
-See \ref{drivernormative:Device Types / Entropy Device / Device
-Operation}.
-} \\
-\hline
-526 & 18 May 2015 & Michael S. Tsirkin & {VIRTIO-143:
-balloon: transitional device support
-
-Support a transitional balloon device: this has the advantage of supporting
-existing drivers, transparently, as well as transports that don't allow mixing
-virtio 0 and virtio 1 devices. And balloon is an easy device to test, so it's
-also useful for people to test virtio core handling of transitional devices.
-
-Three issues with legacy hypervisors have been identified:
-\begin{enumerate}
-\item
-Actual value is actually used, and is necessary for management
-to work. Luckily 4 byte config space writes are now atomic.
-When using old guests, hypervisors can detect access to the last byte.
-When using old hypervisors, drivers can use atomic 4-byte accesses.
-\item Hypervisors actually didn't ignore the stats from the first
-buffer supplied. This means the values there would be
-incorrect until hypervisor resends the request.
-Add a note suggesting hypervisors ignore the 1st buffer.
-\item QEMU simply over-writes stats from each buffer it gets.
-Thus if driver supplies a different subset of stats
-on each request, stale values will be there.
-Require drivers to supply the same subset on each
-request. This also gives us a simple way to figure out
-which stats are supported.
-\end{enumerate}
+540 & 11 Oct 2015 & Greg Kurz & {virtqueues: fix
+trivial typo
 
 See
-\ref{sec:Device Types / Memory Balloon Device},
-\ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Discovery},
-\ref{sec:Conformance / Driver Conformance / Traditional Memory Balloon Driver Conformance},
-\ref{sec:Conformance / Device Conformance / Traditional Memory Balloon Device Conformance},
-\ref{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance},
-\ref{sec:Conformance / Device Conformance} and \ref{sec:Conformance / Driver Conformance}.
+\ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Interrupt Suppression}.
 } \\
 \hline
-527 & 18 May 2015 & Michael S. Tsirkin & {VIRTIO-126:
-document deflate on oom
+541 & 11 Oct 2015 & Paolo Bonzini & {virtio-blk: fix typo
+in legacy framing requirements section
 
-Document the new option, and also clarify behaviour
-without it.
-
-In particular, actual field is not the
-actual number of pages in the balloon as
-driver might do inflate followed by deflate.
-
-Also, device isn't always driven by interrupts,
-driver can inflate/deflate in response to e.g.
-memory compaction.
-
-See \ref{sec:Device Types / Memory Balloon Device / Feature bits},
-\ref{sec:Device Types / Memory Balloon Device / Device Operation} and
-\ref{drivernormative:Device Types / Memory Balloon Device / Device Operation}.
+See
+\ref{sec:Device Types / Block Device / Legacy Interface: Framing Requirements}.
 } \\
 \hline
-528 & 18 May 2015 & Michael S. Tsirkin & {VIRTIO-123:
-network device: xmit/receive cleanup
+545 & 18 Oct 2015 & Paolo Bonzini & {virtio-blk: restore VIRTIO_BLK_F_FLUSH and VIRTIO_BLK_F_CONFIG_WCE
 
-Fix up multiple issues in xmit/receive sections:
-\begin{itemize}
-   \item drop MAY/MUST/SHOULD outside normative statements
-   \item spell out conformance requirements for both drivers and
-      devices, for xmit and receive paths
-   \item document the missing VIRTIO_NET_HDR_F_DATA_VALID
-   \item document handling of unrecognized flag bits so we can extend
-      flags in the future, similar to VIRTIO_NET_HDR_F_DATA_VALID
+VIRTIO_BLK_F_CONFIG_WCE is important in order to achieve good performance
+(up to 2x, though more realistically +30-40\%) in latency-bound workloads.
+However, it was removed by mistake together with VIRTIO_BLK_F_FLUSH.
+
+In addition, even removing VIRTIO_BLK_F_FLUSH was probably not a great
+idea, because it simplifies simple drivers (e.g. firmware) that are okay
+with a writethrough cache but still need data to persist after power loss.
+What really should have been removed is just the possibility that devices
+not propose VIRTIO_BLK_F_FLUSH, but even that only deserves a "SHOULD" in
+the new world of conformance statements.
+
+Restore these, with the following changes:
+
+* clarify and use conformance statements in order to define writeback
+and writethrough caching according to what is commonly done by high-end
+storage.
+
+* clarify (with conformance statements) the influence of the
+VIRTIO_BLK_F_FLUSH feature on caching and how to proceed if only one of
+VIRTIO_BLK_F_FLUSH and VIRTIO_BLK_F_CONFIG_WCE is negotiated.
+
+* strengthen the requirement for persisting writes to MUST after
+a VIRTIO_BLK_T_FLUSH request (and in other cases too involving the
+new features).
+
+The suggested behavior upon feature negotiation is okay for the Linux
+implementation of virtio1, even after the implementation is modified to
+support the two new features.
+
+This fixes VIRTIO-144.
+
+See \ref{sec:Device Types / Block Device},
+\ref{sec:Conformance / Driver Conformance / Block Driver Conformance} and
+\ref{sec:Conformance / Device Conformance / Block Device Conformance}.
+} \\
+\hline
+546 & 18 Oct 2015 & Michael S. Tsirkin & {pci: clarify configuration access capability rules
+
+The point of the configuration access capability is to enable
+access to other capabilities.  The intent never was to allow
+writes to a random place within device BARs.
+Limiting drivers simplifies devices - and devices can always
+add another capability if drivers ever want to access
+some other range.
+
+This resolves VIRTIO-145.
+
+See \ref{drivernormative:Virtio Transport Options / Virtio Over
+PCI Bus / PCI Device Layout / PCI configuration access
+capability}.
+} \\
+\hline
+547 & 18 Oct 2015 & Michael S. Tsirkin & {add advice on transition from legacy interfaces
+
+Reading legacy chapters gives a hint about what changed,
+let's help readers discover this useful shortcut.
+
+This resolves VIRTIO-146.
+
+See \ref{sec:Transition from earlier specification drafts}.
+} \\
+\hline
+554 & 16 Feb 2016 & Thomas Huth & {virtio-net: fix inconsistent legacy header size
+
+    Current text says:
+    	The legacy driver only presented num_buffers in the struct
+    	virtio_net_hdr when VIRTIO_NET_F_MRG_RXBUF was not negotiated;
+
+    Should be:
+    	"\dots was negotiated \dots" instead of "\dots was not negotiated \dots"
+
+    To be consistent with the following:
+    	without that feature the structure was 2 bytes shorter.
+
+See \ref{sec:Device Types / Network Device / Device Operation / Legacy Interface: Device Operation}.
+} \\
+\hline
+555 & 16 Feb 2016 & Michael S. Tsirkin & {virtio header: tweak
+change motivation
+
+    The changes are not just to remove Linux assumptions,
+    we have also renamed ring->queue.
+    Tweak the header description accordingly.
+
+See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Helpers for Operating Virtqueues}.
+} \\
+\hline
+558 & 16 Feb 2016 & Michael S. Tsirkin & {rename virtio_ring.h to virtio_queue.h
+
+    Since vring* and VRING* have been replaced with virtq* and VIRTQ*
+    respectively, rename the header virtio_ring.h to virtio_queue.h.
+
+See \ref{sec:virtio-queue.h}.
+} \\
+\hline
+559 & 16 Feb 2016 & Michael S. Tsirkin & {init: sort status bits
+
+    Status bit order is inconsistent: they are neither in increasing
+    order nor in the order they are likely to be used.
+
+    The second approach seems more useful since there aren't
+    that many bits, so the numerical order does not help much.
+
+    A typical order of use would be:
+
+\begin{itemize}   
+\item    ACKNOWLEDGE
+\item    DRIVER
+\item    then either FAILED or FEATURES_OK
+\item    then either FAILED or DRIVER_OK
+\item    then DEVICE_NEEDS_RESET (if device detects an error)
 \end{itemize}
+    
+    Sort the bits accordingly.
 
-\ref{sec:Device Types / Network Device / Device Initialization},
-\ref{drivernormative:Device Types / Network Device / Device Operation / Packet Transmission},
-\ref{devicenormative:Device Types / Network Device / Device Operation / Packet Transmission},
-\ref{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets},
-\ref{sec:Conformance / Driver Conformance / Network Driver Conformance} and
-\ref{sec:Conformance / Device Conformance / Network Device Conformance}.
-} \\
-\hline
-529 & 18 May 2015 & Michael S. Tsirkin & {VIRTIO-124:
-network device: document VIRTIO_NET_F_CTRL_RX_EXTRA
-
-See
-\ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Packet Receive Filtering},
-\ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Setting MAC Address Filtering},
-\ref{sec:Conformance / Driver Conformance / Network Driver Conformance} and
-\ref{sec:Conformance / Device Conformance / Network Device Conformance}.
+See \ref{sec:Basic Facilities of a Virtio Device / Device Status Field}.
 } \\
 \hline

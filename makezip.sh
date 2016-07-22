@@ -17,8 +17,8 @@ fi
 zip -d $SPECDOC.zip tex/.gitattributes
 rm -fr listings
 mkdir -p listings
-cp virtio-ring.h listings/virtio_ring.h
-zip $SPECDOC.zip listings/virtio_ring.h
+cp virtio-queue.h listings/virtio_queue.h
+zip $SPECDOC.zip listings/virtio_queue.h
 rm -fr tmpfilesforzip
 mkdir -p tmpfilesforzip/tex
 echo "$SPECDOC" > tmpfilesforzip/tex/REVISION
