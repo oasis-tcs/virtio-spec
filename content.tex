@@ -2513,6 +2513,7 @@ virtio:
 #define CCW_CMD_WRITE_STATUS 0x31
 #define CCW_CMD_READ_VQ_CONF 0x32
 #define CCW_CMD_SET_VIRTIO_REV 0x83
+#define CCW_CMD_READ_STATUS 0x72
 \end{lstlisting}
 
 \devicenormative{\subsubsection}{Basic Concepts}{Virtio Transport Options / Virtio over channel I/O / Basic Concepts}
@@ -2573,7 +2574,9 @@ The following values are supported:
 \hline
 1        & 0      & <empty>   & Virtio 1.0 \\
 \hline
-2-n      &        &           & reserved for later revisions \\
+2        & 0      & <empty>   & CCW_CMD_READ_STATUS support \\
+\hline
+3-n      &        &           & reserved for later revisions \\
 \hline
 \end{tabular}
 
@@ -2691,17 +2694,30 @@ As described in
 a device sometimes fails to set the \field{status} field: For example, it
 might fail to accept the FEATURES_OK status bit during device initialization.
 
+With revision 2, CCW_CMD_READ_STATUS is defined: It reads an 8 bit status
+value from the device and acts as a reverse operation to CCW_CMD_WRITE_STATUS.
+
 \drivernormative{\paragraph}{Communicating Status Information}{Virtio Transport Options / Virtio over channel I/O / Device Initialization / Communicating Status Information}
 
 If the device posts a unit check with command reject in response to the
 CCW_CMD_WRITE_STATUS command, the driver MUST assume that the device failed
 to set the status and the \field{status} field retained its previous value.
 
+If at least revision 2 has been negotiated, the driver SHOULD use the
+CCW_CMD_READ_STATUS command to retrieve the \field{status} field after
+a configuration change has been detected.
+
+If not at least revision 2 has been negotiated, the driver MUST NOT attempt
+to issue the CCW_CMD_READ_STATUS command.
+
 \devicenormative{\paragraph}{Communicating Status Information}{Virtio Transport Options / Virtio over channel I/O / Device Initialization / Communicating Status Information}
 
 If the device fails to set the \field{status} field to the value written by
 the driver, the device MUST assure that the \field{status} field is left
 unchanged and MUST post a unit check with command reject.
+
+If at least revision 2 has been negotiated, the device MUST return the
+current \field{status} field if the CCW_CMD_READ_STATUS command is issued.
 
 \subsubsection{Handling Device Features}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Handling Device Features}
 
