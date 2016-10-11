@@ -3073,6 +3073,11 @@ features.
 \item[VIRTIO_NET_F_CTRL_GUEST_OFFLOADS (2)] Control channel offloads
         reconfiguration support.
 
+\item[VIRTIO_NET_F_MTU(3)] Device maximum MTU reporting is supported. If
+    offered by the device, device advises driver about the value of
+    its maximum MTU. If negotiated, the driver uses \field{mtu} as
+    the maximum MTU value.
+
 \item[VIRTIO_NET_F_MAC (5)] Device has given MAC address.
 
 \item[VIRTIO_NET_F_GUEST_TSO4 (7)] Driver can receive TSOv4.
@@ -3164,11 +3169,16 @@ of each of transmit and receive virtqueues (receiveq1\ldots receiveqN
 and transmitq1\ldots transmitqN respectively) that can be configured once VIRTIO_NET_F_MQ
 is negotiated.
 
+The following driver-read-only field, \field{mtu} only exists if
+VIRTIO_NET_F_MTU is set. This field specifies the maximum MTU for the driver to
+use.
+
 \begin{lstlisting}
 struct virtio_net_config {
         u8 mac[6];
         le16 status;
         le16 max_virtqueue_pairs;
+        le16 mtu;
 };
 \end{lstlisting}
 
@@ -3176,6 +3186,23 @@ struct virtio_net_config {
 
 The device MUST set \field{max_virtqueue_pairs} to between 1 and 0x8000 inclusive,
 if it offers VIRTIO_NET_F_MQ.
+
+The device MUST set \field{mtu} to between 68 and 65535 inclusive,
+if it offers VIRTIO_NET_F_MTU.
+
+The device SHOULD set \field{mtu} to at least 1280, if it offers
+VIRTIO_NET_F_MTU.
+
+The device MUST NOT modify \field{mtu} once it has been set.
+
+The device MUST NOT pass received packets that exceed \field{mtu} (plus low
+level ethernet header length) size with \field{gso_type} NONE or ECN
+after VIRTIO_NET_F_MTU has been successfully negotiated.
+
+The device MUST forward transmitted packets of up to \field{mtu} (plus low
+level ethernet header length) size with \field{gso_type} NONE or ECN, and do
+so without fragmentation, after VIRTIO_NET_F_MTU has been successfully
+negotiated.
 
 \drivernormative{\subsubsection}{Device configuration layout}{Device Types / Network Device / Device configuration layout}
 
@@ -3188,6 +3215,16 @@ use a locally-administered MAC address (see \hyperref[intro:IEEE 802]{IEEE 802},
 If the driver does not negotiate the VIRTIO_NET_F_STATUS feature, it SHOULD
 assume the link is active, otherwise it SHOULD read the link status from
 the bottom bit of \field{status}.
+
+A driver SHOULD negotiate VIRTIO_NET_F_MTU if the device offers it.
+
+If the driver negotiates VIRTIO_NET_F_MTU, it MUST supply enough receive
+buffers to receive at least one receive packet of size \field{mtu} (plus low
+level ethernet header length) with \field{gso_type} NONE or ECN.
+
+If the driver negotiates VIRTIO_NET_F_MTU, it MUST NOT transmit packets of
+size exceeding the value of \field{mtu} (plus low level ethernet header length)
+with \field{gso_type} NONE or ECN.
 
 \subsubsection{Legacy Interface: Device configuration layout}\label{sec:Device Types / Network Device / Device configuration layout / Legacy Interface: Device configuration layout}
 \label{sec:Device Types / Block Device / Feature bits / Device configuration layout / Legacy Interface: Device configuration layout}
