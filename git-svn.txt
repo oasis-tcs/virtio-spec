@@ -1,0 +1,34 @@
+Using git svn with virtio svn repository:
+
+Initial clone (fetches all branches, takes a very long time):
+        git svn clone -s https://tools.oasis-open.org/version-control/svn/virtio
+Pull:
+        git svn rebase
+Push:
+        git svn dcommit
+
+Tagging 1.0 cs02 to match the released specification:
+        git branch -t v1.0-cs02
+
+Updating the trunk with all changes made on 1.0 branch:
+
+	git config --global svn.pushmergeinfo true
+	git checkout -b master origin/trunk
+	git svn fetch
+	git svn rebase -l
+	git merge --no-ff origin/v1.0
+		[ resolve merge conflicts ]
+	git svn dcommit
+
+Faster initial clone from git mirror (example using mst's mirror at kernel.org):
+
+	git clone git://git.kernel.org/pub/scm/virt/kvm/mst/virtio-text.git
+	cd virtio-text
+	git config --remove-section remote.origin
+	git svn init -s https://tools.oasis-open.org/version-control/svn/virtio
+	git svn rebase
+	git checkout -b trunk origin/trunk
+
+Updating a git mirror from git-svn repository (after setting up a
+remote named "mirror"):
+	git push mirror --prune +refs/remotes/origin/*:refs/heads/*
