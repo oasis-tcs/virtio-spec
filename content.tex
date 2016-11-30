@@ -5195,7 +5195,7 @@ struct virtio_scsi_config {
 \item[\field{max_sectors}] is a hint to the driver about the maximum transfer
     size to use.
 
-\item[\field{cmd_per_lun}] is tells the driver the maximum number of
+\item[\field{cmd_per_lun}] tells the driver the maximum number of
     linked commands it can send to one LUN.
 
 \item[\field{event_info_size}] is the maximum size that the device will fill
@@ -5287,7 +5287,7 @@ struct virtio_scsi_req_cmd {
         u8 prio;
         u8 crn;
         u8 cdb[cdb_size];
-        // The next two fields are only present if VIRTIO_SCSI_F_T10_PI
+        // The next three fields are only present if VIRTIO_SCSI_F_T10_PI
         // is negotiated.
         le32 pi_bytesout;
         le32 pi_bytesin;
@@ -5301,7 +5301,7 @@ struct virtio_scsi_req_cmd {
         u8 status;
         u8 response;
         u8 sense[sense_size];
-        // The next two fields are only present if VIRTIO_SCSI_F_T10_PI
+        // The next field is only present if VIRTIO_SCSI_F_T10_PI
         // is negotiated
         u8 pi_in[pi_bytesin];
         u8 datain[];
