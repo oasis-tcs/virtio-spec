@@ -95,10 +95,10 @@ Feature bits are allocated as follows:
 \begin{description}
 \item[0 to 23] Feature bits for the specific device type
 
-\item[24 to 32] Feature bits reserved for extensions to the queue and
+\item[24 to 33] Feature bits reserved for extensions to the queue and
   feature negotiation mechanisms
 
-\item[33 and above] Feature bits reserved for future extensions.
+\item[34 and above] Feature bits reserved for future extensions.
 \end{description}
 
 \begin{note}
@@ -5813,7 +5813,7 @@ descriptor for the \field{sense_len}, \field{residual},
 
 \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
 
-Currently there are three device-independent feature bits defined:
+Currently these device-independent feature bits defined:
 
 \begin{description}
   \item[VIRTIO_F_RING_INDIRECT_DESC (28)] Negotiating this feature indicates
@@ -5825,6 +5825,12 @@ Currently there are three device-independent feature bits defined:
 
   \item[VIRTIO_F_VERSION_1(32)] This indicates compliance with this
     specification, giving a simple way to detect legacy devices or drivers.
+
+  \item[VIRTIO_F_IOMMU_PLATFORM(33)] This feature indicates that the device is
+  behind an IOMMU that translates bus addresses from the device into physical
+  addresses in memory.  If this feature bit is set to 0, then the device emits
+  physical addresses which are not translated further, even though an IOMMU
+  may be present.
 \end{description}
 
 \drivernormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
@@ -5832,10 +5838,21 @@ Currently there are three device-independent feature bits defined:
 A driver MUST accept VIRTIO_F_VERSION_1 if it is offered.  A driver
 MAY fail to operate further if VIRTIO_F_VERSION_1 is not offered.
 
+A driver SHOULD accept VIRTIO_F_IOMMU_PLATFORM if it is offered, and it MUST
+then either disable the IOMMU or configure the IOMMU to translate bus addresses
+passed to the device into physical addresses in memory.  If
+VIRTIO_F_IOMMU_PLATFORM is not offered, then a driver MUST pass only physical
+addresses to the device.
+
 \devicenormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
 
 A device MUST offer VIRTIO_F_VERSION_1.  A device MAY fail to operate further
 if VIRTIO_F_VERSION_1 is not accepted.
+
+A device SHOULD offer VIRTIO_F_IOMMU_PLATFORM if it is behind an IOMMU that
+translates bus addresses from the device into physical addresses in memory.
+A device MAY fail to operate further if VIRTIO_F_IOMMU_PLATFORM is not
+accepted.
 
 \section{Legacy Interface: Reserved Feature Bits}\label{sec:Reserved Feature Bits / Legacy Interface: Reserved Feature Bits}
 
