@@ -3561,10 +3561,13 @@ Processing incoming packets involves:
   this packet is spread over (including this one): this will
   always be 1 if VIRTIO_NET_F_MRG_RXBUF was not negotiated.
   This allows receipt of large packets without having to allocate large
-  buffers. In this case, there will be at least \field{num_buffers} in
-  the used ring, and the device chains them together to form a
-  single packet. The other buffers will not begin with a struct
-  virtio_net_hdr.
+  buffers: a packet that does not fit in a single buffer can flow
+  over to the next buffer, and so on. In this case, there will be
+  at least \field{num_buffers} in the used ring, and the device
+  chains them together to form a single packet in a way similar to
+  how it would store it in a single buffer spread over multiple
+  descriptors.
+  The other buffers will not begin with a struct virtio_net_hdr.
 
 \item If
   \field{num_buffers} is one, then the entire packet will be
@@ -3605,10 +3608,15 @@ If VIRTIO_NET_F_MRG_RXBUF has not been negotiated, the device MUST set
 \field{num_buffers} to 1.
 
 If VIRTIO_NET_F_MRG_RXBUF has been negotiated, the device MUST set
-\field{num_buffers} to indicate the number of descriptors
+\field{num_buffers} to indicate the number of buffers
 the packet (including the header) is spread over.
 
-The device MUST use all descriptors used by a single receive
+If a receive packet is spread over multiple buffers, the device
+MUST use all buffers but the last (i.e. the first $num_buffers -
+1$ buffers) completely up to the full length of each buffer
+supplied by the driver.
+
+The device MUST use all buffers used by a single receive
 packet together, by atomically incrementing \field{idx} in the
 used ring by the \field{num_buffers} value.
 
