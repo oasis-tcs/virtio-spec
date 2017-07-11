@@ -3052,9 +3052,9 @@ features.
 \item[0] receiveq1
 \item[1] transmitq1
 \item[\ldots]
-\item[2N] receiveqN
-\item[2N+1] transmitqN
-\item[2N+2] controlq
+\item[2(N-1)] receiveqN
+\item[2(N-1)+1] transmitqN
+\item[2N] controlq
 \end{description}
 
  N=1 if VIRTIO_NET_F_MQ is not negotiated, otherwise N is set by
