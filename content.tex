@@ -2715,6 +2715,7 @@ itself is preceded by a header:
 \begin{lstlisting}
 struct virtio_net_hdr {
 #define VIRTIO_NET_HDR_F_NEEDS_CSUM    1
+#define VIRTIO_NET_HDR_F_DATA_VALID    2
         u8 flags;
 #define VIRTIO_NET_HDR_GSO_NONE        0
 #define VIRTIO_NET_HDR_GSO_TCPV4       1
