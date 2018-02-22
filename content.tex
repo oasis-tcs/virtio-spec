@@ -4513,6 +4513,8 @@ struct virtio_balloon_stat {
 #define VIRTIO_BALLOON_S_MINFLT   3
 #define VIRTIO_BALLOON_S_MEMFREE  4
 #define VIRTIO_BALLOON_S_MEMTOT   5
+#define VIRTIO_BALLOON_S_AVAIL    6
+#define VIRTIO_BALLOON_S_CACHES   7
         le16 tag;
         le64 val;
 } __attribute__((packed));
@@ -4594,6 +4596,13 @@ first buffer.
 
 \item[VIRTIO_BALLOON_S_MEMTOT (5)] The total amount of memory available
   (in bytes).
+
+\item[VIRTIO_BALLOON_S_AVAIL (6)] An estimate of how much memory is available
+  (in bytes) for starting new applications, without pushing the system to swap.
+
+\item[VIRTIO_BALLOON_S_CACHES (7)] The amount of memory, in bytes, that can be
+  quickly reclaimed without additional I/O. Typically these pages are used for
+  caching files from disk.
 \end{description}
 
 \section{SCSI Host Device}\label{sec:Device Types / SCSI Host Device}
