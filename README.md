@@ -27,13 +27,19 @@
 </div>
 
 <div>
+
 <h3>Further Description of this Repository</h3>
+<h4>Providing Feedback</h4>
+<p>See <A
+HREF="https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=virtio#feedback">
+https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=virtio#feedback</A>
+<h4>Note for Contributors</h4>
+<p>Contributors should review TC specific
+process rules under "Further Description of this Repository"
+in <A
+HREF="https://github.com/oasis-tcs/virtio-admin">https://github.com/oasis-tcs/virtio-admin</A>.
 
-<p>[Any narrative content may be provided here by the TC, for example, if the Members wish to provide an extended statement of purpose.]</p>
 </div>
-
-<div>
-
 <h3>Contact</h3>
 <p>Please send questions or comments about <a href="https://www.oasis-open.org/resources/tcadmin/github-repositories-for-oasis-tc-members-chartered-work">OASIS TC GitHub repositories</a> to <a href="mailto:robin@oasis-open.org">Robin Cover</a> and <a href="mailto:chet.ensign@oasis-open.org">Chet Ensign</a>.  For questions about content in this repository, please contact the TC Chair or Co-Chairs as listed on the the virtio TC's <a href="https://www.oasis-open.org/committees/virtio/">home page</a>.</p>
 </div>
