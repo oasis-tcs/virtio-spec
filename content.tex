@@ -230,7 +230,30 @@ result.
 The mechanism for bulk data transport on virtio devices is
 pretentiously called a virtqueue. Each device can have zero or more
 virtqueues\footnote{For example, the simplest network device has one virtqueue for
-transmit and one for receive.}.  Each queue has a 16-bit queue size
+transmit and one for receive.}.
+
+Driver makes requests available to device by adding
+an available buffer to the queue - i.e. adding a buffer
+describing the request to a virtqueue, and optionally triggering
+a driver event - i.e. sending a notification to the device.
+
+Device executes the requests and - when complete - adds
+a used buffer to the queue - i.e. lets the driver
+know by marking the buffer as used. Device can then trigger
+a device event - i.e. send an interrupt to the driver.
+
+For queue operation detail, see \ref{sec:Basic Facilities of a Virtio Device / Split Virtqueues}~\nameref{sec:Basic Facilities of a Virtio Device / Split Virtqueues}.
+
+\section{Split Virtqueues}\label{sec:Basic Facilities of a Virtio Device / Split Virtqueues}
+The split virtqueue format is the original format used by legacy
+virtio devices.  The split virtqueue format separates the
+virtqueue into several parts, where each part is write-able by
+either the driver or the device, but not both. Multiple
+locations need to be updated when making a buffer available
+and when marking it as used.
+
+
+Each queue has a 16-bit queue size
 parameter, which sets the number of entries and implies the total size
 of the queue.
 
