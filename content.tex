@@ -381,12 +381,10 @@ of a device are live once the device has been reset.
 
 \drivernormative{\subsection}{Device Cleanup}{General Initialization And Device Operation / Device Cleanup}
 
-A driver MUST NOT alter descriptor table entries which have been
-exposed in the available ring (and not marked consumed by the device
-in the used ring) of a live virtqueue.
-
-A driver MUST NOT decrement the available \field{idx} on a live virtqueue (ie.
-there is no way to ``unexpose'' buffers).
+A driver MUST NOT alter virtqueue entries for exposed buffers -
+i.e. buffers which have been
+made available to the device (and not been used by the device)
+of a live virtqueue.
 
 Thus a driver MUST ensure a virtqueue isn't live (by device reset) before removing exposed buffers.
 

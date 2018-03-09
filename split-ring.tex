@@ -296,6 +296,10 @@ referred to this structure as vring_avail, and the constant as
 VRING_AVAIL_F_NO_INTERRUPT, but the layout and value were identical.
 \end{note}
 
+\drivernormative{\subsubsection}{The Virtqueue Available Ring}{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Available Ring}
+A driver MUST NOT decrement the available \field{idx} on a virtqueue (ie.
+there is no way to ``unexpose'' buffers).
+
 \subsection{Virtqueue Interrupt Suppression}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Interrupt Suppression}
 
 If the VIRTIO_F_EVENT_IDX feature bit is not negotiated,
