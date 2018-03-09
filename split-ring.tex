@@ -1,11 +1,12 @@
 \section{Split Virtqueues}\label{sec:Basic Facilities of a Virtio Device / Split Virtqueues}
-The split virtqueue format is the original format used by legacy
-virtio devices.  The split virtqueue format separates the
-virtqueue into several parts, where each part is write-able by
-either the driver or the device, but not both. Multiple
-locations need to be updated when making a buffer available
-and when marking it as used.
+The split virtqueue format was the only format supported
+by the version 1.0 (and earlier) of this standard.
 
+The split virtqueue format separates the virtqueue into several
+parts, where each part is write-able by either the driver or the
+device, but not both. Multiple parts and/or locations within
+a part need to be updated when making a buffer
+available and when marking it as used.
 
 Each queue has a 16-bit queue size
 parameter, which sets the number of entries and implies the total size
@@ -496,3 +497,171 @@ include/uapi/linux/virtio_ring.h. This was explicitly licensed by IBM
 and Red Hat under the (3-clause) BSD license so that it can be
 freely used by all other projects, and is reproduced (with slight
 variation) in \ref{sec:virtio-queue.h}~\nameref{sec:virtio-queue.h}.
+
+\subsection{Virtqueue Operation}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Operation}
+
+There are two parts to virtqueue operation: supplying new
+available buffers to the device, and processing used buffers from
+the device.
+
+\begin{note} As an
+example, the simplest virtio network device has two virtqueues: the
+transmit virtqueue and the receive virtqueue. The driver adds
+outgoing (device-readable) packets to the transmit virtqueue, and then
+frees them after they are used. Similarly, incoming (device-writable)
+buffers are added to the receive virtqueue, and processed after
+they are used.
+\end{note}
+
+What follows is the requirements of each of these two parts
+when using the split virtqueue format in more detail.
+
+\subsection{Supplying Buffers to The Device}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Supplying Buffers to The Device}
+
+The driver offers buffers to one of the device's virtqueues as follows:
+
+\begin{enumerate}
+\item\label{itm:Basic Facilities of a Virtio Device / Virtqueues / Supplying Buffers to The Device / Place Buffers} The driver places the buffer into free descriptor(s) in the
+   descriptor table, chaining as necessary (see \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table}~\nameref{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table}).
+
+\item\label{itm:Basic Facilities of a Virtio Device / Virtqueues / Supplying Buffers to The Device / Place Index} The driver places the index of the head of the descriptor chain
+   into the next ring entry of the available ring.
+
+\item Steps \ref{itm:Basic Facilities of a Virtio Device / Virtqueues / Supplying Buffers to The Device / Place Buffers} and \ref{itm:Basic Facilities of a Virtio Device / Virtqueues / Supplying Buffers to The Device / Place Index} MAY be performed repeatedly if batching
+  is possible.
+
+\item The driver performs suitable a memory barrier to ensure the device sees
+  the updated descriptor table and available ring before the next
+  step.
+
+\item The available \field{idx} is increased by the number of
+  descriptor chain heads added to the available ring.
+
+\item The driver performs a suitable memory barrier to ensure that it updates
+  the \field{idx} field before checking for notification suppression.
+
+\item If notifications are not suppressed, the driver notifies the device
+    of the new available buffers.
+\end{enumerate}
+
+Note that the above code does not take precautions against the
+available ring buffer wrapping around: this is not possible since
+the ring buffer is the same size as the descriptor table, so step
+(1) will prevent such a condition.
+
+In addition, the maximum queue size is 32768 (the highest power
+of 2 which fits in 16 bits), so the 16-bit \field{idx} value can always
+distinguish between a full and empty buffer.
+
+What follows is the requirements of each stage in more detail.
+
+\subsubsection{Placing Buffers Into The Descriptor Table}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Supplying Buffers to The Device / Placing Buffers Into The Descriptor Table}
+
+A buffer consists of zero or more device-readable physically-contiguous
+elements followed by zero or more physically-contiguous
+device-writable elements (each has at least one element). This
+algorithm maps it into the descriptor table to form a descriptor
+chain:
+
+for each buffer element, b:
+
+\begin{enumerate}
+\item Get the next free descriptor table entry, d
+\item Set \field{d.addr} to the physical address of the start of b
+\item Set \field{d.len} to the length of b.
+\item If b is device-writable, set \field{d.flags} to VIRTQ_DESC_F_WRITE,
+    otherwise 0.
+\item If there is a buffer element after this:
+    \begin{enumerate}
+    \item Set \field{d.next} to the index of the next free descriptor
+      element.
+    \item Set the VIRTQ_DESC_F_NEXT bit in \field{d.flags}.
+    \end{enumerate}
+\end{enumerate}
+
+In practice, \field{d.next} is usually used to chain free
+descriptors, and a separate count kept to check there are enough
+free descriptors before beginning the mappings.
+
+\subsubsection{Updating The Available Ring}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Supplying Buffers to The Device / Updating The Available Ring}
+
+The descriptor chain head is the first d in the algorithm
+above, ie. the index of the descriptor table entry referring to the first
+part of the buffer.  A naive driver implementation MAY do the following (with the
+appropriate conversion to-and-from little-endian assumed):
+
+\begin{lstlisting}
+avail->ring[avail->idx % qsz] = head;
+\end{lstlisting}
+
+However, in general the driver MAY add many descriptor chains before it updates
+\field{idx} (at which point they become visible to the
+device), so it is common to keep a counter of how many the driver has added:
+
+\begin{lstlisting}
+avail->ring[(avail->idx + added++) % qsz] = head;
+\end{lstlisting}
+
+\subsubsection{Updating \field{idx}}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Supplying Buffers to The Device / Updating idx}
+
+\field{idx} always increments, and wraps naturally at
+65536:
+
+\begin{lstlisting}
+avail->idx += added;
+\end{lstlisting}
+
+Once available \field{idx} is updated by the driver, this exposes the
+descriptor and its contents.  The device MAY
+access the descriptor chains the driver created and the
+memory they refer to immediately.
+
+\drivernormative{\paragraph}{Updating idx}{Basic Facilities of a Virtio Device / Virtqueues / Supplying Buffers to The Device / Updating idx}
+The driver MUST perform a suitable memory barrier before the \field{idx} update, to ensure the
+device sees the most up-to-date copy.
+
+\subsubsection{Notifying The Device}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Supplying Buffers to The Device / Notifying The Device}
+
+The actual method of device notification is bus-specific, but generally
+it can be expensive.  So the device MAY suppress such notifications if it
+doesn't need them, as detailed in section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Notification Suppression}.
+
+The driver has to be careful to expose the new \field{idx}
+value before checking if notifications are suppressed.
+
+\drivernormative{\paragraph}{Notifying The Device}{Basic Facilities of a Virtio Device / Virtqueues / Supplying Buffers to The Device / Notifying The Device}
+The driver MUST perform a suitable memory barrier before reading \field{flags} or
+\field{avail_event}, to avoid missing a notification.
+
+\subsection{Receiving Used Buffers From The Device}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Receiving Used Buffers From The Device}
+
+Once the device has used buffers referred to by a descriptor (read from or written to them, or
+parts of both, depending on the nature of the virtqueue and the
+device), it interrupts the driver as detailed in section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Interrupt Suppression}.
+
+\begin{note}
+For optimal performance, a driver MAY disable interrupts while processing
+the used ring, but beware the problem of missing interrupts between
+emptying the ring and reenabling interrupts.  This is usually handled by
+re-checking for more used buffers after interrups are re-enabled:
+
+\begin{lstlisting}
+virtq_disable_interrupts(vq);
+
+for (;;) {
+        if (vq->last_seen_used != le16_to_cpu(virtq->used.idx)) {
+                virtq_enable_interrupts(vq);
+                mb();
+
+                if (vq->last_seen_used != le16_to_cpu(virtq->used.idx))
+                        break;
+
+                virtq_disable_interrupts(vq);
+        }
+
+        struct virtq_used_elem *e = virtq.used->ring[vq->last_seen_used%vsz];
+        process_buffer(e);
+        vq->last_seen_used++;
+}
+\end{lstlisting}
+\end{note}
