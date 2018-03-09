@@ -272,6 +272,30 @@ Buffer ID is also reserved and is ignored by the device.
 In Descriptors with VIRTQ_DESC_F_INDIRECT set VIRTQ_DESC_F_WRITE
 is reserved and is ignored by the device.
 
+\subsection{In-order use of descriptors}
+\label{sec:Packed Virtqueues / In-order use of descriptors}
+
+Some devices always use descriptors in the same order in which
+they have been made available. These devices can offer the
+VIRTIO_F_IN_ORDER feature. If negotiated, this knowledge allows
+devices to notify the use of a batch of buffers to the driver by
+only writing out a single used descriptor with the Buffer ID
+corresponding to the last descriptor in the batch.
+
+Device then skips forward in the ring according to the size of
+the batch. Driver needs to look up the used Buffer ID and
+calculate the batch size to be able to advance to where the next
+used descriptor will be written by the device.
+
+This will result in the used descriptor overwriting the first
+available descriptor in the batch, the used descriptor for the
+next batch overwriting the first available descriptor in the next
+batch, etc.
+
+The skipped buffers (for which no used descriptor was written)
+are assumed to have been used (read or written) by the
+device completely.
+
 \subsection{Multi-buffer requests}
 \label{sec:Packed Virtqueues / Multi-buffer requests}
 Some devices combine multiple buffers as part of processing of a
