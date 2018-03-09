@@ -15,9 +15,9 @@ of the queue.
 Each virtqueue consists of three parts:
 
 \begin{itemize}
-\item Descriptor Table
-\item Available Ring
-\item Used Ring
+\item Descriptor Table - occupies the Descriptor Area
+\item Available Ring - occupies the Driver Area
+\item Used Ring - occupies the Device Area
 \end{itemize}
 
 where each part is physically-contiguous in guest memory,
