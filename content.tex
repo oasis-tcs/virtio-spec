@@ -245,6 +245,15 @@ a device event - i.e. send an interrupt to the driver.
 Device reports the number of bytes it has written to memory for
 each buffer it uses. This is referred to as ``used length''.
 
+Device is not generally required to use buffers in
+the same order in which they have been made available
+by the driver.
+
+Some devices always use descriptors in the same order in which
+they have been made available. These devices can offer the
+VIRTIO_F_IN_ORDER feature. If negotiated, this knowledge
+might allow optimizations or simplify driver and/or device code.
+
 Each virtqueue can consist of up to 3 parts:
 \begin{itemize}
 \item Descriptor Area - used for describing buffers
@@ -5248,6 +5257,9 @@ Descriptors} and \ref{sec:Packed Virtqueues / Indirect Flag: Scatter-Gather Supp
   \item[VIRTIO_F_RING_PACKED(34)] This feature indicates
   support for the packed virtqueue layout as described in
   \ref{sec:Basic Facilities of a Virtio Device / Packed Virtqueues}~\nameref{sec:Basic Facilities of a Virtio Device / Packed Virtqueues}.
+  \item[VIRTIO_F_IN_ORDER(35)] This feature indicates
+  that all buffers are used by the device in the same
+  order in which they have been made available.
 \end{description}
 
 \drivernormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
@@ -5272,6 +5284,9 @@ A device SHOULD offer VIRTIO_F_IOMMU_PLATFORM if it is behind an IOMMU that
 translates bus addresses from the device into physical addresses in memory.
 A device MAY fail to operate further if VIRTIO_F_IOMMU_PLATFORM is not
 accepted.
+
+If VIRTIO_F_IN_ORDER has been negotiated, a device MUST use
+buffers in the same order in which they have been available.
 
 \section{Legacy Interface: Reserved Feature Bits}\label{sec:Reserved Feature Bits / Legacy Interface: Reserved Feature Bits}
 
