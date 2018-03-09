@@ -263,8 +263,20 @@ these parts (following \ref{sec:Basic Facilities of a Virtio Device / Split Virt
 
 \end{note}
 
+Two formats are supported: Split Virtqueues (see \ref{sec:Basic
+Facilities of a Virtio Device / Split
+Virtqueues}~\nameref{sec:Basic Facilities of a Virtio Device /
+Split Virtqueues}) and Packed Virtqueues (see \ref{sec:Basic
+Facilities of a Virtio Device / Packed
+Virtqueues}~\nameref{sec:Basic Facilities of a Virtio Device /
+Packed Virtqueues}).
+
+Every driver and device supports either the Packed or the Split
+Virtqueue format, or both.
+
 \input{split-ring.tex}
 
+\input{packed-ring.tex}
 \chapter{General Initialization And Device Operation}\label{sec:General Initialization And Device Operation}
 
 We start with an overview of device initialization, then expand on the
@@ -5215,10 +5227,15 @@ Currently these device-independent feature bits defined:
 \begin{description}
   \item[VIRTIO_F_RING_INDIRECT_DESC (28)] Negotiating this feature indicates
   that the driver can use descriptors with the VIRTQ_DESC_F_INDIRECT
-  flag set, as described in \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}~\nameref{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}.
-
+  flag set, as described in \ref{sec:Basic Facilities of a Virtio
+Device / Virtqueues / The Virtqueue Descriptor Table / Indirect
+Descriptors}~\nameref{sec:Basic Facilities of a Virtio Device /
+Virtqueues / The Virtqueue Descriptor Table / Indirect
+Descriptors} and \ref{sec:Packed Virtqueues / Indirect Flag: Scatter-Gather Support}~\nameref{sec:Packed Virtqueues / Indirect Flag: Scatter-Gather Support}.
   \item[VIRTIO_F_RING_EVENT_IDX(29)] This feature enables the \field{used_event}
-  and the \field{avail_event} fields as described in \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Interrupt Suppression} and \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Used Ring}.
+  and the \field{avail_event} fields as described in
+\ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Interrupt Suppression}, \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Used Ring} and \ref{sec:Packed Virtqueues / Driver and Device Event Suppression}.
+
 
   \item[VIRTIO_F_VERSION_1(32)] This indicates compliance with this
     specification, giving a simple way to detect legacy devices or drivers.
@@ -5228,6 +5245,9 @@ Currently these device-independent feature bits defined:
   addresses in memory.  If this feature bit is set to 0, then the device emits
   physical addresses which are not translated further, even though an IOMMU
   may be present.
+  \item[VIRTIO_F_RING_PACKED(34)] This feature indicates
+  support for the packed virtqueue layout as described in
+  \ref{sec:Basic Facilities of a Virtio Device / Packed Virtqueues}~\nameref{sec:Basic Facilities of a Virtio Device / Packed Virtqueues}.
 \end{description}
 
 \drivernormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
@@ -5240,6 +5260,8 @@ then either disable the IOMMU or configure the IOMMU to translate bus addresses
 passed to the device into physical addresses in memory.  If
 VIRTIO_F_IOMMU_PLATFORM is not offered, then a driver MUST pass only physical
 addresses to the device.
+
+A driver SHOULD accept VIRTIO_F_RING_PACKED if it is offered.
 
 \devicenormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
 
