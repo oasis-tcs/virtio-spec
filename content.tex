@@ -1467,8 +1467,7 @@ All register values are organized as Little Endian.
   }
   \hline 
   \mmioreg{QueueNum}{Virtual queue size}{0x038}{W}{%
-    Queue size is the number of elements in the queue, therefore in each
-    of the Descriptor Table, the Available Ring and the Used Ring.
+    Queue size is the number of elements in the queue.
     Writing to this register notifies the device what size of the
     queue the driver will use. This applies to the queue selected by
     writing to \field{QueueSel}.
@@ -1491,9 +1490,9 @@ All register values are organized as Little Endian.
     caused the device interrupt to be asserted.
     The following events are possible:
     \begin{description}
-      \item[Used Ring Update] - bit 0 - the interrupt was asserted
-        because the device has updated the Used
-        Ring in at least one of the active virtual queues.
+      \item[Used Buffer Update] - bit 0 - the interrupt was asserted
+        because the device has used a buffer
+        in at least one of the active virtual queues.
       \item [Configuration Change] - bit 1 - the interrupt was
         asserted because the configuration of the device has changed.
     \end{description}
@@ -1642,9 +1641,8 @@ The driver will typically initialize the virtual queue in the following way:
    \field{QueueNumMax}. If the returned value is zero (0x0) the
    queue is not available.
 
-\item Allocate and zero the queue pages, making sure the memory
-   is physically contiguous. It is recommended to align the
-   Used Ring to an optimal boundary (usually the page size).
+\item Allocate and zero the queue memory, making sure the memory
+   is physically contiguous.
 
 \item Notify the device about the queue size by writing the size to
    \field{QueueNum}.
