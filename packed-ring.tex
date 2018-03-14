@@ -567,8 +567,8 @@ the descriptor flags for the first descriptor
 (and the previous memory barrier) until after the rest of
 the descriptors have been initialized.
 
-Once the descriptor \field{flags} is updated by the driver, this exposes the
-descriptor and its contents.  The device MAY
+Once the descriptor \field{flags} field is updated by the driver, this exposes
+the descriptor and its contents.  The device MAY
 access the descriptor and any following descriptors the driver created and the
 memory they refer to immediately.
 
