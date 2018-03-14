@@ -167,7 +167,7 @@ In a used descriptor, Element Address is unused. Element Length
 specifies the length of the buffer that has been initialized
 (written to) by the device.
 
-Element length is reserved for used descriptors without the
+Element Length is reserved for used descriptors without the
 VIRTQ_DESC_F_WRITE flag, and is ignored by drivers.
 
 \subsection{Scatter-Gather Support}
@@ -269,7 +269,7 @@ only valid flag for descriptors in the indirect table. Others
 are reserved and are ignored by the device.
 Buffer ID is also reserved and is ignored by the device.
 
-In Descriptors with VIRTQ_DESC_F_INDIRECT set VIRTQ_DESC_F_WRITE
+In descriptors with VIRTQ_DESC_F_INDIRECT set VIRTQ_DESC_F_WRITE
 is reserved and is ignored by the device.
 
 \subsection{In-order use of descriptors}
