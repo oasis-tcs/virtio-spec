@@ -525,7 +525,7 @@ when using the packed virtqueue format in more detail.
 The driver offers buffers to one of the device's virtqueues as follows:
 
 \begin{enumerate}
-\item The driver places the buffer into free descriptor in the Descriptor Ring.
+\item The driver places the buffer into free descriptor(s) in the Descriptor Ring.
 
 \item The driver performs a suitable memory barrier to ensure that it updates
   the descriptor(s) before checking for notification suppression.
@@ -534,7 +534,7 @@ The driver offers buffers to one of the device's virtqueues as follows:
     of the new available buffers.
 \end{enumerate}
 
-What follows is the requirements of each stage in more detail.
+What follows are the requirements of each stage in more detail.
 
 \subsubsection{Placing Available Buffers Into The Descriptor Ring}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Supplying Buffers to The Device / Placing Available Buffers Into The Descriptor Ring}
 
