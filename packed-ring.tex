@@ -161,7 +161,7 @@ data has been written by the device into any parts of the buffer.
 
 In an available descriptor, Element Address corresponds to the
 physical address of the buffer element. The length of the element assumed
-to be physically contigious is stored in Element Length.
+to be physically contiguous is stored in Element Length.
 
 In a used descriptor, Element Address is unused. Element Length
 specifies the length of the buffer that has been initialized
@@ -178,7 +178,7 @@ elements (also known as a scatter/gather list) with a request.
 Two features support this: descriptor chaining and indirect descriptors.
 
 If neither feature is in use by the driver, each buffer is
-physically-contigious, either read-only or write-only and is
+physically-contiguous, either read-only or write-only and is
 described completely by a single descriptor.
 
 While unusual (most implementations either create all lists
