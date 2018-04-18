@@ -4516,6 +4516,8 @@ struct virtio_balloon_stat {
 #define VIRTIO_BALLOON_S_MEMTOT   5
 #define VIRTIO_BALLOON_S_AVAIL    6
 #define VIRTIO_BALLOON_S_CACHES   7
+#define VIRTIO_BALLOON_S_HTLB_PGALLOC 8
+#define VIRTIO_BALLOON_S_HTLB_PGFAIL  9
         le16 tag;
         le64 val;
 } __attribute__((packed));
@@ -4604,6 +4606,12 @@ first buffer.
 \item[VIRTIO_BALLOON_S_CACHES (7)] The amount of memory, in bytes, that can be
   quickly reclaimed without additional I/O. Typically these pages are used for
   caching files from disk.
+
+\item[VIRTIO_BALLOON_S_HTLB_PGALLOC (8)] The number of successful hugetlb page
+  allocations in the guest.
+
+\item[VIRTIO_BALLOON_S_HTLB_PGFAIL (9)] The number of failed hugetlb page
+  allocations in the guest.
 \end{description}
 
 \section{SCSI Host Device}\label{sec:Device Types / SCSI Host Device}
