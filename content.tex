@@ -95,10 +95,10 @@ Feature bits are allocated as follows:
 \begin{description}
 \item[0 to 23] Feature bits for the specific device type
 
-\item[24 to 36] Feature bits reserved for extensions to the queue and
+\item[24 to 37] Feature bits reserved for extensions to the queue and
   feature negotiation mechanisms
 
-\item[37 and above] Feature bits reserved for future extensions.
+\item[38 and above] Feature bits reserved for future extensions.
 \end{description}
 
 \begin{note}
@@ -5365,6 +5365,9 @@ Descriptors} and \ref{sec:Packed Virtqueues / Indirect Flag: Scatter-Gather Supp
   better performance.  This feature indicates whether
   a stronger form of barrier suitable for hardware
   devices is necessary.
+  \item[VIRTIO_F_SR_IOV(37)] This feature indicates that
+  the device supports Single Root I/O Virtualization.
+  Currently only PCI devices support this feature.
 \end{description}
 
 \drivernormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
@@ -5399,6 +5402,10 @@ buffers in the same order in which they have been available.
 
 A device MAY fail to operate further if VIRTIO_F_IO_BARRIER
 is not accepted.
+
+A device SHOULD offer VIRTIO_F_SR_IOV if it is a PCI device
+and presents a PCI SR-IOV capability structure, otherwise
+it MUST NOT offer VIRTIO_F_SR_IOV.
 
 \section{Legacy Interface: Reserved Feature Bits}\label{sec:Reserved Feature Bits / Legacy Interface: Reserved Feature Bits}
 
