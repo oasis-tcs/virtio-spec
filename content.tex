@@ -127,6 +127,13 @@ which was not offered.  The device SHOULD accept any valid subset
 of features the driver accepts, otherwise it MUST fail to set the
 FEATURES_OK \field{device status} bit when the driver writes it.
 
+If a device has successfully negotiated a set of features
+at least once (by accepting the FEATURES_OK \field{device
+status} bit during device initialization), then it SHOULD
+NOT fail re-negotiation of the same set of features after
+a device or system reset.  Failure to do so would interfere
+with resuming from suspend and error recovery.
+
 \subsection{Legacy Interface: A Note on Feature
 Bits}\label{sec:Basic Facilities of a Virtio Device / Feature
 Bits / Legacy Interface: A Note on Feature Bits}
