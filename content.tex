@@ -5494,6 +5494,21 @@ A driver SHOULD accept VIRTIO_F_IO_BARRIER if it is offered.
 If VIRTIO_F_IO_BARRIER has been negotiated, a driver MUST use
 the barriers suitable for hardware devices.
 
+If VIRTIO_F_SR_IOV has been negotiated, a driver MAY enable
+virtual functions through the device's PCI SR-IOV capability
+structure.  A driver MUST NOT negotiate VIRTIO_F_SR_IOV if
+the device does not have a PCI SR-IOV capability structure
+or is not a PCI device.  A driver MUST negotiate
+VIRTIO_F_SR_IOV and complete the feature negotiation
+(including checking the FEATURES_OK \field{device status}
+bit) before enabling virtual functions through the device's
+PCI SR-IOV capability structure.  After once successfully
+negotiating VIRTIO_F_SR_IOV, the driver MAY enable virtual
+functions through the device's PCI SR-IOV capability
+structure even if the device or the system has been fully
+or partially reset, and even without re-negotiating
+VIRTIO_F_SR_IOV after the reset.
+
 \devicenormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
 
 A device MUST offer VIRTIO_F_VERSION_1.  A device MAY fail to operate further
