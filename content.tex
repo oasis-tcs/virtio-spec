@@ -2183,7 +2183,7 @@ value.
 
 As described in
 \ref{devicenormative:Basic Facilities of a Virtio Device / Feature Bits},
-a device sometimes fails to set the \field{status} field: For example, it
+a device sometimes fails to set the \field{device status} field: For example, it
 might fail to accept the FEATURES_OK status bit during device initialization.
 
 With revision 2, CCW_CMD_READ_STATUS is defined: It reads an 8 bit status
@@ -2193,10 +2193,11 @@ value from the device and acts as a reverse operation to CCW_CMD_WRITE_STATUS.
 
 If the device posts a unit check with command reject in response to the
 CCW_CMD_WRITE_STATUS command, the driver MUST assume that the device failed
-to set the status and the \field{status} field retained its previous value.
+to set the status and the \field{device status} field retained
+its previous value.
 
 If at least revision 2 has been negotiated, the driver SHOULD use the
-CCW_CMD_READ_STATUS command to retrieve the \field{status} field after
+CCW_CMD_READ_STATUS command to retrieve the \field{device status} field after
 a configuration change has been detected.
 
 If not at least revision 2 has been negotiated, the driver MUST NOT attempt
@@ -2204,12 +2205,14 @@ to issue the CCW_CMD_READ_STATUS command.
 
 \devicenormative{\paragraph}{Communicating Status Information}{Virtio Transport Options / Virtio over channel I/O / Device Initialization / Communicating Status Information}
 
-If the device fails to set the \field{status} field to the value written by
-the driver, the device MUST assure that the \field{status} field is left
-unchanged and MUST post a unit check with command reject.
+If the device fails to set the \field{device status} field
+to the value written by the driver, the device MUST assure
+that the \field{device status} field is left unchanged and
+MUST post a unit check with command reject.
 
 If at least revision 2 has been negotiated, the device MUST return the
-current \field{status} field if the CCW_CMD_READ_STATUS command is issued.
+current \field{device status} field if the CCW_CMD_READ_STATUS
+command is issued.
 
 \subsubsection{Handling Device Features}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Handling Device Features}
 
@@ -3757,7 +3760,7 @@ If VIRTIO_BLK_F_CONFIG_WCE was not negotiated but VIRTIO_BLK_F_FLUSH was,
 the driver SHOULD assume presence of a writeback cache.
 
 The driver MUST NOT read \field{writeback} before setting
-the FEATURES_OK \field{status} bit.
+the FEATURES_OK \field{device status} bit.
 
 \devicenormative{\subsubsection}{Device Initialization}{Device Types / Block Device / Device Initialization}
 
@@ -3779,7 +3782,7 @@ legacy interface:
 
 \begin{itemize}
 \item the driver MAY read or write \field{writeback} before setting
-  the DRIVER or DRIVER_OK \field{status} bit
+  the DRIVER or DRIVER_OK \field{device status} bit
 
 \item the device MUST NOT modify the cache mode (and \field{writeback})
   as a result of a driver setting a status bit, unless
