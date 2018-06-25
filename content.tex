@@ -941,7 +941,7 @@ causes the device to de-assert the interrupt.
 In this way, driver read of ISR status causes the device to de-assert
 an interrupt.
 
-See sections \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Virtqueue Interrupts From The Device} and \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Notification of Device Configuration Changes} for how this is used.
+See sections \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Used Buffer Notifications} and \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Notification of Device Configuration Changes} for how this is used.
 
 \devicenormative{\paragraph}{ISR status capability}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / ISR status capability}
 
@@ -1306,14 +1306,15 @@ enough to ensure that the separate parts of the virtqueue are on
 separate cache lines.
 }.  There was no mechanism to negotiate the queue size.
 
-\subsubsection{Notifying The Device}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Notifying The Device}
+\subsubsection{Available Buffer Notifications}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Available Buffer Notifications}
 
-The driver notifies the device by writing the 16-bit virtqueue index
+The driver sends an available buffer notification to the device by writing
+the 16-bit virtqueue index
 of this virtqueue to the Queue Notify address.  See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability} for how to calculate this address.
 
-\subsubsection{Virtqueue Interrupts From The Device}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Virtqueue Interrupts From The Device}
+\subsubsection{Used Buffer Notifications}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Used Buffer Notifications}
 
-If an interrupt is necessary for a virtqueue, the device would typically act as follows:
+If a used buffer notification is necessary for a virtqueue, the device would typically act as follows:
 
 \begin{itemize}
   \item If MSI-X capability is disabled:
@@ -1332,7 +1333,7 @@ If an interrupt is necessary for a virtqueue, the device would typically act as 
     \end{enumerate}
 \end{itemize}
 
-\devicenormative{\paragraph}{Virtqueue Interrupts From The Device}{Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Virtqueue Interrupts From The Device}
+\devicenormative{\paragraph}{Used Buffer Notifications}{Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Used Buffer Notifications}
 
 If MSI-X capability is enabled and \field{queue_msix_vector} is
 NO_VECTOR for a virtqueue, the device MUST NOT deliver an interrupt
