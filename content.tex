@@ -72,7 +72,8 @@ recover by issuing a reset.
 \devicenormative{\subsection}{Device Status Field}{Basic Facilities of a Virtio Device / Device Status Field}
 The device MUST initialize \field{device status} to 0 upon reset.
 
-The device MUST NOT consume buffers or notify the driver before DRIVER_OK.
+The device MUST NOT consume buffers or send any used buffer
+notifications to the driver before DRIVER_OK.
 
 \label{sec:Basic Facilities of a Virtio Device / Device Status Field / DEVICENEEDSRESET}The device SHOULD set DEVICE_NEEDS_RESET when it enters an error state
 that a reset is needed.  If DRIVER_OK is set, after it sets DEVICE_NEEDS_RESET, the device
@@ -235,12 +236,13 @@ transmit and one for receive.}.
 Driver makes requests available to device by adding
 an available buffer to the queue - i.e. adding a buffer
 describing the request to a virtqueue, and optionally triggering
-a driver event - i.e. sending a notification to the device.
+a driver event - i.e. sending an available buffer notification
+to the device.
 
 Device executes the requests and - when complete - adds
 a used buffer to the queue - i.e. lets the driver
 know by marking the buffer as used. Device can then trigger
-a device event - i.e. send an interrupt to the driver.
+a device event - i.e. send a used buffer notification to the driver.
 
 Device reports the number of bytes it has written to memory for
 each buffer it uses. This is referred to as ``used length''.
@@ -330,7 +332,8 @@ set the FAILED status bit to indicate that it has given up on the
 device (it can reset the device later to restart if desired).  The
 driver MUST NOT continue initialization in that case.
 
-The driver MUST NOT notify the device before setting DRIVER_OK.
+The driver MUST NOT send any buffer available notifications to
+the device before setting DRIVER_OK.
 
 \subsection{Legacy Interface: Device Initialization}\label{sec:General Initialization And Device Operation / Device Initialization / Legacy Interface: Device Initialization}
 Legacy devices did not support the FEATURES_OK status bit, and thus did
@@ -388,10 +391,11 @@ reads unless notified.
 
 \subsection{Notification of Device Configuration Changes}\label{sec:General Initialization And Device Operation / Device Operation / Notification of Device Configuration Changes}
 
-For devices where the device-specific configuration information can be changed, an
-interrupt is delivered when a device-specific configuration change occurs.
+For devices where the device-specific configuration information can be
+changed, a configuration change notification is sent when a
+device-specific configuration change occurs.
 
-In addition, this interrupt is triggered by the device setting
+In addition, this notification is triggered by the device setting
 DEVICE_NEEDS_RESET (see \ref{sec:Basic Facilities of a Virtio Device / Device Status Field / DEVICENEEDSRESET}).
 
 \section{Device Cleanup}\label{sec:General Initialization And Device Operation / Device Cleanup}
@@ -5349,7 +5353,7 @@ Virtqueues / The Virtqueue Descriptor Table / Indirect
 Descriptors} and \ref{sec:Packed Virtqueues / Indirect Flag: Scatter-Gather Support}~\nameref{sec:Packed Virtqueues / Indirect Flag: Scatter-Gather Support}.
   \item[VIRTIO_F_RING_EVENT_IDX(29)] This feature enables the \field{used_event}
   and the \field{avail_event} fields as described in
-\ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Interrupt Suppression}, \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Used Ring} and \ref{sec:Packed Virtqueues / Driver and Device Event Suppression}.
+\ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Used Buffer Notification Suppression}, \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Used Ring} and \ref{sec:Packed Virtqueues / Driver and Device Event Suppression}.
 
 
   \item[VIRTIO_F_VERSION_1(32)] This indicates compliance with this
@@ -5423,16 +5427,16 @@ Transitional devices MAY offer the following:
 \begin{description}
 \item[VIRTIO_F_NOTIFY_ON_EMPTY (24)] If this feature
   has been negotiated by driver, the device MUST issue
-  an interrupt if the device runs
+  a used buffer notification if the device runs
   out of available descriptors on a virtqueue, even though
-  interrupts are suppressed using the VIRTQ_AVAIL_F_NO_INTERRUPT
+  notifications are suppressed using the VIRTQ_AVAIL_F_NO_INTERRUPT
   flag or the \field{used_event} field.
 \begin{note}
   An example of a driver using this feature is the legacy
   networking driver: it doesn't need to know every time a packet
   is transmitted, but it does need to free the transmitted
   packets a finite time after they are transmitted. It can avoid
-  using a timer if the device interrupts it when all the packets
+  using a timer if the device notifies it when all the packets
   are transmitted.
 \end{note}
 \end{description}

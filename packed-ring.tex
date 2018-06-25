@@ -42,8 +42,8 @@ the descriptor.
 The driver then notifies the device. When the device has finished
 processing the buffer, it writes a used device descriptor
 including the Buffer ID into the Descriptor Ring (overwriting a
-driver descriptor previously made available), and sends an
-interrupt.
+driver descriptor previously made available), and sends a
+used event notification.
 
 The Descriptor Ring is used in a circular manner: the driver writes
 descriptors into the ring in order. After reaching the end of the ring,
@@ -65,11 +65,13 @@ in which their processing is complete.
 
 The Device Event Suppression data structure is write-only by the
 device. It includes information for reducing the number of
-device events - i.e. driver notifications to device.
+device events - i.e. sending fewer available buffer notifications
+to the device.
 
 The Driver Event Suppression data structure is read-only by the
 device. It includes information for reducing the number of
-driver events - i.e. device interrupts to driver.
+driver events - i.e. sending fewer used buffer notifications 
+to the driver.
 
 \subsection{Driver and Device Ring Wrap Counters}
 \label{sec:Packed Virtqueues / Driver and Device Ring Wrap Counters}
@@ -309,22 +311,20 @@ in the ring.
 
 \subsection{Driver and Device Event Suppression}
 \label{sec:Packed Virtqueues / Driver and Device Event Suppression}
-In many systems driver and device notifications involve
+In many systems used and available buffer notifications involve
 significant overhead. To mitigate this overhead,
 each virtqueue includes two identical structures used for
 controlling notifications between the device and the driver.
 
 The Driver Event Suppression structure is read-only by the
-device and controls the events sent by the device
-to the driver (e.g. interrupts).
+device and controls the used buffer notifications sent by the device
+to the driver.
 
 The Device Event Suppression structure is read-only by
-the driver and controls the events sent by the driver
-to the device (e.g. IO).
+the driver and controls the available buffer notifications sent by the
+driver to the device.
 
-Each of these Event Suppression structures controls
-both Descriptor Ring events and structure events, and
-each includes the following fields:
+Each of these Event Suppression structures includes the following fields:
 
 \begin{description}
 \item [Descriptor Ring Change Event Flags] Takes values:
@@ -354,7 +354,7 @@ made available/used respectively.
 
 After writing out some descriptors, both the device and the driver
 are expected to consult the relevant structure to find out
-whether an interrupt/notification should be sent.
+whether a used respectively an available buffer notification should be sent.
 
 \subsubsection{Structure Size and Alignment}
 \label{sec:Packed Virtqueues / Structure Size and Alignment}
@@ -463,7 +463,7 @@ When notifying the device, driver MUST set
 \field{next_off} and
 \field{next_wrap} to match the next descriptor
 not yet made available to the device.
-A driver MAY send multiple notifications without making
+A driver MAY send multiple available buffer notifications without making
 any new descriptors available to the device.
 
 \drivernormative{\subsection}{Scatter-Gather Support}{Basic Facilities of a
@@ -579,13 +579,14 @@ The driver MUST perform a suitable memory barrier before the
 \field{flags} update, to ensure the
 device sees the most up-to-date copy.
 
-\subsubsection{Notifying The Device}\label{sec:Basic Facilities
-of a Virtio Device / Packed Virtqueues / Supplying Buffers to The Device / Notifying The Device}
+\subsubsection{Sending Available Buffer Notifications}\label{sec:Basic Facilities
+of a Virtio Device / Packed Virtqueues / Supplying Buffers to The Device
+/ Sending Available Buffer Notifications}
 
 The actual method of device notification is bus-specific, but generally
 it can be expensive.  So the device MAY suppress such notifications if it
-doesn't need them, using the Driver Event Suppression structure
-as detailed in section \ref{sec:Basic
+doesn't need them, using the Event Suppression structure comprising the
+Device Area as detailed in section \ref{sec:Basic
 Facilities of a Virtio Device / Packed Virtqueues / Event
 Suppression Structure Format}.
 
@@ -595,7 +596,7 @@ value before checking if notifications are suppressed.
 \subsubsection{Implementation Example}\label{sec:Basic Facilities of a Virtio Device / Packed Virtqueues / Supplying Buffers to The Device / Implementation Example}
 
 Below is a driver code example. It does not attempt to reduce
-the number of device interrupts, neither does it support
+the number of available buffer notifications, neither does it support
 the VIRTIO_F_RING_EVENT_IDX feature.
 
 \begin{lstlisting}
@@ -651,24 +652,31 @@ if (vq->device_event.flags != RING_EVENT_FLAGS_DISABLE) {
 \end{lstlisting}
 
 
-\drivernormative{\paragraph}{Notifying The Device}{Basic Facilities of a Virtio Device / Packed Virtqueues / Supplying Buffers to The Device / Notifying The Device}
+\drivernormative{\paragraph}{Sending Available Buffer Notifications}
+{Basic Facilities of a Virtio Device / Packed Virtqueues / Supplying
+Buffers to The Device / Sending Available Buffer Notifications}
 The driver MUST perform a suitable memory barrier before reading
-the Driver Event Suppression structure, to avoid missing a notification.
+the Event Suppression structure occupying the Device Area. Failing
+to do so could result in mandatory available buffer notifications
+not being sent.
 
 \subsection{Receiving Used Buffers From The Device}\label{sec:Basic Facilities of a Virtio Device / Packed Virtqueues / Receiving Used Buffers From The Device}
 
 Once the device has used buffers referred to by a descriptor (read from or written to them, or
 parts of both, depending on the nature of the virtqueue and the
-device), it interrupts the driver
+device), it sends a used buffer notification to the driver
 as detailed in section \ref{sec:Basic
 Facilities of a Virtio Device / Packed Virtqueues / Event
 Suppression Structure Format}.
 
 \begin{note}
-For optimal performance, a driver MAY disable interrupts while processing
-the used buffers, but beware the problem of missing interrupts between
-emptying the ring and reenabling interrupts.  This is usually handled by
-re-checking for more used buffers after interrups are re-enabled:
+
+For optimal performance, a driver MAY disable used buffer notifications
+while processing the used buffers, but beware the problem of missing
+notifications between emptying the ring and reenabling used buffer
+notifications.  This is usually handled by re-checking for more used
+buffers after notifications are re-enabled:
+
 \end{note}
 
 \begin{lstlisting}

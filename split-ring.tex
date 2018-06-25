@@ -54,7 +54,8 @@ When the driver wants to send a buffer to the device, it fills in
 a slot in the descriptor table (or chains several together), and
 writes the descriptor index into the available ring.  It then
 notifies the device. When the device has finished a buffer, it
-writes the descriptor index into the used ring, and sends an interrupt.
+writes the descriptor index into the used ring, and sends a
+used buffer notification.
 
 \drivernormative{\subsection}{Virtqueues}{Basic Facilities of a Virtio Device / Virtqueues}
 The driver MUST ensure that the physical address of the first byte
@@ -318,44 +319,47 @@ VRING_AVAIL_F_NO_INTERRUPT, but the layout and value were identical.
 A driver MUST NOT decrement the available \field{idx} on a virtqueue (ie.
 there is no way to ``unexpose'' buffers).
 
-\subsection{Virtqueue Interrupt Suppression}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Interrupt Suppression}
+\subsection{Used Buffer Notification Suppression}\label{sec:Basic
+Facilities of a Virtio Device / Virtqueues / Used Buffer Notification Suppression}
 
 If the VIRTIO_F_EVENT_IDX feature bit is not negotiated,
 the \field{flags} field in the available ring offers a crude mechanism for the driver to inform
-the device that it doesn't want interrupts when buffers are used.  Otherwise
+the device that it doesn't want notifications when buffers are used.  Otherwise
 \field{used_event} is a more performant alternative where the driver
-specifies how far the device can progress before interrupting.
+specifies how far the device can progress before a notification is
+required.
 
-Neither of these interrupt suppression methods are reliable, as they
+Neither of these notification suppression methods are reliable, as they
 are not synchronized with the device, but they serve as
 useful optimizations.
 
-\drivernormative{\subsubsection}{Virtqueue Interrupt Suppression}{Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Interrupt Suppression}
+\drivernormative{\subsubsection}{Used Buffer Notification Suppression}{Basic Facilities of a Virtio Device / Virtqueues / Used Buffer Notification Suppression}
 If the VIRTIO_F_EVENT_IDX feature bit is not negotiated:
 \begin{itemize}
 \item The driver MUST set \field{flags} to 0 or 1.
 \item The driver MAY set \field{flags} to 1 to advise
-the device that interrupts are not needed.
+the device that notifications are not needed.
 \end{itemize}
 
 Otherwise, if the VIRTIO_F_EVENT_IDX feature bit is negotiated:
 \begin{itemize}
 \item The driver MUST set \field{flags} to 0.
-\item The driver MAY use \field{used_event} to advise the device that interrupts are unnecessary until the device writes entry with an index specified by \field{used_event} into the used ring (equivalently, until \field{idx} in the
+\item The driver MAY use \field{used_event} to advise the device that
+notifications are unnecessary until the device writes an entry with an index specified by \field{used_event} into the used ring (equivalently, until \field{idx} in the
 used ring will reach the value \field{used_event} + 1).
 \end{itemize}
 
-The driver MUST handle spurious interrupts from the device.
+The driver MUST handle spurious notifications from the device.
 
-\devicenormative{\subsubsection}{Virtqueue Interrupt Suppression}{Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Interrupt Suppression}
+\devicenormative{\subsubsection}{Used Buffer Notification Suppression}{Basic Facilities of a Virtio Device / Virtqueues / Used Buffer Notification Suppression}
 
 If the VIRTIO_F_EVENT_IDX feature bit is not negotiated:
 \begin{itemize}
 \item The device MUST ignore the \field{used_event} value.
 \item After the device writes a descriptor index into the used ring:
   \begin{itemize}
-  \item If \field{flags} is 1, the device SHOULD NOT send an interrupt.
-  \item If \field{flags} is 0, the device MUST send an interrupt.
+  \item If \field{flags} is 1, the device SHOULD NOT send a notification.
+  \item If \field{flags} is 0, the device MUST send a notification.
   \end{itemize}
 \end{itemize}
 
@@ -366,14 +370,16 @@ Otherwise, if the VIRTIO_F_EVENT_IDX feature bit is negotiated:
   \begin{itemize}
   \item If the \field{idx} field in the used ring (which determined
     where that descriptor index was placed) was equal to
-    \field{used_event}, the device MUST send an interrupt.
-  \item Otherwise the device SHOULD NOT send an interrupt.
+    \field{used_event}, the device MUST send a notification.
+  \item Otherwise the device SHOULD NOT send a notification.
   \end{itemize}
 \end{itemize}
 
 \begin{note}
 For example, if \field{used_event} is 0, then a device using
-  VIRTIO_F_EVENT_IDX would interrupt after the first buffer is
+
+  VIRTIO_F_EVENT_IDX would send a used buffer notification
+  to the driver after the first buffer is
   used (and again after the 65536th buffer, etc).
 \end{note}
 
@@ -460,14 +466,16 @@ that uninitialized memory has been overwritten when it has not.
 The driver MUST NOT make assumptions about data in device-writable buffers
 beyond the first \field{len} bytes, and SHOULD ignore this data.
 
-\subsection{Virtqueue Notification Suppression}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Notification Suppression}
+\subsection{Available Buffer Notification Suppression}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Notification Suppression}
 
-The device can suppress notifications in a manner analogous to the way
-drivers can suppress interrupts as detailed in section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Interrupt Suppression}.
+The device can suppress available buffer notifications in a manner
+analogous to the way drivers can suppress used buffer notifications as
+detailed in section \ref{sec:Basic Facilities of a Virtio Device /
+Virtqueues / Used Buffer Notification Suppression}.
 The device manipulates \field{flags} or \field{avail_event} in the used ring the
 same way the driver manipulates \field{flags} or \field{used_event} in the available ring.
 
-\drivernormative{\subsubsection}{Virtqueue Notification Suppression}{Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Notification Suppression}
+\drivernormative{\subsubsection}{Available Buffer Notification Suppression}{Basic Facilities of a Virtio Device / Virtqueues / Available Buffer Notification Suppression}
 
 The driver MUST initialize \field{flags} in the used ring to 0 when
 allocating the used ring.
@@ -494,7 +502,7 @@ Otherwise, if the VIRTIO_F_EVENT_IDX feature bit is negotiated:
   \end{itemize}
 \end{itemize}
 
-\devicenormative{\subsubsection}{Virtqueue Notification Suppression}{Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Notification Suppression}
+\devicenormative{\subsubsection}{Available Buffer Notification Suppression}{Basic Facilities of a Virtio Device / Virtqueues / Available Buffer Notification Suppression}
 If the VIRTIO_F_EVENT_IDX feature bit is not negotiated:
 \begin{itemize}
 \item The device MUST set \field{flags} to 0 or 1.
@@ -562,8 +570,8 @@ The driver offers buffers to one of the device's virtqueues as follows:
 \item The driver performs a suitable memory barrier to ensure that it updates
   the \field{idx} field before checking for notification suppression.
 
-\item If notifications are not suppressed, the driver notifies the device
-    of the new available buffers.
+\item The driver sends an available buffer notification to the device if
+    such notifications are not suppressed.
 \end{enumerate}
 
 Note that the above code does not take precautions against the
@@ -659,26 +667,30 @@ The driver MUST perform a suitable memory barrier before reading \field{flags} o
 
 Once the device has used buffers referred to by a descriptor (read from or written to them, or
 parts of both, depending on the nature of the virtqueue and the
-device), it interrupts the driver as detailed in section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Interrupt Suppression}.
+device), it sends a used buffer notification to the driver as detailed
+in section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues /
+Used Buffer Notification Suppression}.
 
 \begin{note}
-For optimal performance, a driver MAY disable interrupts while processing
-the used ring, but beware the problem of missing interrupts between
-emptying the ring and reenabling interrupts.  This is usually handled by
-re-checking for more used buffers after interrups are re-enabled:
+
+For optimal performance, a driver MAY disable used buffer notifications
+while processing the used ring, but beware the problem of missing
+notifications between emptying the ring and reenabling notifications.  This
+is usually handled by re-checking for more used buffers after
+notifications are re-enabled:
 
 \begin{lstlisting}
-virtq_disable_interrupts(vq);
+virtq_disable_used_buffer_notifications(vq);
 
 for (;;) {
         if (vq->last_seen_used != le16_to_cpu(virtq->used.idx)) {
-                virtq_enable_interrupts(vq);
+                virtq_enable_used_buffer_notifications(vq);
                 mb();
 
                 if (vq->last_seen_used != le16_to_cpu(virtq->used.idx))
                         break;
 
-                virtq_disable_interrupts(vq);
+                virtq_disable_used_buffer_notifications(vq);
         }
 
         struct virtq_used_elem *e = virtq.used->ring[vq->last_seen_used%vsz];
