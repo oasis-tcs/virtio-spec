@@ -1943,6 +1943,18 @@ Bytes & Description & Contents \\
 \hline
 \end{tabular}
 
+A virtio-ccw proxy device facilitates:
+\begin{itemize} 
+\item Discovery and attachment of virtio devices (as described above).
+\item Initialization of virtqueues and transport-specific facilities (using
+      virtio-specific channel commands).
+\item Notifications (via hypercall and a combination of I/O interrupts
+      and indicator bits).
+\end{itemize} 
+
+\subsubsection{Channel Commands for Virtio}\label{sec:Virtio Transport Options / Virtio
+over channel I/O / Basic Concepts/ Channel Commands for Virtio}
+
 In addition to the basic channel commands, virtio-ccw defines a
 set of channel commands related to configuration and operation of
 virtio:
@@ -1962,6 +1974,36 @@ virtio:
 #define CCW_CMD_SET_VIRTIO_REV 0x83
 #define CCW_CMD_READ_STATUS 0x72
 \end{lstlisting}
+
+\subsubsection{Notifications}\label{sec:Virtio Transport Options / Virtio
+over channel I/O / Basic Concepts/ Notifications}
+
+Available buffer notifications are realized as a hypercall. No additional
+setup by the driver is needed. The operation of available buffer
+notifications is described in section \ref{sec:Virtio Transport Options /
+Virtio over channel I/O / Device Operation / Guest->Host Notification}.
+
+Used buffer notifications are realized either as so-called classic or
+adapter I/O interrupts depending on a transport level negotiation. The
+initialization is described in sections \ref{sec:Virtio Transport Options
+/ Virtio over channel I/O / Device Initialization / Setting Up Indicators
+/ Setting Up Classic Queue Indicators} and \ref{sec:Virtio Transport
+Options / Virtio over channel I/O / Device Initialization / Setting Up
+Indicators / Setting Up Two-Stage Queue Indicators} respectively.  The
+operation of each flavor is described in sections \ref{sec:Virtio
+Transport Options / Virtio over channel I/O / Device Operation /
+Host->Guest Notification / Notification via Classic I/O Interrupts} and
+\ref{sec:Virtio Transport Options / Virtio over channel I/O / Device
+Operation / Host->Guest Notification / Notification via Adapter I/O
+Interrupts} respectively. 
+
+Configuration change notifications are done using so-called classic I/O
+interrupts. The initialization is described in section \ref{sec:Virtio
+Transport Options / Virtio over channel I/O / Device Initialization /
+Setting Up Indicators / Setting Up Configuration Change Indicators} and
+the operation in section \ref{sec:Virtio Transport Options / Virtio over
+channel I/O / Device Operation / Host->Guest Notification / Notification
+via Classic I/O Interrupts}.
 
 \devicenormative{\subsubsection}{Basic Concepts}{Virtio Transport Options / Virtio over channel I/O / Basic Concepts}
 
