@@ -8,6 +8,7 @@ device consists of the following parts:
 \begin{itemize}
 \item Device status field
 \item Feature bits
+\item Notifications
 \item Device Configuration space
 \item One or more virtqueues
 \end{itemize}
@@ -149,6 +150,41 @@ devices and transitional drivers MUST operate according to the
 requirements documented within these legacy interface sections.
 Specification text within these sections generally does not apply
 to non-transitional devices.
+
+\section{Notifications}\label{sec:Basic Facilities of a Virtio Device
+/ Notifications}
+
+The notion of sending a notification (driver to device or device
+to driver) plays an important role in this specification. The
+modus operandi of the notifications is transport specific.
+
+There are three types of notifications: 
+\begin{itemize}
+\item configuration change notification
+\item available buffer notification
+\item used buffer notification. 
+\end{itemize}
+
+Configuration change notifications and used buffer notifications are sent
+by the device, the recipient is the driver. A configuration change
+notification indicates that the device configuration space has changed; a
+used buffer notification indicates that a buffer may have been made used
+on the virtqueue designated by the notification.
+
+Available buffer notifications are sent by the driver, the recipient is
+the device. This type of notification indicates that a buffer may have
+been made available on the virtqueue designated by the notification.
+
+The semantics, the transport-specific implementations, and other
+important aspects of the different notifications are specified in detail
+in the following chapters.
+
+Most transports implement notifications sent by the device to the
+driver using interrupts. Therefore, in previous versions of this
+specification, these notifications were often called interrupts.
+Some names defined in this specification still retain this interrupt
+terminology. Occasionally, the term event is used to refer to
+a notification or a receipt of a notification.
 
 \section{Device Configuration Space}\label{sec:Basic Facilities of a Virtio Device / Device Configuration Space}
 
