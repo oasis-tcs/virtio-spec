@@ -2525,6 +2525,9 @@ features.
 
 \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
     channel.
+
+\item[VIRTIO_NET_F_STANDBY(62)] Device may act as a standby for a primary
+    device with the same MAC address.
 \end{description}
 
 \subsubsection{Feature bit requirements}\label{sec:Device Types / Network Device / Feature bits / Feature bit requirements}
@@ -2614,6 +2617,9 @@ level ethernet header length) size with \field{gso_type} NONE or ECN, and do
 so without fragmentation, after VIRTIO_NET_F_MTU has been successfully
 negotiated.
 
+If the driver negotiates the VIRTIO_NET_F_STANDBY feature, the device MAY act
+as a standby device for a primary device with the same MAC address.
+
 \drivernormative{\subsubsection}{Device configuration layout}{Device Types / Network Device / Device configuration layout}
 
 A driver SHOULD negotiate VIRTIO_NET_F_MAC if the device offers it.
@@ -2635,6 +2641,8 @@ level ethernet header length) with \field{gso_type} NONE or ECN.
 If the driver negotiates VIRTIO_NET_F_MTU, it MUST NOT transmit packets of
 size exceeding the value of \field{mtu} (plus low level ethernet header length)
 with \field{gso_type} NONE or ECN.
+
+A driver SHOULD negotiate the VIRTIO_NET_F_STANDBY feature if the device offers it.
 
 \subsubsection{Legacy Interface: Device configuration layout}\label{sec:Device Types / Network Device / Device configuration layout / Legacy Interface: Device configuration layout}
 \label{sec:Device Types / Block Device / Feature bits / Device configuration layout / Legacy Interface: Device configuration layout}
