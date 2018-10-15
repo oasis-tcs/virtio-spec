@@ -2651,12 +2651,12 @@ Some networking feature bits require other networking feature bits
 
 \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Network Device / Feature bits / Legacy Interface: Feature bits}
 \begin{description}
-\item[VIRTIO_NET_F_GSO (6)] Device handles packets with any GSO type.
+\item[VIRTIO_NET_F_GSO (6)] Device handles packets with any GSO type. This was supposed to indicate segmentation offload support, but
+upon further investigation it became clear that multiple bits were needed.
+\item[VIRTIO_NET_F_GUEST_RSC4 (41)] Device coalesces TCPIP v4 packets. This was implemented by hypervisor patch for certification
+purposes and current Windows driver depends on it. It will not function if virtio-net device reports this feature.
+\item[VIRTIO_NET_F_GUEST_RSC6 (42)] Device coalesces TCPIP v6 packets. Similar to VIRTIO_NET_F_GUEST_RSC4.
 \end{description}
-
-This was supposed to indicate segmentation offload support, but
-upon further investigation it became clear that multiple bits
-were needed.
 
 \subsection{Device configuration layout}\label{sec:Device Types / Network Device / Device configuration layout}
 \label{sec:Device Types / Block Device / Feature bits / Device configuration layout}
