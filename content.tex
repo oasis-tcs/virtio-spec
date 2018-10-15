@@ -2731,6 +2731,9 @@ features.
 \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
     channel.
 
+\item[VIRTIO_NET_F_RSC_EXT(38)] Device can process duplicated ACKs
+    and report number of coalesced segments and duplicated ACKs
+
 \item[VIRTIO_NET_F_STANDBY(62)] Device may act as a standby for a primary
     device with the same MAC address.
 \end{description}
@@ -2756,6 +2759,7 @@ Some networking feature bits require other networking feature bits
 \item[VIRTIO_NET_F_GUEST_ANNOUNCE] Requires VIRTIO_NET_F_CTRL_VQ.
 \item[VIRTIO_NET_F_MQ] Requires VIRTIO_NET_F_CTRL_VQ.
 \item[VIRTIO_NET_F_CTRL_MAC_ADDR] Requires VIRTIO_NET_F_CTRL_VQ.
+\item[VIRTIO_NET_F_RSC_EXT] Requires VIRTIO_NET_F_HOST_TSO4 or VIRTIO_NET_F_HOST_TSO6.
 \end{description}
 
 \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Network Device / Feature bits / Legacy Interface: Feature bits}
@@ -2929,6 +2933,7 @@ itself is preceded by a header:
 struct virtio_net_hdr {
 #define VIRTIO_NET_HDR_F_NEEDS_CSUM    1
 #define VIRTIO_NET_HDR_F_DATA_VALID    2
+#define VIRTIO_NET_HDR_F_RSC_INFO      4
         u8 flags;
 #define VIRTIO_NET_HDR_GSO_NONE        0
 #define VIRTIO_NET_HDR_GSO_TCPV4       1
@@ -3092,8 +3097,8 @@ been negotiated, the driver SHOULD set \field{hdr_len} to a value
 not less than the length of the headers, including the transport
 header.
 
-The driver MUST NOT set the VIRTIO_NET_HDR_F_DATA_VALID bit in
-\field{flags}.
+The driver MUST NOT set the VIRTIO_NET_HDR_F_DATA_VALID and
+VIRTIO_NET_HDR_F_RSC_INFO bits in \field{flags}.
 
 \devicenormative{\paragraph}{Packet Transmission}{Device Types / Network Device / Device Operation / Packet Transmission}
 The device MUST ignore \field{flag} bits that it does not recognize.
@@ -3209,18 +3214,25 @@ transmit segmentation offloading and ECN features, as described
 in \ref{sec:Device Types / Network Device / Device Operation /
 Packet Transmission}:
 \begin{enumerate}
+\item If the VIRTIO_NET_F_GUEST_TSO4, TSO6 or UFO options were
+  negotiated, then \field{gso_type} MAY be something other than
+  VIRTIO_NET_HDR_GSO_NONE, and \field{gso_size} field indicates the
+  desired MSS (see Packet Transmission point 2).
+\item If the VIRTIO_NET_F_RSC_EXT option was negotiated (this
+  implies one of VIRTIO_NET_F_GUEST_TSO4, TSO6), the
+  device processes also duplicated ACK segments, reports
+  number of coalesced TCP segments in \field{csum_start} field and
+  number of duplicated ACK segments in \field{csum_offset} field
+  and sets bit VIRTIO_NET_HDR_F_RSC_INFO in \field{flags}.
 \item If the VIRTIO_NET_F_GUEST_CSUM feature was negotiated, the
   VIRTIO_NET_HDR_F_NEEDS_CSUM bit in \field{flags} can be
   set: if so, the packet checksum at offset \field{csum_offset}
   from \field{csum_start} and any preceding checksums
   have been validated.  The checksum on the packet is incomplete and
-  \field{csum_start} and \field{csum_offset} indicate how to calculate
-  it (see Packet Transmission point 1).
+  if bit VIRTIO_NET_HDR_F_RSC_INFO is not set in \field{flags},
+  then \field{csum_start} and \field{csum_offset} indicate how to calculate it
+  (see Packet Transmission point 1).
 
-\item If the VIRTIO_NET_F_GUEST_TSO4, TSO6 or UFO options were
-  negotiated, then \field{gso_type} MAY be something other than
-  VIRTIO_NET_HDR_GSO_NONE, and \field{gso_size} field indicates the
-  desired MSS (see Packet Transmission point 2).
 \end{enumerate}
 
 \devicenormative{\paragraph}{Processing of Incoming Packets}{Device Types / Network Device / Device Operation / Processing of Incoming Packets}
@@ -3285,6 +3297,13 @@ VIRTIO_NET_HDR_GSO_NONE.
 If \field{gso_type} differs from VIRTIO_NET_HDR_GSO_NONE, then
 the device MUST also set the VIRTIO_NET_HDR_F_NEEDS_CSUM bit in
 \field{flags} MUST set \field{gso_size} to indicate the desired MSS.
+If VIRTIO_NET_F_RSC_EXT was negotiated, the device MUST also
+set VIRTIO_NET_HDR_F_RSC_INFO bit in \field{flags},
+set \field{csum_start} to number of coalesced TCP segments and
+set \field{csum_offset} to number of received duplicated ACK segments.
+
+If VIRTIO_NET_F_RSC_EXT was not negotiated, the device MUST
+not set VIRTIO_NET_HDR_F_RSC_INFO bit in \field{flags}.
 
 If one of the VIRTIO_NET_F_GUEST_TSO4, TSO6 or UFO options have
 been negotiated, the device SHOULD set \field{hdr_len} to a value
@@ -3303,7 +3322,8 @@ Processing of Incoming Packets}
 
 The driver MUST ignore \field{flag} bits that it does not recognize.
 
-If VIRTIO_NET_HDR_F_NEEDS_CSUM bit in \field{flags} is not set, the
+If VIRTIO_NET_HDR_F_NEEDS_CSUM bit in \field{flags} is not set or
+if VIRTIO_NET_HDR_F_RSC_INFO bit \field{flags} is set, the
 driver MUST NOT use the \field{csum_start} and \field{csum_offset}.
 
 If one of the VIRTIO_NET_F_GUEST_TSO4, TSO6 or UFO options have
