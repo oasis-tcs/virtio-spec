@@ -794,7 +794,7 @@ struct virtio_pci_common_cfg {
 
 \item[\field{queue_size}]
         Queue Size.  On reset, specifies the maximum queue size supported by
-        the hypervisor. This can be modified by driver to reduce memory requirements.
+        the device. This can be modified by the driver to reduce memory requirements.
         A 0 means the queue is unavailable.
 
 \item[\field{queue_msix_vector}]
