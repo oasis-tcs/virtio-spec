@@ -220,7 +220,7 @@ read a device-writable buffer (it MAY do so for debugging or diagnostic
 purposes).
 
 \drivernormative{\subsubsection}{The Virtqueue Descriptor Table}{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table}
-Drivers MUST NOT add a descriptor chain over than $2^{32}$ bytes long in total;
+Drivers MUST NOT add a descriptor chain longer than $2^{32}$ bytes in total;
 this implies that loops in the descriptor chain are forbidden!
 
 If VIRTIO_F_IN_ORDER has been negotiated, and when making a
@@ -560,7 +560,7 @@ The driver offers buffers to one of the device's virtqueues as follows:
 \item Steps \ref{itm:Basic Facilities of a Virtio Device / Virtqueues / Supplying Buffers to The Device / Place Buffers} and \ref{itm:Basic Facilities of a Virtio Device / Virtqueues / Supplying Buffers to The Device / Place Index} MAY be performed repeatedly if batching
   is possible.
 
-\item The driver performs suitable a memory barrier to ensure the device sees
+\item The driver performs a suitable memory barrier to ensure the device sees
   the updated descriptor table and available ring before the next
   step.
 
