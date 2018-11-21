@@ -5454,26 +5454,48 @@ Descriptors} and \ref{sec:Packed Virtqueues / Indirect Flag: Scatter-Gather Supp
   \item[VIRTIO_F_VERSION_1(32)] This indicates compliance with this
     specification, giving a simple way to detect legacy devices or drivers.
 
-  \item[VIRTIO_F_IOMMU_PLATFORM(33)] This feature indicates that the device is
+  \item[VIRTIO_F_ACCESS_PLATFORM(33)] This feature indicates that
+  the device can be used on a platform where device access to data
+  in memory is limited and/or translated. E.g. this is the case if the device can be located
   behind an IOMMU that translates bus addresses from the device into physical
-  addresses in memory.  If this feature bit is set to 0, then the device emits
-  physical addresses which are not translated further, even though an IOMMU
-  may be present.
+  addresses in memory, if the device can be limited to only access
+  certain memory addresses or if special commands such as
+  a cache flush can be needed to synchronise data in memory with
+  the device. Whether accesses are actually limited or translated
+  is described by platform-specific means.
+  If this feature bit is set to 0, then the device
+  has same access to memory addresses supplied to it as the
+  driver has.
+  In particular, the device will always use physical addresses
+  matching addresses used by the driver (typically meaning
+  physical addresses used by the CPU)
+  and not translated further, and can access any address supplied to it by
+  the driver. When clear, this overrides any platform-specific description of
+  whether device access is limited or translated in any way, e.g.
+  whether an IOMMU may be present.
   \item[VIRTIO_F_RING_PACKED(34)] This feature indicates
   support for the packed virtqueue layout as described in
   \ref{sec:Basic Facilities of a Virtio Device / Packed Virtqueues}~\nameref{sec:Basic Facilities of a Virtio Device / Packed Virtqueues}.
   \item[VIRTIO_F_IN_ORDER(35)] This feature indicates
   that all buffers are used by the device in the same
   order in which they have been made available.
-  \item[VIRTIO_F_IO_BARRIER(36)] This feature indicates
-  that the device needs the driver to use the barriers
-  suitable for hardware devices.  Some transports require
-  barriers to ensure devices have a consistent view of
-  memory.  When devices are implemented in software a
-  weaker form of barrier may be sufficient and yield
-  better performance.  This feature indicates whether
-  a stronger form of barrier suitable for hardware
-  devices is necessary.
+  \item[VIRTIO_F_ORDER_PLATFORM(36)] This feature indicates
+  that memory accesses by the driver and the device are ordered
+  in a way described by the platform.
+
+  If this feature bit is negotiated, the ordering in effect for any
+  memory accesses by the driver that need to be ordered in a specific way
+  with respect to accesses by the device is the one suitable for devices
+  described by the platform. This implies that the driver needs to use
+  memory barriers suitable for devices described by the platform; e.g.
+  for the PCI transport in the case of hardware PCI devices.
+
+  If this feature bit is not negotiated, then the device
+  and driver are assumed to be implemented in software, that is
+  they can be assumed to run on identical CPUs
+  in an SMP configuration.
+  Thus a weaker form of memory barriers is sufficient
+  to yield better performance.
   \item[VIRTIO_F_SR_IOV(37)] This feature indicates that
   the device supports Single Root I/O Virtualization.
   Currently only PCI devices support this feature.
@@ -5484,16 +5506,16 @@ Descriptors} and \ref{sec:Packed Virtqueues / Indirect Flag: Scatter-Gather Supp
 A driver MUST accept VIRTIO_F_VERSION_1 if it is offered.  A driver
 MAY fail to operate further if VIRTIO_F_VERSION_1 is not offered.
 
-A driver SHOULD accept VIRTIO_F_IOMMU_PLATFORM if it is offered, and it MUST
+A driver SHOULD accept VIRTIO_F_ACCESS_PLATFORM if it is offered, and it MUST
 then either disable the IOMMU or configure the IOMMU to translate bus addresses
 passed to the device into physical addresses in memory.  If
-VIRTIO_F_IOMMU_PLATFORM is not offered, then a driver MUST pass only physical
+VIRTIO_F_ACCESS_PLATFORM is not offered, then a driver MUST pass only physical
 addresses to the device.
 
 A driver SHOULD accept VIRTIO_F_RING_PACKED if it is offered.
 
-A driver SHOULD accept VIRTIO_F_IO_BARRIER if it is offered.
-If VIRTIO_F_IO_BARRIER has been negotiated, a driver MUST use
+A driver SHOULD accept VIRTIO_F_ORDER_PLATFORM if it is offered.
+If VIRTIO_F_ORDER_PLATFORM has been negotiated, a driver MUST use
 the barriers suitable for hardware devices.
 
 If VIRTIO_F_SR_IOV has been negotiated, a driver MAY enable
@@ -5516,16 +5538,25 @@ VIRTIO_F_SR_IOV after the reset.
 A device MUST offer VIRTIO_F_VERSION_1.  A device MAY fail to operate further
 if VIRTIO_F_VERSION_1 is not accepted.
 
-A device SHOULD offer VIRTIO_F_IOMMU_PLATFORM if it is behind an IOMMU that
-translates bus addresses from the device into physical addresses in memory.
-A device MAY fail to operate further if VIRTIO_F_IOMMU_PLATFORM is not
+A device SHOULD offer VIRTIO_F_ACCESS_PLATFORM if its access to
+memory is through bus addresses distinct from and translated
+by the platform to physical addresses used by the driver, and/or
+if it can only access certain memory addresses with said access
+specified and/or granted by the platform.
+A device MAY fail to operate further if VIRTIO_F_ACCESS_PLATFORM is not
 accepted.
 
 If VIRTIO_F_IN_ORDER has been negotiated, a device MUST use
 buffers in the same order in which they have been available.
 
-A device MAY fail to operate further if VIRTIO_F_IO_BARRIER
-is not accepted.
+A device MAY fail to operate further if
+VIRTIO_F_ORDER_PLATFORM is offered but not accepted.
+A device MAY operate in a slower emulation mode if
+VIRTIO_F_ORDER_PLATFORM is offered but not accepted.
+
+It is RECOMMENDED that an add-in card based PCI device
+offers both VIRTIO_F_ACCESS_PLATFORM and
+VIRTIO_F_ORDER_PLATFORM for maximum portability.
 
 A device SHOULD offer VIRTIO_F_SR_IOV if it is a PCI device
 and presents a PCI SR-IOV capability structure, otherwise
