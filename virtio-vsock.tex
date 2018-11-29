@@ -1,0 +1,277 @@
+\section{Socket Device}\label{sec:Device Types / Socket Device}
+
+The virtio socket device is a zero-configuration socket communications device.
+It facilitates data transfer between the guest and device without using the
+Ethernet or IP protocols.
+
+\subsection{Device ID}\label{sec:Device Types / Socket Device / Device ID}
+  19
+
+\subsection{Virtqueues}\label{sec:Device Types / Socket Device / Virtqueues}
+\begin{description}
+\item[0] rx
+\item[1] tx
+\item[2] event
+\end{description}
+
+\subsection{Feature bits}\label{sec:Device Types / Socket Device / Feature bits}
+
+There are currently no feature bits defined for this device.
+
+\subsection{Device configuration layout}\label{sec:Device Types / Socket Device / Device configuration layout}
+
+\begin{lstlisting}
+struct virtio_vsock_config {
+	le64 guest_cid;
+};
+\end{lstlisting}
+
+The \field{guest_cid} field contains the guest's context ID, which uniquely
+identifies the device for its lifetime.  The upper 32 bits of the CID are
+reserved and zeroed.
+
+The following CIDs are reserved and cannot be used as the guest's context ID:
+
+\begin{tabular}{|l|l|}
+\hline
+CID    & Notes \\
+\hline \hline
+0                 & Reserved \\
+\hline
+1                 & Reserved \\
+\hline
+2                 & Well-known CID for the host \\
+\hline
+0xffffffff        & Reserved \\
+\hline
+0xffffffffffffffff        & Reserved \\
+\hline
+\end{tabular}
+
+\subsection{Device Initialization}\label{sec:Device Types / Socket Device / Device Initialization}
+
+\begin{enumerate}
+\item The guest's cid is read from \field{guest_cid}.
+
+\item Buffers are added to the event virtqueue to receive events from the device.
+
+\item Buffers are added to the rx virtqueue to start receiving packets.
+\end{enumerate}
+
+\subsection{Device Operation}\label{sec:Device Types / Socket Device / Device Operation}
+
+Packets transmitted or received contain a header before the payload:
+
+\begin{lstlisting}
+struct virtio_vsock_hdr {
+	le64 src_cid;
+	le64 dst_cid;
+	le32 src_port;
+	le32 dst_port;
+	le32 len;
+	le16 type;
+	le16 op;
+	le32 flags;
+	le32 buf_alloc;
+	le32 fwd_cnt;
+};
+\end{lstlisting}
+
+The upper 32 bits of src_cid and dst_cid are reserved and zeroed.
+
+Most packets simply transfer data but control packets are also used for
+connection and buffer space management.  \field{op} is one of the following
+operation constants:
+
+\begin{lstlisting}
+enum {
+	VIRTIO_VSOCK_OP_INVALID = 0,
+
+	/* Connect operations */
+	VIRTIO_VSOCK_OP_REQUEST = 1,
+	VIRTIO_VSOCK_OP_RESPONSE = 2,
+	VIRTIO_VSOCK_OP_RST = 3,
+	VIRTIO_VSOCK_OP_SHUTDOWN = 4,
+
+	/* To send payload */
+	VIRTIO_VSOCK_OP_RW = 5,
+
+	/* Tell the peer our credit info */
+	VIRTIO_VSOCK_OP_CREDIT_UPDATE = 6,
+	/* Request the peer to send the credit info to us */
+	VIRTIO_VSOCK_OP_CREDIT_REQUEST = 7,
+};
+\end{lstlisting}
+
+\subsubsection{Virtqueue Flow Control}\label{sec:Device Types / Socket Device / Device Operation / Virtqueue Flow Control}
+
+The tx virtqueue carries packets initiated by applications and replies to
+received packets.  The rx virtqueue carries packets initiated by the device and
+replies to previously transmitted packets.
+
+If both rx and tx virtqueues are filled by the driver and device at the same
+time then it appears that a deadlock is reached.  The driver has no free tx
+descriptors to send replies.  The device has no free rx descriptors to send
+replies either.  Therefore neither device nor driver can process virtqueues
+since that may involve sending new replies.
+
+This is solved using additional resources outside the virtqueue to hold
+packets.  With additional resources, it becomes possible to process incoming
+packets even when outgoing packets cannot be sent.
+
+Eventually even the additional resources will be exhausted and further
+processing is not possible until the other side processes the virtqueue that
+it has neglected.  This stop to processing prevents one side from causing
+unbounded resource consumption in the other side.
+
+\drivernormative{\paragraph}{Device Operation: Virtqueue Flow Control}{Device Types / Socket Device / Device Operation / Virtqueue Flow Control}
+
+The rx virtqueue MUST be processed even when the tx virtqueue is full so long as there are additional resources available to hold packets outside the tx virtqueue.
+
+\devicenormative{\paragraph}{Device Operation: Virtqueue Flow Control}{Device Types / Socket Device / Device Operation / Virtqueue Flow Control}
+
+The tx virtqueue MUST be processed even when the rx virtqueue is full so long as there are additional resources available to hold packets outside the rx virtqueue.
+
+\subsubsection{Addressing}\label{sec:Device Types / Socket Device / Device Operation / Addressing}
+
+Flows are identified by a (source, destination) address tuple.  An address
+consists of a (cid, port number) tuple. The header fields used for this are
+\field{src_cid}, \field{src_port}, \field{dst_cid}, and \field{dst_port}.
+
+Currently only stream sockets are supported. \field{type} is 1 for stream
+socket types.
+
+Stream sockets provide in-order, guaranteed, connection-oriented delivery
+without message boundaries.
+
+\subsubsection{Buffer Space Management}\label{sec:Device Types / Socket Device / Device Operation / Buffer Space Management}
+\field{buf_alloc} and \field{fwd_cnt} are used for buffer space management of
+stream sockets. The guest and the device publish how much buffer space is
+available per socket. Only payload bytes are counted and header bytes are not
+included. This facilitates flow control so data is never dropped.
+
+\field{buf_alloc} is the total receive buffer space, in bytes, for this socket.
+This includes both free and in-use buffers. \field{fwd_cnt} is the free-running
+bytes received counter. The sender calculates the amount of free receive buffer
+space as follows:
+
+\begin{lstlisting}
+/* tx_cnt is the sender's free-running bytes transmitted counter */
+u32 peer_free = peer_buf_alloc - (tx_cnt - peer_fwd_cnt);
+\end{lstlisting}
+
+If there is insufficient buffer space, the sender waits until virtqueue buffers
+are returned and checks \field{buf_alloc} and \field{fwd_cnt} again. Sending
+the VIRTIO_VSOCK_OP_CREDIT_REQUEST packet queries how much buffer space is
+available. The reply to this query is a VIRTIO_VSOCK_OP_CREDIT_UPDATE packet.
+It is also valid to send a VIRTIO_VSOCK_OP_CREDIT_UPDATE packet without
+previously receiving a VIRTIO_VSOCK_OP_CREDIT_REQUEST packet. This allows
+communicating updates any time a change in buffer space occurs.
+
+\drivernormative{\paragraph}{Device Operation: Buffer Space Management}{Device Types / Socket Device / Device Operation / Buffer Space Management}
+VIRTIO_VSOCK_OP_RW data packets MUST only be transmitted when the peer has
+sufficient free buffer space for the payload.
+
+All packets associated with a stream flow MUST contain valid information in
+\field{buf_alloc} and \field{fwd_cnt} fields.
+
+\devicenormative{\paragraph}{Device Operation: Buffer Space Management}{Device Types / Socket Device / Device Operation / Buffer Space Management}
+VIRTIO_VSOCK_OP_RW data packets MUST only be transmitted when the peer has
+sufficient free buffer space for the payload.
+
+All packets associated with a stream flow MUST contain valid information in
+\field{buf_alloc} and \field{fwd_cnt} fields.
+
+\subsubsection{Receive and Transmit}\label{sec:Device Types / Socket Device / Device Operation / Receive and Transmit}
+The driver queues outgoing packets on the tx virtqueue and incoming packet
+receive buffers on the rx virtqueue. Packets are of the following form:
+
+\begin{lstlisting}
+struct virtio_vsock_packet {
+    struct virtio_vsock_hdr hdr;
+    u8 data[];
+};
+\end{lstlisting}
+
+Virtqueue buffers for outgoing packets are read-only. Virtqueue buffers for
+incoming packets are write-only.
+
+\drivernormative{\paragraph}{Device Operation: Receive and Transmit}{Device Types / Socket Device / Device Operation / Receive and Transmit}
+
+The \field{guest_cid} configuration field MUST be used as the source CID when
+sending outgoing packets.
+
+A VIRTIO_VSOCK_OP_RST reply MUST be sent if a packet is received with an
+unknown \field{type} value.
+
+\devicenormative{\paragraph}{Device Operation: Receive and Transmit}{Device Types / Socket Device / Device Operation / Receive and Transmit}
+
+The \field{guest_cid} configuration field MUST NOT contain a reserved CID as listed in \ref{sec:Device Types / Socket Device / Device configuration layout}.
+
+A VIRTIO_VSOCK_OP_RST reply MUST be sent if a packet is received with an
+unknown \field{type} value.
+
+\subsubsection{Stream Sockets}\label{sec:Device Types / Socket Device / Device Operation / Stream Sockets}
+
+Connections are established by sending a VIRTIO_VSOCK_OP_REQUEST packet. If a
+listening socket exists on the destination a VIRTIO_VSOCK_OP_RESPONSE reply is
+sent and the connection is established.  A VIRTIO_VSOCK_OP_RST reply is sent if
+a listening socket does not exist on the destination or the destination has
+insufficient resources to establish the connection.
+
+When a connected socket receives VIRTIO_VSOCK_OP_SHUTDOWN the header
+\field{flags} field bit 0 indicates that the peer will not receive any more
+data and bit 1 indicates that the peer will not send any more data.  These
+hints are permanent once sent and successive packets with bits clear do not
+reset them.
+
+The VIRTIO_VSOCK_OP_RST packet aborts the connection process or forcibly
+disconnects a connected socket.
+
+Clean disconnect is achieved by one or more VIRTIO_VSOCK_OP_SHUTDOWN packets
+that indicate no more data will be sent and received, followed by a
+VIRTIO_VSOCK_OP_RST response from the peer.  If no VIRTIO_VSOCK_OP_RST response
+is received within an implementation-specific amount of time, a
+VIRTIO_VSOCK_OP_RST packet is sent to forcibly disconnect the socket.
+
+The clean disconnect process ensures that neither peer reuses the (source,
+destination) address tuple for a new connection while the other peer is still
+processing the old connection.
+
+\subsubsection{Device Events}\label{sec:Device Types / Socket Device / Device Operation / Device Events}
+
+Certain events are communicated by the device to the driver using the event
+virtqueue.
+
+The event buffer is as follows:
+
+\begin{lstlisting}
+enum virtio_vsock_event_id {
+        VIRTIO_VSOCK_EVENT_TRANSPORT_RESET = 0,
+};
+
+struct virtio_vsock_event {
+        le32 id;
+};
+\end{lstlisting}
+
+The VIRTIO_VSOCK_EVENT_TRANSPORT_RESET event indicates that communication has
+been interrupted.  This usually occurs if the guest has been physically
+migrated.  The driver shuts down established connections and the
+\field{guest_cid} configuration field is fetched again.  Existing listen
+sockets remain but their CID is updated to reflect the current
+\field{guest_cid}.
+
+\drivernormative{\paragraph}{Device Operation: Device Events}{Device Types / Socket Device / Device Operation / Device Events}
+
+Event virtqueue buffers SHOULD be replenished quickly so that no events are
+missed.
+
+The \field{guest_cid} configuration field MUST be fetched to determine the
+current CID when a VIRTIO_VSOCK_EVENT_TRANSPORT_RESET event is received.
+
+Existing connections MUST be shut down when a
+VIRTIO_VSOCK_EVENT_TRANSPORT_RESET event is received.
+
+Listen connections MUST remain operational with the current CID when a
+VIRTIO_VSOCK_EVENT_TRANSPORT_RESET event is received.

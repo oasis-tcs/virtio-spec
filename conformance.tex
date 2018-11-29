@@ -15,13 +15,13 @@ Conformance targets:
   \begin{itemize}
     \item Clause \ref{sec:Conformance / Driver Conformance},
     \item One of clauses \ref{sec:Conformance / Driver Conformance / PCI Driver Conformance}, \ref{sec:Conformance / Driver Conformance / MMIO Driver Conformance} or \ref{sec:Conformance / Driver Conformance / Channel I/O Driver Conformance}.
-    \item One of clauses \ref{sec:Conformance / Driver Conformance / Network Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Block Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Console Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Entropy Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Traditional Memory Balloon Driver Conformance} or \ref{sec:Conformance / Driver Conformance / SCSI Host Driver Conformance}.
+    \item One of clauses \ref{sec:Conformance / Driver Conformance / Network Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Block Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Console Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Entropy Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Traditional Memory Balloon Driver Conformance}, \ref{sec:Conformance / Driver Conformance / SCSI Host Driver Conformance}, or \ref{sec:Conformance / Driver Conformance / Socket Driver Conformance}.
   \end{itemize}
 \item[Device] A device MUST conform to three conformance clauses:
   \begin{itemize}
     \item Clause \ref{sec:Conformance / Device Conformance},
     \item One of clauses \ref{sec:Conformance / Device Conformance / PCI Device Conformance}, \ref{sec:Conformance / Device Conformance / MMIO Device Conformance} or \ref{sec:Conformance / Device Conformance / Channel I/O Device Conformance}.
-    \item One of clauses \ref{sec:Conformance / Device Conformance / Network Device Conformance}, \ref{sec:Conformance / Device Conformance / Block Device Conformance}, \ref{sec:Conformance / Device Conformance / Console Device Conformance}, \ref{sec:Conformance / Device Conformance / Entropy Device Conformance}, \ref{sec:Conformance / Device Conformance / Traditional Memory Balloon Device Conformance} or \ref{sec:Conformance / Device Conformance / SCSI Host Device Conformance}.
+    \item One of clauses \ref{sec:Conformance / Device Conformance / Network Device Conformance}, \ref{sec:Conformance / Device Conformance / Block Device Conformance}, \ref{sec:Conformance / Device Conformance / Console Device Conformance}, \ref{sec:Conformance / Device Conformance / Entropy Device Conformance}, \ref{sec:Conformance / Device Conformance / Traditional Memory Balloon Device Conformance}, \ref{sec:Conformance / Device Conformance / SCSI Host Device Conformance}, or \ref{sec:Conformance / Device Conformance / Socket Device Conformance}.
   \end{itemize}
 \end{description}
 
@@ -171,6 +171,16 @@ A Crypto driver MUST conform to the following normative statements:
 \item \ref{drivernormative:Device Types / Crypto Device / Device Operation / AEAD Service Operation}
 \end{itemize}
 
+\subsection{Socket Driver Conformance}\label{sec:Conformance / Driver Conformance / Socket Driver Conformance}
+
+A socket driver MUST conform to the following normative statements:
+
+\begin{itemize}
+\item \ref{drivernormative:Device Types / Socket Device / Device Operation / Buffer Space Management}
+\item \ref{drivernormative:Device Types / Socket Device / Device Operation / Receive and Transmit}
+\item \ref{drivernormative:Device Types / Socket Device / Device Operation / Device Events}
+\end{itemize}
+
 \section{Device Conformance}\label{sec:Conformance / Device Conformance}
 
 A device MUST conform to the following normative statements:
@@ -313,6 +323,15 @@ A Crypto device MUST conform to the following normative statements:
 \item \ref{devicenormative:Device Types / Crypto Device / Device Operation / MAC Service Operation}
 \item \ref{devicenormative:Device Types / Crypto Device / Device Operation / Symmetric algorithms Operation}
 \item \ref{devicenormative:Device Types / Crypto Device / Device Operation / AEAD Service Operation}
+\end{itemize}
+
+\subsection{Socket Device Conformance}\label{sec:Conformance / Device Conformance / Socket Device Conformance}
+
+A socket device MUST conform to the following normative statements:
+
+\begin{itemize}
+\item \ref{devicenormative:Device Types / Socket Device / Device Operation / Buffer Space Management}
+\item \ref{devicenormative:Device Types / Socket Device / Device Operation / Receive and Transmit}
 \end{itemize}
 
 \section{Legacy Interface: Transitional Device and
