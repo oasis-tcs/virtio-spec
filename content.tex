@@ -786,7 +786,7 @@ struct virtio_pci_common_cfg {
 
         /* About a specific virtqueue. */
         le16 queue_select;              /* read-write */
-        le16 queue_size;                /* read-write, power of 2, or 0. */
+        le16 queue_size;                /* read-write */
         le16 queue_msix_vector;         /* read-write */
         le16 queue_enable;              /* read-write */
         le16 queue_notify_off;          /* read-only for driver */
@@ -903,11 +903,18 @@ The device MUST present a 0 in \field{queue_enable} on reset.
 The device MUST present a 0 in \field{queue_size} if the virtqueue
 corresponding to the current \field{queue_select} is unavailable.
 
+If VIRTIO_F_RING_PACKED has not been negotiated, the device MUST
+present either a value of 0 or a power of 2 in
+\field{queue_size}.
+
 \drivernormative{\paragraph}{Common configuration structure layout}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common configuration structure layout}
 
 The driver MUST NOT write to \field{device_feature}, \field{num_queues}, \field{config_generation} or \field{queue_notify_off}.
 
-The driver MUST NOT write a value which is not a power of 2 to \field{queue_size}.
+If VIRTIO_F_RING_PACKED has been negotiated,
+the driver MUST NOT write the value 0 to \field{queue_size}.
+If VIRTIO_F_RING_PACKED has not been negotiated,
+the driver MUST NOT write a value which is not a power of 2 to \field{queue_size}.
 
 The driver MUST configure the other virtqueue fields before enabling the virtqueue
 with \field{queue_enable}.
