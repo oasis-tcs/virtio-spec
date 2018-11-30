@@ -1,0 +1,134 @@
+540 & 11 Oct 2015 & Greg Kurz & {virtqueues: fix
+trivial typo
+
+See
+\ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Used Buffer Notification Suppression}.
+} \\
+\hline
+541 & 11 Oct 2015 & Paolo Bonzini & {virtio-blk: fix typo
+in legacy framing requirements section
+
+See
+\ref{sec:Device Types / Block Device / Legacy Interface: Framing Requirements}.
+} \\
+\hline
+545 & 18 Oct 2015 & Paolo Bonzini & {virtio-blk: restore VIRTIO_BLK_F_FLUSH and VIRTIO_BLK_F_CONFIG_WCE
+
+VIRTIO_BLK_F_CONFIG_WCE is important in order to achieve good performance
+(up to 2x, though more realistically +30-40\%) in latency-bound workloads.
+However, it was removed by mistake together with VIRTIO_BLK_F_FLUSH.
+
+In addition, even removing VIRTIO_BLK_F_FLUSH was probably not a great
+idea, because it simplifies simple drivers (e.g. firmware) that are okay
+with a writethrough cache but still need data to persist after power loss.
+What really should have been removed is just the possibility that devices
+not propose VIRTIO_BLK_F_FLUSH, but even that only deserves a "SHOULD" in
+the new world of conformance statements.
+
+Restore these, with the following changes:
+
+* clarify and use conformance statements in order to define writeback
+and writethrough caching according to what is commonly done by high-end
+storage.
+
+* clarify (with conformance statements) the influence of the
+VIRTIO_BLK_F_FLUSH feature on caching and how to proceed if only one of
+VIRTIO_BLK_F_FLUSH and VIRTIO_BLK_F_CONFIG_WCE is negotiated.
+
+* strengthen the requirement for persisting writes to MUST after
+a VIRTIO_BLK_T_FLUSH request (and in other cases too involving the
+new features).
+
+The suggested behavior upon feature negotiation is okay for the Linux
+implementation of virtio1, even after the implementation is modified to
+support the two new features.
+
+This fixes VIRTIO-144.
+
+See \ref{sec:Device Types / Block Device},
+\ref{sec:Conformance / Driver Conformance / Block Driver Conformance} and
+\ref{sec:Conformance / Device Conformance / Block Device Conformance}.
+} \\
+\hline
+546 & 18 Oct 2015 & Michael S. Tsirkin & {pci: clarify configuration access capability rules
+
+The point of the configuration access capability is to enable
+access to other capabilities.  The intent never was to allow
+writes to a random place within device BARs.
+Limiting drivers simplifies devices - and devices can always
+add another capability if drivers ever want to access
+some other range.
+
+This resolves VIRTIO-145.
+
+See \ref{drivernormative:Virtio Transport Options / Virtio Over
+PCI Bus / PCI Device Layout / PCI configuration access
+capability}.
+} \\
+\hline
+547 & 18 Oct 2015 & Michael S. Tsirkin & {add advice on transition from legacy interfaces
+
+Reading legacy chapters gives a hint about what changed,
+let's help readers discover this useful shortcut.
+
+This resolves VIRTIO-146.
+
+See \ref{sec:Transition from earlier specification drafts}.
+} \\
+\hline
+554 & 16 Feb 2016 & Thomas Huth & {virtio-net: fix inconsistent legacy header size
+
+    Current text says:
+    	The legacy driver only presented num_buffers in the struct
+    	virtio_net_hdr when VIRTIO_NET_F_MRG_RXBUF was not negotiated;
+
+    Should be:
+    	"\dots was negotiated \dots" instead of "\dots was not negotiated \dots"
+
+    To be consistent with the following:
+    	without that feature the structure was 2 bytes shorter.
+
+See \ref{sec:Device Types / Network Device / Device Operation / Legacy Interface: Device Operation}.
+} \\
+\hline
+555 & 16 Feb 2016 & Michael S. Tsirkin & {virtio header: tweak
+change motivation
+
+    The changes are not just to remove Linux assumptions,
+    we have also renamed ring->queue.
+    Tweak the header description accordingly.
+
+See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Helpers for Operating Virtqueues}.
+} \\
+\hline
+558 & 16 Feb 2016 & Michael S. Tsirkin & {rename virtio_ring.h to virtio_queue.h
+
+    Since vring* and VRING* have been replaced with virtq* and VIRTQ*
+    respectively, rename the header virtio_ring.h to virtio_queue.h.
+
+See \ref{sec:virtio-queue.h}.
+} \\
+\hline
+559 & 16 Feb 2016 & Michael S. Tsirkin & {init: sort status bits
+
+    Status bit order is inconsistent: they are neither in increasing
+    order nor in the order they are likely to be used.
+
+    The second approach seems more useful since there aren't
+    that many bits, so the numerical order does not help much.
+
+    A typical order of use would be:
+
+\begin{itemize}   
+\item    ACKNOWLEDGE
+\item    DRIVER
+\item    then either FAILED or FEATURES_OK
+\item    then either FAILED or DRIVER_OK
+\item    then DEVICE_NEEDS_RESET (if device detects an error)
+\end{itemize}
+    
+    Sort the bits accordingly.
+
+See \ref{sec:Basic Facilities of a Virtio Device / Device Status Field}.
+} \\
+\hline
