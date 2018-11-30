@@ -1,6 +1,6 @@
 #! /bin/sh
 
-VERSION=1.0
+VERSION=1.1
 DATESTR=${DATESTR:-`cat REVISION-DATE 2>/dev/null`}
 if [ x"$DATESTR" = x ]; then
     ISODATE=`git show --format=format:'%cd' --date=iso | head -n 1`
