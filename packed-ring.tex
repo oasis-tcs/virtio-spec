@@ -685,16 +685,33 @@ vq->driver_event.flags = RING_EVENT_FLAGS_DISABLE;
 for (;;) {
         struct pvirtq_desc *d = vq->desc[vq->next_used];
 
+        /*
+         * Check that
+         * 1. Descriptor has been made available. This check is necessary
+         *    if the driver is making new descriptors available in parallel
+         *    with this processing of used descriptors (e.g. from another thread).
+         *    Note: there are many other ways to check this, e.g.
+         *    track the number of outstanding available descriptors or buffers
+         *    and check that it's not 0.
+         * 2. Descriptor has been used by the device.
+         */
         flags = d->flags;
+        bool avail = flags & VIRTQ_DESC_F_AVAIL;
         bool used = flags & VIRTQ_DESC_F_USED;
-
-        if (used != vq->used_wrap_count) {
+        if (avail != vq->used_wrap_count || used != vq->used_wrap_count) {
                 vq->driver_event.flags = RING_EVENT_FLAGS_ENABLE;
                 memory_barrier();
 
+                /*
+                 * Re-test in case the driver made more descriptors available in
+                 * parallel with the used descriptor processing (e.g. from another
+                 * thread) and/or the device used more descriptors before the driver
+                 * enabled events.
+                 */
                 flags = d->flags;
+                bool avail = flags & VIRTQ_DESC_F_AVAIL;
                 bool used = flags & VIRTQ_DESC_F_USED;
-                if (used != vq->used_wrap_count) {
+                if (avail != vq->used_wrap_count || used != vq->used_wrap_count) {
                         break;
                 }
 
