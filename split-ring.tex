@@ -466,6 +466,34 @@ that uninitialized memory has been overwritten when it has not.
 The driver MUST NOT make assumptions about data in device-writable buffers
 beyond the first \field{len} bytes, and SHOULD ignore this data.
 
+\subsection{In-order use of descriptors}
+\label{sec:Basic Facilities of a Virtio Device / Virtqueues / In-order use of descriptors}
+
+Some devices always use descriptors in the same order in which
+they have been made available. These devices can offer the
+VIRTIO_F_IN_ORDER feature. If negotiated, this knowledge allows
+devices to notify the use of a batch of buffers to the driver by
+only writing out a single used ring entry with the \field{id}
+corresponding to the head entry of the
+descriptor chain describing the last buffer in the batch.
+
+The device then skips forward in the ring according to the size of
+the batch. Accordingly, it increments the used \field{idx} by the
+size of the batch.
+
+The driver needs to look up the used \field{id} and
+calculate the batch size to be able to advance to where the next
+used ring entry will be written by the device.
+
+This will result in the used ring entry at an offset matching the
+first available ring entry in the batch, the used ring entry for
+the next batch at an offset matching the first available ring
+entry in the next batch, etc.
+
+The skipped buffers (for which no used ring entry was written)
+are assumed to have been used (read or written) by the
+device completely.
+
 \subsection{Available Buffer Notification Suppression}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Notification Suppression}
 
 The device can suppress available buffer notifications in a manner
