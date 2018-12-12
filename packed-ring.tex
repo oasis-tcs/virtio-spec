@@ -652,9 +652,7 @@ if (vq->device_event.flags != RING_EVENT_FLAGS_DISABLE) {
 \end{lstlisting}
 
 
-\drivernormative{\paragraph}{Sending Available Buffer Notifications}
-{Basic Facilities of a Virtio Device / Packed Virtqueues / Supplying
-Buffers to The Device / Sending Available Buffer Notifications}
+\drivernormative{\paragraph}{Sending Available Buffer Notifications} {Basic Facilities of a Virtio Device / Packed Virtqueues / Supplying Buffers to The Device / Sending Available Buffer Notifications}
 The driver MUST perform a suitable memory barrier before reading
 the Event Suppression structure occupying the Device Area. Failing
 to do so could result in mandatory available buffer notifications
