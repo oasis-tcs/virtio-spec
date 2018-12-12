@@ -26,8 +26,19 @@ while (<>) {
 	# As a result, number of \color directives goes does sufficiently
 	# enough to avoid the overflow error.
 
-	$line =~ s/\\DIFdelbegin \\DIFdel\{([^}]*)\}\\DIFdelend/\\DIFdeltext{$1}/;
-	$line =~ s/\\DIFaddbegin \\DIFadd\{([^}]*)\}\\DIFaddend/\\DIFaddtext{$1}/;
+	if ($line =~ m/\\drivernormative|\\devicenormative/) {
+		#3rd argument in normative statements is a label. Don't put it in diffs.
+		$line =~ s/(normative\{[^{]*\{[^{]*\{[^{\\]*)\\DIFdelbegin \\DIFdel\{([^}]*)\}\\DIFdelend/$1$2/;
+		$line =~ s/(normative\{[^{]*\{[^{]*\{[^{\\]*)\\DIFaddbegin \\DIFadd\{([^}]*)\}\\DIFaddend/$1$2/;
+		$line =~ s/(normative\{[^{]*\{[^{]*\{[^{\\]*)\\DIFdel\{([^}]*)\}/$1$2/;
+		$line =~ s/(normative\{[^{]*\{[^{]*\{[^{\\]*)\\DIFadd\{([^}]*)\}/$1$2/;
+	} elsif ($line =~ m/section|paragraph/) {
+		$line =~ s/\\DIFdelbegin \\DIFdel\{([^}]*)\}\\DIFdelend/\\DIFdel{$1}/;
+		$line =~ s/\\DIFaddbegin \\DIFadd\{([^}]*)\}\\DIFaddend/\\DIFadd{$1}/;
+	} else {
+		$line =~ s/\\DIFdelbegin \\DIFdel\{([^}]*)\}\\DIFdelend/\\DIFdeltext{$1}/;
+		$line =~ s/\\DIFaddbegin \\DIFadd\{([^}]*)\}\\DIFaddend/\\DIFaddtext{$1}/;
+	}
 
 	print $line;
 	if (m/%DIFDELCMD\s+<\s+\\end\{lstlisting\}/) {
