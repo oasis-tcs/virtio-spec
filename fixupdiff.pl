@@ -13,6 +13,8 @@ my @protected_labels = (
 'sec:General Initialization And Device Operation / Device Operation / Receiving Used Buffers From The Device',
 'sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Notifying The Device',
 'sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Virtqueue Interrupts From The Device',
+'itm:General Initialization And Device Operation / Device Operation / Supplying Buffers to The Device / Place Buffers',
+'itm:General Initialization And Device Operation / Device Operation / Supplying Buffers to The Device / Place Index',
 );
 my $lstlisting=0;
 
