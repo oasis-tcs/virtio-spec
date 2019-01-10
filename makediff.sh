@@ -20,6 +20,7 @@ while read -r rev; do
 	git cherry-pick --keep-redundant-commits --allow-empty `git rev-list -1 -F --grep "$rev" $newrev` || exit 1
 done << 'EOF'
 headerfile: rename virtio_ring to virtio queue
+edit: drop obsolete commands related to cs02
 EOF
 
 #mv specvars.tex specvars-orig.tex
