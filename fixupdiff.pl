@@ -17,18 +17,29 @@ my @protected_labels = (
 'itm:General Initialization And Device Operation / Device Operation / Supplying Buffers to The Device / Place Index',
 );
 my $lstlisting=0;
+my $add=undef;
 
 while (<>) {
 	my $line = $_;
 	if (m/%DIFDELCMD\s+<\s+\\begin\{lstlisting\}/) {
 		$lstlisting=1;
-		$line =~s/%DIFDELCMD\s+</{\\lstset{escapechar=\\\$} /;
+		$add=0;
+		$line =~s/(\\begin\{lstlisting\})/{\\lstset{escapechar=\\\$} $1/;
+	}
+	if (m/\\DIFaddbegin\s*\\begin\{lstlisting\}/) {
+		$lstlisting=1;
+		$add=1;
+		$line =~s/(\\begin\{lstlisting\})/{\\lstset{escapechar=\\\$} $1/;
 	}
 	if ($lstlisting) {
 		$line =~ s/%DIFDELCMD\s+< //;
 		if (not $line =~ m/\\(?:begin|end)\{lstlisting\}/) {
 			$line =~ s/([#&{} ])/\\$1/g;
-			$line =~ s/(.*)/\$\\DIFdel\{$1\}\$/;
+			if ($add) {
+				$line =~ s/(.*)/\$\\DIFdel\{$1\}\$/;
+			} else {
+				$line =~ s/(.*)/\$\\DIFadd\{$1\}\$/;
+			}
 		}
 		#print "%FIXED BY RULE 1\n";
 	}
@@ -73,8 +84,11 @@ while (<>) {
 	}
 
 	print $line;
-	if (m/%DIFDELCMD\s+<\s+\\end\{lstlisting\}/) {
-		print "}\n";
-		$lstlisting=0;
+	if ($lstlisting) {
+		if (m/\\end\{lstlisting\}/) {
+			print "}\n";
+			$lstlisting=0;
+			$add=undef;
+		}
 	}
 }
