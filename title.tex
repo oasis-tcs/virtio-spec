@@ -20,10 +20,7 @@
 \end{oasistitlesection}
 
 \begin{oasistitlesection}{Previous version}
-\url{http://docs.oasis-open.org/virtio/virtio/v1.0/cs04/tex/}
-{}(Authoritative)\newline
-\url{http://docs.oasis-open.org/virtio/virtio/v1.0/cs04/virtio-v1.0-cs04.pdf}\newline
-\url{http://docs.oasis-open.org/virtio/virtio/v1.0/cs04/virtio-v1.0-cs04.html}
+N/A
 \end{oasistitlesection}
 
 \begin{oasistitlesection}{Latest version}
@@ -35,7 +32,7 @@
 \href{https://www.oasis-open.org/committees/virtio/}{OASIS Virtual I/O Device (VIRTIO) TC}
 \end{oasistitlesection}
 
-\begin{oasistitlesection}{Chairs}
+\begin{oasistitlesection}{Chair}
 Michael S. Tsirkin (\href{mailto:mst@redhat.com}{mst@redhat.com}), \href{http://www.redhat.com/}{Red Hat}\newline
 \end{oasistitlesection}
 
@@ -57,6 +54,10 @@ This prose specification is one component of a Work Product that also includes:
 \begin{oasistitlesection}{Related work}
 This specification replaces or supersedes:
 \begin{itemize*}
+	\item Virtual I/O Device (VIRTIO) Version 1.0. Edited by Rusty Russell, Michael S. Tsirkin, Cornelia Huck, and Pawel
+ Moll. Latest version:\newline
+	\url{https://docs.oasis-open.org/virtio/virtio/v1.0/virtio-v1.0.html}
+	\url{http://ozlabs.org/~rusty/virtio-spec/virtio-0.9.5.pdf}
 	\item Virtio PCI Card Specification Version 0.9.5:\newline
 	\url{http://ozlabs.org/~rusty/virtio-spec/virtio-0.9.5.pdf}
 \end{itemize*}
@@ -94,11 +95,16 @@ should send comments to the Technical Committee by using the
 A Comment}'' button on the Technical Committee’s web page at
 \url{https://www.oasis-open.org/committees/virtio/}.
 
-For information on whether any patents have been disclosed that
-may be essential to implementing this specification, and any
-offers of patent licensing terms, please refer to the
-Intellectual Property Rights section of the Technical Committee
-web page (\url{https://www.oasis-open.org/committees/virtio/ipr.php}).
+\input{ipr.tex}
+
+Note that any machine-readable content
+(\href{https://www.oasis-open.org/policies-guidelines/tc-process#wpComponentsCompLang}
+{Computer Language Definitions}) declared Normative for this Work
+Product is provided in separate plain text files. In the event of
+a discrepancy between any such plain text file and display
+content in the Work Product's prose narrative document(s), the
+content in the separate plain text file prevails.
+
 \end{oasistitlesection}
 
 
@@ -106,8 +112,7 @@ web page (\url{https://www.oasis-open.org/committees/virtio/ipr.php}).
 When referencing this specification the following citation format should be used:\newline
 
 \textbf{[VIRTIO-v\virtiorev]}\newline
-\textit{\virtioversion}. Edited by Rusty Russell, Michael S.
-Tsirkin, Cornelia Huck, and Pawel Moll. \virtioworkingdraftdate.
+\textit{\virtioversion}. Edited by Michael S. Tsirkin and Cornelia Huck. \virtioworkingdraftdate.
 \virtiodraftoasisstagename \virtiodraftstageextra . \virtiourlhtml .
 Latest version: \virtiourllatesthtml .
 \end{oasistitlesection}
@@ -116,7 +121,7 @@ Latest version: \virtiourllatesthtml .
 
 \oasisnoticelabel{Notices}
 
-Copyright © OASIS Open 2015. All Rights Reserved.
+Copyright © OASIS Open 2018. All Rights Reserved.
 
 All capitalized terms in the following text have the meanings assigned
 to them in the OASIS Intellectual Property Rights Policy (the "OASIS
@@ -134,6 +139,8 @@ developing any document or deliverable produced by an OASIS Technical
 Committee (in which case the rules applicable to copyrights, as set
 forth in the OASIS IPR Policy, must be followed) or as required to
 translate it into languages other than English.
+
+\input{ipr.tex}
 
 The limited permissions granted above are perpetual and will not be
 revoked by OASIS or its successors or assigns.
