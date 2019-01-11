@@ -3,7 +3,6 @@
 %DIF FONTSTRIKE PREAMBLE
 \RequirePackage[normalem]{ulem}
 \definecolor{darkgreen}{RGB}{00,153,00}
-%\definecolor{darkgreen}{RGB}{00,204,00}
 
 \providecommand{\DIFadd}[1]{\protect\textcolor{darkgreen}{\sf #1}}
 \providecommand{\DIFdel}[1]{\protect\textcolor{red}{\footnotesize \sout{#1}}}
@@ -11,10 +10,10 @@
 
 %DIF COLOR PREAMBLE
 \RequirePackage{color}
-\providecommand{\DIFaddbegin}{\protect\color{darkgreen}\hypersetup{linkcolor=darkgreen,urlcolor=darkgreen}}
-\providecommand{\DIFaddend}{\protect\color{black}\hypersetup{linkcolor=blue,urlcolor=blue}}
-\providecommand{\DIFdelbegin}{\protect\color{red}\hypersetup{linkcolor=red,urlcolor=red}}
-\providecommand{\DIFdelend}{\protect\color{black}\hypersetup{linkcolor=blue,urlcolor=blue}}
+\providecommand{\DIFaddbegin}{}
+\providecommand{\DIFaddend}{}
+\providecommand{\DIFdelbegin}{}
+\providecommand{\DIFdelend}{}
 
 %DIF END COLOR PREAMBLE
 \providecommand{\DIFaddtext}[1]{\textcolor{darkgreen}{\sf #1}}
