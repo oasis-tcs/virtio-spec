@@ -3983,7 +3983,9 @@ struct virtio_blk_discard_write_zeroes {
 
 \field{sector} indicates the starting offset (in 512-byte units) of the
 segment, while \field{num_sectors} indicates the number of sectors in each
-discarded range. \field{unmap} is only used for write zeroes command.
+discarded range. \field{unmap} is only used in write zeroes commands and allows
+the device to discard the specified range, provided that following reads return
+zeroes.
 
 The final \field{status} byte is written by the device: either
 VIRTIO_BLK_S_OK for success, VIRTIO_BLK_S_IOERR for device or driver
