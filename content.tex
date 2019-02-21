@@ -4040,7 +4040,7 @@ sectors in the device backend storage.
 
 For write zeroes commands, if the \field{unmap} is set, the device MAY
 deallocate the specified range of sectors in the device backend storage,
-as if the DISCARD command had been sent.  After a write zeroes command
+as if the discard command had been sent.  After a write zeroes command
 is completed, reads of the specified ranges of sectors MUST return
 zeroes.  This is true independent of whether \field{unmap} was set or clear.
 
