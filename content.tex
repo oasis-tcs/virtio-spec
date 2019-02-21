@@ -3944,15 +3944,6 @@ struct virtio_blk_req {
         u8 data[];
         u8 status;
 };
-
-struct virtio_blk_discard_write_zeroes {
-       le64 sector;
-       le32 num_sectors;
-       struct {
-               le32 unmap:1;
-               le32 reserved:31;
-       } flags;
-};
 \end{lstlisting}
 
 The type of the request is either a read (VIRTIO_BLK_T_IN), a write
@@ -3977,10 +3968,22 @@ requests write the contents of \field{data} to the block device (in multiples
 of 512 bytes).
 
 The \field{data} used for discard or write zeroes command is described
-by one or more virtio_blk_discard_write_zeroes structs. \field{sector}
-indicates the starting offset (in 512-byte units) of the segment, while
-\field{num_sectors} indicates the number of sectors in each discarded
-range. \field{unmap} is only used for write zeroes command.
+by one or more virtio_blk_discard_write_zeroes structs:
+
+\begin{lstlisting}
+struct virtio_blk_discard_write_zeroes {
+       le64 sector;
+       le32 num_sectors;
+       struct {
+               le32 unmap:1;
+               le32 reserved:31;
+       } flags;
+};
+\end{lstlisting}
+
+\field{sector} indicates the starting offset (in 512-byte units) of the
+segment, while \field{num_sectors} indicates the number of sectors in each
+discarded range. \field{unmap} is only used for write zeroes command.
 
 The final \field{status} byte is written by the device: either
 VIRTIO_BLK_S_OK for success, VIRTIO_BLK_S_IOERR for device or driver
