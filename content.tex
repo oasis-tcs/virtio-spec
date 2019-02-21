@@ -3941,7 +3941,7 @@ struct virtio_blk_req {
         le32 type;
         le32 reserved;
         le64 sector;
-        u8 data[][512];
+        u8 data[];
         u8 status;
 };
 
@@ -3971,6 +3971,11 @@ The \field{sector} number indicates the offset (multiplied by 512) where
 the read or write is to occur. This field is unused and set to 0 for
 commands other than read or write.
 
+VIRTIO_BLK_T_IN requests populate \field{data} with the contents of sectors
+read from the block device (in multiples of 512 bytes).  VIRTIO_BLK_T_OUT
+requests write the contents of \field{data} to the block device (in multiples
+of 512 bytes).
+
 The \field{data} used for discard or write zeroes command is described
 by one or more virtio_blk_discard_write_zeroes structs. \field{sector}
 indicates the starting offset (in 512-byte units) of the segment, while
@@ -3996,6 +4001,13 @@ A driver SHOULD accept the VIRTIO_BLK_F_RO feature if offered.
 
 A driver MUST set \field{sector} to 0 for a VIRTIO_BLK_T_FLUSH request.
 A driver SHOULD NOT include any data in a VIRTIO_BLK_T_FLUSH request.
+
+The length of \field{data} MUST be a multiple of 512 bytes for VIRTIO_BLK_T_IN
+and VIRTIO_BLK_T_OUT requests.
+
+The length of \field{data} MUST be a multiple of the size of struct
+virtio_blk_discard_write_zeroes for VIRTIO_BLK_T_DISCARD and
+VIRTIO_BLK_T_WRITE_ZEROES requests.
 
 If the VIRTIO_BLK_F_CONFIG_WCE feature is negotiated, the driver MAY
 switch to writethrough or writeback mode by writing respectively 0 and
