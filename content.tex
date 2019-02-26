@@ -3967,8 +3967,10 @@ read from the block device (in multiples of 512 bytes).  VIRTIO_BLK_T_OUT
 requests write the contents of \field{data} to the block device (in multiples
 of 512 bytes).
 
-The \field{data} used for discard or write zeroes command is described
-by one or more virtio_blk_discard_write_zeroes structs:
+The \field{data} used for discard or write zeroes commands consists of one or
+more segments.  The maximum number of segments is \field{max_discard_seg} for
+discard commands and \field{max_write_zeroes_seg} for write zeroes commands.
+Each segment is of form:
 
 \begin{lstlisting}
 struct virtio_blk_discard_write_zeroes {
@@ -3997,6 +3999,10 @@ error or VIRTIO_BLK_S_UNSUPP for a request unsupported by device:
 #define VIRTIO_BLK_S_UNSUPP    2
 \end{lstlisting}
 
+The status of individual segments is indeterminate when a discard or write zero
+command produces VIRTIO_BLK_S_IOERR.  A segment may have completed
+successfully, failed, or not been processed by the device.
+
 \drivernormative{\subsubsection}{Device Operation}{Device Types / Block Device / Device Operation}
 
 A driver MUST NOT submit a request which would cause a read or write
@@ -4014,6 +4020,14 @@ The length of \field{data} MUST be a multiple of the size of struct
 virtio_blk_discard_write_zeroes for VIRTIO_BLK_T_DISCARD and
 VIRTIO_BLK_T_WRITE_ZEROES requests.
 
+VIRTIO_BLK_T_DISCARD requests MUST NOT contain more than
+\field{max_discard_seg} struct virtio_blk_discard_write_zeroes segments in
+\field{data}.
+
+VIRTIO_BLK_T_WRITE_ZEROES requests MUST NOT contain more than
+\field{max_write_zeroes_seg} struct virtio_blk_discard_write_zeroes segments in
+\field{data}.
+
 If the VIRTIO_BLK_F_CONFIG_WCE feature is negotiated, the driver MAY
 switch to writethrough or writeback mode by writing respectively 0 and
 1 to the \field{writeback} field.  After writing a 0 to \field{writeback},
@@ -4023,6 +4037,11 @@ to persistent device backend storage.
 The \field{unmap} bit MUST be zero for discard commands.  The driver
 MUST NOT assume anything about the data returned by read requests after
 a range of sectors has been discarded.
+
+A driver MUST NOT assume that individual segments in a multi-segment
+VIRTIO_BLK_T_DISCARD or VIRTIO_BLK_T_WRITE_ZEROES request completed
+successfully, failed, or were processed by the device at all if the request
+failed with VIRTIO_BLK_S_IOERR.
 
 \devicenormative{\subsubsection}{Device Operation}{Device Types / Block Device / Device Operation}
 
