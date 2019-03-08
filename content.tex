@@ -277,15 +277,15 @@ virtqueues\footnote{For example, the simplest network device has one virtqueue f
 transmit and one for receive.}.
 
 Driver makes requests available to device by adding
-an available buffer to the queue - i.e. adding a buffer
+an available buffer to the queue, i.e., adding a buffer
 describing the request to a virtqueue, and optionally triggering
-a driver event - i.e. sending an available buffer notification
+a driver event, i.e., sending an available buffer notification
 to the device.
 
 Device executes the requests and - when complete - adds
-a used buffer to the queue - i.e. lets the driver
+a used buffer to the queue, i.e., lets the driver
 know by marking the buffer as used. Device can then trigger
-a device event - i.e. send a used buffer notification to the driver.
+a device event, i.e., send a used buffer notification to the driver.
 
 Device reports the number of bytes it has written to memory for
 each buffer it uses. This is referred to as ``used length''.
@@ -489,8 +489,8 @@ of a device are live once the device has been reset.
 
 \drivernormative{\subsection}{Device Cleanup}{General Initialization And Device Operation / Device Cleanup}
 
-A driver MUST NOT alter virtqueue entries for exposed buffers -
-i.e. buffers which have been
+A driver MUST NOT alter virtqueue entries for exposed buffers,
+i.e., buffers which have been
 made available to the device (and not been used by the device)
 of a live virtqueue.
 
