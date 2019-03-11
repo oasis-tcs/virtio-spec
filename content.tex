@@ -5272,8 +5272,7 @@ The following commands are defined:
 #define VIRTIO_SCSI_T_TMF_QUERY_TASK           6
 #define VIRTIO_SCSI_T_TMF_QUERY_TASK_SET       7
 
-struct virtio_scsi_ctrl_tmf
-{
+struct virtio_scsi_ctrl_tmf {
         // Device-readable part
         le32 type;
         le32 subtype;
@@ -5281,7 +5280,7 @@ struct virtio_scsi_ctrl_tmf
         le64 id;
         // Device-writable part
         u8   response;
-}
+};
 
 /* command-specific response values */
 #define VIRTIO_SCSI_S_FUNCTION_COMPLETE        0
@@ -5328,7 +5327,7 @@ struct virtio_scsi_ctrl_an {
     // Device-writable part
     le32 event_actual;
     u8   response;
-}
+};
 
 #define VIRTIO_SCSI_EVT_ASYNC_OPERATIONAL_CHANGE  2
 #define VIRTIO_SCSI_EVT_ASYNC_POWER_MGMT          4
@@ -5363,7 +5362,7 @@ struct virtio_scsi_ctrl_an {
         // Device-writable part
         le32 event_actual;
         u8   response;
-}
+};
 \end{lstlisting}
 
   By sending this command, the driver asks the specified LUN to
@@ -5415,7 +5414,7 @@ struct virtio_scsi_event {
         le32 event;
         u8  lun[8];
         le32 reason;
-}
+};
 \end{lstlisting}
 
 The devices sets bit 31 in \field{event} to report lost events
