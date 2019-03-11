@@ -292,6 +292,8 @@ layout is valid.
 
 \subsection{The Virtqueue Available Ring}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Available Ring}
 
+The available ring has the following layout structure:
+
 \begin{lstlisting}
 struct virtq_avail {
 #define VIRTQ_AVAIL_F_NO_INTERRUPT      1
@@ -384,6 +386,8 @@ For example, if \field{used_event} is 0, then a device using
 \end{note}
 
 \subsection{The Virtqueue Used Ring}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Used Ring}
+
+The used ring has the following layout structure:
 
 \begin{lstlisting}
 struct virtq_used {

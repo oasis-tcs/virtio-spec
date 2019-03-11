@@ -39,6 +39,9 @@ control queue.
 
 \subsection{Device configuration layout}\label{sec:Device Types / GPU Device / Device configuration layout}
 
+GPU device configuration uses the following layout structure and
+definitions:
+
 \begin{lstlisting}
 #define VIRTIO_GPU_EVENT_DISPLAY (1 << 0)
 
@@ -160,6 +163,9 @@ the shape use VIRTIO_GPU_CMD_MOVE_CURSOR instead.
 
 \subsubsection{Device Operation: Request header}\label{sec:Device Types / GPU Device / Device Operation / Device Operation: Request header}
 
+All requests and responses on the virt queues have a fixed header
+using the following layout structure and definitions:
+
 \begin{lstlisting}
 enum virtio_gpu_ctrl_type {
 
@@ -207,8 +213,8 @@ struct virtio_gpu_ctrl_hdr {
 };
 \end{lstlisting}
 
-All requests and responses on the virt queues have the fixed header
-\field{struct virtio_gpu_ctrl_hdr}.
+The fixed header \field{struct virtio_gpu_ctrl_hdr} in each
+request includes the following fields:
 
 \begin{description}
 \item[\field{type}] specifies the type of the driver request
