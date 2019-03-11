@@ -10,4 +10,9 @@
 % Mark a normative section (driver or device)
 \newcommand{\drivernormative}[3]{#1{Driver Requirements: #2}\label{drivernormative:#3}}
 \newcommand{\devicenormative}[3]{#1{Device Requirements: #2}\label{devicenormative:#3}}
+\newcounter{clausecounter}
+\newcommand{\conformance}[2]{
+	\stepcounter{clausecounter}
+	#1{Clause \theclausecounter: #2}
+}
 \newenvironment{DIFnomarkup}{}{}
