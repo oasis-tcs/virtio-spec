@@ -4236,9 +4236,7 @@ negotiated VIRTIO_F_ANY_LAYOUT:
   for \field{status}.
 
 \item For SCSI commands there are additional constraints.
-  \field{errors}, \field{data_len}, \field{sense_len} and
-  \field{residual} MUST reside in a single, separate
-  device-writable descriptor, \field{sense} MUST reside in a
+  \field{sense} MUST reside in a
   single separate device-writable descriptor of size 96 bytes,
   and \field{errors}, \field{data_len}, \field{sense_len} and
   \field{residual} MUST reside a single separate
