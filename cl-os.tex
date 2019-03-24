@@ -1,4 +1,4 @@
-5c43ad7 & 27 Feb 2019 & Halil Pasic & { ccw: be more precise about the semantic of revision 1
+5c43ad7 & 27 Feb 2019 & Halil Pasic & {ccw: be more precise about the semantic of revision 1
 
 
 Revision 1 of the CCW transport is currently defined as virtio 1.0. This
@@ -21,7 +21,7 @@ See \ref{sec:Virtio Transport Options / Virtio over channel I/O / Device Initial
 
  } \\
 \hline
-d348ac0 & 27 Feb 2019 & Halil Pasic & { introduction: simplify the designation of legacy
+d348ac0 & 27 Feb 2019 & Halil Pasic & {introduction: simplify the designation of legacy
 
 
 The sentence designating the documents defining what later
@@ -43,7 +43,7 @@ Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 See \ref{intro:Legacy Interface: Terminology}.
  } \\
 \hline
-bef3ff7 & 07 Mar 2019 & Stefan Hajnoczi & { virtio-blk: document data[] size constraints
+bef3ff7 & 07 Mar 2019 & Stefan Hajnoczi & {virtio-blk: document data[] size constraints
 
 
 The struct virtio_blk_req->data[] field is a multiple of 512 bytes long
@@ -80,7 +80,7 @@ Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 See \ref{sec:Device Types / Block Device / Device Operation}.
  } \\
 \hline
-c5c0ce7 & 07 Mar 2019 & Stefan Hajnoczi & { virtio-blk: move virtio_blk_discard_write_zeroes definition
+c5c0ce7 & 07 Mar 2019 & Stefan Hajnoczi & {virtio-blk: move virtio_blk_discard_write_zeroes definition
 
 
 struct virtio_blk_discard_write_zeroes is defined alongside
@@ -98,7 +98,7 @@ Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 See \ref{sec:Device Types / Block Device / Device Operation}.
  } \\
 \hline
-caffe5c & 07 Mar 2019 & Stefan Hajnoczi & { virtio-blk: describe write zeroes unmap semantics
+caffe5c & 07 Mar 2019 & Stefan Hajnoczi & {virtio-blk: describe write zeroes unmap semantics
 
 
 Explain the meaning of the unmap flag.  The details are already covered
@@ -116,7 +116,7 @@ Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 See \ref{sec:Device Types / Block Device / Device Operation}.
  } \\
 \hline
-5f1e981 & 07 Mar 2019 & Stefan Hajnoczi & { virtio-blk: avoid inconsistent "DISCARD" term
+5f1e981 & 07 Mar 2019 & Stefan Hajnoczi & {virtio-blk: avoid inconsistent "DISCARD" term
 
 
 "discard" (lowercase) is used throughout the text.  Remove a lone
@@ -133,7 +133,7 @@ Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 See \ref{sec:Device Types / Block Device / Device Operation}.
  } \\
 \hline
-31a52d2 & 07 Mar 2019 & Stefan Hajnoczi & { virtio-blk: clarify semantics of multi-segment discard/write zeroes commands
+31a52d2 & 07 Mar 2019 & Stefan Hajnoczi & {virtio-blk: clarify semantics of multi-segment discard/write zeroes commands
 
 
 Describe the failure case and maximum number of segments in a
@@ -148,7 +148,7 @@ Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 See \ref{drivernormative:Device Types / Block Device / Device Operation}.
  } \\
 \hline
-90047f5 & 21 Mar 2019 & Michael S. Tsirkin & { format: replace "- i.e." with ", i.e.,"
+90047f5 & 21 Mar 2019 & Michael S. Tsirkin & {format: replace "- i.e." with ", i.e.,"
 
 
 This seems to be preferred by native speakers, and
@@ -160,7 +160,7 @@ Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
 
  } \\
 \hline
-c7b2503 & 21 Mar 2019 & Michael S. Tsirkin & { conformance: add links to crypto and input devices
+c7b2503 & 21 Mar 2019 & Michael S. Tsirkin & {conformance: add links to crypto and input devices
 
 
 Fixes: \url{https://issues.oasis-open.org/browse/VIRTIO-174}
@@ -172,7 +172,7 @@ Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
 See \ref{sec:Conformance / Conformance Targets}.
  } \\
 \hline
-0b5288f & 21 Mar 2019 & Michael S. Tsirkin & { signal start and end of structures consistently
+0b5288f & 21 Mar 2019 & Michael S. Tsirkin & {signal start and end of structures consistently
 
 
 Make sure all structs have the format:
@@ -190,7 +190,7 @@ Reviewed-by: Cornelia Huck <cohuck@redhat.com>
 See \ref{sec:Device Types / SCSI Host Device / Device Operation / Device Operation: controlq}.
  } \\
 \hline
-69daf06 & 21 Mar 2019 & Michael S. Tsirkin & { editorial: explain each structure before use
+69daf06 & 21 Mar 2019 & Michael S. Tsirkin & {editorial: explain each structure before use
 
 Several structures are listed before they are
 introduced in some way. Add a sentence before each one
@@ -210,7 +210,7 @@ See \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueu
 \ref{sec:Device Types / Socket Device / Device configuration layout}.
  } \\
 \hline
-d608f47 & 21 Mar 2019 & Michael S. Tsirkin & { conformance: tweak to match OASIS requirements
+d608f47 & 21 Mar 2019 & Michael S. Tsirkin & {conformance: tweak to match OASIS requirements
 
 
 Number clauses as required by OASIS.
@@ -228,7 +228,7 @@ Reviewed-by: Cornelia Huck <cohuck@redhat.com>
 See \ref{sec:Conformance}.
  } \\
 \hline
-0dbd52d & 21 Mar 2019 & Michael S. Tsirkin & { introduction: update link to IEEE 802
+0dbd52d & 21 Mar 2019 & Michael S. Tsirkin & {introduction: update link to IEEE 802
 
 
 Looks like all GETIEEE links got broken.
@@ -245,7 +245,7 @@ Reviewed-by: Jens Freimann <jfreimann@redhat.com>
 See \ref{sec:Normative References}.
  } \\
 \hline
-7b361ea & 21 Mar 2019 & Michael S. Tsirkin & { editorial: upgrade links to https
+7b361ea & 21 Mar 2019 & Michael S. Tsirkin & {editorial: upgrade links to https
 
 
 Several links have been upgraded and now redirect to the https
@@ -266,7 +266,7 @@ Reviewed-by: Jens Freimann <jfreimann@redhat.com>
 See \ref{sec:Chair}.
  } \\
 \hline
-3e49aec & 21 Mar 2019 & Michael S. Tsirkin & { conformance: fix confusion about legacy interface
+3e49aec & 21 Mar 2019 & Michael S. Tsirkin & {conformance: fix confusion about legacy interface
 
 
 The text describing the legacy interface also obliquely refers to a
@@ -291,7 +291,7 @@ Acked-by: Halil Pasic <pasic@linux.ibm.com>
 See \ref{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}.
  } \\
 \hline
-4cc8a4d & 21 Mar 2019 & Michael S. Tsirkin & { block: drop duplicate text
+4cc8a4d & 21 Mar 2019 & Michael S. Tsirkin & {block: drop duplicate text
 
 
 In version 1.1 draft 01 - Section 5.2.6.4 - second bullet:
