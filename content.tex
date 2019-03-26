@@ -808,7 +808,7 @@ struct virtio_pci_common_cfg {
         le32 device_feature;            /* read-only for driver */
         le32 driver_feature_select;     /* read-write */
         le32 driver_feature;            /* read-write */
-        le16 msix_config;               /* read-write */
+        le16 config_msix_vector;        /* read-write */
         le16 num_queues;                /* read-only for driver */
         u8 device_status;               /* read-write */
         u8 config_generation;           /* read-only for driver */
