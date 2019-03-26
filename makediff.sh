@@ -2,6 +2,7 @@
 #this way they don't appear in the diff
 export SPECDOC=${SPECDOC:-`cat REVISION`}
 export DATESTR=${DATESTR:-`cat REVISION-DATE`}
+export FROMVERSION=${FROMVERSION:-`cat DIFFVERSION`}
 
 #make pdf diff using latexpand and latexdiff-fast
 #preamble in diffpreamble.tex
@@ -9,7 +10,7 @@ export DATESTR=${DATESTR:-`cat REVISION-DATE`}
 MAIN=$1
 PATH=.:${PATH}
 cur="$PWD"
-oldrev=`git rev-list -1 tags/v1.0-cs04`
+oldrev=`git rev-list -1 tags/${FROMVERSION}`
 newrev=`git rev-list -1 HEAD`
 rm -fr old new
 git clone $PWD old

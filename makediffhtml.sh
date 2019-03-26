@@ -3,7 +3,8 @@
 ./makediff.sh virtio-html.tex || exit 3
 
 SPECDOC=${SPECDOC:-`cat REVISION`}
-SPECDOC="${SPECDOC}-diff"
+FROMVERSION=${FROMVERSION:-`cat DIFFVERSION`}
+SPECDOC="${SPECDOC}-diff-from-${FROMVERSION}"
 
 ./make-setup-generated.sh "$SPECDOC"
 

@@ -1,11 +1,12 @@
 export SPECDOC=${SPECDOC:-`cat REVISION`}
 export DATESTR=${DATESTR:-`cat REVISION-DATE`}
+export FROMVERSION=${FROMVERSION:-`cat DIFFVERSION`}
 ./makezip.sh
-./makehtml.sh
+mv -f $SPECDOC.zip $SPECDOC-diff-from-${FROMVERSION}.pdf
 ./makediffhtml.sh
-./makepdf.sh
 ./makediffpdf.sh
-zip $SPECDOC.zip $SPECDOC.pdf $SPECDOC-diff.html $SPECDOC-diff.css $SPECDOC-diff.pdf
+zip $SPECDOC-diff-from-${FROMVERSION}.zip \
+	$SPECDOC-diff-from-${FROMVERSION}.pdf
 echo Generated file $SPECDOC.zip
 echo To change output file name, set SPECDOC environment variable
 echo Examples:
