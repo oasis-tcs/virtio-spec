@@ -569,9 +569,9 @@ the device.
 \begin{note} As an
 example, the simplest virtio network device has two virtqueues: the
 transmit virtqueue and the receive virtqueue. The driver adds
-outgoing (device-readable) packets to the transmit virtqueue, and then
-frees them after they are used. Similarly, incoming (device-writable)
-buffers are added to the receive virtqueue, and processed after
+outgoing packets as device-readable buffers to the transmit virtqueue, and then
+frees them after they are used. Similarly, device-writable buffers for incoming 
+packets are added to the receive virtqueue, and processed after
 they are used.
 \end{note}
 
