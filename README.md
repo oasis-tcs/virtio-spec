@@ -30,11 +30,40 @@
 
 <h3>Further Description of this Repository</h3>
 <h4>Providing Feedback</h4>
+Feedback must be provided the <strong>virtio-comment</strong> mailing list,
+and archived in the mailing list archives.
 <p>See <A
 HREF="https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=virtio#feedback">
 https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=virtio#feedback</A>
-<h4>Note for Contributors</h4>
-<p>Contributors should review TC specific
+<p>Note that only plain text part of the message is archived, and all
+attachments are stripped. Accordingly, messages sent to the
+mailing list should use text/plain encoding and not
+have any attachments.
+<p>The preferred form of providing feedback is in form of a patch.
+A patch can be generated and sent by cloning the spec repository,
+creating a commit, formatting it as a patch and then sending it.
+For example:
+<code>
+<p>
+git clone https://github.com/oasis-tcs/virtio-spec.git<br>
+... edit spec text, and save ...<br>
+<p>
+git commit -a<br>
+... describe the proposed change, in the following format:<br>
+single line summary<br>
+<br>
+detailed description, including motivation for the change<br>
+<br>
+Signed-off-by: Name &lt;email&gt;<br>
+... then save and close the editor ... <br>
+<p>
+git format-patch -o proposal1/ HEAD~1..<br>
+... generates a new directory proposal1/ and a file starting with 0001- ...<br>
+<p>
+git send-email --to=virtio-comment@lists.oasis-open.org proposal1/0001-*
+</code>
+<h4>Note for TC Members</h4>
+<p>TC Members should review TC specific
 process rules under "Further Description of this Repository"
 in <A
 HREF="https://github.com/oasis-tcs/virtio-admin">https://github.com/oasis-tcs/virtio-admin</A>.
