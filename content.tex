@@ -746,6 +746,23 @@ The fields are interpreted as follows:
         \end{note}
 \end{description}
 
+A variant of this type, struct virtio_pci_cap64, is defined for
+those capaibilites that require offsets or lengths larger than
+4GiB:
+
+\begin{lstlisting}
+struct virtio_pci_cap64 {
+        struct virtio_pci_cap cap;
+        u32 offset_hi;
+        u32 length_hi;
+};
+\end{lstlisting}
+
+Given that the \field{cap.length} and \field{cap.offset} fields
+are only 32 bit, the additional \field{offset_hi} and \field {length_hi}
+fields provide the most significant 32 bits of a total 64 bit offset and
+length within the bar specified by \field{cap.bar}.
+
 \drivernormative{\subsubsection}{Virtio Structure PCI Capabilities}{Virtio Transport Options / Virtio Over PCI Bus / Virtio Structure PCI Capabilities}
 
 The driver MUST ignore any vendor-specific capability structure which has
