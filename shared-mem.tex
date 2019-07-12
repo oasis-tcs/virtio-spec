@@ -1,0 +1,42 @@
+\section{Shared Memory Regions}\label{sec:Basic Facilities of a Virtio Device / Shared Memory Regions}
+
+Shared memory regions are an additional facility
+available to devices that need a region of memory that's
+continuously shared between the device and the driver, rather
+than passed between them in the way virtqueue elements are.
+
+Example uses include shared caches and version pools for versioned
+data structures.
+
+The memory region is allocated by the device and presented to the
+driver.  Where the device is implemented in software on a host,
+this arrangement allows the memory region to be allocated by
+a library on the host, which the device may not have full control
+over.
+
+A device may have multiple shared memory regions associated with
+it.  Each region has a \field{shmid} to identify it, the meaning
+of which is device-specific.
+
+Enumeration and location of shared memory regions is performed
+in a transport-specific way.
+
+Memory consistency rules vary depending on the region and the
+device and they will be specified as required by each device.
+
+\subsection{Addressing within regions}\label{sec:Basic Facilities of a Virtio Device / Shared Memory Regions / Addressing within regions }
+
+References into shared memory regions are represented as offsets from
+the beginning of the region instead of absolute memory addresses.
+Offsets are used both for references between structures stored
+within shared memory and for requests placed in virtqueues that
+refer to shared memory.
+The \field{shmid} may be explicit or may be inferred from the
+context of the reference.
+
+\devicenormative{\subsection}{Shared Memory Regions}{Basic Facilities of a Virtio
+Device / Shared Memory Regions}
+Shared memory regions MUST NOT expose shared memory regions which
+are used to control the operation of the device, nor to stream
+data.
+
