@@ -651,7 +651,8 @@ struct virtio_pci_cap {
         u8 cap_len;     /* Generic PCI field: capability length */
         u8 cfg_type;    /* Identifies the structure. */
         u8 bar;         /* Where to find it. */
-        u8 padding[3];  /* Pad to full dword. */
+        u8 id;          /* Multiple capabilities of the same type */
+        u8 padding[2];  /* Pad to full dword. */
         le32 offset;    /* Offset within bar. */
         le32 length;    /* Length of the structure, in bytes. */
 };
@@ -697,7 +698,8 @@ The fields are interpreted as follows:
         The device MAY offer more than one structure of any type - this makes it
         possible for the device to expose multiple interfaces to drivers.  The order of
         the capabilities in the capability list specifies the order of preference
-        suggested by the device.
+        suggested by the device.  A device may specify that this ordering mechanism be
+        overridden by the use of the \field{id} field.
         \begin{note}
           For example, on some hypervisors, notifications using IO accesses are
         faster than memory accesses. In this case, the device would expose two
@@ -715,6 +717,12 @@ The fields are interpreted as follows:
         or I/O Space.
 
         Any other value is reserved for future use.
+
+\item[\field{id}]
+        Used by some device types to uniquely identify multiple capabilities
+        of a certain type. If the device type does not specify the meaning of
+        this field, its contents are undefined.
+
 
 \item[\field{offset}]
         indicates where the structure begins relative to the base address associated
