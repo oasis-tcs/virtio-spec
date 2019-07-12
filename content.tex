@@ -689,6 +689,8 @@ The fields are interpreted as follows:
 #define VIRTIO_PCI_CAP_DEVICE_CFG        4
 /* PCI configuration access */
 #define VIRTIO_PCI_CAP_PCI_CFG           5
+/* Shared memory region */
+#define VIRTIO_PCI_CAP_SHARED_MEMORY_CFG 8
 \end{lstlisting}
 
         Any other value is reserved for future use.
@@ -1076,6 +1078,26 @@ any device type which has a device-specific configuration.
 \devicenormative{\paragraph}{Device-specific configuration}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Device-specific configuration}
 
 The \field{offset} for the device-specific configuration MUST be 4-byte aligned.
+
+\subsubsection{Shared memory capability}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Shared memory capability}
+
+Shared memory regions \ref{sec:Basic Facilities of a Virtio
+Device / Shared Memory Regions} are enumerated on the PCI transport
+as a sequence of VIRTIO_PCI_CAP_SHARED_MEMORY_CFG capabilities, one per region.
+
+The capability is defined by a struct virtio_pci_cap64 and
+utilises the \field{cap.id} to allow multiple shared memory
+regions per device.
+The identifier in \field{cap.id} does not denote a certain order of
+preference; it is only used to uniquely identify a region.
+
+\devicenormative{\paragraph}{Device-specific configuration}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Shared memory capability}
+
+The region defined by the combination of the \field {cap.offset},
+\field {cap.offset_hi}, and \field {cap.length}, \field
+{cap.length_hi} fields MUST be contained within the declared bar.
+
+The \field{cap.id} MUST be unique for any one device instance.
 
 \subsubsection{PCI configuration access capability}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / PCI configuration access capability}
 
