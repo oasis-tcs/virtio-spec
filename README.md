@@ -69,6 +69,33 @@ in <A
 HREF="https://github.com/oasis-tcs/virtio-admin">https://github.com/oasis-tcs/virtio-admin</A>.
 
 </div>
+<h4>Use of github issues</h4>
+Note: according to the virtio TC rules, all official TC communication
+is taking place on one of the TC mailing lists.
+In particular, all comments must be provided on
+one of the TC mailing lists. Accordingly, the TC will not respond
+to comments provided in github issues: github issues are
+used solely to track integration of comments into the
+specification.<p>
+To request a TC vote on resolving a specific comment:
+<ol>
+<li>Create a github issue, or edit an existing issue, with
+a short summary of the comment.
+The issue MUST specify
+the link to the latest proposal in the TC mailing list
+archives. <em>Note:</em> the link MUST be in the issue description itself -
+<em>not</em> in the comments.</li>
+<li>Reply by email to the comment email, requesting that the TC vote
+on resolving the issue.
+The mail requesting the vote should include the following, on a line by itself:<br>
+<code>
+Fixes: https://github.com/oasis-tcs/virtio-spec/issues/NNN
+</code>
+(NNN is the issue number)</li>
+<li>Please make sure to allow time for review between posting a comment
+and asking for a vote. </li>
+</ol>
+
 <h3>Contact</h3>
 <p>Please send questions or comments about <a href="https://www.oasis-open.org/resources/tcadmin/github-repositories-for-oasis-tc-members-chartered-work">OASIS TC GitHub repositories</a> to <a href="mailto:robin@oasis-open.org">Robin Cover</a> and <a href="mailto:chet.ensign@oasis-open.org">Chet Ensign</a>.  For questions about content in this repository, please contact the TC Chair or Co-Chairs as listed on the the virtio TC's <a href="https://www.oasis-open.org/committees/virtio/">home page</a>.</p>
 </div>
