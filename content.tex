@@ -1742,7 +1742,7 @@ All register values are organized as Little Endian.
     \field{SHMBaseLow} and \field{SHMBaseHigh} apply to.
   }
   \hline 
-  \mmiodreg{SHMLenLow}{SHMLenHigh}{Shared memory region 64 bit long length}{0x0b0}{0x0xb4}{R}{%
+  \mmiodreg{SHMLenLow}{SHMLenHigh}{Shared memory region 64 bit long length}{0x0b0}{0x0b4}{R}{%
     These registers return the length of the shared memory
     region in bytes, as defined by the device for the region selected by
     the \field{SHMSel} register.  The lower 32 bits of the length
@@ -1752,7 +1752,7 @@ All register values are organized as Little Endian.
     results in a length of -1.
   }
   \hline 
-  \mmiodreg{SHMBaseLow}{SHMBaseHigh}{Shared memory region 64 bit long physical address}{0x0b8}{0x0xbc}{R}{%
+  \mmiodreg{SHMBaseLow}{SHMBaseHigh}{Shared memory region 64 bit long physical address}{0x0b8}{0x0bc}{R}{%
     The driver reads these registers to discover the base address
     of the region in physical address space.  This address is
     chosen by the device (or other part of the VMM).
