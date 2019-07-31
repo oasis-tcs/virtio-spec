@@ -3609,6 +3609,11 @@ of \field{mac} in the config space.
 If the driver negotiates the VIRTIO_NET_F_CTRL_VLAN feature, it
 can control a VLAN filter table in the device.
 
+\begin{note}
+Similar to the MAC address based filtering, the VLAN filtering
+is also best-effort: unwanted packets could still arrive.
+\end{note}
+
 \begin{lstlisting}
 #define VIRTIO_NET_CTRL_VLAN       2
  #define VIRTIO_NET_CTRL_VLAN_ADD             0
