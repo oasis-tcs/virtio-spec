@@ -29,6 +29,34 @@
 <div>
 
 <h3>Further Description of this Repository</h3>
+<h4>Building Instructions</h4>
+<p>In order to build the spec you will need <a href="https://www.tug.org/texlive/">Tex-Live</a>.
+Installing it can be done via:<br>
+Fedora:
+<code>
+sudo dnf install texlive-scheme-full
+</code><br>
+Ubuntu:
+<code>
+sudo apt-get install texlive-full
+</code><br></p>
+<p>OSX users don't need to install Tex-Live because they already have
+<a href="http://www.tug.org/mactex/">MacTex</a> installed.
+
+<p>The building proccess is done with
+<code>
+./makeall.sh
+</code>
+and it contains 3 main parts:
+<code>
+makezip.sh
+</code>,
+<code>
+makehtml.sh
+</code>,
+<code>
+makepdf.sh
+</code>.
 <h4>Providing Feedback</h4>
 Feedback must be provided the <strong>virtio-comment</strong> mailing list,
 and archived in the mailing list archives.
