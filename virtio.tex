@@ -52,9 +52,9 @@
 %\def_{\_}
 % Don't hyphenate acronyms
 %\uchyph=0
-\setmainfont[Mapping=tex-text]{Arial}
+\IfFontExistsTF{Arial}{\setmainfont[Mapping=tex-text]{Arial}}{\setmainfont[Mapping=tex-text]{Liberation Sans}}
 %\setromanfont{Arial}
-\setmonofont{Courier New}
+\IfFontExistsTF{Courier New}{\setmonofont{Courier New}}{\setmonofont{Liberation Mono}}
 
 \urlstyle{rm}
 
