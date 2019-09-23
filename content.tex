@@ -3822,7 +3822,7 @@ Facilities of a Virtio Device / Virtqueues / Message Framing}.
 
 The virtio block device is a simple virtual block device (ie.
 disk). Read and write requests (and other exotic requests) are
-placed in the queue, and serviced (probably out of order) by the
+placed in one of its queues, and serviced (probably out of order) by the
 device except where noted.
 
 \subsection{Device ID}\label{sec:Device Types / Block Device / Device ID}
@@ -3830,8 +3830,13 @@ device except where noted.
 
 \subsection{Virtqueues}\label{sec:Device Types / Block Device / Virtqueues}
 \begin{description}
-\item[0] requestq
+\item[0] requestq1
+\item[\ldots]
+\item[N] requestqN
 \end{description}
+
+ N=1 if VIRTIO_BLK_F_MQ is not negotiated, otherwise N is set by
+ \field{num_queues}.
 
 \subsection{Feature bits}\label{sec:Device Types / Block Device / Feature bits}
 
@@ -3856,6 +3861,8 @@ device except where noted.
 
 \item[VIRTIO_BLK_F_CONFIG_WCE (11)] Device can toggle its cache between writeback
     and writethrough modes.
+
+\item[VIRTIO_BLK_F_MQ (12)] Device supports multiqueue.
 
 \item[VIRTIO_BLK_F_DISCARD (13)] Device can support discard command, maximum
     discard sectors size in \field{max_discard_sectors} and maximum discard
@@ -3885,6 +3892,9 @@ The \field{capacity} of the device (expressed in 512-byte sectors) is always
 present. The availability of the others all depend on various feature
 bits as indicated above.
 
+The field \field{num_queues} only exists if VIRTIO_BLK_F_MQ is set. This field specifies
+the number of queues.
+
 The parameters in the configuration space of the device \field{max_discard_sectors}
 \field{discard_sector_alignment} are expressed in 512-byte units if the
 VIRTIO_BLK_F_DISCARD feature bit is negotiated. The \field{max_write_zeroes_sectors}
@@ -3913,7 +3923,8 @@ struct virtio_blk_config {
                 le32 opt_io_size;
         } topology;
         u8 writeback;
-        u8 unused0[3];
+        u8 unused0;
+        u16 num_queues;
         le32 max_discard_sectors;
         le32 max_discard_seg;
         le32 discard_sector_alignment;
@@ -3973,6 +3984,10 @@ according to the native endian of the guest rather than
     \field{max_write_zeroes_sectors} and \field{max_write_zeroes_seg} can
     be read to determine the maximum write zeroes sectors and maximum
     number of write zeroes segments for the block driver to use.
+
+\item If the VIRTIO_BLK_F_MQ feature is negotiated, \field{num_queues} field
+    can be read to determine the number of queues.
+
 \end{enumerate}
 
 \drivernormative{\subsubsection}{Device Initialization}{Device Types / Block Device / Device Initialization}
@@ -4024,7 +4039,7 @@ legacy interface:
 
 \subsection{Device Operation}\label{sec:Device Types / Block Device / Device Operation}
 
-The driver queues requests to the virtqueue, and they are used by
+The driver queues requests to the virtqueues, and they are used by
 the device (not necessarily in order). Each request is of form:
 
 \begin{lstlisting}
