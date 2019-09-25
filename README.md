@@ -30,33 +30,51 @@
 
 <h3>Further Description of this Repository</h3>
 <h4>Building Instructions</h4>
-<p>In order to build the spec you will need <a href="https://www.tug.org/texlive/">Tex-Live</a>.
-Installing it can be done via:<br>
-Fedora:
+Authoritative version of the specification is maintained in the
+TeX document format. PDF and HTML versions are made available for
+ease of use and review.
+In order to build the HTML and PDF versions of the spec you will need the
+<a href="https://www.tug.org/"> TeX document production system</a>.
+The easiest way to get it up and running is probably by installing
+<a href="https://www.tug.org/texlive/">Tex-Live</a>.
+
+<dl>Installation cheat sheet:
+<dt>Fedora:</dt>
+<dd>
 <code>
 sudo dnf install texlive-scheme-full
-</code><br>
-Ubuntu:
+</code></dd>
+<dt>
+Ubuntu and other Debian derivatives:
+</dt>
+<dd>
 <code>
 sudo apt-get install texlive-full
-</code><br></p>
-<p>OSX users don't need to install Tex-Live because they already have
+</code></dd>
+<dt>OSX:<dt>
+<dd>OSX users don't need to install Tex-Live because they already have
 <a href="http://www.tug.org/mactex/">MacTex</a> installed.
-
-<p>The building proccess is done with
+</dd>
+</dl>
+<dl>The build process generates a ZIP package file including the
+original TeX sources, as well as HTML and PDF formatted
+versions of the specification.
+<dt>To generate the ZIP package, run:<dt>
+<dd>
 <code>
 ./makeall.sh
 </code>
-and it contains 3 main parts:
-<code>
-makezip.sh
-</code>,
-<code>
-makehtml.sh
-</code>,
-<code>
-makepdf.sh
-</code>.
+</dd>
+<dt>Troubleshooting notes:</dt>
+<dd> PDFs of the specification can be generated with
+either MicroSoft's Core fonts for the Web: Arial and Courier New,
+or Liberation fonts: Liberation Sans and Liberation Mono.
+Most systems come with one of these two variants included:
+should you get an error message about missing fonts,
+you will need to downloads and install one of the above
+font packages.
+<dd>
+</dl>
 <h4>Providing Feedback</h4>
 Feedback must be provided the <strong>virtio-comment</strong> mailing list,
 and archived in the mailing list archives.
