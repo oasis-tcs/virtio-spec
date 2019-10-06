@@ -1645,8 +1645,8 @@ All register values are organized as Little Endian.
   \mmioreg{QueueSel}{Virtual queue index}{0x030}{W}{%
     Writing to this register selects the virtual queue that the
     following operations on \field{QueueNumMax}, \field{QueueNum}, \field{QueueReady},
-    \field{QueueDescLow}, \field{QueueDescHigh}, \field{QueueAvailLow}, \field{QueueAvailHigh},
-    \field{QueueUsedLow} and \field{QueueUsedHigh} apply to. The index
+    \field{QueueDescLow}, \field{QueueDescHigh}, \field{QueueDriverlLow}, \field{QueueDriverHigh},
+    \field{QueueDeviceLow} and \field{QueueDeviceHigh} apply to. The index
     number of the first queue is zero (0x0). 
   }
   \hline 
@@ -1724,14 +1724,14 @@ All register values are organized as Little Endian.
   \hline 
   \mmiodreg{QueueDriverLow}{QueueDriverHigh}{Virtual queue's Driver Area 64 bit long physical address}{0x090}{0x094}{W}{%
     Writing to these two registers (lower 32 bits of the address
-    to \field{QueueAvailLow}, higher 32 bits to \field{QueueAvailHigh}) notifies
+    to \field{QueueDriverLow}, higher 32 bits to \field{QueueDriverHigh}) notifies
     the device about location of the Driver Area of the queue
     selected by writing to \field{QueueSel}.
   }
   \hline 
   \mmiodreg{QueueDeviceLow}{QueueDeviceHigh}{Virtual queue's Device Area 64 bit long physical address}{0x0a0}{0x0a4}{W}{%
     Writing to these two registers (lower 32 bits of the address
-    to \field{QueueUsedLow}, higher 32 bits to \field{QueueUsedHigh}) notifies
+    to \field{QueueDeviceLow}, higher 32 bits to \field{QueueDeviceHigh}) notifies
     the device about location of the Device Area of the queue
     selected by writing to \field{QueueSel}.
   }
@@ -1829,7 +1829,7 @@ or equal to the value presented by the device in \field{QueueNumMax}.
 
 When \field{QueueReady} is not zero, the driver MUST NOT access
 \field{QueueNum}, \field{QueueDescLow}, \field{QueueDescHigh},
-\field{QueueAvailLow}, \field{QueueAvailHigh}, \field{QueueUsedLow}, \field{QueueUsedHigh}.
+\field{QueueDriverLow}, \field{QueueDriverHigh}, \field{QueueDeviceLow}, \field{QueueDeviceHigh}.
 
 To stop using the queue the driver MUST write zero (0x0) to this
 \field{QueueReady} and MUST read the value back to ensure
