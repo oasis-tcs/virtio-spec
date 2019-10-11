@@ -634,7 +634,7 @@ for (each buffer element b) {
 
         if (vq->next_avail >= vq->size) {
                 vq->next_avail = 0;
-                vq->avail_wrap_count \^= 1;
+                vq->avail_wrap_count ^= 1;
         }
 }
 vq->sgs[id] = sgs;
@@ -727,7 +727,7 @@ for (;;) {
         vq->next_used += sgs;
         if (vq->next_used >= vq->size) {
                 vq->next_used -= vq->size;
-                vq->used_wrap_count \^= 1;
+                vq->used_wrap_count ^= 1;
         }
 
         free_id(vq, id);
