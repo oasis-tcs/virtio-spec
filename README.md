@@ -34,7 +34,7 @@ Authoritative version of the specification is maintained in the
 TeX document format. PDF and HTML versions are made available for
 ease of use and review.
 In order to build the HTML and PDF versions of the spec you will need the
-<a href="https://www.tug.org/"> TeX document production system</a>.
+TeX document production system.
 The easiest way to get it up and running is probably by installing
 <a href="https://www.tug.org/texlive/">Tex-Live</a>.
 
@@ -53,7 +53,7 @@ sudo apt-get install texlive-full
 </code></dd>
 <dt>OSX:<dt>
 <dd>OSX users don't need to install Tex-Live because they already have
-<a href="http://www.tug.org/mactex/">MacTex</a> installed.
+<a href="http://www.tug.org/mactex/">MacTeX</a> installed.
 </dd>
 </dl>
 <dl>The build process generates a ZIP package file including the
