@@ -141,6 +141,21 @@ Fixes: https://github.com/oasis-tcs/virtio-spec/issues/NNN
 <li>Please make sure to allow time for review between posting a comment
 and asking for a vote. </li>
 </ol>
+<h4>TC standing rules</h4>
+The TC adopted the following standing rule:
+<p>
+<em>
+Minor cleanups, including editorial formatting changes, spelling
+and typo fixes can be committed directly into git for approval as
+part of the next specification approval ballot.
+</em>
+<ol>
+<li>To request such a commit, reply by email to the comment email, requesting that the
+issue is resolved under the minor cleanups standing rule.
+</li>
+<li>Please make sure to allow time for review between posting a comment
+and asking for a commit. </li>
+</ol>
 
 <h3>Contact</h3>
 <p>Please send questions or comments about <a href="https://www.oasis-open.org/resources/tcadmin/github-repositories-for-oasis-tc-members-chartered-work">OASIS TC GitHub repositories</a> to <a href="mailto:robin@oasis-open.org">Robin Cover</a> and <a href="mailto:chet.ensign@oasis-open.org">Chet Ensign</a>.  For questions about content in this repository, please contact the TC Chair or Co-Chairs as listed on the the virtio TC's <a href="https://www.oasis-open.org/committees/virtio/">home page</a>.</p>
