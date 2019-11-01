@@ -2897,6 +2897,7 @@ features.
 
 \item[VIRTIO_NET_F_STANDBY(62)] Device may act as a standby for a primary
     device with the same MAC address.
+\item[VIRTIO_NET_F_SPEED_DUPLEX(63)] Device reports speed and duplex.
 \end{description}
 
 \subsubsection{Feature bit requirements}\label{sec:Device Types / Network Device / Feature bits / Feature bit requirements}
@@ -2956,12 +2957,27 @@ The following driver-read-only field, \field{mtu} only exists if
 VIRTIO_NET_F_MTU is set. This field specifies the maximum MTU for the driver to
 use.
 
+The following two fields, \field{speed} and \field{duplex}, only
+exist if VIRTIO_NET_F_SPEED_DUPLEX is set.
+
+\field{speed} contains the device speed, in units of 1 MByte, 0
+to 0x7ffffffff, or 0xfffffffff for unknown speed.
+
+\field{duplex} has the values of 0x00 for full duplex, 0x01 for
+half duplex and 0xff for unknown duplex state.
+
+Neither \field{speed} not \field{duplex} changes as long as
+VIRTIO_NET_S_LINK_UP is set.
+
 \begin{lstlisting}
 struct virtio_net_config {
         u8 mac[6];
         le16 status;
         le16 max_virtqueue_pairs;
         le16 mtu;
+        le32 speed;
+        u8 duplex;
+
 };
 \end{lstlisting}
 
@@ -2990,6 +3006,18 @@ negotiated.
 If the driver negotiates the VIRTIO_NET_F_STANDBY feature, the device MAY act
 as a standby device for a primary device with the same MAC address.
 
+If VIRTIO_NET_F_SPEED_DUPLEX has been negotiated, \field{speed}
+MUST contain the device speed, in units of 1 MByte, 0 to
+0x7ffffffff, or 0xfffffffff for unknown.
+
+If VIRTIO_NET_F_SPEED_DUPLEX has been negotiated, \field{duplex}
+MUST have the values of 0x00 for full duplex, 0x01 for half
+duplex and 0xff for unknown.
+
+If VIRTIO_NET_F_SPEED_DUPLEX has been negotiated, the device MUST
+NOT change the \field{speed} and \field{duplex} fields as long as
+VIRTIO_NET_S_LINK_UP is set in the \field{status}.
+
 \drivernormative{\subsubsection}{Device configuration layout}{Device Types / Network Device / Device configuration layout}
 
 A driver SHOULD negotiate VIRTIO_NET_F_MAC if the device offers it.
@@ -3013,6 +3041,11 @@ size exceeding the value of \field{mtu} (plus low level ethernet header length)
 with \field{gso_type} NONE or ECN.
 
 A driver SHOULD negotiate the VIRTIO_NET_F_STANDBY feature if the device offers it.
+
+If VIRTIO_NET_F_SPEED_DUPLEX has been negotiated,
+the driver MUST treat any value of \field{speed} above
+0x7fffffff as well as any value of \field{duplex} not
+matching 0x00 or 0x01 as an unknown value.
 
 \subsubsection{Legacy Interface: Device configuration layout}\label{sec:Device Types / Network Device / Device configuration layout / Legacy Interface: Device configuration layout}
 \label{sec:Device Types / Block Device / Feature bits / Device configuration layout / Legacy Interface: Device configuration layout}
