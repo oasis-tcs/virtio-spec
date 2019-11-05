@@ -2813,6 +2813,9 @@ features.
 \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
     channel.
 
+\item[VIRTIO_NET_F_GUEST_HDRLEN(59)] Driver can provide the exact \field{hdr_len}
+    value. Device benefits from knowing the exact header length.
+
 \item[VIRTIO_NET_F_RSC_EXT(61)] Device can process duplicated ACKs
     and report number of coalesced segments and duplicated ACKs
 
@@ -3097,11 +3100,20 @@ checksum includes the header), and \field{csum_offset} will be 16.
   into smaller packets. The other gso fields are set:
 
   \begin{itemize}
-  \item \field{hdr_len} is a hint to the device as to how much of the header
+  \item If the VIRTIO_NET_F_GUEST_HDRLEN feature has been negotiated,
+    \field{hdr_len} indicates the header length that needs to be replicated
+    for each packet. It's a number of bytes from beginning of the packet
+    to beginning of the transport payload.
+    Otherwise, if the VIRTIO_NET_F_GUEST_HDRLEN feature has not been negotiated,
+    \field{hdr_len} is a hint to the device as to how much of the header
     needs to be kept to copy into each packet, usually set to the
     length of the headers, including the transport header\footnote{Due to various bugs in implementations, this field is not useful
 as a guarantee of the transport header size.
 }.
+
+  \begin{note}
+  Some devices benefit from knowledge of the exact header length.
+  \end{note}
 
   \item \field{gso_size} is the maximum size of each packet beyond that
     header (ie. MSS).
@@ -3175,9 +3187,20 @@ the driver MUST also set the VIRTIO_NET_HDR_F_NEEDS_CSUM bit in
 desired MSS.
 
 If one of the VIRTIO_NET_F_HOST_TSO4, TSO6 or UFO options have
-been negotiated, the driver SHOULD set \field{hdr_len} to a value
-not less than the length of the headers, including the transport
-header.
+been negotiated:
+\begin{itemize}
+\item If the VIRTIO_NET_F_GUEST_HDRLEN feature has been negotiated,
+	the driver MUST set \field{hdr_len} to a value equal to the length
+	of the headers, including the transport header.
+
+\item If the VIRTIO_NET_F_GUEST_HDRLEN feature has not been negotiated,
+	the driver SHOULD set \field{hdr_len} to a value
+	not less than the length of the headers, including the transport
+	header.
+\end{itemize}
+
+The driver SHOULD accept the VIRTIO_NET_F_GUEST_HDRLEN feature if it has
+been offered, and if it's able to provide the exact header length.
 
 The driver MUST NOT set the VIRTIO_NET_HDR_F_DATA_VALID and
 VIRTIO_NET_HDR_F_RSC_INFO bits in \field{flags}.
@@ -3189,12 +3212,25 @@ If VIRTIO_NET_HDR_F_NEEDS_CSUM bit in \field{flags} is not set, the
 device MUST NOT use the \field{csum_start} and \field{csum_offset}.
 
 If one of the VIRTIO_NET_F_HOST_TSO4, TSO6 or UFO options have
-been negotiated, the device MAY use \field{hdr_len} only as a hint about the
-transport header size.
-The device MUST NOT rely on \field{hdr_len} to be correct.
-\begin{note}
-This is due to various bugs in implementations.
-\end{note}
+been negotiated:
+\begin{itemize}
+\item If the VIRTIO_NET_F_GUEST_HDRLEN feature has been negotiated,
+	the device MAY use \field{hdr_len} as the transport header size.
+
+	\begin{note}
+	Caution should be taken by the implementation so as to prevent
+	malicious driver from attacking the device by setting incorrect hdr_len.
+	\end{note}
+
+\item If the VIRTIO_NET_F_GUEST_HDRLEN feature has not been negotiated,
+	the device MAY use \field{hdr_len} only as a hint about the
+	transport header size.
+	The device MUST NOT rely on \field{hdr_len} to be correct.
+
+	\begin{note}
+	This is due to various bugs in implementations.
+	\end{note}
+\end{itemize}
 
 If VIRTIO_NET_HDR_F_NEEDS_CSUM is not set, the device MUST NOT
 rely on the packet checksum being correct.
