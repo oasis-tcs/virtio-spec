@@ -217,7 +217,7 @@ VRING_DESC_F_NEXT, etc, but the layout and values were identical.
 \devicenormative{\subsubsection}{The Virtqueue Descriptor Table}{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table}
 A device MUST NOT write to a device-readable buffer, and a device SHOULD NOT
 read a device-writable buffer (it MAY do so for debugging or diagnostic
-purposes).
+purposes). A device MUST NOT write to any descriptor table entry.
 
 \drivernormative{\subsubsection}{The Virtqueue Descriptor Table}{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table}
 Drivers MUST NOT add a descriptor chain longer than $2^{32}$ bytes in total;
