@@ -1,0 +1,816 @@
+\section{IOMMU device}\label{sec:Device Types / IOMMU Device}
+
+The virtio-iommu device manages Direct Memory Access (DMA) from one or
+more endpoints. It may act both as a proxy for physical IOMMUs managing
+devices assigned to the guest, and as virtual IOMMU managing emulated and
+paravirtualized devices.
+
+The driver first discovers endpoints managed by the virtio-iommu device
+using platform specific mechanisms. It then sends requests to create
+virtual address spaces and virtual-to-physical mappings for these
+endpoints. In its simplest form, the virtio-iommu supports four request
+types:
+
+\begin{enumerate}
+\item Create a domain and attach an endpoint to it.  \\
+  \texttt{attach(endpoint = 0x8, domain = 1)}
+\item Create a mapping between a range of guest-virtual and guest-physical
+  address. \\
+  \texttt{map(domain = 1, virt_start = 0x1000, virt_end = 0x1fff,
+          phys = 0xa000, flags = READ)}
+
+  Endpoint 0x8, for example a hardware PCI endpoint with BDF 00:01.0, can
+  now read at addresses 0x1000-0x1fff. These accesses are translated
+  into system-physical addresses by the IOMMU.
+
+\item Remove the mapping.\\
+  \texttt{unmap(domain = 1, virt_start = 0x1000, virt_end = 0x1fff)}
+
+  Any access to addresses 0x1000-0x1fff by endpoint 0x8 would now be
+  rejected.
+\item Detach the device and remove the domain.\\
+  \texttt{detach(endpoint = 0x8, domain = 1)}
+\end{enumerate}
+
+\subsection{Device ID}\label{sec:Device Types / IOMMU Device / Device ID}
+
+23
+
+\subsection{Virtqueues}\label{sec:Device Types / IOMMU Device / Virtqueues}
+
+\begin{description}
+\item[0] requestq
+\item[1] eventq
+\end{description}
+
+\subsection{Feature bits}\label{sec:Device Types / IOMMU Device / Feature bits}
+
+\begin{description}
+\item[VIRTIO_IOMMU_F_INPUT_RANGE (0)]
+  Available range of virtual addresses is described in
+    \field{input_range}.
+
+\item[VIRTIO_IOMMU_F_DOMAIN_RANGE (1)]
+  The number of domains supported is described in \field{domain_range}.
+
+\item[VIRTIO_IOMMU_F_MAP_UNMAP (2)]
+  Map and unmap requests are available.\footnote{Future extensions may add
+  different modes of operations. At the moment, only
+  VIRTIO_IOMMU_F_MAP_UNMAP is supported.}
+
+\item[VIRTIO_IOMMU_F_BYPASS (3)]
+  When not attached to a domain, endpoints downstream of the IOMMU
+  can access the guest-physical address space.
+
+\item[VIRTIO_IOMMU_F_PROBE (4)]
+  The PROBE request is available.
+
+\item[VIRTIO_IOMMU_F_MMIO (5)]
+  The VIRTIO_IOMMU_MAP_F_MMIO flag is available.
+\end{description}
+
+\drivernormative{\subsubsection}{Feature bits}{Device Types / IOMMU Device / Feature bits}
+
+The driver SHOULD accept any of the VIRTIO_IOMMU_F_INPUT_RANGE,
+VIRTIO_IOMMU_F_DOMAIN_RANGE and VIRTIO_IOMMU_F_PROBE feature bits if
+offered by the device.
+
+\devicenormative{\subsubsection}{Feature bits}{Device Types / IOMMU Device / Feature bits}
+
+The device SHOULD offer feature bit VIRTIO_IOMMU_F_MAP_UNMAP.
+
+\subsection{Device configuration layout}\label{sec:Device Types / IOMMU Device / Device configuration layout}
+
+The \field{page_size_mask} field is always present. Availability of the
+others all depend on feature bits described in
+\ref{sec:Device Types / IOMMU Device / Feature bits}.
+
+\begin{lstlisting}
+struct virtio_iommu_config {
+  le64 page_size_mask;
+  struct virtio_iommu_range_64 {
+    le64 start;
+    le64 end;
+  } input_range;
+  struct virtio_iommu_range_32 {
+    le32 start;
+    le32 end;
+  } domain_range;
+  le32 probe_size;
+};
+\end{lstlisting}
+
+\drivernormative{\subsubsection}{Device configuration layout}{Device Types / IOMMU Device / Device configuration layout}
+
+The driver MUST NOT write to device configuration fields.
+
+\devicenormative{\subsubsection}{Device configuration layout}{Device Types / IOMMU Device / Device configuration layout}
+
+The device SHOULD set \field{padding} to zero.
+
+The device MUST set at least one bit in \field{page_size_mask}, describing
+the page granularity. The device MAY set more than one bit in
+\field{page_size_mask}.
+
+\subsection{Device initialization}\label{sec:Device Types / IOMMU Device / Device initialization}
+
+When the device is reset, endpoints are not attached to any domain.
+
+If the VIRTIO_IOMMU_F_BYPASS feature is negotiated, all accesses from
+unattached endpoints are allowed and translated by the IOMMU using the
+identity function. If the feature is not negotiated, any memory access
+from an unattached endpoint fails. Upon attaching an endpoint in
+bypass mode to a new domain, any memory access from the endpoint fails,
+since the domain does not contain any mapping.
+
+Future devices might support more modes of operation besides MAP/UNMAP.
+Drivers verify that devices set VIRTIO_IOMMU_F_MAP_UNMAP and fail
+gracefully if they don't.
+
+\drivernormative{\subsubsection}{Device Initialization}{Device Types / IOMMU Device / Device Initialization}
+
+The driver MUST NOT negotiate VIRTIO_IOMMU_F_MAP_UNMAP if it is incapable
+of sending VIRTIO_IOMMU_T_MAP and VIRTIO_IOMMU_T_UNMAP requests.
+
+If the VIRTIO_IOMMU_F_PROBE feature is negotiated, the driver SHOULD send a
+VIRTIO_IOMMU_T_PROBE request for each endpoint before attaching the
+endpoint to a domain.
+
+\devicenormative{\subsubsection}{Device Initialization}{Device Types / IOMMU Device / Device Initialization}
+
+If the driver does not accept the VIRTIO_IOMMU_F_BYPASS feature, the
+device SHOULD NOT let endpoints access the guest-physical address space.
+
+\subsection{Device operations}\label{sec:Device Types / IOMMU Device / Device operations}
+
+Driver send requests on the request virtqueue, notifies the device and
+waits for the device to return the request with a status in the used ring.
+All requests are split in two parts: one device-readable, one device-
+writable.
+
+\begin{lstlisting}
+struct virtio_iommu_req_head {
+  u8   type;
+  u8   reserved[3];
+};
+
+struct virtio_iommu_req_tail {
+  u8   status;
+  u8   reserved[3];
+};
+\end{lstlisting}
+
+Type may be one of:
+
+\begin{lstlisting}
+#define VIRTIO_IOMMU_T_ATTACH     1
+#define VIRTIO_IOMMU_T_DETACH     2
+#define VIRTIO_IOMMU_T_MAP        3
+#define VIRTIO_IOMMU_T_UNMAP      4
+#define VIRTIO_IOMMU_T_PROBE      5
+\end{lstlisting}
+
+A few general-purpose status codes are defined here.
+
+\begin{lstlisting}
+/* All good! Carry on. */
+#define VIRTIO_IOMMU_S_OK         0
+/* Virtio communication error */
+#define VIRTIO_IOMMU_S_IOERR      1
+/* Unsupported request */
+#define VIRTIO_IOMMU_S_UNSUPP     2
+/* Internal device error */
+#define VIRTIO_IOMMU_S_DEVERR     3
+/* Invalid parameters */
+#define VIRTIO_IOMMU_S_INVAL      4
+/* Out-of-range parameters */
+#define VIRTIO_IOMMU_S_RANGE      5
+/* Entry not found */
+#define VIRTIO_IOMMU_S_NOENT      6
+/* Bad address */
+#define VIRTIO_IOMMU_S_FAULT      7
+/* Insufficient resources */
+#define VIRTIO_IOMMU_S_NOMEM      8
+\end{lstlisting}
+
+When the device fails to parse a request, for instance if a request is too
+small for its type and the device cannot find the tail, then it is unable
+to set \field{status}. In that case, it returns the buffers without
+writing to them.
+
+Range limits of some request fields are described in the device
+configuration:
+
+\begin{itemize}
+\item \field{page_size_mask} contains the bitmask of all page sizes that
+  can be mapped. The least significant bit set defines the page
+  granularity of IOMMU mappings.
+
+  The smallest page granularity supported by the IOMMU is one byte. It is
+  legal for the driver to map one byte at a time if bit 0 of
+  \field{page_size_mask} is set.
+
+  Other bits in \field{page_size_mask} are hints and describe larger page
+  sizes that the IOMMU device handles efficiently. For example, when the
+  device stores mappings using a page table tree, it may be able to
+  describe large mappings using a few leaf entries in intermediate tables,
+  rather than using lots of entries in the last level of the tree.
+  Creating mappings aligned on large page sizes can improve performance
+  since they require fewer page table and TLB entries.
+
+\item If the VIRTIO_IOMMU_F_DOMAIN_RANGE feature is offered,
+  \field{domain_range} describes the values supported in a \field{domain}
+  field. If the feature is not offered, any \field{domain} value is valid.
+
+\item If the VIRTIO_IOMMU_F_INPUT_RANGE feature is offered,
+  \field{input_range} contains the virtual address range that the IOMMU is
+  able to translate. Any mapping request to virtual addresses outside of
+  this range fails.
+
+  If the feature is not offered, virtual mappings span over the whole
+  64-bit address space (\texttt{start = 0, end = 0xffffffff ffffffff})
+\end{itemize}
+
+\drivernormative{\subsubsection}{Device operations}{Device Types / IOMMU Device / Device operations}
+
+The driver SHOULD set field \field{reserved} of struct
+virtio_iommu_req_head to zero and MUST ignore field \field{reserved} of
+struct virtio_iommu_req_tail.
+
+When a device uses a buffer without having written to it (i.e.
+used length is zero), the driver SHOULD interpret it as a request failure.
+
+If the VIRTIO_IOMMU_F_INPUT_RANGE feature is negotiated, the driver MUST
+NOT send requests with \field{virt_start} less than
+\field{input_range.start} or \field{virt_end} greater than
+\field{input_range.end}.
+
+If the VIRTIO_IOMMU_F_DOMAIN_RANGE feature is negotiated, the driver MUST
+NOT send requests with \field{domain} less than \field{domain_range.start}
+or greater than \field{domain_range.end}.
+
+\devicenormative{\subsubsection}{Device operations}{Device Types / IOMMU Device / Device operations}
+
+The device SHOULD set \field{status} to VIRTIO_IOMMU_S_OK if a request
+succeeds.
+
+If a request \field{type} is not recognized, the device SHOULD NOT write
+the buffer and SHOULD set the used length to zero.
+
+The device MUST ignore field \field{reserved} of struct
+virtio_iommu_req_head and SHOULD set field \field{reserved} of struct
+virtio_iommu_req_tail to zero.
+
+\subsubsection{ATTACH request}\label{sec:Device Types / IOMMU Device / Device operations / ATTACH request}
+
+\begin{lstlisting}
+struct virtio_iommu_req_attach {
+  struct virtio_iommu_req_head head;
+  le32 domain;
+  le32 endpoint;
+  u8   reserved[8];
+  struct virtio_iommu_req_tail tail;
+};
+\end{lstlisting}
+
+Attach an endpoint to a domain. \field{domain} uniquely identifies a
+domain within the virtio-iommu device. If the domain doesn't exist in the
+device, it is created. Semantics of the \field{endpoint} identifier are
+platform specific, but the following rules apply:
+
+\begin{itemize}
+\item The endpoint ID uniquely identifies an endpoint from the
+  virtio-iommu point of view. Multiple endpoints whose DMA transactions
+  are not translated by the same virtio-iommu device can have the same
+  endpoint ID. Endpoints whose DMA transactions may be translated by the
+  same virtio-iommu device have different endpoint IDs.
+
+\item On some platforms, it might not be possible to completely isolate
+  two endpoints from each other. For example on a conventional PCI bus,
+  endpoints can snoop DMA transactions from other endpoints on the same
+  bus. Such limitations need to be communicated in a platform specific
+  way.
+\end{itemize}
+
+Multiple endpoints can be attached to the same domain. An endpoint can be
+attached to a single domain at a time. Endpoints attached to different
+domains are isolated from each other.
+
+\drivernormative{\paragraph}{ATTACH request}{Device Types / IOMMU Device / Device operations / ATTACH request}
+
+The driver SHOULD set \field{reserved} to zero.
+
+The driver SHOULD ensure that endpoints that cannot be isolated from each
+other are attached to the same domain.
+
+\devicenormative{\paragraph}{ATTACH request}{Device Types / IOMMU Device / Device operations / ATTACH request}
+
+If the \field{reserved} field of an ATTACH request is not zero, the device
+MUST reject the request and set \field{status} to VIRTIO_IOMMU_S_INVAL.
+
+If the endpoint identified by \field{endpoint} doesn't exist, the device
+MUST reject the request and set \field{status} to VIRTIO_IOMMU_S_NOENT.
+
+If another endpoint is already attached to the domain identified by
+\field{domain}, then the device MAY attach the endpoint identified by
+\field{endpoint} to the domain. If it cannot do so, the device MUST reject
+the request and set \field{status} to VIRTIO_IOMMU_S_UNSUPP.
+
+If the endpoint identified by \field{endpoint} is already attached to
+another domain, then the device SHOULD first detach it from that domain
+and attach it to the one identified by \field{domain}. In that case the
+device SHOULD behave as if the driver issued a DETACH request with this
+\field{endpoint}, followed by the ATTACH request. If the device cannot do
+so, it MUST reject the request and set \field{status} to
+VIRTIO_IOMMU_S_UNSUPP.
+
+If properties of the endpoint (obtained with a PROBE request) are
+compatible with properties of other endpoints already attached to the
+requested domain, then the device SHOULD attach the endpoint. Otherwise
+the device SHOULD reject the request and set \field{status} to
+VIRTIO_IOMMU_S_UNSUPP.
+
+A device that does not reject the request MUST attach the endpoint.
+
+\subsubsection{DETACH request}
+
+\begin{lstlisting}
+struct virtio_iommu_req_detach {
+  struct virtio_iommu_req_head head;
+  le32 domain;
+  le32 endpoint;
+  u8   reserved[8];
+  struct virtio_iommu_req_tail tail;
+};
+\end{lstlisting}
+
+Detach an endpoint from a domain. When this request completes, the
+endpoint cannot access any mapping from that domain anymore. If feature
+VIRTIO_IOMMU_F_BYPASS has been negotiated, then once this request
+completes all accesses from the endpoint are allowed and translated by the
+IOMMU using the identity function.
+
+After all endpoints have been successfully detached from a domain, it
+ceases to exist and its ID can be reused by the driver for another domain.
+
+\drivernormative{\paragraph}{DETACH request}{Device Types / IOMMU Device / Device operations / DETACH request}
+
+The driver SHOULD set \field{reserved} to zero.
+
+\devicenormative{\paragraph}{DETACH request}{Device Types / IOMMU Device / Device operations / DETACH request}
+
+The device MUST ignore \field{reserved}.
+
+If the endpoint identified by \field{endpoint} doesn't exist, then the
+device MUST reject the request and set \field{status} to
+VIRTIO_IOMMU_S_NOENT.
+
+If the domain identified by \field{domain} doesn't exist, or if the
+endpoint identified by \field{endpoint} isn't attached to this domain,
+then the device MAY set the request \field{status} to
+VIRTIO_IOMMU_S_INVAL.
+
+The device MUST ensure that after being detached from a domain, the
+endpoint cannot access any mapping from that domain.
+
+\subsubsection{MAP request}\label{sec:Device Types / IOMMU Device / Device operations / MAP request}
+
+\begin{lstlisting}
+struct virtio_iommu_req_map {
+  struct virtio_iommu_req_head head;
+  le32  domain;
+  le64  virt_start;
+  le64  virt_end;
+  le64  phys_start;
+  le32  flags;
+  struct virtio_iommu_req_tail tail;
+};
+
+/* Read access is allowed */
+#define VIRTIO_IOMMU_MAP_F_READ   (1 << 0)
+/* Write access is allowed */
+#define VIRTIO_IOMMU_MAP_F_WRITE  (1 << 1)
+/* Accesses are to memory-mapped I/O device */
+#define VIRTIO_IOMMU_MAP_F_MMIO   (1 << 2)
+\end{lstlisting}
+
+Map a range of virtually-contiguous addresses to a range of
+physically-contiguous addresses of the same size. After the request
+succeeds, all endpoints attached to this domain can access memory in the
+range $[virt\_start; virt\_end]$ (inclusive). For example, if an endpoint
+accesses address $VA \in [virt\_start; virt\_end]$, the device (or the
+physical IOMMU) translates the address: $PA = VA - virt\_start +
+phys\_start$. If the access parameters are compatible with \field{flags}
+(for instance, the access is write and \field{flags} are
+VIRTIO_IOMMU_MAP_F_READ | VIRTIO_IOMMU_MAP_F_WRITE) then the IOMMU allows
+the access to reach $PA$.
+
+The range defined by \field{virt_start} and \field{virt_end} should be
+within the limits specified by \field{input_range}. Given $phys\_end =
+phys\_start + virt\_end - virt\_start$, the range defined by
+\field{phys_start} and phys_end should be within the guest-physical
+address space. This includes upper and lower limits, as well as any
+carving of guest-physical addresses for use by the host. Guest physical
+boundaries are set by the host in a platform specific way.
+
+Availability and allowed combinations of \field{flags} depend on the
+underlying IOMMU architectures. VIRTIO_IOMMU_MAP_F_READ and
+VIRTIO_IOMMU_MAP_F_WRITE are usually implemented, although READ is
+sometimes implied by WRITE. In addition combinations such as "WRITE and
+not READ" might not be supported.
+
+The VIRTIO_IOMMU_MAP_F_MMIO flag is a memory type rather than a protection
+flag. It is only available when the VIRTIO_IOMMU_F_MMIO feature has been
+negotiated. Accesses to the mapping are not speculated, buffered, cached,
+split into multiple accesses or combined with other accesses. It may be
+used, for example, to map Message Signaled Interrupt doorbells when a
+VIRTIO_IOMMU_RESV_MEM_T_MSI region isn't available. To trigger interrupts
+the endpoint performs a direct memory write to another peripheral, the IRQ
+chip.
+
+This request is only available when VIRTIO_IOMMU_F_MAP_UNMAP has been
+negotiated.
+
+\drivernormative{\paragraph}{MAP request}{Device Types / IOMMU Device / Device operations / MAP request}
+
+The driver SHOULD set undefined \field{flags} bits to zero.
+
+\field{virt_end} MUST be strictly greater than \field{virt_start}.
+
+The driver SHOULD set the VIRTIO_IOMMU_MAP_F_MMIO flag when the physical
+range corresponds to memory-mapped device registers. The physical range
+SHOULD have a single memory type: either normal memory or memory-mapped
+I/O.
+
+If it intends to allow read accesses from endpoints attached to
+the domain, the driver MUST set the VIRTIO_IOMMU_MAP_F_READ flag.
+
+If the VIRTIO_IOMMU_F_MMIO feature isn't negotiated, the driver MUST NOT
+use the VIRTIO_IOMMU_MAP_F_MMIO flag.
+
+\devicenormative{\paragraph}{MAP request}{Device Types / IOMMU Device / Device operations / MAP request}
+
+If \field{virt_start}, \field{phys_start} or (\field{virt_end} + 1) is
+not aligned on the page granularity, the device SHOULD reject the request
+and set \field{status} to VIRTIO_IOMMU_S_RANGE.
+
+If a mapping already exists in the requested range, the device SHOULD
+reject the request and set \field{status} to VIRTIO_IOMMU_S_INVAL.
+
+If the device doesn't recognize a \field{flags} bit, it MUST reject the
+request and set \field{status} to VIRTIO_IOMMU_S_INVAL.
+
+If \field{domain} does not exist, the device SHOULD reject the request and
+set \field{status} to VIRTIO_IOMMU_S_NOENT.
+
+The device MUST NOT allow writes to a range mapped without the
+VIRTIO_IOMMU_MAP_F_WRITE flag. However, if the underlying architecture
+does not support write-only mappings, the device MAY allow reads to a
+range mapped with VIRTIO_IOMMU_MAP_F_WRITE but not
+VIRTIO_IOMMU_MAP_F_READ.
+
+\subsubsection{UNMAP request}\label{sec:Device Types / IOMMU Device / Device operations / UNMAP request}
+
+\begin{lstlisting}
+struct virtio_iommu_req_unmap {
+  struct virtio_iommu_req_head head;
+  le32  domain;
+  le64  virt_start;
+  le64  virt_end;
+  u8    reserved[4];
+  struct virtio_iommu_req_tail tail;
+};
+\end{lstlisting}
+
+Unmap a range of addresses mapped with VIRTIO_IOMMU_T_MAP. We define here
+a mapping as a virtual region created with a single MAP request. All
+mappings covered by the range $[virt\_start; virt\_end]$ (inclusive) are
+removed.
+
+The semantics of unmapping are specified in \ref{drivernormative:Device
+Types / IOMMU Device / Device operations / UNMAP request} and
+\ref{devicenormative:Device Types / IOMMU Device / Device operations /
+UNMAP request}, and illustrated with the following requests, assuming each
+example sequence starts with a blank address space. We define two
+pseudocode functions \texttt{map(virt_start, virt_end) -> mapping} and
+\texttt{unmap(virt_start, virt_end)}.
+
+\begin{lstlisting}
+(1) unmap(virt_start=0,
+          virt_end=4)            -> succeeds, doesn't unmap anything
+
+(2) a = map(virt_start=0,
+            virt_end=9);
+    unmap(0, 9)                  -> succeeds, unmaps a
+
+(3) a = map(0, 4);
+    b = map(5, 9);
+    unmap(0, 9)                  -> succeeds, unmaps a and b
+
+(4) a = map(0, 9);
+    unmap(0, 4)                  -> fails, doesn't unmap anything
+
+(5) a = map(0, 4);
+    b = map(5, 9);
+    unmap(0, 4)                  -> succeeds, unmaps a
+
+(6) a = map(0, 4);
+    unmap(0, 9)                  -> succeeds, unmaps a
+
+(7) a = map(0, 4);
+    b = map(10, 14);
+    unmap(0, 14)                 -> succeeds, unmaps a and b
+\end{lstlisting}
+
+As illustrated by example (4), partially removing a mapping isn't
+supported.
+
+This request is only available when VIRTIO_IOMMU_F_MAP_UNMAP has been
+negotiated.
+
+\drivernormative{\paragraph}{UNMAP request}{Device Types / IOMMU Device / Device operations / UNMAP request}
+
+The driver SHOULD set the \field{reserved} field to zero.
+
+The range, defined by \field{virt_start} and \field{virt_end}, SHOULD
+cover one or more contiguous mappings created with MAP requests. The range
+MAY spill over unmapped virtual addresses.
+
+The first address of a range MUST either be the first address of a mapping
+or be outside any mapping. The last address of a range MUST either be the
+last address of a mapping or be outside any mapping.
+
+\devicenormative{\paragraph}{UNMAP request}{Device Types / IOMMU Device / Device operations / UNMAP request}
+
+If the \field{reserved} field of an UNMAP request is not zero, the device
+MAY set the request \field{status} to VIRTIO_IOMMU_S_INVAL, in which case
+the device MAY perform the UNMAP operation.
+
+If \field{domain} does not exist, the device SHOULD set the request
+\field{status} to VIRTIO_IOMMU_S_NOENT.
+
+If a mapping affected by the range is not covered in its entirety by the
+range (the UNMAP request would split the mapping), then the device SHOULD
+set the request \field{status} to VIRTIO_IOMMU_S_RANGE, and SHOULD NOT
+remove any mapping.
+
+If part of the range or the full range is not covered by an existing
+mapping, then the device SHOULD remove all mappings affected by the range
+and set the request \field{status} to VIRTIO_IOMMU_S_OK.
+
+\subsubsection{PROBE request}\label{sec:Device Types / IOMMU Device / Device operations / PROBE request}
+
+If the VIRTIO_IOMMU_F_PROBE feature bit is present, the driver sends a
+VIRTIO_IOMMU_T_PROBE request for each endpoint that the virtio-iommu
+device manages. This probe is performed before attaching the endpoint to
+a domain.
+
+\begin{lstlisting}
+struct virtio_iommu_req_probe {
+  struct virtio_iommu_req_head head;
+  /* Device-readable */
+  le32  endpoint;
+  u8    reserved[64];
+
+  /* Device-writable */
+  u8    properties[probe_size];
+  struct virtio_iommu_req_tail tail;
+};
+\end{lstlisting}
+
+\begin{description}
+\item[\field{endpoint}] has the same meaning as in ATTACH and DETACH
+  requests.
+
+\item[\field{reserved}] is used as padding, so that future extensions can
+  add fields to the device-readable part.
+
+\item[\field{properties}] contains a list of properties of the
+  \field{endpoint}, filled by the device. The length of the
+  \field{properties} field is \field{probe_size} bytes. Each property is
+  described with a struct virtio_iommu_probe_property header, which may be
+  followed by a value of size \field{length}.
+
+\begin{lstlisting}
+struct virtio_iommu_probe_property {
+  le16 {
+    type      : 12;
+    reserved  : 4;
+  };
+  le16  length;
+};
+\end{lstlisting}
+
+\end{description}
+
+The driver allocates a buffer for the PROBE request, large enough to
+accommodate \field{probe_size} bytes of \field{properties}. It writes
+\field{endpoint} and adds the buffer to the request queue. The device
+fills the \field{properties} field with a list of properties for this
+endpoint.
+
+The driver parses the first property by reading \field{type}, then
+\field{length}. If the driver recognizes \field{type}, it reads and
+handles the rest of the property. The driver then reads the next property,
+that is located $(\field{length} + 4)$ bytes after the beginning of the
+first one, and so on. The driver parses all properties until it reaches an
+empty property (\field{type} is 0) or the end of \field{properties}.
+
+Available property types are described in section
+\ref{sec:Device Types / IOMMU Device / Device operations / PROBE properties}.
+
+\drivernormative{\paragraph}{PROBE request}{Device Types / IOMMU Device / Device operations / PROBE request}
+
+The size of \field{properties} MUST be \field{probe_size} bytes.
+
+The driver SHOULD set field \field{reserved} of the PROBE request to zero.
+
+If the driver doesn't recognize the \field{type} of a property, it SHOULD
+ignore the property.
+
+The driver SHOULD NOT deduce the property length from \field{type}.
+
+The driver MUST ignore a property whose \field{reserved} field is not
+zero.
+
+If the driver ignores a property, it SHOULD continue parsing the list.
+
+\devicenormative{\paragraph}{PROBE request}{Device Types / IOMMU Device / Device operations / PROBE request}
+
+The device MUST ignore field \field{reserved} of a PROBE request.
+
+If the endpoint identified by \field{endpoint} doesn't exist, then the
+device SHOULD reject the request and set \field{status} to
+VIRTIO_IOMMU_S_NOENT.
+
+If the device does not offer the VIRTIO_IOMMU_F_PROBE feature, and if the
+driver sends a VIRTIO_IOMMU_T_PROBE request, then the device SHOULD NOT
+write the buffer and SHOULD set the used length to zero.
+
+The device SHOULD set field \field{reserved} of a property to zero.
+
+The device MUST write the size of a property without the struct
+virtio_iommu_probe_property header, in bytes, into \field{length}.
+
+When two properties follow each other, the device MUST put the second
+property exactly $(\field{length} + 4)$ bytes after the beginning of the
+first one.
+
+If the \field{properties} list is smaller than \field{probe_size}, the
+device SHOULD NOT write any property. It SHOULD reject the request and set
+\field{status} to VIRTIO_IOMMU_S_INVAL.
+
+If the device doesn't fill all \field{probe_size} bytes with properties,
+it SHOULD fill the remaining bytes of \field{properties} with zeroes.
+
+\subsubsection{PROBE properties}\label{sec:Device Types / IOMMU Device / Device operations / PROBE properties}
+
+\begin{lstlisting}
+#define VIRTIO_IOMMU_PROBE_T_RESV_MEM   1
+\end{lstlisting}
+
+\paragraph{Property RESV_MEM}\label{sec:Device Types / IOMMU Device / Device operations / PROBE properties / RESVMEM}
+
+The RESV_MEM property describes a chunk of reserved virtual memory. It may
+be used by the device to describe virtual address ranges that cannot be
+used by the driver, or that are special.
+
+\begin{lstlisting}
+struct virtio_iommu_probe_resv_mem {
+  struct virtio_iommu_probe_property head;
+  u8    subtype;
+  u8    reserved[3];
+  le64  start;
+  le64  end;
+};
+\end{lstlisting}
+
+Fields \field{start} and \field{end} describe the range of reserved virtual
+addresses. \field{subtype} may be one of:
+
+\begin{description}
+  \item[VIRTIO_IOMMU_RESV_MEM_T_RESERVED (0)]
+    These virtual addresses cannot be used in a MAP requests. The region
+    is be reserved by the device, for example, if the platform needs to
+    setup DMA mappings of its own.
+
+  \item[VIRTIO_IOMMU_RESV_MEM_T_MSI (1)]
+    This region is a doorbell for Message Signaled Interrupts (MSIs). It
+    is similar to VIRTIO_IOMMU_RESV_MEM_T_RESERVED, in that the driver
+    cannot map virtual addresses described by the property.
+
+    In addition it provides information about MSI doorbells. If the
+    endpoint doesn't have a VIRTIO_IOMMU_RESV_MEM_T_MSI property, then the
+    driver creates an MMIO mapping to the doorbell of the MSI controller.
+\end{description}
+
+\drivernormative{\subparagraph}{Property RESV_MEM}{Device Types / IOMMU Device / Device operations / PROBE properties / RESVMEM}
+
+The driver SHOULD NOT map any virtual address described by a
+VIRTIO_IOMMU_RESV_MEM_T_RESERVED or VIRTIO_IOMMU_RESV_MEM_T_MSI property.
+
+The driver MUST ignore \field{reserved}.
+
+The driver SHOULD treat any \field{subtype} it doesn't recognize as if it
+was VIRTIO_IOMMU_RESV_MEM_T_RESERVED.
+
+\devicenormative{\subparagraph}{Property RESV_MEM}{Device Types / IOMMU Device / Device operations / PROBE properties / RESVMEM}
+
+The device SHOULD set \field{reserved} to zero.
+
+The device SHOULD NOT present more than one VIRTIO_IOMMU_RESV_MEM_T_MSI
+property per endpoint.
+
+The device SHOULD NOT present multiple RESV_MEM properties that overlap
+each other for the same endpoint.
+
+The device SHOULD reject a MAP request that overlaps a RESV_MEM region.
+
+The device SHOULD NOT allow accesses from the endpoint to RESV_MEM regions
+to affect any other component than the endpoint and the driver.
+
+\subsubsection{Fault reporting}\label{sev:Device Types / IOMMU Device / Device operations / Fault reporting}
+
+The device can report translation faults and other significant
+asynchronous events on the event virtqueue. The driver initially populates
+the queue with device-writeable buffers. When the device needs to report
+an event, it fills a buffer and notifies the driver. The driver consumes
+the report and adds a new buffer to the virtqueue.
+
+If no buffer is available, the device can either wait for one to be
+consumed, or drop the event.
+
+\begin{lstlisting}
+struct virtio_iommu_fault {
+  u8    reason;
+  u8    reserved[3];
+  le32  flags;
+  le32  endpoint;
+  le32  reserved1;
+  le64  address;
+};
+
+#define VIRTIO_IOMMU_FAULT_F_READ     (1 << 0)
+#define VIRTIO_IOMMU_FAULT_F_WRITE    (1 << 1)
+#define VIRTIO_IOMMU_FAULT_F_ADDRESS  (1 << 8)
+\end{lstlisting}
+
+\begin{description}
+  \item[\field{reason}] The reason for this report. It may have the
+    following values:
+    \begin{description}
+      \item[VIRTIO_IOMMU_FAULT_R_UNKNOWN (0)] An internal error happened, or
+        an error that cannot be described with the following reasons.
+      \item[VIRTIO_IOMMU_FAULT_R_DOMAIN (1)] The endpoint attempted to
+        access \field{address} without being attached to a domain.
+      \item[VIRTIO_IOMMU_FAULT_R_MAPPING (2)] The endpoint attempted to
+        access \field{address}, which wasn't mapped in the domain or
+        didn't have the correct protection flags.
+    \end{description}
+  \item[\field{flags}] Information about the fault context.
+  \item[\field{endpoint}] The endpoint causing the fault.
+  \item[\field{reserved} and \field{reserved1}] Should be zero.
+  \item[\field{address}] If VIRTIO_IOMMU_FAULT_F_ADDRESS is set, the
+    address causing the fault.
+\end{description}
+
+When the fault is reported by a physical IOMMU, the fault reasons may not
+match exactly the reason of the original fault report. The device does its
+best to find the closest match.
+
+If the device encounters an internal error that wasn't caused by a
+specific endpoint, it is unlikely that the driver would be able to do
+anything else than print the fault and stop using the device, so reporting
+the fault on the event queue isn't useful. In that case, we recommend
+using the DEVICE_NEEDS_RESET status bit.
+
+\drivernormative{\paragraph}{Fault reporting}{Device Types / IOMMU Device / Device operations / Fault reporting}
+
+If the \field{reserved} field is not zero, the driver MUST ignore the
+fault report.
+
+The driver MUST ignore \field{reserved1}.
+
+The driver MUST ignore undefined \field{flags}.
+
+If the driver doesn't recognize \field{reason}, it SHOULD treat the fault
+as if it was VIRTIO_IOMMU_FAULT_R_UNKNOWN.
+
+\devicenormative{\paragraph}{Fault reporting}{Device Types / IOMMU Device / Device operations / Fault reporting}
+
+The device SHOULD set \field{reserved} and \field{reserved1} to zero.
+
+The device SHOULD set undefined \field{flags} to zero.
+
+The device SHOULD write a valid endpoint ID in \field{endpoint}.
+
+The device MAY omit setting VIRTIO_IOMMU_FAULT_F_ADDRESS and writing
+\field{address} in any fault report, regardless of the \field{reason}.
+
+If a buffer is too small to contain the fault report\footnotemark, the
+device SHOULD NOT use multiple buffers to describe it. The device MAY fall
+back to using an older fault report format that fits in the buffer.
+
+\footnotetext{This would happen for example if the device implements a
+more recent version of this specification, whose fault report contains
+additional fields.}

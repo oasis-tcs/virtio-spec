@@ -15,14 +15,25 @@ Conformance targets:
   \begin{itemize}
     \item Clause \ref{sec:Conformance / Driver Conformance}.
     \item One of clauses \ref{sec:Conformance / Driver Conformance / PCI Driver Conformance}, \ref{sec:Conformance / Driver Conformance / MMIO Driver Conformance} or \ref{sec:Conformance / Driver Conformance / Channel I/O Driver Conformance}.
-    \item One of clauses \ref{sec:Conformance / Driver Conformance / Network Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Block Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Console Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Entropy Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Traditional Memory Balloon Driver Conformance}, \ref{sec:Conformance / Driver Conformance / SCSI Host Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Input Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Crypto Driver Conformance} or \ref{sec:Conformance / Driver Conformance / Socket Driver Conformance}.
+    \item One of clauses \ref{sec:Conformance / Driver Conformance / Network Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Block Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Console Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Entropy Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Traditional Memory Balloon Driver Conformance}, \ref{sec:Conformance / Driver Conformance / SCSI Host Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Input Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Crypto Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Socket Driver Conformance} or \ref{sec:Conformance / Driver Conformance / IOMMU Driver Conformance}.
     \item Clause \ref{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}.
   \end{itemize}
 \item[Device] A device MUST conform to four conformance clauses:
   \begin{itemize}
     \item Clause \ref{sec:Conformance / Device Conformance}.
     \item One of clauses \ref{sec:Conformance / Device Conformance / PCI Device Conformance}, \ref{sec:Conformance / Device Conformance / MMIO Device Conformance} or \ref{sec:Conformance / Device Conformance / Channel I/O Device Conformance}.
-    \item One of clauses \ref{sec:Conformance / Device Conformance / Network Device Conformance}, \ref{sec:Conformance / Device Conformance / Block Device Conformance}, \ref{sec:Conformance / Device Conformance / Console Device Conformance}, \ref{sec:Conformance / Device Conformance / Entropy Device Conformance}, \ref{sec:Conformance / Device Conformance / Traditional Memory Balloon Device Conformance}, \ref{sec:Conformance / Device Conformance / SCSI Host Device Conformance}, \ref{sec:Conformance / Device Conformance / Input Device Conformance}, \ref{sec:Conformance / Device Conformance / Crypto Device Conformance}, \ref{sec:Conformance / Device Conformance / Socket Device Conformance} or \ref{sec:Conformance / Device Conformance / RPMB Device Conformance}.
+    \item One of clauses 
+\ref{sec:Conformance / Device Conformance / Network Device Conformance}, 
+\ref{sec:Conformance / Device Conformance / Block Device Conformance}, 
+\ref{sec:Conformance / Device Conformance / Console Device Conformance}, 
+\ref{sec:Conformance / Device Conformance / Entropy Device Conformance}, 
+\ref{sec:Conformance / Device Conformance / Traditional Memory Balloon Device Conformance}, 
+\ref{sec:Conformance / Device Conformance / SCSI Host Device Conformance}, 
+\ref{sec:Conformance / Device Conformance / Input Device Conformance}, 
+\ref{sec:Conformance / Device Conformance / Crypto Device Conformance}, 
+\ref{sec:Conformance / Device Conformance / Socket Device Conformance}, 
+\ref{sec:Conformance / Device Conformance / RPMB Device Conformance} or 
+\ref{sec:Conformance / Device Conformance / IOMMU Device Conformance}.
     \item Clause \ref{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}.
   \end{itemize}
 \end{description}
@@ -190,6 +201,23 @@ A RPMB driver MUST conform to the following normative statements:
 
 \begin{itemize}
 \item \ref{drivernormative:Device Types / RPMB Device / Device Operation}
+\end{itemize}
+\conformance{\subsection}{IOMMU Driver Conformance}\label{sec:Conformance / Driver Conformance / IOMMU Driver Conformance}
+
+An IOMMU driver MUST conform to the following normative statements:
+
+\begin{itemize}
+\item \ref{drivernormative:Device Types / IOMMU Device / Feature bits}
+\item \ref{drivernormative:Device Types / IOMMU Device / Device configuration layout}
+\item \ref{drivernormative:Device Types / IOMMU Device / Device Initialization}
+\item \ref{drivernormative:Device Types / IOMMU Device / Device operations}
+\item \ref{drivernormative:Device Types / IOMMU Device / Device operations / ATTACH request}
+\item \ref{drivernormative:Device Types / IOMMU Device / Device operations / DETACH request}
+\item \ref{drivernormative:Device Types / IOMMU Device / Device operations / MAP request}
+\item \ref{drivernormative:Device Types / IOMMU Device / Device operations / UNMAP request}
+\item \ref{drivernormative:Device Types / IOMMU Device / Device operations / PROBE request}
+\item \ref{drivernormative:Device Types / IOMMU Device / Device operations / PROBE properties / RESVMEM}
+\item \ref{drivernormative:Device Types / IOMMU Device / Device operations / Fault reporting}
 \end{itemize}
 
 \conformance{\section}{Device Conformance}\label{sec:Conformance / Device Conformance}
@@ -360,6 +388,24 @@ An RPMB device MUST conform to the following normative statements:
 \item \ref{devicenormative:Device Types / RPMB Device / Device Operation / Device Operation: Data Read}
 \item \ref{devicenormative:Device Types / RPMB Device / Device Operation / Device Operation: Result Read}
 \item \ref{devicenormative:Device Types / RPMB Device / Device Operation}
+\end{itemize}
+
+\conformance{\subsection}{IOMMU Device Conformance}\label{sec:Conformance / Device Conformance / IOMMU Device Conformance}
+
+An IOMMU device MUST conform to the following normative statements:
+
+\begin{itemize}
+\item \ref{devicenormative:Device Types / IOMMU Device / Feature bits}
+\item \ref{devicenormative:Device Types / IOMMU Device / Device configuration layout}
+\item \ref{devicenormative:Device Types / IOMMU Device / Device Initialization}
+\item \ref{devicenormative:Device Types / IOMMU Device / Device operations}
+\item \ref{devicenormative:Device Types / IOMMU Device / Device operations / ATTACH request}
+\item \ref{devicenormative:Device Types / IOMMU Device / Device operations / DETACH request}
+\item \ref{devicenormative:Device Types / IOMMU Device / Device operations / MAP request}
+\item \ref{devicenormative:Device Types / IOMMU Device / Device operations / UNMAP request}
+\item \ref{devicenormative:Device Types / IOMMU Device / Device operations / PROBE request}
+\item \ref{devicenormative:Device Types / IOMMU Device / Device operations / PROBE properties / RESVMEM}
+\item \ref{devicenormative:Device Types / IOMMU Device / Device operations / Fault reporting}
 \end{itemize}
 
 \conformance{\section}{Legacy Interface: Transitional Device and Transitional Driver Conformance}\label{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}
