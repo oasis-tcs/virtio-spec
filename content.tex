@@ -3102,8 +3102,8 @@ checksum includes the header), and \field{csum_offset} will be 16.
   \begin{itemize}
   \item If the VIRTIO_NET_F_GUEST_HDRLEN feature has been negotiated,
     \field{hdr_len} indicates the header length that needs to be replicated
-    for each packet. It's a number of bytes from beginning of the packet
-    to beginning of the transport payload.
+    for each packet. It's the number of bytes from the beginning of the packet
+    to the beginning of the transport payload.
     Otherwise, if the VIRTIO_NET_F_GUEST_HDRLEN feature has not been negotiated,
     \field{hdr_len} is a hint to the device as to how much of the header
     needs to be kept to copy into each packet, usually set to the
@@ -3219,7 +3219,7 @@ been negotiated:
 
 	\begin{note}
 	Caution should be taken by the implementation so as to prevent
-	malicious driver from attacking the device by setting incorrect hdr_len.
+	a malicious driver from attacking the device by setting an incorrect hdr_len.
 	\end{note}
 
 \item If the VIRTIO_NET_F_GUEST_HDRLEN feature has not been negotiated,
