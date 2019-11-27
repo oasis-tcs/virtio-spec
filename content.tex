@@ -691,8 +691,6 @@ The fields are interpreted as follows:
 #define VIRTIO_PCI_CAP_PCI_CFG           5
 /* Shared memory region */
 #define VIRTIO_PCI_CAP_SHARED_MEMORY_CFG 8
-/* Vendor-specific data */
-#define VIRTIO_PCI_CAP_VENDOR_CFG        9
 \end{lstlisting}
 
         Any other value is reserved for future use.
@@ -1100,80 +1098,6 @@ The region defined by the combination of the \field {cap.offset},
 {cap.length_hi} fields MUST be contained within the declared bar.
 
 The \field{cap.id} MUST be unique for any one device instance.
-
-\devicenormative{\paragraph}{Device-specific configuration}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Shared memory capability}
-
-The region defined by the combination of the \field {cap.offset},
-\field {cap.offset_hi}, and \field {cap.length}, \field
-{cap.length_hi} fields MUST be contained within the declared bar.
-
-The \field{cap.id} MUST be unique for any one device instance.
-
-\subsubsection{Vendor data capability}\label{sec:Virtio
-Transport Options / Virtio Over PCI Bus / PCI Device Layout /
-Vendor data capability}
-
-The optional Vendor data capability allows the device to present
-vendor-specific data to the driver, without
-conflicts, for debugging and/or reporting purposes,
-and without conflicting with standard functionality.
-
-This capability augments but does not replace the standard
-subsystem ID and subsystem vendor ID fields
-(offsets 0x2C and 0x2E in the PCI configuration space header)
-as specified by \hyperref[intro:PCI]{[PCI]}.
-
-Vendor data capability is enumerated on the PCI transport
-as a VIRTIO_PCI_CAP_VENDOR_CFG capability.
-
-The capability has the following structure:
-\begin{lstlisting}
-struct virtio_pci_vndr_data {
-        u8 cap_vndr;    /* Generic PCI field: PCI_CAP_ID_VNDR */
-        u8 cap_next;    /* Generic PCI field: next ptr. */
-        u8 cap_len;     /* Generic PCI field: capability length */
-        u8 cfg_type;    /* Identifies the structure. */
-        u16 vendor_id;  /* Identifies the vendor-specific format. */
-	/* For Vendor Definition */
-	/* Pads structure to a multiple of 4 bytes */
-	/* Reads must not have side effects */
-};
-\end{lstlisting}
-
-Where \field{vendor_id} identifies the PCI-SIG assigned Vendor ID
-as specified by \hyperref[intro:PCI]{[PCI]}.
-
-Note that the capability size is required to be a multiple of 4.
-
-To make it safe for a generic driver to access the capability,
-reads from this capability MUST NOT have any side effects.
-
-\devicenormative{\subsection}{Vendor data capability}{Virtio
-Transport Options / Virtio Over PCI Bus / PCI Device Layout /
-Vendor data capability}
-
-Devices CAN present \field{vendor_id} that does not match
-either the PCI Vendor ID or the PCI Subsystem Vendor ID.
-
-Devices CAN present multiple Vendor data capabilities with
-either different or identical \field{vendor_id} values.
-
-The value \field{vendor_id} MUST NOT equal 0x1AF4.
-
-The size of the Vendor data capability MUST be a multiple of 4 bytes.
-
-Reads of the Vendor data capability by the driver MUST NOT have any
-side effects.
-
-\drivernormative{\subsection}{Vendor data capability}{Virtio
-Transport Options / Virtio Over PCI Bus / PCI Device Layout /
-Vendor data capability}
-
-The driver SHOULD NOT use the Vendor data capability except
-for debugging and reporting purposes.
-
-The driver MUST qualify the \field{vendor_id} before
-interpreting or writing into the Vendor data capability.
 
 \subsubsection{PCI configuration access capability}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / PCI configuration access capability}
 
