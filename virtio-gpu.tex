@@ -70,16 +70,21 @@ struct virtio_gpu_config {
 \begin{description}
 \item[VIRTIO_GPU_EVENT_DISPLAY] Display configuration has changed.
   The driver SHOULD use the VIRTIO_GPU_CMD_GET_DISPLAY_INFO command to
-  fetch the information from the device.
+  fetch the information from the device.  In case EDID support is
+  negotiated (VIRTIO_GPU_F_EDID feature flag) the device SHOULD also
+  fetch the updated EDID blobs using the VIRTIO_GPU_CMD_GET_EDID
+  command.
 \end{description}
 
 \devicenormative{\subsection}{Device Initialization}{Device Types / GPU Device / Device Initialization}
 
 The driver SHOULD query the display information from the device using
 the VIRTIO_GPU_CMD_GET_DISPLAY_INFO command and use that information
-for the initial scanout setup.  In case no information is available or
-all displays are disabled the driver MAY choose to use a fallback,
-such as 1024x768 at display 0.
+for the initial scanout setup.  In case EDID support is negotiated
+(VIRTIO_GPU_F_EDID feature flag) the device SHOULD also fetch the EDID
+information using the VIRTIO_GPU_CMD_GET_EDID command.  If no
+information is available or all displays are disabled the driver MAY
+choose to use a fallback, such as 1024x768 at display 0.
 
 \subsection{Device Operation}\label{sec:Device Types / GPU Device / Device Operation}
 
