@@ -4554,12 +4554,14 @@ struct virtio_blk_req {
 
 The type of the request is either a read (VIRTIO_BLK_T_IN), a write
 (VIRTIO_BLK_T_OUT), a discard (VIRTIO_BLK_T_DISCARD), a write zeroes
-(VIRTIO_BLK_T_WRITE_ZEROES) or a flush (VIRTIO_BLK_T_FLUSH).
+(VIRTIO_BLK_T_WRITE_ZEROES), a flush (VIRTIO_BLK_T_FLUSH), or a get device ID
+string command (VIRTIO_BLK_T_GET_ID).
 
 \begin{lstlisting}
 #define VIRTIO_BLK_T_IN           0
 #define VIRTIO_BLK_T_OUT          1
 #define VIRTIO_BLK_T_FLUSH        4
+#define VIRTIO_BLK_T_GET_ID       8
 #define VIRTIO_BLK_T_DISCARD      11
 #define VIRTIO_BLK_T_WRITE_ZEROES 13
 \end{lstlisting}
@@ -4595,6 +4597,10 @@ discarded range. \field{unmap} is only used in write zeroes commands and allows
 the device to discard the specified range, provided that following reads return
 zeroes.
 
+VIRTIO_BLK_T_GET_ID requests fetch the device ID string from the device into
+\field{data}.  The device ID string is a NUL-padded ASCII string up to 20 bytes
+long.  If the string is 20 bytes long then there is no NUL terminator.
+
 The final \field{status} byte is written by the device: either
 VIRTIO_BLK_S_OK for success, VIRTIO_BLK_S_IOERR for device or driver
 error or VIRTIO_BLK_S_UNSUPP for a request unsupported by device:
@@ -4625,6 +4631,8 @@ and VIRTIO_BLK_T_OUT requests.
 The length of \field{data} MUST be a multiple of the size of struct
 virtio_blk_discard_write_zeroes for VIRTIO_BLK_T_DISCARD and
 VIRTIO_BLK_T_WRITE_ZEROES requests.
+
+The length of \field{data} MUST be 20 bytes for VIRTIO_BLK_T_GET_ID requests.
 
 VIRTIO_BLK_T_DISCARD requests MUST NOT contain more than
 \field{max_discard_seg} struct virtio_blk_discard_write_zeroes segments in
