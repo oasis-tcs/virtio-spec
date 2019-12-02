@@ -115,6 +115,17 @@ in <A
 HREF="https://github.com/oasis-tcs/virtio-admin">https://github.com/oasis-tcs/virtio-admin</A>.
 
 </div>
+<h4>Implementation discussion</h4>
+Implementation discussion should take place on the <strong>virtio-dev</strong> mailing list,
+and be archived in the mailing list archives.
+<p>See <A
+HREF="https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=virtio#feedback">
+https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=virtio#feedback</A>
+<p>This is the correct list to copy on Linux virtio UAPI change proposals.
+<p>Note that only the plain text part of the message is archived, and all
+attachments are stripped. Accordingly, messages sent to the
+mailing list should use text/plain encoding and not
+have any attachments.
 <h4>Use of github issues</h4>
 Note: according to the virtio TC rules, all official TC communication
 is taking place on one of the TC mailing lists.
