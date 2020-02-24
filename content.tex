@@ -3344,10 +3344,12 @@ If one of the VIRTIO_NET_F_HOST_TSO4, TSO6 or UFO options have
 been negotiated:
 \begin{itemize}
 \item If the VIRTIO_NET_F_GUEST_HDRLEN feature has been negotiated,
+	and \field{gso_type} differs from VIRTIO_NET_HDR_GSO_NONE,
 	the driver MUST set \field{hdr_len} to a value equal to the length
 	of the headers, including the transport header.
 
 \item If the VIRTIO_NET_F_GUEST_HDRLEN feature has not been negotiated,
+	or \field{gso_type} is VIRTIO_NET_HDR_GSO_NONE,
 	the driver SHOULD set \field{hdr_len} to a value
 	not less than the length of the headers, including the transport
 	header.
@@ -3369,6 +3371,7 @@ If one of the VIRTIO_NET_F_HOST_TSO4, TSO6 or UFO options have
 been negotiated:
 \begin{itemize}
 \item If the VIRTIO_NET_F_GUEST_HDRLEN feature has been negotiated,
+	and \field{gso_type} differs from VIRTIO_NET_HDR_GSO_NONE,
 	the device MAY use \field{hdr_len} as the transport header size.
 
 	\begin{note}
@@ -3377,6 +3380,7 @@ been negotiated:
 	\end{note}
 
 \item If the VIRTIO_NET_F_GUEST_HDRLEN feature has not been negotiated,
+	or \field{gso_type} is VIRTIO_NET_HDR_GSO_NONE,
 	the device MAY use \field{hdr_len} only as a hint about the
 	transport header size.
 	The device MUST NOT rely on \field{hdr_len} to be correct.
