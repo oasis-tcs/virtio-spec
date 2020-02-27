@@ -182,6 +182,16 @@ enum virtio_gpu_ctrl_type {
         VIRTIO_GPU_CMD_GET_CAPSET,
         VIRTIO_GPU_CMD_GET_EDID,
 
+        /* 3d commands (OpenGL) */
+        VIRTIO_GPU_CMD_CTX_CREATE = 0x0200,
+        VIRTIO_GPU_CMD_CTX_DESTROY,
+        VIRTIO_GPU_CMD_CTX_ATTACH_RESOURCE,
+        VIRTIO_GPU_CMD_CTX_DETACH_RESOURCE,
+        VIRTIO_GPU_CMD_RESOURCE_CREATE_3D,
+        VIRTIO_GPU_CMD_TRANSFER_TO_HOST_3D,
+        VIRTIO_GPU_CMD_TRANSFER_FROM_HOST_3D,
+        VIRTIO_GPU_CMD_SUBMIT_3D,
+
         /* cursor commands */
         VIRTIO_GPU_CMD_UPDATE_CURSOR = 0x0300,
         VIRTIO_GPU_CMD_MOVE_CURSOR,
@@ -453,6 +463,31 @@ struct virtio_gpu_resource_detach_backing {
 
 This detaches any backing pages from a resource, to be used in case of
 guest swapping or object destruction.
+
+\end{description}
+
+\subsubsection{Device Operation: controlq (3d)}\label{sec:Device Types / GPU Device / Device Operation / Device Operation: controlq (3d)}
+
+These commands are supported by the device if the VIRTIO_GPU_F_VIRGL
+feature flag is set.
+
+\begin{description}
+
+\item[VIRTIO_GPU_CMD_CTX_CREATE]
+\item[VIRTIO_GPU_CMD_CTX_DESTROY]
+\item[VIRTIO_GPU_CMD_CTX_ATTACH_RESOURCE]
+\item[VIRTIO_GPU_CMD_CTX_DETACH_RESOURCE]
+  Manage OpenGL contexts.
+
+\item[VIRTIO_GPU_CMD_RESOURCE_CREATE_3D]
+  Create OpenGL resources.
+
+\item[VIRTIO_GPU_CMD_TRANSFER_TO_HOST_3D]
+\item[VIRTIO_GPU_CMD_TRANSFER_FROM_HOST_3D]
+  Transfer data from and to OpenGL resources.
+
+\item[VIRTIO_GPU_CMD_SUBMIT_3D]
+  Submit rendering commands (mesa gallium command stream).
 
 \end{description}
 
