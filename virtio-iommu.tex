@@ -106,8 +106,6 @@ The driver MUST NOT write to device configuration fields.
 
 \devicenormative{\subsubsection}{Device configuration layout}{Device Types / IOMMU Device / Device configuration layout}
 
-The device SHOULD set \field{padding} to zero.
-
 The device MUST set at least one bit in \field{page_size_mask}, describing
 the page granularity. The device MAY set more than one bit in
 \field{page_size_mask}.
