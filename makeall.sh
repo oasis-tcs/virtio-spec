@@ -1,3 +1,5 @@
+#!/bin/sh
+
 export SPECDOC=${SPECDOC:-`cat REVISION`}
 export DATESTR=${DATESTR:-`cat REVISION-DATE`}
 ./makezip.sh
