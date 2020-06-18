@@ -26,8 +26,9 @@ Conformance targets:
 \ref{sec:Conformance / Driver Conformance / Crypto Driver Conformance},
 \ref{sec:Conformance / Driver Conformance / Socket Driver Conformance},
 \ref{sec:Conformance / Driver Conformance / RPMB Driver Conformance},
-\ref{sec:Conformance / Driver Conformance / IOMMU Driver Conformance} or
-\ref{sec:Conformance / Driver Conformance / Sound Driver Conformance}.
+\ref{sec:Conformance / Driver Conformance / IOMMU Driver Conformance},
+\ref{sec:Conformance / Driver Conformance / Sound Driver Conformance} or
+\ref{sec:Conformance / Driver Conformance / Memory Driver Conformance}.
     \item Clause \ref{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}.
   \end{itemize}
 \item[Device] A device MUST conform to four conformance clauses:
@@ -45,8 +46,9 @@ Conformance targets:
 \ref{sec:Conformance / Device Conformance / Crypto Device Conformance}, 
 \ref{sec:Conformance / Device Conformance / Socket Device Conformance}, 
 \ref{sec:Conformance / Device Conformance / RPMB Device Conformance},
-\ref{sec:Conformance / Device Conformance / IOMMU Device Conformance} or
-\ref{sec:Conformance / Device Conformance / Sound Device Conformance}.
+\ref{sec:Conformance / Device Conformance / IOMMU Device Conformance},
+\ref{sec:Conformance / Device Conformance / Sound Device Conformance} or
+\ref{sec:Conformance / Device Conformance / Memory Device Conformance}.
     \item Clause \ref{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}.
   \end{itemize}
 \end{description}
@@ -243,6 +245,20 @@ A sound driver MUST conform to the following normative statements:
 \item \ref{drivernormative:Device Types / Sound Device / Device Operation / PCM Stream Parameters}
 \item \ref{drivernormative:Device Types / Sound Device / Device Operation / PCM Output Stream}
 \item \ref{drivernormative:Device Types / Sound Device / Device Operation / PCM Input Stream}
+\end{itemize}
+
+\conformance{\subsection}{Memory Driver Conformance}\label{sec:Conformance / Driver Conformance / Memory Driver Conformance}
+
+A memory driver MUST conform to the following normative statements:
+
+\begin{itemize}
+\item \ref{drivernormative:Device Types / Memory Device / Device configuration layout}
+\item \ref{drivernormative:Device Types / Memory Device / Device Initialization}
+\item \ref{drivernormative:Device Types / Memory Device / Device Operation}
+\item \ref{drivernormative:Device Types / Memory Device / Device Operation / PLUG request}
+\item \ref{drivernormative:Device Types / Memory Device / Device Operation / UNPLUG request}
+\item \ref{drivernormative:Device Types / Memory Device / Device Operation / UNPLUG ALL request}
+\item \ref{drivernormative:Device Types / Memory Device / Device Operation / STATE request}
 \end{itemize}
 
 \conformance{\section}{Device Conformance}\label{sec:Conformance / Device Conformance}
@@ -445,6 +461,20 @@ A sound device MUST conform to the following normative statements:
 \item \ref{devicenormative:Device Types / Sound Device / Device Operation / PCM Output Stream}
 \item \ref{devicenormative:Device Types / Sound Device / Device Operation / PCM Input Stream}
 \item \ref{devicenormative:Device Types / Sound Device / Device Operation / Channel Map Information}
+\end{itemize}
+
+\conformance{\subsection}{Memory Device Conformance}\label{sec:Conformance / Device Conformance / Memory Device Conformance}
+
+A memory device MUST conform to the following normative statements:
+
+\begin{itemize}
+\item \ref{devicenormative:Device Types / Memory Device / Device configuration layout}
+\item \ref{devicenormative:Device Types / Memory Device / Device Initialization}
+\item \ref{devicenormative:Device Types / Memory Device / Device Operation}
+\item \ref{devicenormative:Device Types / Memory Device / Device Operation / PLUG request}
+\item \ref{devicenormative:Device Types / Memory Device / Device Operation / UNPLUG request}
+\item \ref{devicenormative:Device Types / Memory Device / Device Operation / UNPLUG ALL request}
+\item \ref{devicenormative:Device Types / Memory Device / Device Operation / STATE request}
 \end{itemize}
 
 \conformance{\section}{Legacy Interface: Transitional Device and Transitional Driver Conformance}\label{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}
