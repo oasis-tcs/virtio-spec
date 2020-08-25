@@ -5164,12 +5164,19 @@ guest memory statistics to the host.
     page hinting. A virtqueue for providing hints as to what memory is
     currently free is present. Configuration field \field{free_page_hint_cmd_id}
     is valid.
+\item[ VIRTIO_BALLOON_F_PAGE_POISON(4) ] A hint to the device, that the driver
+    will immediately write \field{poison_val} to pages after deflating them.
+    Configuration field \field{poison_val} is valid.
 
 \end{description}
 
 \drivernormative{\subsubsection}{Feature bits}{Device Types / Memory Balloon Device / Feature bits}
 The driver SHOULD accept the VIRTIO_BALLOON_F_MUST_TELL_HOST
 feature if offered by the device.
+
+The driver SHOULD clear the VIRTIO_BALLOON_F_PAGE_POISON flag if it will
+not immediately write \field{poison_val} to deflated pages (e.g., to
+initialize them, or fill them with a poison value).
 
 \devicenormative{\subsubsection}{Feature bits}{Device Types / Memory Balloon Device / Feature bits}
 If the device offers the VIRTIO_BALLOON_F_MUST_TELL_HOST feature
@@ -5192,12 +5199,15 @@ VIRTIO_BALLOON_F_MUST_TELL_HOST is not negotiated.
   \field{free_page_hint_cmd_id} is available if
     VIRTIO_BALLOON_F_FREE_PAGE_HINT has been negotiated and is read-only by
     the driver.
+  \field{poison_val} is available if VIRTIO_BALLOON_F_PAGE_POISON has been
+    negotiated.
 
 \begin{lstlisting}
 struct virtio_balloon_config {
         le32 num_pages;
         le32 actual;
         le32 free_page_hint_cmd_id;
+        le32 poison_val;
 };
 \end{lstlisting}
 
@@ -5225,6 +5235,8 @@ The device initialization process is outlined below:
 
 \item If the VIRTIO_BALLOON_F_FREE_PAGE_HINT feature bit is negotiated,
   identify the free_page_vq.
+\item If the VIRTIO_BALLOON_F_PAGE_POISON feature bit is negotiated, update
+  the \field{poison_val} configuration field.
 
 \item DRIVER_OK is set: device operation begins.
 
@@ -5631,6 +5643,40 @@ When using the legacy interface, transitional devices and drivers MUST
 format the command ID field in output buffers according to the native
 endian of the guest rather than (necessarily when not using the legacy
 interface) little-endian.
+
+\subsubsection{Page Poison}\label{sec:Device Types / Memory Balloon Device / Device Operation / Page Poison}
+
+Page Poison provides a way to notify the host that the guest is initializing
+free pages with \field{poison_val}. When the feature is enabled, pages will
+be immediately written to by the driver after deflating.
+
+If the guest is not initializing freed pages, the driver should reject the
+VIRTIO_BALLOON_F_PAGE_POISON feature.
+
+If VIRTIO_BALLOON_F_PAGE_POISON feature has been negotiated, the driver
+will place the initialization value into the \field{poison_val}
+configuration field data.
+
+\drivernormative{\paragraph}{Page Poison}{Device Types / Memory Balloon Device / Device Operation / Page Poison}
+
+Normative statements in this section apply if the
+VIRTIO_BALLOON_F_PAGE_POISON feature has been negotiated.
+
+The driver MUST initialize the deflated pages with \field{poison_val} when
+they are reused by the driver.
+
+The driver MUST populate the \field{poison_val} configuration data before
+setting the DRIVER_OK bit.
+
+The driver MUST NOT modify \field{poison_val} while the DRIVER_OK bit is set.
+
+\devicenormative{\paragraph}{Page Poison}{Device Types / Memory Balloon Device / Device Operation / Page Poison}
+
+Normative statements in this section apply if the
+VIRTIO_BALLOON_F_PAGE_POISON feature has been negotiated.
+
+The device MAY use the content of \field{poison_val} as a hint to guest
+behavior.
 
 \section{SCSI Host Device}\label{sec:Device Types / SCSI Host Device}
 
