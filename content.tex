@@ -5143,10 +5143,13 @@ guest memory statistics to the host.
 \begin{description}
 \item[0] inflateq
 \item[1] deflateq
-\item[2] statsq.
+\item[2] statsq
+\item[3] free_page_vq
 \end{description}
 
-  Virtqueue 2 only exists if VIRTIO_BALLOON_F_STATS_VQ set.
+  statsq only exists if VIRTIO_BALLOON_F_STATS_VQ is set.
+
+  free_page_vq only exists if VIRTIO_BALLOON_F_FREE_PAGE_HINT is set.
 
 \subsection{Feature bits}\label{sec:Device Types / Memory Balloon Device / Feature bits}
 \begin{description}
@@ -5157,6 +5160,10 @@ guest memory statistics to the host.
     memory statistics is present.
 \item[VIRTIO_BALLOON_F_DEFLATE_ON_OOM (2) ] Deflate balloon on
     guest out of memory condition.
+\item[ VIRTIO_BALLOON_F_FREE_PAGE_HINT(3) ] The device has support for free
+    page hinting. A virtqueue for providing hints as to what memory is
+    currently free is present. Configuration field \field{free_page_hint_cmd_id}
+    is valid.
 
 \end{description}
 
@@ -5180,13 +5187,17 @@ allow guest to use memory before notifying host if
 VIRTIO_BALLOON_F_MUST_TELL_HOST is not negotiated.
 
 \subsection{Device configuration layout}\label{sec:Device Types / Memory Balloon Device / Device configuration layout}
-  Both fields of this configuration
-  are always available.
+  \field{num_pages} and \field{actual} are always available.
+
+  \field{free_page_hint_cmd_id} is available if
+    VIRTIO_BALLOON_F_FREE_PAGE_HINT has been negotiated and is read-only by
+    the driver.
 
 \begin{lstlisting}
 struct virtio_balloon_config {
         le32 num_pages;
         le32 actual;
+        le32 free_page_hint_cmd_id;
 };
 \end{lstlisting}
 
@@ -5210,9 +5221,15 @@ The device initialization process is outlined below:
   \begin{enumerate}
   \item Identify the stats virtqueue.
   \item Add one empty buffer to the stats virtqueue.
-  \item DRIVER_OK is set: device operation begins.
-  \item Notify the device about the stats virtqueue buffer.
   \end{enumerate}
+
+\item If the VIRTIO_BALLOON_F_FREE_PAGE_HINT feature bit is negotiated,
+  identify the free_page_vq.
+
+\item DRIVER_OK is set: device operation begins.
+
+\item If the VIRTIO_BALLOON_F_STATS_VQ feature bit is negotiated, then
+  notify the device about the stats virtqueue buffer.
 \end{enumerate}
 
 \subsection{Device Operation}\label{sec:Device Types / Memory Balloon Device / Device Operation}
@@ -5482,6 +5499,138 @@ first buffer.
 \item[VIRTIO_BALLOON_S_HTLB_PGFAIL (9)] The number of failed hugetlb page
   allocations in the guest.
 \end{description}
+
+\subsubsection{Free Page Hinting}\label{sec:Device Types / Memory Balloon Device / Device Operation / Free Page Hinting}
+
+Free page hinting is designed to be used during migration to determine what
+pages within the guest are currently unused so that they can be skipped over
+while migrating the guest. The device will indicate that it is ready to start
+performing hinting by setting the \field{free_page_hint_cmd_id} to one of the
+non-reserved values that can be used as a command ID. The following values
+are reserved:
+
+\begin{description}
+\item[VIRTIO_BALLOON_CMD_ID_STOP (0)] Any command ID previously supplied by
+  the device is invalid. The driver should stop hinting free pages until a
+  new command ID is supplied, but should not release any hinted pages for
+  use by the guest.
+
+\item[VIRTIO_BALLOON_CMD_ID_DONE (1)] Any command ID previously supplied by
+  the device is invalid. The driver should stop hinting free pages, and
+  should release all hinted pages for use by the guest.
+\end{description}
+
+When a hint is provided by the driver it indicates that the data contained
+in the given page is no longer needed and can be discarded. If the driver
+writes to the page this overrides the hint and the data will be retained.
+The contents of any stale pages that have not been written to since the
+page was hinted may be lost, and if read the contents of such pages will
+be uninitialized memory.
+
+A request for free page hinting proceeds as follows:
+
+\begin{enumerate}
+
+\item The driver examines the \field{free_page_hint_cmd_id} configuration field.
+  If it contains a non-reserved value then free page hinting will begin.
+
+\item To supply free page hints:
+  \begin{enumerate}
+  \item The driver constructs an output buffer containing the new value from
+    the \field{free_page_hint_cmd_id} configuration field and adds it to the
+    free_page_vq.
+  \item The driver maps a series of pages and adds them to the
+    free_page_vq as individual scatter-gather input buffer entries.
+  \item When the driver is no longer able to fetch additional pages to add
+    to the free_page_vq, it will construct an output buffer containing the
+    command ID VIRTIO_BALLOON_CMD_ID_STOP.
+  \end{enumerate}
+
+\item A round of hinting ends either when the driver is no longer able to
+  supply more pages for hinting as described above, or when the device
+  updates \field{free_page_hint_cmd_id} configuration field to contain either
+  VIRTIO_BALLOON_CMD_ID_STOP or VIRTIO_BALLOON_CMD_ID_DONE.
+
+\item The device may follow VIRTIO_BALLOON_CMD_ID_STOP with a new
+  non-reserved value for the \field{free_page_hint_cmd_id} configuration
+  field in which case it will resume supplying free page hints.
+
+\item Otherwise, if the device provides VIRTIO_BALLOON_CMD_ID_DONE then
+  hinting is complete and the driver may release all previously hinted
+  pages for use by the guest.
+
+\end{enumerate}
+
+\drivernormative{\paragraph}{Free Page Hinting}{Device Types / Memory Balloon Device / Device Operation / Free Page Hinting}
+
+Normative statements in this section apply if the
+VIRTIO_BALLOON_F_FREE_PAGE_HINT feature has been negotiated.
+
+The driver MUST use an output buffer size of 4 bytes for all output
+buffers submitted to the free_page_vq.
+
+The driver MUST start hinting by providing an output buffer containing
+the current command ID for the given block of pages.
+
+The driver MUST NOT provide more than one output buffer containing the
+current command ID.
+
+The driver SHOULD supply pages to the free_page_vq as input buffers when
+\field{free_page_hint_cmd_id} specifies a value of 2 or greater.
+
+The driver SHOULD stop supplying pages for hinting when
+\field{free_page_hint_cmd_id} specifies a value of VIRTIO_BALLOON_CMD_ID_STOP
+or VIRTIO_BALLOON_CMD_ID_DONE.
+
+If the driver is unable to supply pages, it MUST complete hinting by adding
+an output buffer containing the command ID VIRTIO_BALLOON_CMD_ID_STOP.
+
+The driver MAY release hinted pages for use by the guest including when the
+device has not yet used the descriptor containing the hinting request.
+
+The driver MUST treat the content of all hinted pages as uninitialized
+memory.
+
+The driver MUST initialize the contents of any previously hinted page
+released before \field{free_page_hint_cmd_id} specifies a value of
+VIRTIO_BALLOON_CMD_ID_DONE.
+
+The driver SHOULD release all previously hinted pages once
+\field{free_page_hint_cmd_id} specifies a value of
+VIRTIO_BALLOON_CMD_ID_DONE.
+
+\devicenormative{\paragraph}{Free Page Hinting}{Device Types / Memory Balloon Device / Device Operation / Free Page Hinting}
+
+Normative statements in this section apply if the
+VIRTIO_BALLOON_F_FREE_PAGE_HINT feature has been negotiated.
+
+The device SHOULD set \field{free_page_hint_cmd_id} to
+VIRTIO_BALLOON_CMD_ID_STOP any time that it will not be able to make use
+of the hints provided by the driver.
+
+The device MUST NOT reuse a command ID until it has received an output
+buffer containing VIRTIO_BALLOON_CMD_ID_STOP from the driver.
+
+The device MUST ignore pages that are provided with a command ID that does
+not match the current value in \field{free_page_hint_cmd_id}.
+
+If the content of a previously hinted page has not been modified by the
+guest since the device issued the \field{free_page_hint_cmd_id} associated
+with the hint, the device MAY modify the contents of the page.
+
+The device MUST NOT modify the content of a previously hinted page after
+\field{free_page_hint_cmd_id} is set to VIRTIO_BALLOON_CMD_ID_DONE.
+
+The device MUST report a value of VIRTIO_BALLOON_CMD_ID_DONE in
+\field{free_page_hint_cmd_id} when it no longer has need for the
+previously hinted pages.
+
+\paragraph{Legacy Interface: Free Page Hinting}\label{sec:Device Types / Memory Balloon Device / Device Operation / Free Page Hinting / Legacy Interface: Free Page Hinting}
+
+When using the legacy interface, transitional devices and drivers MUST
+format the command ID field in output buffers according to the native
+endian of the guest rather than (necessarily when not using the legacy
+interface) little-endian.
 
 \section{SCSI Host Device}\label{sec:Device Types / SCSI Host Device}
 
