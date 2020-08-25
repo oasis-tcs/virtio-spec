@@ -5145,11 +5145,14 @@ guest memory statistics to the host.
 \item[1] deflateq
 \item[2] statsq
 \item[3] free_page_vq
+\item[4] reporting_vq
 \end{description}
 
   statsq only exists if VIRTIO_BALLOON_F_STATS_VQ is set.
 
   free_page_vq only exists if VIRTIO_BALLOON_F_FREE_PAGE_HINT is set.
+
+  reporting_vq only exists if VIRTIO_BALLOON_F_PAGE_REPORTING is set.
 
 \subsection{Feature bits}\label{sec:Device Types / Memory Balloon Device / Feature bits}
 \begin{description}
@@ -5167,6 +5170,8 @@ guest memory statistics to the host.
 \item[ VIRTIO_BALLOON_F_PAGE_POISON(4) ] A hint to the device, that the driver
     will immediately write \field{poison_val} to pages after deflating them.
     Configuration field \field{poison_val} is valid.
+\item[ VIRTIO_BALLOON_F_PAGE_REPORTING(5) ] The device has support for free
+    page reporting. A virtqueue for reporting free guest memory is present.
 
 \end{description}
 
@@ -5177,6 +5182,10 @@ feature if offered by the device.
 The driver SHOULD clear the VIRTIO_BALLOON_F_PAGE_POISON flag if it will
 not immediately write \field{poison_val} to deflated pages (e.g., to
 initialize them, or fill them with a poison value).
+
+If the driver is expecting the pages to retain some initialized value,
+it MUST NOT accept VIRTIO_BALLOON_F_PAGE_REPORTING unless it also
+negotiates VIRTIO_BALLOON_F_PAGE_POISON.
 
 \devicenormative{\subsubsection}{Feature bits}{Device Types / Memory Balloon Device / Feature bits}
 If the device offers the VIRTIO_BALLOON_F_MUST_TELL_HOST feature
@@ -5237,11 +5246,15 @@ The device initialization process is outlined below:
   identify the free_page_vq.
 \item If the VIRTIO_BALLOON_F_PAGE_POISON feature bit is negotiated, update
   the \field{poison_val} configuration field.
+\item If the VIRTIO_BALLOON_F_PAGE_REPORTING feature bit is negotiated,
+  identify the reporting_vq.
 
 \item DRIVER_OK is set: device operation begins.
 
 \item If the VIRTIO_BALLOON_F_STATS_VQ feature bit is negotiated, then
   notify the device about the stats virtqueue buffer.
+\item If the VIRTIO_BALLOON_F_PAGE_REPORTING feature bit is negotiated, then
+  begin reporting free pages to the device.
 \end{enumerate}
 
 \subsection{Device Operation}\label{sec:Device Types / Memory Balloon Device / Device Operation}
@@ -5648,7 +5661,8 @@ interface) little-endian.
 
 Page Poison provides a way to notify the host that the guest is initializing
 free pages with \field{poison_val}. When the feature is enabled, pages will
-be immediately written to by the driver after deflating.
+be immediately written to by the driver after deflating, and pages reported
+by free page reporting will retain the value indicated by \field{poison_val}.
 
 If the guest is not initializing freed pages, the driver should reject the
 VIRTIO_BALLOON_F_PAGE_POISON feature.
@@ -5677,6 +5691,71 @@ VIRTIO_BALLOON_F_PAGE_POISON feature has been negotiated.
 
 The device MAY use the content of \field{poison_val} as a hint to guest
 behavior.
+
+\subsubsection{Free Page Reporting}\label{sec:Device Types / Memory Balloon Device / Device Operation / Free Page Reporting}
+
+Free Page Reporting provides a mechanism similar to balloon inflation,
+however it does not provide a deflation queue. Reported free pages can
+be reused by the driver after the reporting request has been acknowledged
+without notifying the device.
+
+The driver will begin reporting free pages. When exactly and which free
+pages are reported is up to the driver.
+
+\begin{enumerate}
+
+\item The driver determines it has enough pages available to begin
+  reporting free pages.
+
+\item The driver gathers free pages into a scatter-gather list and adds
+  them to the reporting_vq.
+
+\item The device acknowledges the reporting request by using the
+  reporting_vq descriptor.
+
+\item Once the device has acknowledged the report, the driver can reuse the
+  reported free pages when needed (e.g., by putting them back to free page
+  lists in the guest operating system).
+
+\item The driver can then continue to gather and report free pages until it
+  has determined it has reported a sufficient quantity of pages.
+
+\end{enumerate}
+
+\drivernormative{\paragraph}{Free Page Reporting}{Device Types / Memory Balloon Device / Device Operation / Free Page Reporting}
+
+Normative statements in this section apply if the
+VIRTIO_BALLOON_F_PAGE_REPORTING feature has been negotiated.
+
+If the VIRTIO_BALLOON_F_PAGE_POISON feature has not been negotiated, then
+the driver MUST treat all reported pages as uninitialized memory.
+
+If the VIRTIO_BALLOON_F_PAGE_POISON feature has been negotiated, the
+driver MUST initialize all free pages with \field{poison_val} before
+reporting them.
+
+The driver MUST NOT use the reported pages until the device has
+acknowledged the reporting request.
+
+The driver MAY report free pages any time after DRIVER_OK is set.
+
+The driver SHOULD attempt to report large pages rather than smaller ones.
+
+The driver SHOULD avoid reading/writing reported pages if
+not strictly necessary.
+
+\devicenormative{\paragraph}{Free Page Reporting}{Device Types / Memory Balloon Device / Device Operation / Free Page Reporting}
+
+Normative statements in this section apply if the
+VIRTIO_BALLOON_F_PAGE_REPORTING feature has been negotiated.
+
+If the VIRTIO_BALLOON_F_PAGE_POISON feature has not been negotiated, the
+device MAY modify the contents of any page supplied in a report request
+before acknowledging that request by using the reporting_vq descriptor.
+
+If the VIRTIO_BALLOON_F_PAGE_POISON feature has been negotiated, the device
+MUST NOT modify the the content of a reported page to a value other than
+\field{poison_val}.
 
 \section{SCSI Host Device}\label{sec:Device Types / SCSI Host Device}
 
