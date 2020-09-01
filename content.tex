@@ -3058,9 +3058,9 @@ The following two fields, \field{speed} and \field{duplex}, only
 exist if VIRTIO_NET_F_SPEED_DUPLEX is set.
 
 \field{speed} contains the device speed, in units of 1 MBit per
-second, 0 to 0x7ffffffff, or 0xfffffffff for unknown speed.
+second, 0 to 0x7fffffff, or 0xffffffff for unknown speed.
 
-\field{duplex} has the values of 0x00 for full duplex, 0x01 for
+\field{duplex} has the values of 0x01 for full duplex, 0x00 for
 half duplex and 0xff for unknown duplex state.
 
 Both \field{speed} and \field{duplex} can change, thus the driver
