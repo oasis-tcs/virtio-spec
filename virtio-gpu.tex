@@ -90,13 +90,31 @@ information using the VIRTIO_GPU_CMD_GET_EDID command.  If no
 information is available or all displays are disabled the driver MAY
 choose to use a fallback, such as 1024x768 at display 0.
 
+The driver SHOULD query all shared memory regions supported by the device.
+If the device supports shared memory, the \field{shmid} of a region MUST
+(see \ref{sec:Basic Facilities of a Virtio Device /
+Shared Memory Regions}~\nameref{sec:Basic Facilities of a Virtio Device /
+Shared Memory Regions}) be one of the following:
+
+\begin{lstlisting}
+enum virtio_gpu_shm_id {
+        VIRTIO_GPU_SHM_ID_UNDEFINED = 0,
+        VIRTIO_GPU_SHM_ID_HOST_VISIBLE = 1,
+};
+\end{lstlisting}
+
+The shared memory region with VIRTIO_GPU_SHM_ID_HOST_VISIBLE is referred as
+the "host visible memory region".  The device MUST support the
+VIRTIO_GPU_CMD_RESOURCE_MAP_BLOB and VIRTIO_GPU_CMD_RESOURCE_UNMAP_BLOB
+if the host visible memory region is available.
+
 \subsection{Device Operation}\label{sec:Device Types / GPU Device / Device Operation}
 
 The virtio-gpu is based around the concept of resources private to the
-host, the guest must DMA transfer into these resources. This is a
-design requirement in order to interface with future 3D rendering. In
-the unaccelerated 2D mode there is no support for DMA transfers from
-resources, just to them.
+host.  The guest must DMA transfer into these resources, unless shared memory
+regions are supported. This is a design requirement in order to interface with
+future 3D rendering. In the unaccelerated 2D mode there is no support for DMA
+transfers from resources, just to them.
 
 Resources are initially simple 2D resources, consisting of a width,
 height and format along with an identifier. The guest must then attach
@@ -203,6 +221,8 @@ enum virtio_gpu_ctrl_type {
         VIRTIO_GPU_CMD_TRANSFER_TO_HOST_3D,
         VIRTIO_GPU_CMD_TRANSFER_FROM_HOST_3D,
         VIRTIO_GPU_CMD_SUBMIT_3D,
+        VIRTIO_GPU_CMD_RESOURCE_MAP_BLOB,
+        VIRTIO_GPU_CMD_RESOURCE_UNMAP_BLOB,
 
         /* cursor commands */
         VIRTIO_GPU_CMD_UPDATE_CURSOR = 0x0300,
@@ -215,6 +235,7 @@ enum virtio_gpu_ctrl_type {
         VIRTIO_GPU_RESP_OK_CAPSET,
         VIRTIO_GPU_RESP_OK_EDID,
         VIRTIO_GPU_RESP_OK_RESOURCE_UUID,
+        VIRTIO_GPU_RESP_OK_MAP_INFO,
 
         /* error responses */
         VIRTIO_GPU_RESP_ERR_UNSPEC = 0x1200,
@@ -622,6 +643,49 @@ feature flag is set.
 
 \item[VIRTIO_GPU_CMD_SUBMIT_3D]
   Submit rendering commands (mesa gallium command stream).
+
+\item[VIRTIO_GPU_CMD_RESOURCE_MAP_BLOB] maps a host-only
+  blob resource into an offset in the host visible memory region. Request
+  data is \field{struct virtio_gpu_resource_map_blob}.  The driver MUST
+  not map a blob resource that is already mapped.  Response type is
+  VIRTIO_GPU_RESP_OK_MAP_INFO. Support is optional and negotiated
+  using the VIRTIO_GPU_F_RESOURCE_BLOB feature flag and checking for
+  the presence of the host visible memory region.
+
+\begin{lstlisting}
+struct virtio_gpu_resource_map_blob {
+        struct virtio_gpu_ctrl_hdr hdr;
+        le32 resource_id;
+        le32 padding;
+        le64 offset;
+};
+
+#define VIRTIO_GPU_MAP_CACHE_MASK      0x0f
+#define VIRTIO_GPU_MAP_CACHE_NONE      0x00
+#define VIRTIO_GPU_MAP_CACHE_CACHED    0x01
+#define VIRTIO_GPU_MAP_CACHE_UNCACHED  0x02
+#define VIRTIO_GPU_MAP_CACHE_WC        0x03
+struct virtio_gpu_resp_map_info {
+        struct virtio_gpu_ctrl_hdr hdr;
+        u32 map_info;
+        u32 padding;
+};
+\end{lstlisting}
+
+\item[VIRTIO_GPU_CMD_RESOURCE_UNMAP_BLOB] unmaps a
+  host-only blob resource from the host visible memory region. Request data
+  is \field{struct virtio_gpu_resource_unmap_blob}.  Response type is
+  VIRTIO_GPU_RESP_OK_NODATA.  Support is optional and negotiated
+  using the VIRTIO_GPU_F_RESOURCE_BLOB feature flag and checking for
+  the presence of the host visible memory region.
+
+\begin{lstlisting}
+struct virtio_gpu_resource_unmap_blob {
+        struct virtio_gpu_ctrl_hdr hdr;
+        le32 resource_id;
+        le32 padding;
+};
+\end{lstlisting}
 
 \end{description}
 
