@@ -37,6 +37,8 @@ control queue.
 \item[VIRTIO_GPU_F_EDID  (1)] EDID is supported.
 \item[VIRTIO_GPU_F_RESOURCE_UUID (2)] assigning resources UUIDs for export
   to other virtio devices is supported.
+\item[VIRTIO_GPU_F_RESOURCE_BLOB (3)] creating and using size-based blob
+  resources is supported.
 \end{description}
 
 \subsection{Device configuration layout}\label{sec:Device Types / GPU Device / Device configuration layout}
@@ -189,6 +191,8 @@ enum virtio_gpu_ctrl_type {
         VIRTIO_GPU_CMD_GET_CAPSET,
         VIRTIO_GPU_CMD_GET_EDID,
         VIRTIO_GPU_CMD_RESOURCE_ASSIGN_UUID,
+        VIRTIO_GPU_CMD_RESOURCE_CREATE_BLOB,
+        VIRTIO_GPU_CMD_SET_SCANOUT_BLOB,
 
         /* 3d commands (OpenGL) */
         VIRTIO_GPU_CMD_CTX_CREATE = 0x0200,
@@ -498,6 +502,101 @@ the host private resource. Note that if the resource has an attached backing,
 modifications made to the host private resource through the exported object by
 other devices are not visible in the attached backing until they are transferred
 into the backing.
+
+\item[VIRTIO_GPU_CMD_RESOURCE_CREATE_BLOB] Creates a virtio-gpu blob
+  resource. Request data is \field{struct
+  virtio_gpu_resource_create_blob}, followed by \field{struct
+  virtio_gpu_mem_entry} entries. Response type is
+  VIRTIO_GPU_RESP_OK_NODATA. Support is optional and negotiated
+  using the VIRTIO_GPU_F_RESOURCE_BLOB feature flag.
+
+\begin{lstlisting}
+#define VIRTIO_GPU_BLOB_MEM_GUEST             0x0001
+#define VIRTIO_GPU_BLOB_MEM_HOST3D            0x0002
+#define VIRTIO_GPU_BLOB_MEM_HOST3D_GUEST      0x0003
+
+#define VIRTIO_GPU_BLOB_FLAG_USE_MAPPABLE     0x0001
+#define VIRTIO_GPU_BLOB_FLAG_USE_SHAREABLE    0x0002
+#define VIRTIO_GPU_BLOB_FLAG_USE_CROSS_DEVICE 0x0004
+
+struct virtio_gpu_resource_create_blob {
+       struct virtio_gpu_ctrl_hdr hdr;
+       le32 resource_id;
+       le32 blob_mem;
+       le32 blob_flags;
+       le32 nr_entries;
+       le64 blob_id;
+       le64 size;
+};
+
+\end{lstlisting}
+
+A blob resource is a container for:
+
+  \begin{itemize*}
+  \item a guest memory allocation (referred to as a
+  "guest-only blob resource").
+  \item a host memory allocation (referred to as a
+  "host-only blob resource").
+  \item a guest memory and host memory allocation (referred
+  to as a "default blob resource").
+  \end{itemize*}
+
+The memory properties of the blob resource MUST be described by
+\field{blob_mem}, which MUST be non-zero.
+
+For default and guest-only blob resources, \field{nr_entries} guest
+memory entries may be assigned to the resource.  For default blob resources
+(i.e, when \field{blob_mem} is VIRTIO_GPU_BLOB_MEM_HOST3D_GUEST), these
+memory entries are used as a shadow buffer for the host memory. To
+facilitate drivers that support swap-in and swap-out, \field{nr_entries} may
+be zero and VIRTIO_GPU_CMD_RESOURCE_ATTACH_BACKING may be subsequently used.
+VIRTIO_GPU_CMD_RESOURCE_DETACH_BACKING may be used to unassign memory entries.
+
+\field{blob_mem} can only be VIRTIO_GPU_BLOB_MEM_HOST3D and
+VIRTIO_GPU_BLOB_MEM_HOST3D_GUEST if VIRTIO_GPU_F_VIRGL is supported.
+VIRTIO_GPU_BLOB_MEM_GUEST is valid regardless whether VIRTIO_GPU_F_VIRGL
+is supported or not.
+
+For VIRTIO_GPU_BLOB_MEM_HOST3D and VIRTIO_GPU_BLOB_MEM_HOST3D_GUEST, the
+virtio-gpu resource MUST be created from the rendering context local object
+identified by the \field{blob_id}. The actual allocation is done via
+VIRTIO_GPU_CMD_SUBMIT_3D.
+
+The driver MUST inform the device if the blob resource is used for
+memory access, sharing between driver instances and/or sharing with
+other devices. This is done via the \field{blob_flags} field.
+
+If VIRTIO_GPU_F_VIRGL is set, both VIRTIO_GPU_CMD_TRANSFER_TO_HOST_3D
+and VIRTIO_GPU_CMD_TRANSFER_FROM_HOST_3D may be used to update the
+resource. There is no restriction on the image/buffer view the driver
+has on the blob resource.
+
+\item[VIRTIO_GPU_CMD_SET_SCANOUT_BLOB] sets scanout parameters for a
+   blob resource. Request data is
+  \field{struct virtio_gpu_set_scanout_blob}. Response type is
+  VIRTIO_GPU_RESP_OK_NODATA. Support is optional and negotiated
+  using the VIRTIO_GPU_F_RESOURCE_BLOB feature flag.
+
+\begin{lstlisting}
+struct virtio_gpu_set_scanout_blob {
+       struct virtio_gpu_ctrl_hdr hdr;
+       struct virtio_gpu_rect r;
+       le32 scanout_id;
+       le32 resource_id;
+       le32 width;
+       le32 height;
+       le32 format;
+       le32 padding;
+       le32 strides[4];
+       le32 offsets[4];
+};
+\end{lstlisting}
+
+The rectangle \field{r} represents the portion of the blob resource being
+displayed. The rest is the metadata associated with the blob resource. The
+format MUST be one of \field{enum virtio_gpu_formats}.  The format MAY be
+compressed with header and data planes.
 
 \end{description}
 
