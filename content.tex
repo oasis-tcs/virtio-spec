@@ -836,6 +836,7 @@ struct virtio_pci_common_cfg {
         le64 queue_desc;                /* read-write */
         le64 queue_driver;              /* read-write */
         le64 queue_device;              /* read-write */
+        le16 queue_notify_data;         /* read-only for driver */
 };
 \end{lstlisting}
 
@@ -902,6 +903,19 @@ struct virtio_pci_common_cfg {
 
 \item[\field{queue_device}]
         The driver writes the physical address of Device Area here.  See section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues}.
+
+\item[\field{queue_notify_data}]
+        This field exists only if VIRTIO_F_NOTIF_CONFIG_DATA has been negotiated.
+        The driver will use this value to put it in the 'virtqueue number' field
+        in the available buffer notification structure.
+        See section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Available Buffer Notifications}.
+        \begin{note}
+        This field provides the device with flexibility to determine how virtqueues
+        will be referred to in available buffer notifications.
+        In a trivial case the device can set \field{queue_notify_data}=vqn. Some devices
+        may benefit from providing another value, for example an internal virtqueue
+        identifier, or an internal offset related to the virtqueue number.
+        \end{note}
 \end{description}
 
 \devicenormative{\paragraph}{Common configuration structure layout}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common configuration structure layout}
@@ -952,7 +966,7 @@ present either a value of 0 or a power of 2 in
 
 \drivernormative{\paragraph}{Common configuration structure layout}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common configuration structure layout}
 
-The driver MUST NOT write to \field{device_feature}, \field{num_queues}, \field{config_generation} or \field{queue_notify_off}.
+The driver MUST NOT write to \field{device_feature}, \field{num_queues}, \field{config_generation}, \field{queue_notify_off} or \field{queue_notify_data}.
 
 If VIRTIO_F_RING_PACKED has been negotiated,
 the driver MUST NOT write the value 0 to \field{queue_size}.
@@ -1530,6 +1544,15 @@ for the definition of the components.
 
 See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability}
 for how to calculate the Queue Notify address.
+
+\drivernormative{\paragraph}{Available Buffer Notifications}{Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Available Buffer Notifications}
+If VIRTIO_F_NOTIF_CONFIG_DATA has been negotiated:
+\begin{itemize}
+\item If VIRTIO_F_NOTIFICATION_DATA has not been negotiated, the driver MUST use the
+\field{queue_notify_data} value instead of the virtqueue index.
+\item If VIRTIO_F_NOTIFICATION_DATA has been negotiated, the driver MUST set the
+\field{vqn} field to the \field{queue_notify_data} value.
+\end{itemize}
 
 \subsubsection{Used Buffer Notifications}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Used Buffer Notifications}
 
@@ -6554,6 +6577,25 @@ Descriptors} and \ref{sec:Packed Virtqueues / Indirect Flag: Scatter-Gather Supp
   that the driver passes extra data (besides identifying the virtqueue)
   in its device notifications.
   See \ref{sec:Virtqueues / Driver notifications}~\nameref{sec:Virtqueues / Driver notifications}.
+
+  \item[VIRTIO_F_NOTIF_CONFIG_DATA(39)] This feature indicates that the driver
+  uses the data provided by the device as a virtqueue identifier in available
+  buffer notifications.
+  As mentioned in section \ref{sec:Virtqueues / Driver notifications}, when the
+  driver is required to send an available buffer notification to the device, it
+  sends the virtqueue number to be notified. The method of delivering
+  notifications is transport specific.
+  With the PCI transport, the device can optionally provide a per-virtqueue value
+  for the driver to use in driver notifications, instead of the virtqueue number.
+  Some devices may benefit from this flexibility by providing, for example,
+  an internal virtqueue identifier, or an internal offset related to the
+  virtqueue number.
+
+  This feature indicates the availability of such value. The definition of the
+  data to be provided in driver notification and the delivery method is
+  transport specific.
+  For more details about driver notifications over PCI see \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Available Buffer Notifications}.
+
 \end{description}
 
 \drivernormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
@@ -6587,6 +6629,8 @@ functions through the device's PCI SR-IOV capability
 structure even if the device or the system has been fully
 or partially reset, and even without re-negotiating
 VIRTIO_F_SR_IOV after the reset.
+
+A driver SHOULD accept VIRTIO_F_NOTIF_CONFIG_DATA if it is offered.
 
 \devicenormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
 
