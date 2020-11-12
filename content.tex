@@ -5206,8 +5206,8 @@ VIRTIO_BALLOON_F_MUST_TELL_HOST is not negotiated.
   \field{num_pages} and \field{actual} are always available.
 
   \field{free_page_hint_cmd_id} is available if
-    VIRTIO_BALLOON_F_FREE_PAGE_HINT has been negotiated and is read-only by
-    the driver.
+    VIRTIO_BALLOON_F_FREE_PAGE_HINT has been negotiated. The field is
+    read-only by the driver.
   \field{poison_val} is available if VIRTIO_BALLOON_F_PAGE_POISON has been
     negotiated.
 
