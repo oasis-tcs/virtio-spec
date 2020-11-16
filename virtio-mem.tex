@@ -246,8 +246,13 @@ The device MAY change the content of unplugged memory blocks at any time.
 
 The device MUST NOT change the content of plugged memory blocks.
 
-The device MUST allow to read from unplugged memory blocks inside
-the usable device-managed region.
+The device MUST allow the CPU to read from unplugged memory blocks inside
+the usable device-managed region. \footnote{To allow for simplified dumping of
+memory. The CPU is expected to copy such memory to another location before
+starting DMA.}
+
+The device MAY allow to read from unplugged memory blocks inside the
+usable device-managed region via DMA.
 
 The device MAY allow to read from unplugged memory blocks outside
 the usable device-managed region.
