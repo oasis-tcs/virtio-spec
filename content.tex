@@ -3975,7 +3975,7 @@ contains multicast addresses.
 
 The VIRTIO_NET_CTRL_MAC_ADDR_SET command is used to set the
 default MAC address which rx filtering
-accepts (and if VIRTIO_NET_F_MAC_ADDR has been negotiated,
+accepts (and if VIRTIO_NET_F_MAC has been negotiated,
 this will be reflected in \field{mac} in config space).
 
 The command-specific-data for VIRTIO_NET_CTRL_MAC_ADDR_SET is
@@ -3989,7 +3989,7 @@ The device MUST update the MAC filtering table before it consumes
 the VIRTIO_NET_CTRL_MAC_TABLE_SET command.
 
 The device MUST update \field{mac} in config space before it consumes
-the VIRTIO_NET_CTRL_MAC_ADDR_SET command, if VIRTIO_NET_F_MAC_ADDR has
+the VIRTIO_NET_CTRL_MAC_ADDR_SET command, if VIRTIO_NET_F_MAC has
 been negotiated.
 
 The device SHOULD drop incoming packets which have a destination MAC which
