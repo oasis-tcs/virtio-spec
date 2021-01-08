@@ -27,8 +27,10 @@ Conformance targets:
 \ref{sec:Conformance / Driver Conformance / Socket Driver Conformance},
 \ref{sec:Conformance / Driver Conformance / RPMB Driver Conformance},
 \ref{sec:Conformance / Driver Conformance / IOMMU Driver Conformance},
-\ref{sec:Conformance / Driver Conformance / Sound Driver Conformance} or
-\ref{sec:Conformance / Driver Conformance / Memory Driver Conformance}.
+\ref{sec:Conformance / Driver Conformance / Sound Driver Conformance}
+\ref{sec:Conformance / Driver Conformance / Memory Driver Conformance} or
+\ref{sec:Conformance / Driver Conformance / I2C Adapter Driver Conformance}.
+
     \item Clause \ref{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}.
   \end{itemize}
 \item[Device] A device MUST conform to four conformance clauses:
@@ -47,8 +49,10 @@ Conformance targets:
 \ref{sec:Conformance / Device Conformance / Socket Device Conformance}, 
 \ref{sec:Conformance / Device Conformance / RPMB Device Conformance},
 \ref{sec:Conformance / Device Conformance / IOMMU Device Conformance},
-\ref{sec:Conformance / Device Conformance / Sound Device Conformance} or
-\ref{sec:Conformance / Device Conformance / Memory Device Conformance}.
+\ref{sec:Conformance / Device Conformance / Sound Device Conformance}
+\ref{sec:Conformance / Device Conformance / Memory Device Conformance} or
+\ref{sec:Conformance / Device Conformance / I2C Adapter Device Conformance}.
+
     \item Clause \ref{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}.
   \end{itemize}
 \end{description}
@@ -262,6 +266,14 @@ A memory driver MUST conform to the following normative statements:
 \item \ref{drivernormative:Device Types / Memory Device / Device Operation / UNPLUG request}
 \item \ref{drivernormative:Device Types / Memory Device / Device Operation / UNPLUG ALL request}
 \item \ref{drivernormative:Device Types / Memory Device / Device Operation / STATE request}
+\end{itemize}
+
+\conformance{\subsection}{I2C Adapter Driver Conformance}\label{sec:Conformance / Driver Conformance / I2C Adapter Driver Conformance}
+
+An I2C Adapter driver MUST conform to the following normative statements:
+
+\begin{itemize}
+\item \ref{drivernormative:Device Types / I2C Adapter Device / Device Operation}
 \end{itemize}
 
 \conformance{\section}{Device Conformance}\label{sec:Conformance / Device Conformance}
@@ -481,6 +493,14 @@ A memory device MUST conform to the following normative statements:
 \item \ref{devicenormative:Device Types / Memory Device / Device Operation / UNPLUG request}
 \item \ref{devicenormative:Device Types / Memory Device / Device Operation / UNPLUG ALL request}
 \item \ref{devicenormative:Device Types / Memory Device / Device Operation / STATE request}
+\end{itemize}
+
+\conformance{\subsection}{I2C Adapter Device Conformance}\label{sec:Conformance / Device Conformance / I2C Adapter Device Conformance}
+
+An I2C Adapter device MUST conform to the following normative statements:
+
+\begin{itemize}
+\item \ref{devicenormative:Device Types / I2C Adapter Device / Device Operation}
 \end{itemize}
 
 \conformance{\section}{Legacy Interface: Transitional Device and Transitional Driver Conformance}\label{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}
