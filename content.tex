@@ -51,6 +51,9 @@ they would be typically set):
   an error from which it can't recover.
 \end{description}
 
+The \field{device status} field starts out as 0, and is reinitialized to 0 by
+the device during reset.
+
 \drivernormative{\subsection}{Device Status Field}{Basic Facilities of a Virtio Device / Device Status Field}
 The driver MUST update \field{device status},
 setting bits to indicate the completed steps of the driver
@@ -71,7 +74,6 @@ recover by issuing a reset.
 \end{note}
 
 \devicenormative{\subsection}{Device Status Field}{Basic Facilities of a Virtio Device / Device Status Field}
-The device MUST initialize \field{device status} to 0 upon reset.
 
 The device MUST NOT consume buffers or send any used buffer
 notifications to the driver before DRIVER_OK.
@@ -192,6 +194,26 @@ specification, these notifications were often called interrupts.
 Some names defined in this specification still retain this interrupt
 terminology. Occasionally, the term event is used to refer to
 a notification or a receipt of a notification.
+
+\section{Device Reset}\label{sec:Basic Facilities of a Virtio Device / Device Reset}
+
+The driver may want to initiate a device reset at various times; notably,
+it is required to do so during device initialization and device cleanup.
+
+The mechanism used by the driver to initiate the reset is transport specific.
+
+\devicenormative{\subsection}{Device Reset}{Basic Facilities of a Virtio Device / Device Reset}
+
+A device MUST reinitialize \field{device status} to 0 after receiving a reset.
+
+A device MUST NOT send notifications or interact with the queues after
+indicating completion of the reset by reinitializing \field{device status}
+to 0, until the driver re-initializes the device.
+
+\drivernormative{\subsection}{Device Reset}{Basic Facilities of a Virtio Device / Device Reset}
+
+The driver SHOULD consider a driver-initiated reset complete when it
+reads \field{device status} as 0.
 
 \section{Device Configuration Space}\label{sec:Basic Facilities of a Virtio Device / Device Configuration Space}
 
