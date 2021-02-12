@@ -1,0 +1,271 @@
+\section{SCMI Device}\label{sec:Device Types / SCMI Device}
+
+An SCMI device implements the Arm System Control and Management
+Interface (SCMI). SCMI can be used for sensors, power state management,
+clock management and performance management among other things.
+
+This section relies on definitions from the \hyperref[intro:SCMI]{SCMI
+specification}.
+
+Virtio SCMI device and driver are mapped to SCMI platform and agent
+respectively. The device is visible to a particular SCMI agent. The
+device allows a guest to communicate as an SCMI agent using one or more
+SCMI protocols. The default SCMI protocols are defined in the
+\hyperref[intro:SCMI]{SCMI specification}. Virtio provides a transport
+medium for exchanging SCMI messages between the SCMI agent and platform.
+The virtio SCMI transport allows the queueing of multiple messages and
+responses.
+
+SCMI FastChannels are not supported.
+
+\subsection{Device ID}\label{sec:Device Types / SCMI Device / Device ID}
+
+32
+
+\subsection{Virtqueues}\label{sec:Device Types / SCMI Device / Virtqueues}
+
+\begin{description}
+\item[0] cmdq
+\item[1] eventq
+\end{description}
+
+The cmdq is used by the driver to send commands to the device. The
+device replies with responses (not delayed responses) over the cmdq.
+
+The eventq is used by the device to send notifications and delayed
+responses. The eventq only exists if VIRTIO_SCMI_F_P2A_CHANNELS was
+negotiated.
+
+\subsection{Feature bits}\label{sec:Device Types / SCMI Device / Feature bits}
+
+\begin{description}
+\item[VIRTIO_SCMI_F_P2A_CHANNELS (0)] Device implements some SCMI
+notifications, or delayed responses.
+\item[VIRTIO_SCMI_F_SHARED_MEMORY (1)] Device implements any SCMI
+statistics shared memory region.
+\end{description}
+
+VIRTIO_SCMI_F_P2A_CHANNELS is used to determine the existence of the
+eventq. The eventq is required for SCMI notifications and delayed
+responses.
+
+VIRTIO_SCMI_F_SHARED_MEMORY is used to determine whether the device
+provides any SCMI statistics shared memory region. SCMI statistics
+shared memory regions are defined by some SCMI protocols.
+
+The SCMI protocols provide the PROTOCOL_MESSAGE_ATTRIBUTES commands to
+inquire about the particular SCMI notifications and delayed responses
+implemented by the device. The SCMI protocols provide additional
+commands to detect other features implemented by the device.
+
+\devicenormative{\subsubsection}{Feature bits}{Device Types / SCMI Device / Feature bits}
+
+The device MUST offer VIRTIO_SCMI_F_P2A_CHANNELS if the device can
+implement at least one SCMI notification, or delayed response.
+
+The device MUST offer VIRTIO_SCMI_F_SHARED_MEMORY if the device can
+implement at least one SCMI statistics shared memory region.
+
+\subsection{Device configuration layout}\label{sec:Device Types / SCMI Device / Device configuration layout}
+
+There is no configuration data for the device.
+
+\subsection{Device Initialization}\label{sec:Device Types / SCMI Device / Device Initialization}
+
+The
+\hyperref[sec:General Initialization And Device Operation / Device Initialization]{general
+requirements on device initialization} apply.
+
+\subsection{Device Operation}\label{sec:Device Types / SCMI Device / Device Operation}
+
+The SCMI transport used for the device puts each SCMI message into a
+dedicated virtio buffer. The driver uses the cmdq for transmitting SCMI
+commands and receiving the corresponding SCMI responses. The device uses
+the eventq for transmitting SCMI notifications and delayed responses.
+Each message includes an SCMI protocol header and payload, as defined by
+the \hyperref[intro:SCMI]{SCMI specification}.
+
+\subsubsection{cmdq Operation}\label{sec:Device Types / SCMI Device / Device Operation / cmdq Operation}
+
+Each buffer in the cmdq holds a single SCMI command once the buffer has
+been made available. When the buffer has been marked as used, it
+contains the SCMI response. An arbitrary number of such SCMI messages
+can be in transit at the same time. Conceptually, each SCMI message in
+the cmdq uses its own SCMI A2P (agent to platform) channel.
+
+The SCMI response is in the same virtio buffer as the corresponding SCMI
+command. The response contains the return values which SCMI specifies
+for each command, whether synchronous or asynchronous. Delayed responses
+are distinct SCMI messages transmitted over the eventq.
+
+Buffers in the cmdq contain both the request and the response. A request
+has the following layout:
+
+\begin{lstlisting}
+struct virtio_scmi_request {
+        le32 hdr;
+        u8 params[<actual parameters size>];
+};
+\end{lstlisting}
+
+The virtio_scmi_request fields are interpreted as follows:
+
+\begin{description}
+\item[\field{hdr}] (device-readable) contains the SCMI message header
+\item[\field{params}] (device-readable) comprises the SCMI message
+parameters
+\end{description}
+
+A cmdq response has the following layout:
+
+\begin{lstlisting}
+struct virtio_scmi_response {
+        le32 hdr;
+        u8 ret_values[<actual return values size>];
+};
+\end{lstlisting}
+
+The virtio_scmi_response fields are interpreted as follows:
+
+\begin{description}
+\item[\field{hdr}] (device-writable) contains the SCMI message header
+\item[\field{ret_values}] (device-writable) comprises the SCMI message
+return values
+\end{description}
+
+If VIRTIO_SCMI_F_P2A_CHANNELS was not negotiated, the device responds to
+SCMI commands as if no SCMI notifications or delayed responses were
+implemented.
+
+\devicenormative{\paragraph}{cmdq Operation}{Device Types / SCMI Device / Device Operation / cmdq Operation}
+
+The device MAY process available commands out of order and in parallel.
+
+The device MUST process all available commands eventually, even in the
+case of bursts of multiple command messages.
+
+If the \field{status} field in the \field{virtio_scmi_response}
+\field{ret_values} has a value other than SUCCESS, the device MUST set
+the size of \field{ret_values} to the size of the \field{status} field.
+
+If the driver requests an SCMI notification or a delayed response and
+there are currently NOT enough available buffers in the eventq, the
+device SHOULD still return SCMI status code SUCCESS.
+
+If VIRTIO_SCMI_F_P2A_CHANNELS was not negotiated, the device MUST deny
+any request for an SCMI notification or a delayed response by returning
+SCMI status code NOT_SUPPORTED.
+
+If VIRTIO_SCMI_F_P2A_CHANNELS was not negotiated, the device MUST NOT
+indicate in the PROTOCOL_MESSAGE_ATTRIBUTES return values that any SCMI
+notification, or delayed response, is implemented.
+
+\drivernormative{\paragraph}{cmdq Operation}{Device Types / SCMI Device / Device Operation / cmdq Operation}
+
+Before sending a command, the driver MUST wait for responses to all
+commands whose completion the driver considers prerequisites to
+executing the command.
+
+With every command message, the driver MUST provide enough
+device-writable memory to enable the device to return corresponding
+return values.
+
+If VIRTIO_SCMI_F_P2A_CHANNELS was not negotiated, the driver MUST NOT
+request any SCMI notification, nor any delayed response.
+
+\subsubsection{Setting Up eventq Buffers}
+
+The driver has to populate the eventq before the device can use it.
+
+\drivernormative{\paragraph}{Setting Up eventq Buffers}{Device Types / SCMI Device / Device Operation / Setting Up eventq Buffers}
+
+If VIRTIO_SCMI_F_P2A_CHANNELS was negotiated, the driver SHOULD populate
+the eventq with buffers.
+
+The driver MUST NOT put device-readable descriptors into the eventq.
+
+The driver MUST NOT put into the eventq any buffer which is smaller than
+the largest SCMI P2A (platform to agent) message which the driver will
+request.
+
+\subsubsection{eventq Operation}
+
+Each buffer in the eventq holds (once the buffer is marked as used)
+either a single SCMI notification, or a single SCMI delayed response. An
+arbitrary number of such SCMI messages can be in transit at the same
+time. Conceptually, each SCMI message transmitted over the eventq uses
+its own SCMI P2A (platform to agent) channel. Buffers in the eventq have
+the following layout:
+
+\begin{lstlisting}
+struct virtio_scmi_event_msg {
+        /* start of device-writable data */
+        le32 hdr;
+        u8 payload[<actual payload size>];
+};
+\end{lstlisting}
+
+\begin{description}
+\item[\field{hdr}] (device-writable) contains the SCMI message header
+\item[\field{payload}] (device-writable) comprises the SCMI message
+payload
+\end{description}
+
+\devicenormative{\paragraph}{eventq Operation}{Device Types / SCMI Device / Device Operation / eventq Operation}
+
+If the device intends to send a notification and there are no available
+buffers in the eventq, the device MAY drop the notification, or send a
+corresponding notification later, once enough buffers become available.
+
+The device MAY send the notification later if the events which cause the
+notification take place in quick succession.
+
+If the device sends the notification later, the device MAY send the
+notification with updated data, unless the specific SCMI protocol
+disallows this.
+
+If the device intends to send a notification and there are available
+buffers, but one of the buffers is too small to fit the notification,
+the device MAY omit the notification.
+
+If the device intends to send a delayed response and there are no
+available buffers in the eventq, the device MUST send the corresponding
+delayed response once enough buffers become available.
+
+If the \field{status} field in a delayed response \field{payload} has a
+value other than SUCCESS, the device MUST set the size of
+\field{payload} to the size of the \field{status} field.
+
+\subsubsection{Shared Memory Operation}
+
+Various SCMI protocols define statistics shared memory regions (for
+statistics and sensor values).
+
+\devicenormative{\paragraph}{Shared Memory Operation}{Device Types / SCMI Device / Device Operation / Shared Memory Operation}
+
+If VIRTIO_SCMI_F_SHARED_MEMORY was negotiated, the device MAY implement
+an SCMI statistics shared memory region using a virtio shared memory
+region.
+
+If the device implements a shared memory region, the device MUST assign
+the corresponding shmid as per the following table:
+
+\begin{tabular}{|l|l|}
+\hline
+SCMI statistics shared memory region & Virtio shmid \\
+\hline \hline
+Reserved (invalid) & 0 \\
+\hline
+Power state statistics shared memory region & 1 \\
+\hline
+Performance domain statistics shared memory region & 2 \\
+\hline
+Sensor Values Shared Memory & 3 \\
+\hline
+Reserved for future use & 4 to 0x7F \\
+\hline
+Vendor-specific statistics shared memory regions & 0x80 to 0xFF \\
+\hline
+Reserved for future use & 0x100 and greater \\
+\hline
+\end{tabular}
