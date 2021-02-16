@@ -2396,7 +2396,7 @@ it does not support. For any invalid combination of \field{revision}, \field{len
 and \field{data}, it MUST post a unit check with command reject as well. A
 non-transitional device MUST reject revision id 0.
 
-A device MUST answer with command reject to any virtio-ccw specific
+A device SHOULD answer with command reject to any virtio-ccw specific
 channel command that is not contained in the revision selected by the
 driver.
 
