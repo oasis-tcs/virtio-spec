@@ -4418,6 +4418,9 @@ device except where noted.
 \item[VIRTIO_BLK_F_WRITE_ZEROES (14)] Device can support write zeroes command,
      maximum write zeroes sectors size in \field{max_write_zeroes_sectors} and
      maximum write zeroes segment number in \field{max_write_zeroes_seg}.
+
+\item[VIRTIO_BLK_F_LIFETIME (15)] Device supports providing storage lifetime
+     information.
 \end{description}
 
 \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Block Device / Feature bits / Legacy Interface: Feature bits}
@@ -4601,14 +4604,16 @@ struct virtio_blk_req {
 
 The type of the request is either a read (VIRTIO_BLK_T_IN), a write
 (VIRTIO_BLK_T_OUT), a discard (VIRTIO_BLK_T_DISCARD), a write zeroes
-(VIRTIO_BLK_T_WRITE_ZEROES), a flush (VIRTIO_BLK_T_FLUSH), or a get device ID
-string command (VIRTIO_BLK_T_GET_ID).
+(VIRTIO_BLK_T_WRITE_ZEROES), a flush (VIRTIO_BLK_T_FLUSH), a get device ID
+string command (VIRTIO_BLK_T_GET_ID), or a get device lifetime command
+(VIRTIO_BLK_T_GET_LIFETIME).
 
 \begin{lstlisting}
 #define VIRTIO_BLK_T_IN           0
 #define VIRTIO_BLK_T_OUT          1
 #define VIRTIO_BLK_T_FLUSH        4
 #define VIRTIO_BLK_T_GET_ID       8
+#define VIRTIO_BLK_T_GET_LIFETIME 10
 #define VIRTIO_BLK_T_DISCARD      11
 #define VIRTIO_BLK_T_WRITE_ZEROES 13
 \end{lstlisting}
@@ -4647,6 +4652,26 @@ zeroes.
 VIRTIO_BLK_T_GET_ID requests fetch the device ID string from the device into
 \field{data}.  The device ID string is a NUL-padded ASCII string up to 20 bytes
 long.  If the string is 20 bytes long then there is no NUL terminator.
+
+The \field{data} used for VIRTIO_BLK_T_GET_LIFETIME requests is populated
+by the device, and is of the form
+
+\begin{lstlisting}
+struct virtio_blk_lifetime {
+  le16 pre_eol_info;
+  le16 device_lifetime_est_typ_a;
+  le16 device_lifetime_est_typ_b;
+};
+\end{lstlisting}
+
+The device lifetime metrics \field{pre_eol_info}, \field{device_lifetime_est_a}
+and \field{device_lifetime_est_b} have the semantics described by the JESD84-B50
+specification for the extended CSD register fields \field{PRE_EOL_INFO}
+\field{DEVICE_LIFETIME_EST_TYP_A} and \field{DEVICE_LIFETIME_EST_TYP_B}
+respectively.
+
+JESD84-B50 is available at the JEDEC website (https://www.jedec.org)
+pursuant to JEDEC's licensing terms and conditions.
 
 The final \field{status} byte is written by the device: either
 VIRTIO_BLK_S_OK for success, VIRTIO_BLK_S_IOERR for device or driver
@@ -4778,6 +4803,12 @@ is not an absolute requirement of the specification.
   Not offering VIRTIO_BLK_F_FLUSH is an absolute requirement
   for implementations that do not wish to be safe against such data losses.
 \end{note}
+
+If the device is backed by storage providing lifetime metrics (such as eMMC
+or UFS persistent storage), the device SHOULD offer the VIRTIO_BLK_F_LIFETIME
+flag. The flag MUST NOT be offered if the device is backed by storage for which
+the lifetime metrics described in this document cannot be obtained or for which
+such metrics have no useful meaning.
 
 \subsubsection{Legacy Interface: Device Operation}\label{sec:Device Types / Block Device / Device Operation / Legacy Interface: Device Operation}
 When using the legacy interface, transitional devices and drivers
