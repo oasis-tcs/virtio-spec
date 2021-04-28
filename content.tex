@@ -2970,6 +2970,10 @@ features.
 \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
     channel.
 
+\item[VIRTIO_NET_F_HOST_USO (56)] Device can receive USO packets. Unlike UFO
+ (fragmenting the packet) the USO splits large UDP packet
+ to several segments when each of these smaller packets has UDP header.
+
 \item[VIRTIO_NET_F_HASH_REPORT(57)] Device can report per-packet hash
     value and a type of calculated hash.
 
@@ -3004,6 +3008,7 @@ Some networking feature bits require other networking feature bits
 \item[VIRTIO_NET_F_HOST_TSO6] Requires VIRTIO_NET_F_CSUM.
 \item[VIRTIO_NET_F_HOST_ECN] Requires VIRTIO_NET_F_HOST_TSO4 or VIRTIO_NET_F_HOST_TSO6.
 \item[VIRTIO_NET_F_HOST_UFO] Requires VIRTIO_NET_F_CSUM.
+\item[VIRTIO_NET_F_HOST_USO] Requires VIRTIO_NET_F_CSUM.
 
 \item[VIRTIO_NET_F_CTRL_RX] Requires VIRTIO_NET_F_CTRL_VQ.
 \item[VIRTIO_NET_F_CTRL_VLAN] Requires VIRTIO_NET_F_CTRL_VQ.
@@ -3206,10 +3211,10 @@ A driver would perform a typical initialization routine like so:
 \item A performant driver would indicate that it will generate checksumless
   packets by negotating the VIRTIO_NET_F_CSUM feature.
 
-\item If that feature is negotiated, a driver can use TCP or UDP
-  segmentation offload by negotiating the VIRTIO_NET_F_HOST_TSO4 (IPv4
-  TCP), VIRTIO_NET_F_HOST_TSO6 (IPv6 TCP) and VIRTIO_NET_F_HOST_UFO
-  (UDP fragmentation) features.
+\item If that feature is negotiated, a driver can use TCP segmentation or UDP
+  segmentation/fragmentation offload by negotiating the VIRTIO_NET_F_HOST_TSO4 (IPv4
+  TCP), VIRTIO_NET_F_HOST_TSO6 (IPv6 TCP), VIRTIO_NET_F_HOST_UFO
+  (UDP fragmentation) and VIRTIO_NET_F_HOST_USO (UDP segmentation) features.
 
 \item The converse features are also available: a driver can save
   the virtual device some work by negotiating these features.\note{For example, a network packet transported between two guests on
@@ -3248,6 +3253,7 @@ struct virtio_net_hdr {
 #define VIRTIO_NET_HDR_GSO_TCPV4       1
 #define VIRTIO_NET_HDR_GSO_UDP         3
 #define VIRTIO_NET_HDR_GSO_TCPV6       4
+#define VIRTIO_NET_HDR_GSO_UDP_L4      5
 #define VIRTIO_NET_HDR_GSO_ECN      0x80
         u8 gso_type;
         le16 hdr_len;
@@ -3318,9 +3324,9 @@ checksum includes the header), and \field{csum_offset} will be 16.
 \end{note}
 
 \item If the driver negotiated
-  VIRTIO_NET_F_HOST_TSO4, TSO6 or UFO, and the packet requires
-  TCP segmentation or UDP fragmentation, then \field{gso_type}
-  is set to VIRTIO_NET_HDR_GSO_TCPV4, TCPV6 or UDP.
+  VIRTIO_NET_F_HOST_TSO4, TSO6, USO or UFO, and the packet requires
+  TCP segmentation, UDP segmentation or fragmentation, then \field{gso_type}
+  is set to VIRTIO_NET_HDR_GSO_TCPV4, TCPV6, UDP_L4 or UDP.
   (Otherwise, it is set to VIRTIO_NET_HDR_GSO_NONE). In this
   case, packets larger than 1514 bytes can be transmitted: the
   metadata indicates how to replicate the packet header to cut it
@@ -3381,6 +3387,11 @@ If VIRTIO_NET_F_HOST_UFO is negotiated, the driver MAY set
 fragmentation, otherwise the driver MUST NOT set
 \field{gso_type} to VIRTIO_NET_HDR_GSO_UDP.
 
+If VIRTIO_NET_F_HOST_USO is negotiated, the driver MAY set
+\field{gso_type} to VIRTIO_NET_HDR_GSO_UDP_L4 to request UDP
+segmentation, otherwise the driver MUST NOT set
+\field{gso_type} to VIRTIO_NET_HDR_GSO_UDP_L4.
+
 The driver SHOULD NOT send to the device TCP packets requiring segmentation offload
 which have the Explicit Congestion Notification bit set, unless the
 VIRTIO_NET_F_HOST_ECN feature is negotiated, in which case the
@@ -3404,7 +3415,7 @@ driver MAY set the VIRTIO_NET_HDR_F_NEEDS_CSUM bit in
 	packet;
 \end{enumerate}
 
-If none of the VIRTIO_NET_F_HOST_TSO4, TSO6 or UFO options have
+If none of the VIRTIO_NET_F_HOST_TSO4, TSO6, USO or UFO options have
 been negotiated, the driver MUST set \field{gso_type} to
 VIRTIO_NET_HDR_GSO_NONE.
 
@@ -3413,7 +3424,7 @@ the driver MUST also set the VIRTIO_NET_HDR_F_NEEDS_CSUM bit in
 \field{flags} and MUST set \field{gso_size} to indicate the
 desired MSS.
 
-If one of the VIRTIO_NET_F_HOST_TSO4, TSO6 or UFO options have
+If one of the VIRTIO_NET_F_HOST_TSO4, TSO6, USO or UFO options have
 been negotiated:
 \begin{itemize}
 \item If the VIRTIO_NET_F_GUEST_HDRLEN feature has been negotiated,
@@ -3440,7 +3451,7 @@ The device MUST ignore \field{flag} bits that it does not recognize.
 If VIRTIO_NET_HDR_F_NEEDS_CSUM bit in \field{flags} is not set, the
 device MUST NOT use the \field{csum_start} and \field{csum_offset}.
 
-If one of the VIRTIO_NET_F_HOST_TSO4, TSO6 or UFO options have
+If one of the VIRTIO_NET_F_HOST_TSO4, TSO6, USO or UFO options have
 been negotiated:
 \begin{itemize}
 \item If the VIRTIO_NET_F_GUEST_HDRLEN feature has been negotiated,
