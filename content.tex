@@ -3378,7 +3378,7 @@ segmentation, otherwise the driver MUST NOT set
 
 If VIRTIO_NET_F_HOST_UFO is negotiated, the driver MAY set
 \field{gso_type} to VIRTIO_NET_HDR_GSO_UDP to request UDP
-segmentation, otherwise the driver MUST NOT set
+fragmentation, otherwise the driver MUST NOT set
 \field{gso_type} to VIRTIO_NET_HDR_GSO_UDP.
 
 The driver SHOULD NOT send to the device TCP packets requiring segmentation offload
