@@ -336,7 +336,7 @@ Each of these Event Suppression structures includes the following fields:
 /*
  * Enable events for a specific descriptor
  * (as specified by Descriptor Ring Change Event Offset/Wrap Counter).
- * Only valid if VIRTIO_F_RING_EVENT_IDX has been negotiated.
+ * Only valid if VIRTIO_F_EVENT_IDX has been negotiated.
  */
 #define RING_EVENT_FLAGS_DESC 0x2
 /* The value 0x3 is reserved */
@@ -597,7 +597,7 @@ value before checking if notifications are suppressed.
 
 Below is a driver code example. It does not attempt to reduce
 the number of available buffer notifications, neither does it support
-the VIRTIO_F_RING_EVENT_IDX feature.
+the VIRTIO_F_EVENT_IDX feature.
 
 \begin{lstlisting}
 /* Note: vq->avail_wrap_count is initialized to 1 */

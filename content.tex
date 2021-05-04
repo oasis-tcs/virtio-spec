@@ -6587,14 +6587,14 @@ descriptor for the \field{sense_len}, \field{residual},
 Currently these device-independent feature bits defined:
 
 \begin{description}
-  \item[VIRTIO_F_RING_INDIRECT_DESC (28)] Negotiating this feature indicates
+  \item[VIRTIO_F_INDIRECT_DESC (28)] Negotiating this feature indicates
   that the driver can use descriptors with the VIRTQ_DESC_F_INDIRECT
   flag set, as described in \ref{sec:Basic Facilities of a Virtio
 Device / Virtqueues / The Virtqueue Descriptor Table / Indirect
 Descriptors}~\nameref{sec:Basic Facilities of a Virtio Device /
 Virtqueues / The Virtqueue Descriptor Table / Indirect
 Descriptors} and \ref{sec:Packed Virtqueues / Indirect Flag: Scatter-Gather Support}~\nameref{sec:Packed Virtqueues / Indirect Flag: Scatter-Gather Support}.
-  \item[VIRTIO_F_RING_EVENT_IDX(29)] This feature enables the \field{used_event}
+  \item[VIRTIO_F_EVENT_IDX(29)] This feature enables the \field{used_event}
   and the \field{avail_event} fields as described in
 \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Used Buffer Notification Suppression}, \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Used Ring} and \ref{sec:Packed Virtqueues / Driver and Device Event Suppression}.
 
