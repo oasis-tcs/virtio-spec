@@ -3612,8 +3612,8 @@ If VIRTIO_NET_F_MRG_RXBUF has been negotiated, the device MUST set
 the packet (including the header) is spread over.
 
 If a receive packet is spread over multiple buffers, the device
-MUST use all buffers but the last (i.e. the first $num_buffers -
-1$ buffers) completely up to the full length of each buffer
+MUST use all buffers but the last (i.e. the first \field{num_buffers} -
+1 buffers) completely up to the full length of each buffer
 supplied by the driver.
 
 The device MUST use all buffers used by a single receive
