@@ -25,23 +25,32 @@ This section relies on definitions from \hyperref[intro:FUSE]{FUSE}.
 
 \begin{description}
 \item[0] hiprio
-\item[1\ldots n] request queues
+\item[1] notification queue
+\item[2\ldots n] request queues
 \end{description}
+
+The notification queue only exists if VIRTIO_FS_F_NOTIFICATION is set.
 
 \subsection{Feature bits}\label{sec:Device Types / File System Device / Feature bits}
 
-There are currently no feature bits defined.
+\begin{description}
+\item[VIRTIO_FS_F_NOTIFICATION (0)] Device has support for FUSE notify
+    messages.  The notification queue is virtqueue 1.
+\end{description}
 
 \subsection{Device configuration layout}\label{sec:Device Types / File System Device / Device configuration layout}
-
-All fields of this configuration are always available.
 
 \begin{lstlisting}
 struct virtio_fs_config {
         char tag[36];
         le32 num_request_queues;
+        le32 notify_buf_size;
 };
 \end{lstlisting}
+
+The \field{tag} and \field{num_request_queues} fields are always available.
+The \field{notify_buf_size} field is only available when
+VIRTIO_FS_F_NOTIFICATION is set.
 
 \begin{description}
 \item[\field{tag}] is the name associated with this file system.  The tag is
@@ -53,6 +62,8 @@ struct virtio_fs_config {
     there are no ordering guarantees between requests made available on
     different queues.  Use of multiple queues is intended to increase
     performance.
+\item[\field{notify_buf_size}] is the minimum number of bytes required for each
+    buffer in the notification queue.
 \end{description}
 
 \drivernormative{\subsubsection}{Device configuration layout}{Device Types / File System Device / Device configuration layout}
@@ -65,13 +76,20 @@ The driver MAY use from one up to \field{num_request_queues} request virtqueues.
 
 The device MUST set \field{num_request_queues} to 1 or greater.
 
+The device MUST set \field{notify_buf_size} to be large enough to hold any of
+the FUSE notify messages that this device emits.
+
 \subsection{Device Initialization}\label{Device Types / File System Device / Device Initialization}
 
-On initialization the driver first discovers the device's virtqueues.  The FUSE
-session is started by sending a FUSE\_INIT request as defined by the FUSE
-protocol on one request virtqueue.  All virtqueues provide access to the same
-FUSE session and therefore only one FUSE\_INIT request is required regardless
-of the number of available virtqueues.
+On initialization the driver first discovers the device's virtqueues.
+
+The driver populates the notification queue with buffers for receiving FUSE
+notify messages if VIRTIO_FS_F_NOTIFICATION is set.
+
+The FUSE session is started by sending a FUSE\_INIT request as defined by the
+FUSE protocol on one request virtqueue.  All virtqueues provide access to the
+same FUSE session and therefore only one FUSE\_INIT request is required
+regardless of the number of available virtqueues.
 
 \subsection{Device Operation}\label{sec:Device Types / File System Device / Device Operation}
 
@@ -88,7 +106,8 @@ The FUSE request types are as follows:
       full.
 \end{itemize}
 
-Note that FUSE notification requests are not supported.
+FUSE notify messages are received on the notification queue if
+VIRTIO_FS_F_NOTIFICATION is set.
 
 \subsubsection{Device Operation: Request Queues}\label{sec:Device Types / File System Device / Device Operation / Device Operation: Request Queues}
 
@@ -178,6 +197,38 @@ The driver MUST submit FUSE\_INTERRUPT, FUSE\_FORGET, and FUSE\_BATCH\_FORGET re
 The driver MUST not submit normal requests on the hiprio queue.
 
 The driver MUST anticipate that request queues are processed concurrently with the hiprio queue.
+
+\subsubsection{Device Operation: Notification Queue}\label{sec:Device Types / File System Device / Device Operation / Device Operation: Notification Queue}
+
+The notification queue is populated with buffers by the driver and these
+buffers are used by the device to emit FUSE notify messages.  Notification
+queue buffer layout is as follows:
+
+\begin{lstlisting}
+struct virtio_fs_notify {
+        // Device-writable part
+        struct fuse_out_header out_hdr;
+        char outarg[notify_buf_size - sizeof(struct fuse_out_header)];
+};
+\end{lstlisting}
+
+\field{outarg} contains the FUSE notify message payload that depends on the
+type of notification being emitted.
+
+If the driver provides notification queue buffers at a slower rate than the
+device emits FUSE notify messages then the virtqueue will eventually become
+empty.  The behavior in response to an empty virtqueue depends on the FUSE
+notify message type.  The following FUSE notify message types are supported:
+\begin{itemize}
+\item FUSE\_NOTIFY\_LOCK messages are delivered when buffers become available again. The device has resources for a certain number of lock requests. If the device runs out of resources new lock requests fail with ENOLCK.
+\end{itemize}
+
+\drivernormative{\paragraph}{Device Operation: Notification Queue}{Device Types / File System Device / Device Operation / Device Operation: Notification Queue}
+
+The driver MUST provide buffers of at least \field{notify_buf_size} bytes.
+
+The driver SHOULD replenish notification queue buffers sufficiently quickly so
+that there is always at least one available buffer.
 
 \subsubsection{Device Operation: DAX Window}\label{sec:Device Types / File System Device / Device Operation / Device Operation: DAX Window}
 
