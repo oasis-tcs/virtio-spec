@@ -25,6 +25,7 @@ Conformance targets:
 \ref{sec:Conformance / Driver Conformance / Input Driver Conformance},
 \ref{sec:Conformance / Driver Conformance / Crypto Driver Conformance},
 \ref{sec:Conformance / Driver Conformance / Socket Driver Conformance},
+\ref{sec:Conformance / Driver Conformance / File System Driver Conformance},
 \ref{sec:Conformance / Driver Conformance / RPMB Driver Conformance},
 \ref{sec:Conformance / Driver Conformance / IOMMU Driver Conformance},
 \ref{sec:Conformance / Driver Conformance / Sound Driver Conformance},
@@ -48,6 +49,7 @@ Conformance targets:
 \ref{sec:Conformance / Device Conformance / Input Device Conformance}, 
 \ref{sec:Conformance / Device Conformance / Crypto Device Conformance}, 
 \ref{sec:Conformance / Device Conformance / Socket Device Conformance}, 
+\ref{sec:Conformance / Device Conformance / File System Device Conformance},
 \ref{sec:Conformance / Device Conformance / RPMB Device Conformance},
 \ref{sec:Conformance / Device Conformance / IOMMU Device Conformance},
 \ref{sec:Conformance / Device Conformance / Sound Device Conformance},
@@ -218,6 +220,16 @@ A socket driver MUST conform to the following normative statements:
 \item \ref{drivernormative:Device Types / Socket Device / Device Operation / Buffer Space Management}
 \item \ref{drivernormative:Device Types / Socket Device / Device Operation / Receive and Transmit}
 \item \ref{drivernormative:Device Types / Socket Device / Device Operation / Device Events}
+\end{itemize}
+
+\conformance{\subsection}{File System Driver Conformance}\label{sec:Conformance / Driver Conformance / File System Driver Conformance}
+
+A file system driver MUST conform to the following normative statements:
+
+\begin{itemize}
+\item \ref{drivernormative:Device Types / File System Device / Device configuration layout}
+\item \ref{drivernormative:Device Types / File System Device / Device Operation / Device Operation: High Priority Queue}
+\item \ref{drivernormative:Device Types / File System Device / Device Operation / Device Operation: DAX Window}
 \end{itemize}
 
 \conformance{\subsection}{RPMB Driver Conformance}\label{sec:Conformance / Driver Conformance / RPMB Driver Conformance}
@@ -446,6 +458,16 @@ A socket device MUST conform to the following normative statements:
 \begin{itemize}
 \item \ref{devicenormative:Device Types / Socket Device / Device Operation / Buffer Space Management}
 \item \ref{devicenormative:Device Types / Socket Device / Device Operation / Receive and Transmit}
+\end{itemize}
+
+\conformance{\subsection}{File System Device Conformance}\label{sec:Conformance / Device Conformance / File System Device Conformance}
+
+A file system device MUST conform to the following normative statements:
+
+\begin{itemize}
+\item \ref{devicenormative:Device Types / File System Device / Device configuration layout}
+\item \ref{devicenormative:Device Types / File System Device / Device Operation / Device Operation: High Priority Queue}
+\item \ref{devicenormative:Device Types / File System Device / Device Operation / Device Operation: DAX Window}
 \end{itemize}
 
 \conformance{\subsection}{RPMB Device Conformance}\label{sec:Conformance / Device Conformance / RPMB Device Conformance}
