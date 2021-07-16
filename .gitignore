@@ -1,0 +1,10 @@
+*.swp
+*.patch
+missfont.log
+listings/
+new/
+old/
+setup-generated.tex
+tmpfilesforzip/
+virtio-diff*
+virtio-v[0-9].[0-9]-cs[0-9][0-9]*
