@@ -239,22 +239,24 @@ the data address, the calculated MAC and the result:
 
 \devicenormative{\paragraph}{Device Operation: Data Read}{Device Types / RPMB Device / Device Operation / Device Operation: Data Read}
 
-If the authentication key is not yet programmed then VIRTIO_RPMB_RES_NO_AUTH_KEY
-SHOULD be returned in \field{result}.
+\begin{enumerate}
+\item If the authentication key is not yet programmed then
+  VIRTIO_RPMB_RES_NO_AUTH_KEY SHOULD be returned in \field{result}.
 
-If block count has not been set to 1 then VIRTIO_RPMB_RES_GENERAL_FAILURE SHOULD be
-responded as \field{result}.
+\item If block count is zero or greater than \field{max_rd_cnt} then
+  VIRTIO_RPMB_RES_GENERAL_FAILURE SHOULD be responded as \field{result}.
 
-If there is an error in the address (out of range) then the \field{result} SHOULD
-be set to VIRTIO_RPMB_RES_ADDR_FAILURE.
+\item If there is an error in the address (out of range) then the
+  \field{result} SHOULD be set to VIRTIO_RPMB_RES_ADDR_FAILURE.
 
-If data fetch from addressed location inside the device fails then the \field{result}
-SHOULD be VIRTIO_RPMB_RES_READ_FAILURE.
+\item If data fetch from addressed location inside the device fails
+  then the \field{result} SHOULD be VIRTIO_RPMB_RES_READ_FAILURE.
 
-If some other error occurs during the read procedure then the \field{result}
-SHOULD be VIRTIO_RPMB_RES_GENERAL_FAILURE.
+\item If some other error occurs during the read procedure then the
+  \field{result} SHOULD be VIRTIO_RPMB_RES_GENERAL_FAILURE.
 
-The \field{req_resp} value VIRTIO_RPMB_RESP_DATA_READ SHOULD be responded.
+\item The device SHOULD respond with \field{block_count} frames containing the data and \field{req_resp} value set to VIRTIO_RPMB_RESP_DATA_READ.
+\end{enumerate}
 
 \devicenormative{\paragraph}{Device Operation: Result Read}{Device Types / RPMB Device / Device Operation / Device Operation: Result Read}
 
