@@ -27,7 +27,7 @@ Both queues have the same format.  Each request and each response have
 a fixed header, followed by command specific data fields.  The
 separate cursor queue is the "fast track" for cursor commands
 (VIRTIO_GPU_CMD_UPDATE_CURSOR and VIRTIO_GPU_CMD_MOVE_CURSOR), so they
-go though without being delayed by time-consuming commands in the
+go through without being delayed by time-consuming commands in the
 control queue.
 
 \subsection{Feature bits}\label{sec:Device Types / GPU Device / Feature bits}
