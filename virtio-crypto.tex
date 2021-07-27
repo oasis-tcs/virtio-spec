@@ -275,13 +275,13 @@ Unless explicitly stated otherwise all lengths and sizes are in bytes.
 \item The driver MUST read the detailed algorithms fields based on \field{crypto_services} field.
 \item The driver SHOULD read \field{max_size} to discover the maximum size of the variable-length
     parameters of data operation of the crypto request's content the device supports and MUST
-    guarantee the size of each crypto request's content within the \field{max_size}, otherwise
+    guarantee that the size of each crypto request's content is within the \field{max_size}, otherwise
     the request will fail and the driver MUST reset the device.
 \item The driver SHOULD read \field{max_cipher_key_len} to discover the maximum length of cipher key
-    the device supports and MUST guarantee the \field{key_len} (CIPHER service or AEAD service) within
+    the device supports and MUST guarantee that the \field{key_len} (CIPHER service or AEAD service) is within
     the \field{max_cipher_key_len} of the device configuration, otherwise the request will fail.
 \item The driver SHOULD read \field{max_auth_key_len} to discover the maximum length of authenticated
-    key the device supports and MUST guarantee the \field{auth_key_len} (MAC service) within the
+    key the device supports and MUST guarantee that the \field{auth_key_len} (MAC service) is within the
     \field{max_auth_key_len} of the device configuration, otherwise the request will fail.
 \end{itemize*}
 
