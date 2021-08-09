@@ -1,0 +1,346 @@
+\section{GPIO Device}\label{sec:Device Types / GPIO Device}
+
+The Virtio GPIO device is a virtual General Purpose Input/Output device that
+supports a variable number of named I/O lines, which can be configured in input
+mode or in output mode with logical level low (0) or high (1).
+
+\subsection{Device ID}\label{sec:Device Types / GPIO Device / Device ID}
+41
+
+\subsection{Virtqueues}\label{sec:Device Types / GPIO Device / Virtqueues}
+
+\begin{description}
+\item[0] requestq
+\end{description}
+
+\subsection{Feature bits}\label{sec:Device Types / GPIO Device / Feature bits}
+
+None currently defined.
+
+\subsection{Device configuration layout}\label{sec:Device Types / GPIO Device / Device configuration layout}
+
+GPIO device uses the following configuration structure layout:
+
+\begin{lstlisting}
+struct virtio_gpio_config {
+    le16 ngpio;
+    u8 padding[2];
+    le32 gpio_names_size;
+};
+\end{lstlisting}
+
+\begin{description}
+\item[\field{ngpio}] is the total number of GPIO lines supported by the device.
+
+\item[\field{padding}] has no meaning and is reserved for future use. This is
+    set to zero by the device.
+
+\item[\field{gpio_names_size}] is the size of the gpio-names memory block in
+    bytes, which can be fetched by the driver using the
+    \field{VIRTIO_GPIO_MSG_GET_LINE_NAMES} message. The device sets this to
+    0 if it doesn't support names for the GPIO lines.
+\end{description}
+
+
+\subsection{Device Initialization}\label{sec:Device Types / GPIO Device / Device Initialization}
+
+\begin{itemize}
+\item The driver configures and initializes the \field{requestq} virtqueue.
+\end{itemize}
+
+\subsection{Device Operation: requestq}\label{sec:Device Types / GPIO Device / requestq Operation}
+
+The driver uses the \field{requestq} virtqueue to send messages to the device.
+The driver sends a pair of buffers, request (filled by driver) and response (to
+be filled by device later), to the device. The device in turn fills the response
+buffer and sends it back to the driver.
+
+\begin{lstlisting}
+struct virtio_gpio_request {
+    le16 type;
+    le16 gpio;
+    le32 value;
+};
+\end{lstlisting}
+
+All the fields of this structure are set by the driver and read by the device.
+
+\begin{description}
+\item[\field{type}] is the GPIO message type, i.e. one of
+    \field{VIRTIO_GPIO_MSG_*} values.
+
+\item[\field{gpio}] is the GPIO line number, i.e. 0 <= \field{gpio} <
+    \field{ngpio}.
+
+\item[\field{value}] is a message specific value.
+\end{description}
+
+\begin{lstlisting}
+struct virtio_gpio_response {
+    u8 status;
+    u8 value;
+};
+
+/* Possible values of the status field */
+#define VIRTIO_GPIO_STATUS_OK                   0x0
+#define VIRTIO_GPIO_STATUS_ERR                  0x1
+\end{lstlisting}
+
+All the fields of this structure are set by the device and read by the driver.
+
+\begin{description}
+\item[\field{status}] of the GPIO message,
+    \field{VIRTIO_GPIO_STATUS_OK} on success and \field{VIRTIO_GPIO_STATUS_ERR}
+    on failure.
+
+\item[\field{value}] is a message specific value.
+\end{description}
+
+Following is the list of messages supported by the virtio gpio specification.
+
+\begin{lstlisting}
+/* GPIO message types */
+#define VIRTIO_GPIO_MSG_GET_LINE_NAMES          0x0001
+#define VIRTIO_GPIO_MSG_GET_DIRECTION           0x0002
+#define VIRTIO_GPIO_MSG_SET_DIRECTION           0x0003
+#define VIRTIO_GPIO_MSG_GET_VALUE               0x0004
+#define VIRTIO_GPIO_MSG_SET_VALUE               0x0005
+
+/* GPIO Direction types */
+#define VIRTIO_GPIO_DIRECTION_NONE              0x00
+#define VIRTIO_GPIO_DIRECTION_OUT               0x01
+#define VIRTIO_GPIO_DIRECTION_IN                0x02
+\end{lstlisting}
+
+\subsubsection{requestq Operation: Get Line Names}\label{sec:Device Types / GPIO Device / requestq Operation / Get Line Names}
+
+The driver sends this message to receive a stream of zero-terminated strings,
+where each string represents the name of a GPIO line, present in increasing
+order of the GPIO line numbers. The names of the GPIO lines are optional and may
+be present only for a subset of GPIO lines. If missing, then a zero-byte must be
+present for the GPIO line. If present, the name string must be zero-terminated
+and the name must be unique within a GPIO Device.
+
+These names of the GPIO lines should be most meaningful producer names for the
+system, such as name indicating the usage. For example "MMC-CD", "Red LED Vdd"
+and "ethernet reset" are reasonable line names as they describe what the line is
+used for, while "GPIO0" is not a good name to give to a GPIO line.
+
+Here is an example of how the gpio names memory block may look like for a GPIO
+device with 10 GPIO lines, where line names are provided only for lines 0
+("MMC-CD"), 5 ("Red LED Vdd") and 7 ("ethernet reset").
+
+\begin{lstlisting}
+u8 gpio_names[] = {
+    'M', 'M', 'C', '-', 'C', 'D', 0,
+    0,
+    0,
+    0,
+    0,
+    'R', 'e', 'd', ' ', 'L', 'E', 'D', ' ', 'V', 'd', 'd', 0,
+    0,
+    'E', 't', 'h', 'e', 'r', 'n', 'e', 't', ' ', 'r', 'e', 's', 'e', 't', 0,
+    0,
+    0
+};
+\end{lstlisting}
+
+The device sets the \field{gpio_names_size} to a non-zero value if this message
+is supported by the device, else it must be set to zero.
+
+This message type uses different layout for the response structure, as the
+device needs to return the \field{gpio_names} array.
+
+\begin{lstlisting}
+struct virtio_gpio_response_N {
+    u8 status;
+    u8 value[N];
+};
+\end{lstlisting}
+
+The driver must allocate the \field{value[N]} buffer in the \field{struct
+virtio_gpio_response_N} for N bytes, where N = \field{gpio_names_size}.
+
+\begin{tabularx}{\textwidth}{ |l||X|X|X| }
+\hline
+\textbf{Request} & \field{type} & \field{gpio} & \field{value} \\
+\hline
+& \field{VIRTIO_GPIO_MSG_GET_LINE_NAMES} & 0 & 0 \\
+\hline
+\end{tabularx}
+
+\begin{tabularx}{\textwidth}{ |l||X|X|X| }
+\hline
+\textbf{Response} & \field{status} & \field{value[N]} & \field{Where N is} \\
+\hline
+& \field{VIRTIO_GPIO_STATUS_*} & gpio-names & \field{gpio_names_size} \\
+\hline
+\end{tabularx}
+
+\subsubsection{requestq Operation: Get Direction}\label{sec:Device Types / GPIO Device / requestq Operation / Get Direction}
+
+The driver sends this message to request the device to return a line's
+configured direction.
+
+\begin{tabularx}{\textwidth}{ |l||X|X|X| }
+\hline
+\textbf{Request} & \field{type} & \field{gpio} & \field{value} \\
+\hline
+& \field{VIRTIO_GPIO_MSG_GET_DIRECTION} & line number & 0 \\
+\hline
+\end{tabularx}
+
+\begin{tabularx}{\textwidth}{ |l||X|X| }
+\hline
+\textbf{Response} & \field{status} & \field{value} \\
+\hline
+& \field{VIRTIO_GPIO_STATUS_*} & 0 = none, 1 = output, 2 = input \\
+\hline
+\end{tabularx}
+
+\subsubsection{requestq Operation: Set Direction}\label{sec:Device Types / GPIO Device / requestq Operation / Set Direction}
+
+The driver sends this message to request the device to configure a line's
+direction. The driver can either set the direction to
+\field{VIRTIO_GPIO_DIRECTION_IN} or \field{VIRTIO_GPIO_DIRECTION_OUT}, which
+also activates the line, or to \field{VIRTIO_GPIO_DIRECTION_NONE}, which
+deactivates the line.
+
+The driver should set the value of the GPIO line, using the
+\field{VIRTIO_GPIO_MSG_SET_VALUE} message, before setting the direction of the
+line to output to avoid any undesired behavior.
+
+\begin{tabularx}{\textwidth}{ |l||X|X|X| }
+\hline
+\textbf{Request} & \field{type} & \field{gpio} & \field{value} \\
+\hline
+& \field{VIRTIO_GPIO_MSG_SET_DIRECTION} & line number & 0 = none, 1 = output, 2 = input \\
+\hline
+\end{tabularx}
+
+\begin{tabularx}{\textwidth}{ |l||X|X| }
+\hline
+\textbf{Response} & \field{status} & \field{value} \\
+\hline
+& \field{VIRTIO_GPIO_STATUS_*} & 0 \\
+\hline
+\end{tabularx}
+
+\subsubsection{requestq Operation: Get Value}\label{sec:Device Types / GPIO Device / requestq Operation / Get Value}
+
+The driver sends this message to request the device to return current value
+sensed on a line.
+
+\begin{tabularx}{\textwidth}{ |l||X|X|X| }
+\hline
+\textbf{Request} & \field{type} & \field{gpio} & \field{value} \\
+\hline
+& \field{VIRTIO_GPIO_MSG_GET_VALUE} & line number & 0 \\
+\hline
+\end{tabularx}
+
+\begin{tabularx}{\textwidth}{ |l||X|X| }
+\hline
+\textbf{Response} & \field{status} & \field{value} \\
+\hline
+& \field{VIRTIO_GPIO_STATUS_*} & 0 = low, 1 = high \\
+\hline
+\end{tabularx}
+
+\subsubsection{requestq Operation: Set Value}\label{sec:Device Types / GPIO Device / requestq Operation / Set Value}
+
+The driver sends this message to request the device to set the value of a line.
+The line may already be configured for output or may get configured to output
+later, at which point this output value must be used by the device for the line.
+
+\begin{tabularx}{\textwidth}{ |l||X|X|X| }
+\hline
+\textbf{Request} & \field{type} & \field{gpio} & \field{value} \\
+\hline
+& \field{VIRTIO_GPIO_MSG_SET_VALUE} & line number & 0 = low, 1 = high \\
+\hline
+\end{tabularx}
+
+\begin{tabularx}{\textwidth}{ |l||X|X| }
+\hline
+\textbf{Response} & \field{status} & \field{value} \\
+\hline
+& \field{VIRTIO_GPIO_STATUS_*} & 0 \\
+\hline
+\end{tabularx}
+
+\subsubsection{requestq Operation: Message Flow}\label{sec:Device Types / GPIO Device / requestq Operation / Message Flow}
+
+\begin{itemize}
+\item The driver queues \field{struct virtio_gpio_request} and
+    \field{virtio_gpio_response} buffers to the \field{requestq} virtqueue,
+    after filling all fields of the \field{struct virtio_gpio_request} buffer as
+    defined by the specific message type.
+
+\item The driver notifies the device of the presence of buffers on the
+    \field{requestq} virtqueue.
+
+\item The device, after receiving the message from the driver, processes it and
+    fills all the fields of the \field{struct virtio_gpio_response} buffer
+    (received from the driver). The \field{status} must be set to
+    \field{VIRTIO_GPIO_STATUS_OK} on success and \field{VIRTIO_GPIO_STATUS_ERR}
+    on failure.
+
+\item The device puts the buffers back on the \field{requestq} virtqueue and
+    notifies the driver of the same.
+
+\item The driver fetches the buffers and processes the response received in the
+    \field{virtio_gpio_response} buffer.
+
+\item The driver can send multiple messages in parallel for same or different
+    GPIO line.
+\end{itemize}
+
+\drivernormative{\subsubsection}{requestq Operation}{Device Types / GPIO Device / requestq Operation}
+
+\begin{itemize}
+\item The driver MUST send messages on the \field{requestq} virtqueue.
+
+\item The driver MUST queue both \field{struct virtio_gpio_request} and
+    \field{virtio_gpio_response} for every message sent to the device.
+
+\item The \field{struct virtio_gpio_request} buffer MUST be filled by the driver
+    and MUST be read-only for the device.
+
+\item The \field{struct virtio_gpio_response} buffer MUST be filled by the
+    device and MUST be writable by the device.
+
+\item The driver MAY send multiple messages for same or different GPIO lines in
+    parallel.
+\end{itemize}
+
+\devicenormative{\subsubsection}{requestq Operation}{Device Types / GPIO Device / requestq Operation}
+
+\begin{itemize}
+\item The device MUST set all the fields of the \field{struct
+    virtio_gpio_response} before sending it back to the driver.
+
+\item The device MUST set all the fields of the \field{struct
+    virtio_gpio_config} on receiving a configuration request from the driver.
+
+\item The device MUST set the \field{gpio_names_size} field as zero in the
+    \field{struct virtio_gpio_config}, if it doesn't implement names for
+    individual GPIO lines.
+
+\item The device MUST set the \field{gpio_names_size} field, in the
+    \field{struct virtio_gpio_config}, with the size of gpio-names memory block
+    in bytes, if the device implements names for individual GPIO lines. The
+    strings MUST be zero-terminated and an unique (if available) within the GPIO
+    device.
+
+\item The device MUST process multiple messages, for the same GPIO line,
+    sequentially and respond to them in the order they were received on the
+    virtqueue.
+
+\item The device MAY process messages, for different GPIO lines, out of order
+    and in parallel, and MAY send message's response to the driver out of order.
+
+\item The device MUST discard all state information corresponding to a GPIO
+    line, once the driver has requested to set its direction to
+    \field{VIRTIO_GPIO_DIRECTION_NONE}.
+\end{itemize}
