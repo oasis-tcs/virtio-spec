@@ -119,7 +119,8 @@ where each string represents the name of a GPIO line, present in increasing
 order of the GPIO line numbers. The names of the GPIO lines are optional and may
 be present only for a subset of GPIO lines. If missing, then a zero-byte must be
 present for the GPIO line. If present, the name string must be zero-terminated
-and the name must be unique within a GPIO Device.
+and the name must be unique within a GPIO Device. The names of the GPIO lines
+are encoded in 7-bit ASCII.
 
 These names of the GPIO lines should be most meaningful producer names for the
 system, such as name indicating the usage. For example "MMC-CD", "Red LED Vdd"
