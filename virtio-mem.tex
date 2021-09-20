@@ -249,6 +249,9 @@ The device MAY change the content of unplugged memory blocks at any time.
 
 The device MUST NOT change the content of plugged memory blocks.
 
+The device MUST allow the driver to read and write memory of plugged
+memory blocks.
+
 The device MUST allow the driver to read memory of unplugged memory blocks
 inside \field{usable_region_size} via the CPU. \footnote{To allow for simplified
 dumping of memory. The CPU is expected to copy such memory to another location
