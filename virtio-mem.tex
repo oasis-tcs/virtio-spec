@@ -46,6 +46,8 @@ available for the page allocator.
 \begin{description}
 \item[VIRTIO_MEM_F_ACPI_PXM (0)] The field \field{node_id} in the device
 configuration is valid and corresponds to an ACPI PXM.
+\item[VIRTIO_MEM_F_UNPLUGGED_INACCESSIBLE (1)] The driver is not allowed to
+access unplugged memory.
 \end{description}
 
 \subsection{Device configuration layout}\label{sec:Device Types / Memory Device / Device configuration layout}
@@ -144,10 +146,16 @@ dump, memory still in use after unloading the driver).
 
 \drivernormative{\subsubsection}{Device Initialization}{Device Types / Memory Device / Device Initialization}
 
+The driver SHOULD accept VIRTIO_MEM_F_UNPLUGGED_INACCESSIBLE if it is
+offered and the driver supports it.
+
 The driver SHOULD issue UNPLUG ALL requests until successful if the device
 still has memory plugged and the plugged memory is not in use.
 
 \devicenormative{\subsubsection}{Device Initialization}{Device Types / Memory Device / Device Initialization}
+
+A device MAY fail to operate further if VIRTIO_MEM_F_UNPLUGGED_INACCESSIBLE
+is not accepted.
 
 The device MUST NOT change the state of memory blocks during device reset.
 
@@ -223,8 +231,12 @@ The driver MUST NOT read memory of unplugged memory blocks outside
 The driver MUST NOT read memory of unplugged memory blocks inside
 \field{usable_region_size} via DMA.
 
-The driver SHOULD NOT read memory of unplugged memory blocks inside
+If VIRTIO_MEM_F_UNPLUGGED_INACCESSIBLE has not been negotiated, the driver
+SHOULD NOT read memory of unplugged memory blocks inside
 \field{usable_region_size} via the CPU.
+
+If VIRTIO_MEM_F_UNPLUGGED_INACCESSIBLE has been negotiated, the driver
+MUST NOT read memory of unplugged memory blocks.
 
 The driver MUST NOT request to unplug memory blocks while the memory is
 still in use.
@@ -252,10 +264,11 @@ The device MUST NOT change the content of plugged memory blocks.
 The device MUST allow the driver to read and write memory of plugged
 memory blocks.
 
-The device MUST allow the driver to read memory of unplugged memory blocks
-inside \field{usable_region_size} via the CPU. \footnote{To allow for simplified
-dumping of memory. The CPU is expected to copy such memory to another location
-before starting DMA.}
+If VIRTIO_MEM_F_UNPLUGGED_INACCESSIBLE has not been negotiated, the device
+MUST allow the driver to read memory of unplugged memory blocks inside
+\field{usable_region_size} via the CPU. \footnote{To allow for simplified
+dumping of memory. The CPU is expected to copy such memory to another
+location before starting DMA.}
 
 The device MAY change the state of memory blocks during system resets.
 
