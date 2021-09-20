@@ -32,6 +32,16 @@ deciding how plugged memory blocks will be used.  A common use case is to
 expose plugged memory blocks to the operating system as system RAM,
 available for the page allocator.
 
+Some platforms provide memory properties for system RAM that are usually
+queried and modified using special CPU instructions. Memory properties might
+be implicitly queried or modified on memory access. Memory properties can
+include advanced memory protection, access and change indication, or memory
+usage indication relevant in virtualized environments. \footnote{For example,
+s390x provides storage keys for each 4 KiB page and may, depending on the
+configuration, provide storage attributes for each 4 KiB page.} The device
+provides the exact same properties with the exact same semantics for
+plugged device memory as available for comparable RAM in the same configuration.
+
 \subsection{Device ID}\label{sec:Device Types / Memory Device / Device ID}
 24
 
@@ -47,7 +57,9 @@ available for the page allocator.
 \item[VIRTIO_MEM_F_ACPI_PXM (0)] The field \field{node_id} in the device
 configuration is valid and corresponds to an ACPI PXM.
 \item[VIRTIO_MEM_F_UNPLUGGED_INACCESSIBLE (1)] The driver is not allowed to
-access unplugged memory.
+access unplugged memory. \footnote{On platforms with memory properties that
+might get modified implicitly on memory access, this feature is expected to
+be offered by the device.}
 \end{description}
 
 \subsection{Device configuration layout}\label{sec:Device Types / Memory Device / Device configuration layout}
@@ -159,8 +171,8 @@ is not accepted.
 
 The device MUST NOT change the state of memory blocks during device reset.
 
-The device MUST NOT change the content of plugged memory blocks during
-device reset.
+The device MUST NOT modify memory or memory properties of plugged memory
+blocks during device reset.
 
 \subsection{Device Operation}\label{sec:Device Types / Memory Device / Device Operation}
 
@@ -223,23 +235,24 @@ Possible response types, in general, are:
 
 \drivernormative{\subsubsection}{Device Operation}{Device Types / Memory Device / Device Operation}
 
-The driver MUST NOT write memory of unplugged memory blocks.
+The driver MUST NOT write memory or modify memory properties of
+unplugged memory blocks.
 
-The driver MUST NOT read memory of unplugged memory blocks outside
-\field{usable_region_size}.
+The driver MUST NOT read memory or query memory properties of unplugged memory
+blocks outside \field{usable_region_size}.
 
-The driver MUST NOT read memory of unplugged memory blocks inside
-\field{usable_region_size} via DMA.
+The driver MUST NOT read memory or query memory properties of unplugged memory
+blocks inside \field{usable_region_size} via DMA.
 
 If VIRTIO_MEM_F_UNPLUGGED_INACCESSIBLE has not been negotiated, the driver
-SHOULD NOT read memory of unplugged memory blocks inside
-\field{usable_region_size} via the CPU.
+SHOULD NOT read memory or query memory properties of unplugged memory blocks
+inside \field{usable_region_size} via the CPU.
 
 If VIRTIO_MEM_F_UNPLUGGED_INACCESSIBLE has been negotiated, the driver
-MUST NOT read memory of unplugged memory blocks.
+MUST NOT read memory or query memory properties of unplugged memory blocks.
 
-The driver MUST NOT request to unplug memory blocks while the memory is
-still in use.
+The driver MUST NOT request unplug of memory blocks while corresponding memory
+or memory properties are still in use.
 
 The driver SHOULD initialize memory blocks after plugging them, the content
 is undefined.
@@ -257,18 +270,24 @@ unplugged memory blocks after plugging them (e.g., alignment).
 
 \devicenormative{\subsubsection}{Device Operation}{Device Types / Memory Device / Device Operation}
 
-The device MAY change the content of unplugged memory blocks at any time.
+The device MUST provide the exact same memory properties with the exact same
+semantics for device memory the platform provides in the same configuration for
+comparable RAM.
 
-The device MUST NOT change the content of plugged memory blocks.
+The device MAY modify memory of unplugged memory blocks or reset memory
+properties of such memory blocks to platform defaults at any time.
 
-The device MUST allow the driver to read and write memory of plugged
-memory blocks.
+The device MUST NOT modify memory or memory properties of plugged memory
+blocks.
+
+The device MUST allow the driver to read and write memory and to query
+and modify memory attributes of plugged memory blocks.
 
 If VIRTIO_MEM_F_UNPLUGGED_INACCESSIBLE has not been negotiated, the device
-MUST allow the driver to read memory of unplugged memory blocks inside
-\field{usable_region_size} via the CPU. \footnote{To allow for simplified
-dumping of memory. The CPU is expected to copy such memory to another
-location before starting DMA.}
+MUST allow the driver to read memory and to query memory properties of
+unplugged memory blocks inside \field{usable_region_size} via the CPU.
+\footnote{To allow for simplified dumping of memory. The CPU is expected to
+copy such memory to another location before starting DMA.}
 
 The device MAY change the state of memory blocks during system resets.
 
