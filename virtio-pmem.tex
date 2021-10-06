@@ -1,0 +1,129 @@
+\section{PMEM Device}\label{sec:Device Types / PMEM Device}
+
+The virtio pmem device is a persistent memory (NVDIMM) device
+that provides a virtio based asynchronous flush mechanism. This avoids
+the need for a separate page cache in the guest and keeps the page cache
+only in the host. Under memory pressure, the host makes use of
+efficient memory reclaim decisions for page cache pages of all the
+guests. This helps to reduce the memory footprint and fits more guests
+in the host system.
+
+The virtio pmem device provides access to byte-addressable persistent
+memory. The persistent memory is a directly accessible range of system memory.
+Data written to this memory is made persistent by separately sending a
+flush command. Writes that have been flushed are preserved across device
+reset and power failure.
+
+\subsection{Device ID}\label{sec:Device Types / PMEM Device / Device ID}
+  27
+
+\subsection{Virtqueues}\label{sec:Device Types / PMEM Device / Virtqueues}
+\begin{description}
+\item[0] req_vq
+\end{description}
+
+\subsection{Feature bits}\label{sec:Device Types / PMEM Device / Feature bits}
+
+There are currently no feature bits defined for this device.
+
+\subsection{Device configuration layout}\label{sec:Device Types / PMEM Device / Device configuration layout}
+
+\begin{lstlisting}
+struct virtio_pmem_config {
+	le64 start;
+	le64 size;
+};
+\end{lstlisting}
+
+\begin{description}
+\item[\field{start}] contains the physical address of the first byte of the persistent memory region.
+
+\item[\field{size}] contains the length of this address range.
+\end{description}
+
+\begin{enumerate}
+\item Driver vpmem start is read from \field{start}.
+\item Driver vpmem end is read from \field{size}.
+\end{enumerate}
+
+\subsection{Driver Initialization}\label{sec:Device Types / PMEM Driver / Driver Initialization}
+
+The driver determines the start address and size of the persistent memory region in preparation for reading or writing data.
+
+The driver initializes req_vq in preparation for making flush requests.
+
+\subsection{Driver Operations}\label{sec:Device Types / PMEM Driver / Driver Operation / Request Queues}
+
+Requests have the following format:
+
+\begin{lstlisting}
+struct virtio_pmem_req {
+        le32 type;
+};
+\end{lstlisting}
+
+\field{type} is the request command type.
+
+Possible request types are:
+
+\begin{lstlisting}
+#define VIRTIO_PMEM_REQ_TYPE_FLUSH      0
+\end{lstlisting}
+
+\subsection{Device Operations}\label{sec:Device Types / PMEM Driver / Device Operation}
+\devicenormative{\subsubsection}{Device Operation: Virtqueue flush}{Device Types / PMEM Device / Device Operation / Virtqueue flush}
+
+The device MUST ensure that all writes completed before a flush request persist across device reset and power failure before completing the flush request.
+
+\subsubsection{Device Operations}\label{sec:Device Types / PMEM Driver / Device Operation / Virtqueue return}
+\begin{lstlisting}
+struct virtio_pmem_resp {
+        le32 ret;
+};
+\end{lstlisting}
+
+\field{ret} is the value which the device returns after command completion.
+
+\devicenormative{\subsubsection}{Device Operation: Virtqueue return}{Device Types / PMEM Device / Device Operation / Virtqueue return}
+
+The device MUST return "0" for success and "-1" for failure.
+
+\subsection{Possible security implications}\label{sec:Device Types / PMEM Device / Possible Security Implications}
+
+There could be potential security implications depending on how
+memory mapped backing device is used. By default device emulation
+is done with SHARED memory mapping. There is a contract between driver
+and device to access shared memory region for read or write operations.
+
+If a malicious driver or device maps the same memory region, the attacker
+can make use of known side channel attacks to predict the current state of data.
+If both attacker and victim somehow execute same shared code after a flush
+or evict operation, with difference in execution timing attacker could infer
+another device's data.
+
+\subsection{Countermeasures}\label{sec:Device Types / PMEM Device / Possible Security Implications / Countermeasures}
+
+\subsubsection{With SHARED mapping}\label{sec:Device Types / PMEM Device / Possible Security Implications / Countermeasures / SHARED}
+
+If a device's backing region is shared between multiple devices, this may act
+as a metric for side channel attacks. As a counter measure every device
+should have its own (not shared with another driver) SHARED backing memory.
+
+\subsubsection{With PRIVATE mapping}\label{sec:Device Types / PMEM Device / Possible Security Implications / Countermeasures / PRIVATE}
+There maybe be chances of side channels attack with PRIVATE
+memory mapping similar to SHARED with read-only shared mappings.
+PRIVATE is not used for virtio pmem making this usecase
+irrelevant.
+
+\subsubsection{Workload specific mapping}\label{sec:Device Types / PMEM Device / Possible Security Implications / Countermeasures / Workload}
+When using SHARED mappings with a workload that is a single application
+inside the driver where the risk in sharing data is very low or
+nonexisting, the device sharing the same backing region with a SHARED
+mapping can be used as a valid configuration.
+
+\subsubsection{Prevent cache eviction}\label{sec:Device Types / PMEM Device / Possible Security Implications / Countermeasures / Cache eviction}
+Don't allow device shared region eviction from driver filesystem trim or discard
+like commands with virtio pmem. This rules out any possibility of evict-reload
+cache side channel attacks if backing region is shared (SHARED)
+between mutliple devices. Though if we use per device backing file with
+shared mapping this countermeasure is not required.
