@@ -2775,8 +2775,28 @@ info->cookie = do_notify(schid,
 \subsubsection{Resetting Devices}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Operation / Resetting Devices}
 
 In order to reset a device, a driver sends the
-CCW_CMD_VDEV_RESET command.
+CCW_CMD_VDEV_RESET command. This command does not carry any payload.
 
+The device signals completion of the virtio reset operation through successful
+conclusion of the CCW_CMD_VDEV_RESET channel command. In particular, the
+command not only triggers the reset operation, but the reset operation is
+already completed when the operation concludes successfully.
+
+\devicenormative{\paragraph}{Resetting Devices}{Virtio Transport Options / Virtio over channel I/O / Device Operation / Resetting Devices}
+
+The device MUST finish the virtio reset operation and reinitialize
+\field{device status} to zero before it concludes the CCW_CMD_VDEV_RESET
+command successfully.
+
+The device MUST NOT send notifications or interact with the queues after
+it signaled successful conclusion of the CCW_CMD_VDEV_RESET command.
+
+\drivernormative{\paragraph}{Resetting Devices}{Virtio Transport Options / Virtio over channel I/O / Device Operation / Resetting Devices}
+
+The driver MAY consider the virtio reset operation to be complete already after
+successful conclusion of the CCW_CMD_VDEV_RESET channel command, although it
+MAY also choose to verify reset completion by reading \field{device status} via
+CCW_CMD_READ_STATUS and checking whether it is 0 afterwards.
 
 \chapter{Device Types}\label{sec:Device Types}
 
