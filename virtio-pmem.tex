@@ -24,7 +24,10 @@ reset and power failure.
 
 \subsection{Feature bits}\label{sec:Device Types / PMEM Device / Feature bits}
 
-There are currently no feature bits defined for this device.
+\begin{description}
+\item[VIRTIO_PMEM_F_SHMEM_REGION (0)] The guest physical address range will be
+indicated as a shared memory region.
+\end{description}
 
 \subsection{Device configuration layout}\label{sec:Device Types / PMEM Device / Device configuration layout}
 
@@ -36,21 +39,44 @@ struct virtio_pmem_config {
 \end{lstlisting}
 
 \begin{description}
-\item[\field{start}] contains the physical address of the first byte of the persistent memory region.
+\item[\field{start}] contains the physical address of the first byte of the
+persistent memory region, if VIRTIO_PMEM_F_SHMEM_REGION has not been negotiated.
 
-\item[\field{size}] contains the length of this address range.
+\item[\field{size}] contains the length of this address range, if
+VIRTIO_PMEM_F_SHMEM_REGION has not been negotiated.
 \end{description}
 
-\begin{enumerate}
-\item Driver vpmem start is read from \field{start}.
-\item Driver vpmem end is read from \field{size}.
-\end{enumerate}
+\subsection{Device Initialization}\label{sec:Device Types / PMEM Device / Device Initialization}
 
-\subsection{Driver Initialization}\label{sec:Device Types / PMEM Driver / Driver Initialization}
+The device indicates the guest physical address to the driver in one of two ways:
+\begin{enumerate}
+\item As a guest absolute address, using virtio_pmem_config.
+\item As a shared memory region.
+\end{enumerate}
 
 The driver determines the start address and size of the persistent memory region in preparation for reading or writing data.
 
 The driver initializes req_vq in preparation for making flush requests.
+
+\devicenormative{\subsubsection}{Device Initialization}{Device Types / PMEM Device / Device Initialization}
+
+If VIRTIO_PMEM_F_SHMEM_REGION has been negotiated, the device MUST indicate the
+guest physical address as a shared memory region. The device MUST use shared
+memory region ID 0. The device SHOULD set \field{start} and \field{size} to zero.
+
+If VIRTIO_PMEM_F_SHMEM_REGION has not been negotiated, the device MUST indicate
+the guest physical address as a guest absolute address. The device MUST set
+\field{start} to the absolute address and \field{size} to the size of the
+address range, in bytes.
+
+\drivernormative{\subsubsection}{Device Initialization}{Device Types / PMEM Device / Device Initialization}
+
+If VIRTIO_PMEM_F_SHMEM_REGION has been negotiated, the driver MUST query
+shared memory ID 0 for the physical address ranges, and MUST NOT use
+\field{start} or \field{stop}.
+
+If VIRTIO_PMEM_F_SHMEM_REGION has not been negotiated, the driver MUST read the
+physical address ranges from \field{start} and \field{stop}.
 
 \subsection{Driver Operations}\label{sec:Device Types / PMEM Driver / Driver Operation / Request Queues}
 

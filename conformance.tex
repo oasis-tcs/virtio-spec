@@ -31,8 +31,9 @@ Conformance targets:
 \ref{sec:Conformance / Driver Conformance / Sound Driver Conformance},
 \ref{sec:Conformance / Driver Conformance / Memory Driver Conformance},
 \ref{sec:Conformance / Driver Conformance / I2C Adapter Driver Conformance},
-\ref{sec:Conformance / Driver Conformance / SCMI Driver Conformance} or
-\ref{sec:Conformance / Driver Conformance / GPIO Driver Conformance}.
+\ref{sec:Conformance / Driver Conformance / SCMI Driver Conformance},
+\ref{sec:Conformance / Driver Conformance / GPIO Driver Conformance} or
+\ref{sec:Conformance / Driver Conformance / PMEM Driver Conformance}.
 
     \item Clause \ref{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}.
   \end{itemize}
@@ -314,6 +315,14 @@ normative statements:
 \item \ref{drivernormative:Device Types / GPIO Device / eventq Operation}
 \end{itemize}
 
+\conformance{\subsection}{PMEM Driver Conformance}\label{sec:Conformance / Driver Conformance / PMEM Driver Conformance}
+
+A PMEM driver MUST conform to the following normative statements:
+
+\begin{itemize}
+\item \ref{drivernormative:Device Types / PMEM Device / Device Initialization}
+\end{itemize}
+
 \conformance{\section}{Device Conformance}\label{sec:Conformance / Device Conformance}
 
 A device MUST conform to the following normative statements:
@@ -578,6 +587,7 @@ normative statements:
 A PMEM device MUST conform to the following normative statements:
 
 \begin{itemize}
+\item \ref{devicenormative:Device Types / PMEM Device / Device Initialization}
 \item \ref{devicenormative:Device Types / PMEM Device / Device Operation / Virtqueue flush}
 \item \ref{devicenormative:Device Types / PMEM Device / Device Operation / Virtqueue return}
 \end{itemize}
