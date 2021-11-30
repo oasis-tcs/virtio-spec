@@ -50,7 +50,7 @@ VIRTIO_PMEM_F_SHMEM_REGION has not been negotiated.
 
 The device indicates the guest physical address to the driver in one of two ways:
 \begin{enumerate}
-\item As a guest absolute address, using virtio_pmem_config.
+\item As a physical address, using virtio_pmem_config.
 \item As a shared memory region.
 \end{enumerate}
 
@@ -65,7 +65,7 @@ guest physical address as a shared memory region. The device MUST use shared
 memory region ID 0. The device SHOULD set \field{start} and \field{size} to zero.
 
 If VIRTIO_PMEM_F_SHMEM_REGION has not been negotiated, the device MUST indicate
-the guest physical address as a guest absolute address. The device MUST set
+the guest physical address as a physical address. The device MUST set
 \field{start} to the absolute address and \field{size} to the size of the
 address range, in bytes.
 
