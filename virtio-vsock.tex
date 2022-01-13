@@ -16,7 +16,11 @@ Ethernet or IP protocols.
 
 \subsection{Feature bits}\label{sec:Device Types / Socket Device / Feature bits}
 
-There are currently no feature bits defined for this device.
+If no feature bit is set, only stream socket type is supported.
+
+\begin{description}
+\item[VIRTIO_VSOCK_F_STREAM (0)] stream socket type is supported.
+\end{description}
 
 \subsection{Device configuration layout}\label{sec:Device Types / Socket Device / Device configuration layout}
 
