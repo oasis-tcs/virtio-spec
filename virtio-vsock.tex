@@ -17,9 +17,12 @@ Ethernet or IP protocols.
 \subsection{Feature bits}\label{sec:Device Types / Socket Device / Feature bits}
 
 If no feature bit is set, only stream socket type is supported.
+If VIRTIO_VSOCK_F_SEQPACKET has been negotiated, the device MAY act
+as if VIRTIO_VSOCK_F_STREAM has also been negotiated.
 
 \begin{description}
 \item[VIRTIO_VSOCK_F_STREAM (0)] stream socket type is supported.
+\item[VIRTIO_VSOCK_F_SEQPACKET (1)] seqpacket socket type is supported.
 \end{description}
 
 \subsection{Device configuration layout}\label{sec:Device Types / Socket Device / Device configuration layout}
@@ -139,15 +142,17 @@ Flows are identified by a (source, destination) address tuple.  An address
 consists of a (cid, port number) tuple. The header fields used for this are
 \field{src_cid}, \field{src_port}, \field{dst_cid}, and \field{dst_port}.
 
-Currently only stream sockets are supported. \field{type} is 1 (VIRTIO_VSOCK_TYPE_STREAM)
-for stream socket types.
+Currently stream and seqpacket sockets are supported. \field{type} is 1 (VIRTIO_VSOCK_TYPE_STREAM)
+for stream socket types, and 2 (VIRTIO_VSOCK_TYPE_SEQPACKET) for seqpacket socket types.
 
 \begin{lstlisting}
-#define VIRTIO_VSOCK_TYPE_STREAM 1
+#define VIRTIO_VSOCK_TYPE_STREAM    1
+#define VIRTIO_VSOCK_TYPE_SEQPACKET 2
 \end{lstlisting}
 
 Stream sockets provide in-order, guaranteed, connection-oriented delivery
-without message boundaries.
+without message boundaries. Seqpacket sockets provide in-order, guaranteed,
+connection-oriented delivery with message and record boundaries.
 
 \subsubsection{Buffer Space Management}\label{sec:Device Types / Socket Device / Device Operation / Buffer Space Management}
 \field{buf_alloc} and \field{fwd_cnt} are used for buffer space management of
@@ -247,6 +252,27 @@ VIRTIO_VSOCK_OP_RST packet is sent to forcibly disconnect the socket.
 The clean disconnect process ensures that neither peer reuses the (source,
 destination) address tuple for a new connection while the other peer is still
 processing the old connection.
+
+\subsubsection{Seqpacket Sockets}\label{sec:Device Types / Socket Device / Device Operation / Seqpacket Sockets}
+
+\paragraph{Message and record boundaries}\label{sec:Device Types / Socket Device / Device Operation / Seqpacket Sockets / Boundaries}
+Two types of boundaries are supported: message and record boundaries.
+
+A message contains data sent in a single operation. A single message can be
+split into multiple RW packets.
+To provide message boundaries, last RW packet of each message has
+VIRTIO_VSOCK_SEQ_EOM bit (bit 0) set in the \field{flags} of packet's header.
+
+Record is any number of subsequent messages, where last message is sent with POSIX
+MSG_EOR flag set. Record boundary means that receiver gets MSG_EOR flag set
+in the corresponding message where sender set it.
+To provide record boundaries, last RW packet of each record has VIRTIO_VSOCK_SEQ_EOR
+bit (bit 1) set in the \field{flags} of packet's header.
+
+\begin{lstlisting}
+#define VIRTIO_VSOCK_SEQ_EOM (1 << 0)
+#define VIRTIO_VSOCK_SEQ_EOR (1 << 1)
+\end{lstlisting}
 
 \subsubsection{Device Events}\label{sec:Device Types / Socket Device / Device Operation / Device Events}
 
