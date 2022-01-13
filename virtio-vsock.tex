@@ -86,23 +86,18 @@ connection and buffer space management.  \field{op} is one of the following
 operation constants:
 
 \begin{lstlisting}
-enum {
-	VIRTIO_VSOCK_OP_INVALID = 0,
-
-	/* Connect operations */
-	VIRTIO_VSOCK_OP_REQUEST = 1,
-	VIRTIO_VSOCK_OP_RESPONSE = 2,
-	VIRTIO_VSOCK_OP_RST = 3,
-	VIRTIO_VSOCK_OP_SHUTDOWN = 4,
-
-	/* To send payload */
-	VIRTIO_VSOCK_OP_RW = 5,
-
-	/* Tell the peer our credit info */
-	VIRTIO_VSOCK_OP_CREDIT_UPDATE = 6,
-	/* Request the peer to send the credit info to us */
-	VIRTIO_VSOCK_OP_CREDIT_REQUEST = 7,
-};
+#define VIRTIO_VSOCK_OP_INVALID        0
+/* Connect operations */
+#define VIRTIO_VSOCK_OP_REQUEST        1
+#define VIRTIO_VSOCK_OP_RESPONSE       2
+#define VIRTIO_VSOCK_OP_RST            3
+#define VIRTIO_VSOCK_OP_SHUTDOWN       4
+/* To send payload */
+#define VIRTIO_VSOCK_OP_RW             5
+/* Tell the peer our credit info */
+#define VIRTIO_VSOCK_OP_CREDIT_UPDATE  6
+/* Request the peer to send the credit info to us */
+#define VIRTIO_VSOCK_OP_CREDIT_REQUEST 7
 \end{lstlisting}
 
 \subsubsection{Virtqueue Flow Control}\label{sec:Device Types / Socket Device / Device Operation / Virtqueue Flow Control}
@@ -140,8 +135,12 @@ Flows are identified by a (source, destination) address tuple.  An address
 consists of a (cid, port number) tuple. The header fields used for this are
 \field{src_cid}, \field{src_port}, \field{dst_cid}, and \field{dst_port}.
 
-Currently only stream sockets are supported. \field{type} is 1 for stream
-socket types.
+Currently only stream sockets are supported. \field{type} is 1 (VIRTIO_VSOCK_TYPE_STREAM)
+for stream socket types.
+
+\begin{lstlisting}
+#define VIRTIO_VSOCK_TYPE_STREAM 1
+\end{lstlisting}
 
 Stream sockets provide in-order, guaranteed, connection-oriented delivery
 without message boundaries.
@@ -222,10 +221,15 @@ a listening socket does not exist on the destination or the destination has
 insufficient resources to establish the connection.
 
 When a connected socket receives VIRTIO_VSOCK_OP_SHUTDOWN the header
-\field{flags} field bit 0 indicates that the peer will not receive any more
-data and bit 1 indicates that the peer will not send any more data.  These
-hints are permanent once sent and successive packets with bits clear do not
-reset them.
+\field{flags} field bit VIRTIO_VSOCK_SHUTDOWN_F_RECEIVE (bit 0) set indicates
+that the peer will not receive any more data and bit VIRTIO_VSOCK_SHUTDOWN_F_SEND
+(bit 1) set indicates that the peer will not send any more data.  These hints are
+permanent once sent and successive packets with bits clear do not reset them.
+
+\begin{lstlisting}
+#define VIRTIO_VSOCK_SHUTDOWN_F_RECEIVE 0
+#define VIRTIO_VSOCK_SHUTDOWN_F_SEND    1
+\end{lstlisting}
 
 The VIRTIO_VSOCK_OP_RST packet aborts the connection process or forcibly
 disconnects a connected socket.
@@ -248,9 +252,7 @@ virtqueue.
 The event buffer is as follows:
 
 \begin{lstlisting}
-enum virtio_vsock_event_id {
-        VIRTIO_VSOCK_EVENT_TRANSPORT_RESET = 0,
-};
+#define VIRTIO_VSOCK_EVENT_TRANSPORT_RESET 0
 
 struct virtio_vsock_event {
         le32 id;
