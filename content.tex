@@ -4863,6 +4863,9 @@ successfully, failed, or not been processed by the device.
 
 \drivernormative{\subsubsection}{Device Operation}{Device Types / Block Device / Device Operation}
 
+The driver SHOULD check if the content of the \field{capacity} field has
+changed upon receiving a configuration change notification.
+
 A driver MUST NOT submit a request which would cause a read or write
 beyond \field{capacity}.
 
@@ -4908,6 +4911,10 @@ successfully, failed, or were processed by the device at all if the request
 failed with VIRTIO_BLK_S_IOERR.
 
 \devicenormative{\subsubsection}{Device Operation}{Device Types / Block Device / Device Operation}
+
+The device MAY change the content of the \field{capacity} field during
+operation of the device. When this happens, the device SHOULD trigger a
+configuration change notification.
 
 A device MUST set the \field{status} byte to VIRTIO_BLK_S_IOERR
 for a write request if the VIRTIO_BLK_F_RO feature if offered, and MUST NOT
