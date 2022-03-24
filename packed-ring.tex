@@ -499,7 +499,7 @@ The device MAY limit the number of buffers it will allow in a
 list.
 
 \drivernormative{\subsection}{Indirect Descriptors}{Basic Facilities of a Virtio Device / Packed Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}
-The driver MUST NOT set the DESC_F_INDIRECT flag unless the
+The driver MUST NOT set the VIRTQ_DESC_F_INDIRECT flag unless the
 VIRTIO_F_INDIRECT_DESC feature was negotiated.   The driver MUST NOT
 set any flags except DESC_F_WRITE within an indirect descriptor.
 
@@ -507,7 +507,7 @@ A driver MUST NOT create a descriptor chain longer than allowed
 by the device.
 
 A driver MUST NOT write direct descriptors with
-DESC_F_INDIRECT set in a scatter-gather list linked by
+VIRTQ_DESC_F_INDIRECT set in a scatter-gather list linked by
 VIRTQ_DESC_F_NEXT.
 \field{flags}.
 
