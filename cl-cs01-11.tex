@@ -1,0 +1,321 @@
+5c43ad7 & 27 Feb 2019 & Halil Pasic & {ccw: be more precise about the semantic of revision 1
+
+
+Revision 1 of the CCW transport is currently defined as virtio 1.0. This
+could become confusing when we bump the version of the virtio
+specification to 1.1, in a sense that it could be interpreted like one
+can not use any features not part of the 1.0 specification.
+
+So let us try to avoid confusion regarding the semantic of virtio-ccw
+revision 1.
+
+Fixes: \url{https://issues.oasis-open.org/browse/VIRTIO-163}
+
+Signed-off-by: Halil Pasic <pasic@linux.vnet.ibm.com>
+
+Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+See \ref{sec:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Setting the Virtio Revision}.
+
+ } \\
+\hline
+d348ac0 & 27 Feb 2019 & Halil Pasic & {introduction: simplify the designation of legacy
+
+
+The sentence designating the documents defining what later
+became known as the legacy virtio interface had the most
+important piece of information placed in parenthesis.
+
+Let's reword this sentence so we avoid using an ambiguous designation
+based on a relative anchor (i.e. 'earlier drafts of this specification')
+and just use the absolute anchor (version 1.0).
+
+Fixes: \url{https://issues.oasis-open.org/browse/VIRTIO-164}
+
+Signed-off-by: Halil Pasic <pasic@linux.vnet.ibm.com>
+
+Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+See \ref{intro:Legacy Interface: Terminology}.
+ } \\
+\hline
+bef3ff7 & 07 Mar 2019 & Stefan Hajnoczi & {virtio-blk: document data[] size constraints
+
+
+The struct virtio_blk_req->data[] field is a multiple of 512 bytes long
+for read and write requests.  Flush requests don't use data[] at all.
+
+The new discard and write zeroes requests being introduced in VIRTIO 1.1
+put struct virtio_blk_discard_write_zeroes elements into data[], so it
+must be a multiple of the struct size.
+
+The uint8_t data[][512] pseudo-code makes it look like discard and write
+zeroes requests must pad to 512 bytes.  This wastes memory since struct
+virtio_blk_discard_write_data is only 16 bytes long.
+
+Furthermore, all known implementations wishing to take advantage of this
+upcoming VIRTIO 1.1 feature do not use 512-byte padding (Linux
+virtio_blk.ko, QEMU virtio-blk device emulation, the SPDK virtio-blk
+driver, and the SPDK vhost-user-blk device backend).
+
+This patch documents the data[] size constraints clearly in the driver
+normative section.  This is clearer than the current pseudo-code.
+
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/32}
+
+Cc: Michael S. Tsirkin <mst@redhat.com>
+
+Cc: Changpeng Liu <changpeng.liu@intel.com>
+
+Cc: Stefano Garzarella <sgarzare@redhat.com>
+
+Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+See \ref{sec:Device Types / Block Device / Device Operation}.
+ } \\
+\hline
+c5c0ce7 & 07 Mar 2019 & Stefan Hajnoczi & {virtio-blk: move virtio_blk_discard_write_zeroes definition
+
+
+struct virtio_blk_discard_write_zeroes is defined alongside
+struct virtio_blk_req but only discussed later in the text.  Move it to
+where it belongs.
+
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/32}
+
+Suggested-by: Michael S. Tsirkin <mst@redhat.com>
+
+Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+See \ref{sec:Device Types / Block Device / Device Operation}.
+ } \\
+\hline
+caffe5c & 07 Mar 2019 & Stefan Hajnoczi & {virtio-blk: describe write zeroes unmap semantics
+
+
+Explain the meaning of the unmap flag.  The details are already covered
+in the device normative section but mentioning it here makes the text
+easier to understand.
+
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/32}
+
+Suggested-by: Michael S. Tsirkin <mst@redhat.com>
+
+Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+See \ref{sec:Device Types / Block Device / Device Operation}.
+ } \\
+\hline
+5f1e981 & 07 Mar 2019 & Stefan Hajnoczi & {virtio-blk: avoid inconsistent "DISCARD" term
+
+
+"discard" (lowercase) is used throughout the text.  Remove a lone
+instance of "DISCARD" (uppercase).
+
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/32}
+
+Suggested-by: Michael S. Tsirkin <mst@redhat.com>
+
+Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+See \ref{sec:Device Types / Block Device / Device Operation}.
+ } \\
+\hline
+31a52d2 & 07 Mar 2019 & Stefan Hajnoczi & {virtio-blk: clarify semantics of multi-segment discard/write zeroes commands
+
+
+Describe the failure case and maximum number of segments in a
+multi-segment discard/write zeroes command.
+
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/34}
+
+Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+See \ref{drivernormative:Device Types / Block Device / Device Operation}.
+ } \\
+\hline
+90047f5 & 21 Mar 2019 & Michael S. Tsirkin & {format: replace "- i.e." with ", i.e.,"
+
+
+This seems to be preferred by native speakers, and
+seems just as effective as a sentence device.
+
+Fixes: \url{https://issues.oasis-open.org/browse/VIRTIO-171}
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+
+ } \\
+\hline
+c7b2503 & 21 Mar 2019 & Michael S. Tsirkin & {conformance: add links to crypto and input devices
+
+
+Fixes: \url{https://issues.oasis-open.org/browse/VIRTIO-174}
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+
+See \ref{sec:Conformance / Conformance Targets}.
+ } \\
+\hline
+0b5288f & 21 Mar 2019 & Michael S. Tsirkin & {signal start and end of structures consistently
+
+
+Make sure all structs have the format:
+
+struct X .
+
+...
+\};
+
+Fixes: \url{https://issues.oasis-open.org/browse/VIRTIO-170}
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Device Types / SCSI Host Device / Device Operation / Device Operation: controlq}.
+ } \\
+\hline
+69daf06 & 21 Mar 2019 & Michael S. Tsirkin & {editorial: explain each structure before use
+
+Several structures are listed before they are
+introduced in some way. Add a sentence before each one
+so they don't appear prior to any prose.
+
+Fixes: \url{https://issues.oasis-open.org/browse/VIRTIO-166}
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue},
+\ref{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Used Ring},
+\ref{sec:Device Types / Crypto Device / Device configuration layout},
+\ref{sec:Device Types / GPU Device / Device configuration layout},
+\ref{sec:Device Types / GPU Device / Device Operation / Device Operation: Request header},
+\ref{sec:Device Types / GPU Device / Device Operation / Device Operation: Request header} amd
+\ref{sec:Device Types / Socket Device / Device configuration layout}.
+ } \\
+\hline
+d608f47 & 21 Mar 2019 & Michael S. Tsirkin & {conformance: tweak to match OASIS requirements
+
+
+Number clauses as required by OASIS.
+
+Also reference the transitional clause.
+
+Fixes: \url{https://issues.oasis-open.org/browse/VIRTIO-168}
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+
+Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Conformance}.
+ } \\
+\hline
+0dbd52d & 21 Mar 2019 & Michael S. Tsirkin & {introduction: update link to IEEE 802
+
+
+Looks like all GETIEEE links got broken.
+Let's just point to their main page.
+
+Fixes: \url{https://issues.oasis-open.org/browse/VIRTIO-175}
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+
+Reviewed-by: Jens Freimann <jfreimann@redhat.com>
+
+See \ref{sec:Normative References}.
+ } \\
+\hline
+7b361ea & 21 Mar 2019 & Michael S. Tsirkin & {editorial: upgrade links to https
+
+
+Several links have been upgraded and now redirect to the https
+version. Upgrade our version accordingly.
+
+Note that some other links use the status 301 - moved permanently
+apparently in error (e.g. for a language specific redirect), not
+updating these.
+
+Fixes: \url{https://issues.oasis-open.org/browse/VIRTIO-173}
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+
+Reviewed-by: Jens Freimann <jfreimann@redhat.com>
+
+See \ref{sec:Chair}.
+ } \\
+\hline
+3e49aec & 21 Mar 2019 & Michael S. Tsirkin & {conformance: fix confusion about legacy interface
+
+
+The text describing the legacy interface also obliquely refers to a
+non-transitional implementation. This seems to cause confusion
+and there's no good reason to do it here: this section
+is about legacy interface and transitional devices,
+it add not value at all. Just drop it.
+
+Note: the spec does not make it clear whether description of the legacy
+interface is normative or not, and in particular, this section is not
+linked to from any conformance targets.
+Resolving that is left for later.
+
+Fixes: \url{https://issues.oasis-open.org/browse/VIRTIO-167}
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+
+Acked-by: Halil Pasic <pasic@linux.ibm.com>
+
+See \ref{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}.
+ } \\
+\hline
+4cc8a4d & 21 Mar 2019 & Michael S. Tsirkin & {block: drop duplicate text
+
+
+In version 1.1 draft 01 - Section 5.2.6.4 - second bullet:
+
+Duplicated text "errors, data_len, sense_len and residual MUST reside in
+a single, separate device-writable descriptor" appears +both in the
+beginning and at the end of the 2nd sentence.
+
+The original text:
+
+For SCSI commands there are additional constraints. errors, data_len,
+sense_len and residual MUST reside in a single, separate device-writable
+descriptor, sense MUST reside in a single separate device-writable
+descriptor of size 96 bytes, and errors, data_len, sense_len and
+residual MUST reside a single separate device-writable descriptor.
+I suggest to delete the 1st one, so in the end result, fields are
+described in same order as appear in struct virtio_scsi_pc_req.
+
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/39}
+
+Reported-by: Gil Savir <gil.savir@intel.com>
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+See \ref{sec:Device Types / Block Device / Legacy Interface: Framing Requirements}.
+ } \\
+\hline
