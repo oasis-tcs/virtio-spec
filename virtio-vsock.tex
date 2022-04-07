@@ -107,6 +107,11 @@ operation constants:
 #define VIRTIO_VSOCK_OP_CREDIT_REQUEST 7
 \end{lstlisting}
 
+\field{len} is the size of the payload, in bytes. However, the driver may
+provide buffer(s) for the payload that have a total size longer than
+\field{len}, in which case only the first \field{len} bytes will be used for
+the actual data.
+
 \subsubsection{Virtqueue Flow Control}\label{sec:Device Types / Socket Device / Device Operation / Virtqueue Flow Control}
 
 The tx virtqueue carries packets initiated by applications and replies to
