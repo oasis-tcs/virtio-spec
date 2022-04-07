@@ -232,22 +232,22 @@ configuration:
   Creating mappings aligned on large page sizes can improve performance
   since they require fewer page table and TLB entries.
 
-\item If the VIRTIO_IOMMU_F_DOMAIN_RANGE feature is offered,
+\item If the VIRTIO_IOMMU_F_DOMAIN_RANGE feature is negotiated,
   \field{domain_range} describes the values supported in a \field{domain}
-  field. If the feature is not offered, any \field{domain} value is valid.
+  field. If the feature is not negotiated, any \field{domain} value is valid.
 
-\item If the VIRTIO_IOMMU_F_INPUT_RANGE feature is offered,
+\item If the VIRTIO_IOMMU_F_INPUT_RANGE feature is negotiated,
   \field{input_range} contains the virtual address range that the IOMMU is
   able to translate. Any mapping request to virtual addresses outside of
   this range fails.
 
-  If the feature is not offered, virtual mappings span over the whole
+  If the feature is not negotiated, virtual mappings span over the whole
   64-bit address space (\texttt{start = 0, end = 0xffffffff ffffffff})
 \end{itemize}
 
 An endpoint is in bypass mode if:
 \begin{itemize}
-  \item the VIRTIO_IOMMU_F_BYPASS_CONFIG feature is offered and:
+  \item the VIRTIO_IOMMU_F_BYPASS_CONFIG feature is negotiated and:
     \begin{itemize}
       \item config field \field{bypass} is 1 and the endpoint is
         not attached to a domain. This applies even if the driver
