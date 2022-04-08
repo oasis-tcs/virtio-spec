@@ -48,6 +48,7 @@ Conformance targets:
 \ref{sec:Conformance / Device Conformance / Entropy Device Conformance}, 
 \ref{sec:Conformance / Device Conformance / Traditional Memory Balloon Device Conformance}, 
 \ref{sec:Conformance / Device Conformance / SCSI Host Device Conformance}, 
+\ref{sec:Conformance / Device Conformance / GPU Device Conformance},
 \ref{sec:Conformance / Device Conformance / Input Device Conformance}, 
 \ref{sec:Conformance / Device Conformance / Crypto Device Conformance}, 
 \ref{sec:Conformance / Device Conformance / Socket Device Conformance}, 
@@ -451,6 +452,15 @@ An SCSI host device MUST conform to the following normative statements:
 \item \ref{devicenormative:Device Types / SCSI Host Device / Device Initialization}
 \item \ref{devicenormative:Device Types / SCSI Host Device / Device Operation / Device Operation: Request Queues}
 \item \ref{devicenormative:Device Types / SCSI Host Device / Device Operation / Device Operation: eventq}
+\end{itemize}
+
+\conformance{\subsection}{GPU Device Conformance}\label{sec:Conformance / Device Conformance / GPU Device Conformance}
+
+A GPU device MUST conform to the following normative statements:
+
+\begin{itemize}
+\item \ref{devicenormative:Device Types / GPU Device / Device Initialization}
+\item \ref{devicenormative:Device Types / GPU Device / Device Operation / Device Operation: Command lifecycle and fencing}
 \end{itemize}
 
 \conformance{\subsection}{Input Device Conformance}\label{sec:Conformance / Device Conformance / Input Device Conformance}
