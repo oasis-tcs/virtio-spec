@@ -155,7 +155,7 @@ In this case, it might be beneficial for the reader to focus on
 sections tagged "Legacy Interface" in the section title.
 These highlight the changes made since the earlier drafts.
 
-\section{Structure Specifications}
+\section{Structure Specifications}\label{sec:Structure Specifications}
 
 Many device and driver in-memory structure layouts are documented using
 the C struct syntax. All structures are assumed to be without additional
@@ -216,7 +216,7 @@ portable C code to generate a value to be stored into \field{x}:
 \begin{lstlisting}
 CPU_TO_BE16(B << 15 | A)
 \end{lstlisting}
-\section{Constant Specifications}
+\section{Constant Specifications}\label{sec:Constant Specifications}
 
 In many cases, numeric values used in the interface between the device
 and the driver are documented using the C \#define and /* */
