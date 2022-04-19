@@ -35,6 +35,10 @@ while (<>) {
 		$line =~ s/%DIFDELCMD\s+< //;
 		if (not $line =~ m/\\(?:begin|end)\{lstlisting\}/) {
 			$line =~ s/([#&{} ])/\\$1/g;
+			#be careful: do not escape \^
+			$line =~ s/([^\\])(\^)/$1\\$2/g;
+			#also at beginning of line
+			$line =~ s/^(\^)/\\$1/g;
 			if ($add) {
 				$line =~ s/(.*)/\$\\DIFdel\{$1\}\$/;
 			} else {
