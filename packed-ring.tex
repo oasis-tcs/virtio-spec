@@ -388,14 +388,12 @@ virtqueue\footnote{For example, if Queue Size is 4 then at most 4 buffers
 can be queued at any given time.}.  The Queue Size value does not
 have to be a power of 2.
 
-\drivernormative{\subsection}{Virtqueues}{Basic Facilities of a
-Virtio Device / Packed Virtqueues}
+\drivernormative{\subsection}{Virtqueues}{Basic Facilities of a Virtio Device / Packed Virtqueues}
 The driver MUST ensure that the physical address of the first byte
 of each virtqueue part is a multiple of the specified alignment value
 in the above table.
 
-\devicenormative{\subsection}{Virtqueues}{Basic Facilities of a
-Virtio Device / Packed Virtqueues}
+\devicenormative{\subsection}{Virtqueues}{Basic Facilities of a Virtio Device / Packed Virtqueues}
 The device MUST start processing driver descriptors in the order
 in which they appear in the ring.
 The device MUST start writing device descriptors into the ring in
@@ -466,8 +464,7 @@ not yet made available to the device.
 A driver MAY send multiple available buffer notifications without making
 any new descriptors available to the device.
 
-\drivernormative{\subsection}{Scatter-Gather Support}{Basic Facilities of a
-Virtio Device / Packed Virtqueues / Scatter-Gather Support}
+\drivernormative{\subsection}{Scatter-Gather Support}{Basic Facilities of a Virtio Device / Packed Virtqueues / Scatter-Gather Support}
 A driver MUST NOT create a descriptor list longer than allowed
 by the device.
 
@@ -489,8 +486,7 @@ A driver MUST NOT make the first descriptor in the list available
 before all subsequent descriptors comprising the list are made
 available.
 
-\devicenormative{\subsection}{Scatter-Gather Support}{Basic Facilities of a
-Virtio Device / Packed Virtqueues / Scatter-Gather Support}
+\devicenormative{\subsection}{Scatter-Gather Support}{Basic Facilities of a Virtio Device / Packed Virtqueues / Scatter-Gather Support}
 The device MUST use descriptors in a list chained by the
 VIRTQ_DESC_F_NEXT flag in the same order that they
 were made available by the driver.
@@ -572,9 +568,7 @@ the descriptor and its contents.  The device MAY
 access the descriptor and any following descriptors the driver created and the
 memory they refer to immediately.
 
-\drivernormative{\paragraph}{Updating flags}{Basic Facilities of
-a Virtio Device / Packed Virtqueues / Supplying Buffers to The
-Device / Updating flags}
+\drivernormative{\paragraph}{Updating flags}{Basic Facilities of a Virtio Device / Packed Virtqueues / Supplying Buffers to The Device / Updating flags}
 The driver MUST perform a suitable memory barrier before the
 \field{flags} update, to ensure the
 device sees the most up-to-date copy.
