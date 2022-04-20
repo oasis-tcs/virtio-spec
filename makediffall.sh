@@ -7,7 +7,7 @@ mv -f $SPECDOC.zip $SPECDOC-diff-from-${FROMVERSION}.pdf
 ./makediffpdf.sh
 zip $SPECDOC-diff-from-${FROMVERSION}.zip \
 	$SPECDOC-diff-from-${FROMVERSION}.pdf
-echo Generated file $SPECDOC.zip
+echo Generated file $SPECDOC-diff-from-${FROMVERSION}.zip
 echo To change output file name, set SPECDOC environment variable
 echo Examples:
 echo     SPECDOC=virtio-v1.0-wd01 $0
