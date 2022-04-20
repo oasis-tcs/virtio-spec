@@ -40,9 +40,9 @@ while (<>) {
 			#also at beginning of line
 			$line =~ s/^(\^)/\\$1/g;
 			if ($add) {
-				$line =~ s/(.*)/\$\\DIFdel\{$1\}\$/;
-			} else {
 				$line =~ s/(.*)/\$\\DIFadd\{$1\}\$/;
+			} else {
+				$line =~ s/(.*)/\$\\DIFdel\{$1\}\$/;
 			}
 		}
 		#print "%FIXED BY RULE 1\n";
