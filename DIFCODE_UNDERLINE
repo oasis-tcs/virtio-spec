@@ -1,0 +1,4 @@
+%DIF DIFCODE_UNDERLINE
+  moredelim=[il][\color{red}\sout]{\%DIF\ <\ },
+  moredelim=[il][\color{neongreen}\uwave]{\%DIF\ >\ }
+%DIF END DIFCODE_UNDERLINE

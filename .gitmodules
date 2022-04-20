@@ -1,0 +1,3 @@
+[submodule "latexdiff"]
+	path = latexdiff
+	url = https://github.com/ftilmann/latexdiff.git

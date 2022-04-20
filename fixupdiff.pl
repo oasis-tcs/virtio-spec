@@ -1,5 +1,9 @@
 use strict;
 
+#This script was useful with latexdiff we previously used:
+#commit f0914be03e6548bbe1ed0b453c45b6f2498e46e5 https://github.com/ftilmann/latexdiff.git
+#(which is 1.1.0 + a ton of changes).
+#This script is no longer in use, will remove down the road
 my @protected_labels = (
 'devicenormative:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Interrupt Suppression',
 'devicenormative:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Notification Suppression',
