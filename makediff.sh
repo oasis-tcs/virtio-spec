@@ -59,4 +59,3 @@ ln -fs ./latexdiff/latexdiff ./latexdiff-fast
  --exclude-textcmd=chapter \
 --ignore-warnings -p diffpreamble.tex old/flat-fixed.tex \
 new/flat-fixed.tex > virtio-diff.tex
-#perl fixupdiff.pl virtio-diff-tofix.tex > virtio-diff.tex
