@@ -1,6 +1,5 @@
 #! /bin/sh
 
-VERSION=1.1
 DATESTR=${DATESTR:-`cat REVISION-DATE 2>/dev/null`}
 if [ x"$DATESTR" = x ]; then
     ISODATE=`git show --format=format:'%cd' --date=iso | head -n 1`
@@ -39,6 +38,8 @@ case "$1" in
 	echo Unknown doc type >&2
 	exit 1
 esac
+
+VERSION=`echo "$1"| sed -e 's/virtio-v//' -e 's/-.*//'`
 
 #Prepend OASIS unless already there
 case "$STAGENAME" in
