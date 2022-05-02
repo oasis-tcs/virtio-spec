@@ -1,8 +1,25 @@
 #!/usr/bin/perl
 
+#Usage: perl gitlog.pl [From..To]
+#by default, logs from one before last version recorded in REVISION
 use strict;
 
-my @hashes=split(' ', `git log --reverse -q --format=%h v1.2-wd01..`);
+my $revs;
+if ($#ARGV >= 0) {
+	$revs = join(' ', @ARGV);
+} else {
+	# by default, get 1 revision before last
+	my $rev = `git log -q --format=%h -n 1 --skip=1 REVISION`;
+	chomp $rev;
+	my $name=`git cat-file -p ${rev}:REVISION`;
+	chomp $name;
+	$name =~ s/^virtio-//;
+	$revs = $name . "..";
+}
+
+print STDERR "LOG in the range $revs\n";
+
+my @hashes=split(' ', `git log --reverse -q --format=%h ${revs}`);
 
 sub escapelatex {
 	my $s = shift;
