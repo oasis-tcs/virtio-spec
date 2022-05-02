@@ -2535,3 +2535,59 @@ Signed-off-by: Cornelia Huck <cohuck@redhat.com>
 See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / Virtio Structure PCI Capabilities}.
  } \\
 \hline
+c5fd7eda1203 & 29 Apr 2022 & Parav Pandit & { virtio: Improve queue_reset polarity to match to default reset state
+    
+    Currently when driver initiates a queue reset, device is expected
+    to communicate reset status to the driver by changing the value of the
+    queue_reset register twice. First to return value other than 1 when
+    reset is ongoing, later to return 1 when queue reset is completed.
+    
+    However initially during the device reset time the queue reset value
+    is zero. queue_reset changes the value of the register to a different
+    value on reset completion. Yet another time queue_reset value is
+    expected to change when queue_select is reprogrammed.
+    
+    Instead, it is better and efficient to maintain the same VQ state
+    on the device when queue reset is completed.
+    
+    new proposed flow:
+
+    q_enable, q_reset
+
+    A) 0, 0 -> default, device init time
+
+    B) 1, 0 -> driver has enabled vq
+
+    C) 1, 1 -> driver started q reset
+
+    D) 1, 1 -> q_reset stays 1 until device is busy resetting vq
+    (device communicates that its working on resetting VQ,
+	consistent with \#C)
+
+    E) 0, 0 -> q_reset by device is completed, q got disabled
+    (consistent with device init time \#A)
+    
+    Hence, this patch proposes a simple change to have reset register
+    polarity to be same as that of initial reset value.
+    
+    Fixes: https://github.com/oasis-tcs/virtio-spec/issues/139
+
+    Fixes: 12998e738621 ("virtio: pci support virtqueue reset")
+
+    Fixes: a4ce81a83780 ("virtio: mmio support virtqueue reset")
+
+    Fixes: 3b5378d70a42 ("virtio: introduce virtqueue reset as basic facility")
+
+    Reviewed-by: Jason Wang <jasowang@redhat.com>
+
+    Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+
+    Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+    Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common configuration structure layout}
+and
+\ref{sec:Virtio Transport Options / Virtio Over MMIO / MMIO Device Register Layout}.
+ } \\
+\hline
