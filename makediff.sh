@@ -42,13 +42,6 @@ SPECDOC=${SPECDOC:-`cat REVISION`}
 ./make-setup-generated.sh "$SPECDOC"
 latexpand $MAIN -o flat.tex
 cd "${cur}"
-# latexdiff does not do diffs within footnotes
-# adding space make it not realize the text is a footnote,
-# and treat it normally
-sed 's/\\footnote{/\\footnote {/' old/flat.tex > old/flat-fixed.tex
-sed 's/\\footnote{/\\footnote {/' new/flat.tex > new/flat-fixed.tex
-#cp old/flat.tex old/flat-fixed.tex
-#cp new/flat.tex new/flat-fixed.tex
 #wget http://mirror.math.ku.edu/tex-archive/support/latexdiff/latexdiff-fast
 #chmod +x latexdiff-fast
 git submodule update latexdiff
@@ -57,5 +50,5 @@ ln -fs ./latexdiff/latexdiff ./latexdiff-fast
  --append-safecmd=field --append-textcmd=mmioreg \
 --append-textcmd=mmiodreg \
  --exclude-textcmd=chapter \
---ignore-warnings -p diffpreamble.tex old/flat-fixed.tex \
-new/flat-fixed.tex > virtio-diff.tex
+--ignore-warnings -p diffpreamble.tex old/flat.tex \
+new/flat.tex > virtio-diff.tex
