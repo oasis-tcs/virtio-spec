@@ -2,7 +2,7 @@
 
 use strict;
 
-my @hashes=split(' ', `git log --reverse -q --format=%h virtio-v1.1-csprd01..`);
+my @hashes=split(' ', `git log --reverse -q --format=%h v1.2-wd01..`);
 
 sub escapelatex {
 	my $s = shift;
