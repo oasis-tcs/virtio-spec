@@ -162,12 +162,12 @@ div.array {text-align:center;}
 table[rules] {border-left:solid black 0.4pt; border-right:solid black 0.4pt; }
 div.longtable{text-align:center;}
 body { font-family: Arial, Helvetica, sans-serif; font-size: 10pt; }
-h1 { color:#552681; font-size:150%; }
-h2 { color:#552681; font-size:140%; }
-h3 { color:#552681; font-size:130%; }
-h4 { color:#552681; font-size:120%; }
-h5 { color:#552681; font-size:110%; }
-h6 { color:#552681; font-size:100%; }
+h1 { color:#446CAA; font-size:150%; }
+h2 { color:#446CAA; font-size:140%; }
+h3 { color:#446CAA; font-size:130%; }
+h4 { color:#446CAA; font-size:120%; }
+h5 { color:#446CAA; font-size:110%; }
+h6 { color:#446CAA; font-size:100%; }
 table.tabular { margin-left: 0em; }
 dt { margin-top: 0.5em; }
 div.lstlisting, div.lstinputlisting {font-family: Courier New, monospace; white-space: nowrap; margin-top:0.5em; margin-bottom:0.5em; padding: 5px; border: 1px solid black; color: black; background-color: #F5F5F5;}
