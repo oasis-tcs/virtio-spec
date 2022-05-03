@@ -4,7 +4,7 @@ export DATESTR=${DATESTR:-`cat REVISION-DATE`}
 ./makehtml.sh
 ./makepdf.sh
 zip $SPECDOC.zip $SPECDOC.pdf
-for version in v1.1-cs01 v1.2-wd01; do
+for version in v1.1-cs01; do
 	export FROMVERSION="${version}"
 	mv -f $SPECDOC.zip $SPECDOC-diff-from-${FROMVERSION}.zip
 	./makediffhtml.sh
