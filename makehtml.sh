@@ -19,6 +19,9 @@ sed 's/>~/>"/g' $SPECDOC.tmp2 >$SPECDOC.tmp3
 sed 's/>=~/>="/g' $SPECDOC.tmp3 >$SPECDOC.tmp4
 sed 's/~</"</g' $SPECDOC.tmp4 >$SPECDOC.tmp5
 
+#drop width/height limits from the logo.
+sed '/oasis.png/{n;s/^width="39" height="39" >/ >/}' $SPECDOC.tmp5 >$SPECDOC.tmp6
+
 # If font paths are misconfigured, we get ligatures
 # (such as 'ff or 'fi') replaced by NULL character in output.
 # This in not a valid HTML output, so detect this and warn user.
@@ -41,7 +44,7 @@ then
 	echo 
 fi
 
-mv $SPECDOC.tmp5 $SPECDOC.html
+mv $SPECDOC.tmp6 $SPECDOC.html
 rm $SPECDOC.tmp*
 
 #uncomment if you have a broken t4ht
