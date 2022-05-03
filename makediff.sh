@@ -45,7 +45,8 @@ cd "${cur}"
 #wget http://mirror.math.ku.edu/tex-archive/support/latexdiff/latexdiff-fast
 #chmod +x latexdiff-fast
 git submodule update latexdiff
-ln -fs ./latexdiff/latexdiff ./latexdiff-fast
+make -C latexdiff mkdirs dist/latexdiff-fast
+ln -fs ./latexdiff/dist/latexdiff-fast ./latexdiff-fast
 ./latexdiff-fast \
  --append-safecmd=field --append-textcmd=mmioreg \
 --append-textcmd=mmiodreg \
