@@ -22,12 +22,18 @@ sed 's/~</"</g' $SPECDOC.tmp4 >$SPECDOC.tmp5
 #drop width/height limits from the logo.
 sed '/oasis.png/{n;s/^width="39" height="39" >/ >/}' $SPECDOC.tmp5 >$SPECDOC.tmp6
 
+#To conform to OASIS style, this should use bold font in title and
+#headings from top through "Notices"
+#these headings use class="aeb10-", but this
+#is not defined in the .css file
+sed '/start css.sty/a .aeb10-{font-weight: bold;}' $SPECDOC.tmp6 >$SPECDOC.tmp7
+
 # If font paths are misconfigured, we get ligatures
 # (such as 'ff or 'fi') replaced by NULL character in output.
 # This in not a valid HTML output, so detect this and warn user.
 # For detection, we rely on the fact that file utility
 # recognizes files with NULL characters as binary data.
-if test "$(file -b $SPECDOC.tmp5)" = 'data';
+if test "$(file -b $SPECDOC.tmp7)" = 'data';
 then
 	echo 
 	echo WARNING!
@@ -44,7 +50,7 @@ then
 	echo 
 fi
 
-mv $SPECDOC.tmp6 $SPECDOC.html
+mv $SPECDOC.tmp7 $SPECDOC.html
 rm $SPECDOC.tmp*
 
 #uncomment if you have a broken t4ht
