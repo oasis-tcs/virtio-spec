@@ -2,7 +2,7 @@
 
 The virtio crypto device is a virtual cryptography device as well as a
 virtual cryptographic accelerator. The virtio crypto device provides the
-following crypto services: CIPHER, MAC, HASH, and AEAD. Virtio crypto
+following crypto services: CIPHER, MAC, HASH, AEAD and AKCIPHER. Virtio crypto
 devices have a single control queue and at least one data queue. Crypto
 operation requests are placed into a data queue, and serviced by the
 device. Some crypto operation requests are only valid in the context of a
@@ -39,6 +39,8 @@ N is set by \field{max_dataqueues}.
     supported by the MAC service.
 \item VIRTIO_CRYPTO_F_AEAD_STATELESS_MODE (4) stateless mode requests are
     supported by the AEAD service.
+\item VIRTIO_CRYPTO_F_AKCIPHER_STATELESS_MODE (5) stateless mode requests are
+    supported by the AKCIPHER service.
 \end{description}
 
 
@@ -52,6 +54,7 @@ Some crypto feature bits require other crypto feature bits
 \item[VIRTIO_CRYPTO_F_HASH_STATELESS_MODE] Requires VIRTIO_CRYPTO_F_REVISION_1.
 \item[VIRTIO_CRYPTO_F_MAC_STATELESS_MODE] Requires VIRTIO_CRYPTO_F_REVISION_1.
 \item[VIRTIO_CRYPTO_F_AEAD_STATELESS_MODE] Requires VIRTIO_CRYPTO_F_REVISION_1.
+\item[VIRTIO_CRYPTO_F_AKCIPHER_STATELESS_MODE] Requires VIRTIO_CRYPTO_F_REVISION_1.
 \end{description}
 
 \subsection{Supported crypto services}\label{sec:Device Types / Crypto Device / Supported crypto services}
@@ -59,7 +62,7 @@ Some crypto feature bits require other crypto feature bits
 The following crypto services are defined:
 
 \begin{lstlisting}
-/* CIPHER service */
+/* CIPHER (Symmetric Key Cipher) service */
 #define VIRTIO_CRYPTO_SERVICE_CIPHER 0
 /* HASH service */
 #define VIRTIO_CRYPTO_SERVICE_HASH   1
@@ -67,6 +70,8 @@ The following crypto services are defined:
 #define VIRTIO_CRYPTO_SERVICE_MAC    2
 /* AEAD (Authenticated Encryption with Associated Data) service */
 #define VIRTIO_CRYPTO_SERVICE_AEAD   3
+/* AKCIPHER (Asymmetric Key Cipher) service */
+#define VIRTIO_CRYPTO_SERVICE_AKCIPHER 4
 \end{lstlisting}
 
 The above constants designate bits used to indicate the which of crypto services are
@@ -181,6 +186,24 @@ are supported by the device, see \ref{sec:Device Types / Crypto Device / Device 
 operation requests, see \ref{sec:Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation}.
 \end{enumerate}
 
+\subsubsection{AKCIPHER services}\label{sec: Device Types / Crypto Device / Supported crypto services / AKCIPHER services}
+
+The following AKCIPHER algorithms are defined:
+\begin{lstlisting}
+#define VIRTIO_CRYPTO_NO_AKCIPHER 0
+#define VIRTIO_CRYPTO_AKCIPHER_RSA   1
+#define VIRTIO_CRYPTO_AKCIPHER_ECDSA 2
+\end{lstlisting}
+
+The above constants have two usages:
+\begin{enumerate}
+\item As bit numbers, used to tell the driver which AKCIPHER algorithms
+are supported by the device, see \ref{sec:Device Types / Crypto Device / Device configuration layout}.
+\item As values, used to designate the algorithm in asymmetric crypto operation requests,
+see \ref{sec:Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation}.
+\end{enumerate}
+
+
 \subsection{Device configuration layout}\label{sec:Device Types / Crypto Device / Device configuration layout}
 
 Crypto device configuration uses the following layout structure:
@@ -201,7 +224,7 @@ struct virtio_crypto_config {
     le32 max_cipher_key_len;
     /* Maximum length of authenticated key in bytes */
     le32 max_auth_key_len;
-    le32 reserved;
+    le32 akcipher_algo;
     /* Maximum size of each crypto request's content in bytes */
     le64 max_size;
 };
@@ -237,7 +260,7 @@ struct virtio_crypto_config {
 
 \item [\field{max_auth_key_len}] is the maximum length of authenticated key supported by the device.
 
-\item [\field{reserved}] is reserved for future use.
+\item [\field{akcipher_algo}] AKCIPHER algorithms bit 0-31, see \ref{sec: Device Types / Crypto Device / Supported crypto services / AKCIPHER services}.
 
 \item [\field{max_size}] is the maximum size of the variable-length parameters of
     data operation of each crypto request's content supported by the device.
@@ -323,6 +346,7 @@ enum VIRTIO_CRYPTO_STATUS {
     VIRTIO_CRYPTO_NOTSUPP = 3,
     VIRTIO_CRYPTO_INVSESS = 4,
     VIRTIO_CRYPTO_NOSPC = 5,
+    VIRTIO_CRYPTO_KEY_REJECTED = 6,
     VIRTIO_CRYPTO_MAX
 };
 \end{lstlisting}
@@ -334,6 +358,7 @@ enum VIRTIO_CRYPTO_STATUS {
 \item VIRTIO_CRYPTO_INVSESS: invalid session ID when executing crypto operations.
 \item VIRTIO_CRYPTO_NOSPC: no free session ID (only when the VIRTIO_CRYPTO_F_REVISION_1
     feature bit is negotiated).
+\item VIRTIO_CRYPTO_KEY_REJECTED: signature verification failed (only when AKCIPHER verification).
 \item VIRTIO_CRYPTO_ERR: any failure not mentioned above occurs.
 \end{itemize*}
 
@@ -364,6 +389,10 @@ struct virtio_crypto_ctrl_header {
        VIRTIO_CRYPTO_OPCODE(VIRTIO_CRYPTO_SERVICE_AEAD, 0x02)
 #define VIRTIO_CRYPTO_AEAD_DESTROY_SESSION \
        VIRTIO_CRYPTO_OPCODE(VIRTIO_CRYPTO_SERVICE_AEAD, 0x03)
+#define VIRTIO_CRYPTO_AKCIPHER_CREATE_SESSION \
+       VIRTIO_CRYPTO_OPCODE(VIRTIO_CRYPTO_SERVICE_AKCIPHER, 0x04)
+#define VIRTIO_CRYPTO_AKCIPHER_DESTROY_SESSION \
+       VIRTIO_CRYPTO_OPCDE(VIRTIO_CRYPTO_SERVICE_AKCIPHER, 0x05)
     le32 opcode;
     /* algo should be service-specific algorithms */
     le32 algo;
@@ -427,6 +456,11 @@ operation is ZERO.
     VIRTIO_CRYPTO_F_REVISION_1 is negotiated and struct virtio_crypto_aead_create_session_flf is
     padded to 56 bytes if NOT negotiated, and \field{op_vlf} is struct
     virtio_crypto_aead_create_session_vlf.
+\item If the opcode (in \field{header}) is VIRTIO_CRYPTO_AKCIPHER_CREATE_SESSION
+    then \field{op_flf} is struct virtio_crypto_akcipher_create_session_flf if
+    VIRTIO_CRYPTO_F_REVISION_1 is negotiated and struct virtio_crypto_akcipher_create_session_flf is
+    padded to 56 bytes if NOT negotiated, and \field{op_vlf} is struct
+    virtio_crypto_akcipher_create_session_vlf.
 \item If the opcode (in \field{header}) is VIRTIO_CRYPTO_CIPHER_DESTROY_SESSION
     or VIRTIO_CRYPTO_HASH_DESTROY_SESSION or VIRTIO_CRYPTO_MAC_DESTROY_SESSION or
     VIRTIO_CRYPTO_AEAD_DESTROY_SESSION then \field{op_flf} is struct
@@ -690,12 +724,166 @@ struct virtio_crypto_aead_create_session_vlf {
 The length of \field{key} is specified in \field{key_len} in struct
 virtio_crypto_aead_create_session_flf.
 
+\subparagraph{Session operation: AKCIPHER session}\label{sec:Device Types / Crypto Device / Device
+Operation / Control Virtqueue / Session operation / Session operation: AKCIPHER session}
+
+Due to the complexity of asymmetric key algorithms, different algorithms
+require different parameters. The following data structures are used as
+supplementary parameters to describe the asymmetric algorithm sessions.
+
+For the RSA algorithm, the extra parameters are as follows:
+\begin{lstlisting}
+struct virtio_crypto_rsa_session_para {
+#define VIRTIO_CRYPTO_RSA_RAW_PADDING   0
+#define VIRTIO_CRYPTO_RSA_PKCS1_PADDING 1
+    le32 padding_algo;
+
+#define VIRTIO_CRYPTO_RSA_NO_HASH   0
+#define VIRTIO_CRYPTO_RSA_MD2       1
+#define VIRTIO_CRYPTO_RSA_MD3       2
+#define VIRTIO_CRYPTO_RSA_MD4       3
+#define VIRTIO_CRYPTO_RSA_MD5       4
+#define VIRTIO_CRYPTO_RSA_SHA1      5
+#define VIRTIO_CRYPTO_RSA_SHA256    6
+#define VIRTIO_CRYPTO_RSA_SHA384    7
+#define VIRTIO_CRYPTO_RSA_SHA512    8
+#define VIRTIO_CRYPTO_RSA_SHA224    9
+    le32 hash_algo;
+};
+\end{lstlisting}
+
+\field{padding_algo} specifies the padding method used by RSA sessions.
+\begin{itemize*}
+\item If VIRTIO_CRYPTO_RSA_RAW_PADDING is specified, 1) \field{hash_algo}
+is ignored, 2) ciphertext and plaintext MUST be padded with leading zeros,
+3) and RSA sessions with VIRTIO_CRYPTO_RSA_RAW_PADDING MUST not be used
+for verification and signing operations.
+\item If VIRTIO_CRYPTO_RSA_PKCS1_PADDING is specified, EMSA-PKCS1-v1_5 padding method
+is used (see \hyperref[intro:rfc3447]{PKCS\#1}), \field{hash_algo} specifies how the
+digest of the data passed to RSA sessions is calculated when verifying and signing.
+It only affects the padding algorithm and is ignored during encryption and decryption.
+\end{itemize*}
+
+The ECC algorithms such as the ECDSA algorithm, cannot use custom curves, only the
+following known curves can be used (see \hyperref[intro:NIST]{NIST-recommended curves}).
+
+\begin{lstlisting}
+#define VIRTIO_CRYPTO_CURVE_UNKNOWN   0
+#define VIRTIO_CRYPTO_CURVE_NIST_P192 1
+#define VIRTIO_CRYPTO_CURVE_NIST_P224 2
+#define VIRTIO_CRYPTO_CURVE_NIST_P256 3
+#define VIRTIO_CRYPTO_CURVE_NIST_P384 4
+#define VIRTIO_CRYPTO_CURVE_NIST_P521 5
+\end{lstlisting}
+
+For the ECDSA algorithm, the extra parameters are as follows:
+\begin{lstlisting}
+struct virtio_crypto_ecdsa_session_para {
+    /* See VIRTIO_CRYPTO_CURVE_* above */
+    le32 curve_id;
+};
+\end{lstlisting}
+
+The fixed-length and the variable-length parameters of AKCIPHER session requests are as follows:
+\begin{lstlisting}
+struct virtio_crypto_akcipher_create_session_flf {
+    /* Device read only portion */
+
+    /* See VIRTIO_CRYPTO_AKCIPHER_* above */
+    le32 algo;
+#define VIRTIO_CRYPTO_AKCIPHER_KEY_TYPE_PUBLIC 1
+#define VIRTIO_CRYPTO_AKCIPHER_KEY_TYPE_PRIVATE 2
+    le32 key_type;
+    /* length of key */
+    le32 key_len;
+
+#define VIRTIO_CRYPTO_AKCIPHER_SESS_ALGO_SPEC_HDR_SIZE 44
+    u8 algo_flf[VIRTIO_CRYPTO_AKCIPHER_SESS_ALGO_SPEC_HDR_SIZE];
+};
+
+struct virtio_crypto_akcipher_create_session_vlf {
+    /* Device read only portion */
+    u8 key[key_len];
+};
+\end{lstlisting}
+
+\field{algo} decides the type used by \field{algo_flf}.
+\field{algo_flf} is fixed to 44 bytes and MUST contains of be one the
+following structures:
+\begin{itemize*}
+\item struct virtio_crypto_rsa_session_para
+\item struct virtio_crypto_ecdsa_session_para
+\end{itemize*}
+
+The length of \field{key} is specified in \field{key_len} in the struct
+virtio_crypto_akcipher_create_session_flf.
+
+For the RSA algorithm, the key needs to be encoded according to
+\hyperref[intro:rfc3447]{PKCS\#1}. The private key is described with the
+RSAPrivateKey structure, and the public key is described with the RSAPublicKey
+structure. These ASN.1 structures are encoded in DER encoding rules (see
+\hyperref[intro:rfc6025]{rfc6025}).
+
+\begin{lstlisting}
+RSAPrivateKey ::= SEQUENCE {
+    version          INTEGER,
+    modulus          INTEGER,
+    publicExponent   INTEGER,
+    privateExponent  INTEGER,
+    prime1           INTEGER,
+    prime2           INTEGER,
+    exponent1        INTEGER,
+    exponent1        INTEGER,
+    coefficient      INTEGER,
+    otherPrimeInfos  OtherPrimeInfos OPTIONAL
+}
+
+OtherPrimeInfos ::= SEQUENCE SIZE(1...MAX) OF OtherPrimeInfo
+
+OtherPrimeINfo ::= SEQUENCE {
+    prime           INTEGER,
+    exponent        INTEGER,
+    coefficient     INTEGER
+}
+
+RSAPublicKey ::= SEQUENCE {
+    modulus         INTEGER,
+    publicExponent  INTEGER
+}
+\end{lstlisting}
+
+For the ECDSA algorithm, the private key is encoded according to
+\hyperref[intro:rfc5915]{RFC5915}, the private key of the ECDSA algorithm
+is described by the ASN.1 structure ECPrivateKey and encoded with DER
+encoding rules (see \hyperref[intro:rfc6025]{rfc6025}).
+
+\begin{lstlisting}
+ECPrivateKey ::= SEQUNCE {
+    version         INTEGER,
+    privateKey      OCTET STRING,
+    parameters [0]  ECParameters {{ NamedCurve }} OPTIONAL,
+    publicKey  [1]  BIT STRING OPTIONAL
+}
+\end{lstlisting}
+
+The public key of the ECDSA algorithm is encoded according to \hyperref[intro:SEC1]{SEC1},
+and the public key of ECDSA is described by the ASN.1 structure ECPoint.
+When initializing a session with ECDSA public key, the ECPoint is DER encoded and the
+\field{key} only contains the value part of ECPoint, that is, the header part of the
+OCTET STRING will be omitted (see \hyperref[intro:rfc6025]{rfc6025}).
+
+\begin{lstlisting}
+ECPoint ::= OCTET STRING
+\end{lstlisting}
+
+The length of \field{key} is specified in \field{key_len} in
+struct virtio_crypto_akcipher_create_session_flf.
 
 \drivernormative{\subparagraph}{Session operation: create session}{Device Types / Crypto Device / Device
 Operation / Control Virtqueue / Session operation / Session operation: create session}
 
 \begin{itemize*}
-\item The driver MUST set the \field{opcode} field based on service type: CIPHER, HASH, MAC, or AEAD.
+\item The driver MUST set the \field{opcode} field based on service type: CIPHER, HASH, MAC, AEAD or AKCIPHER.
 \item The driver MUST set the control general header, the opcode specific header,
     the opcode specific extra parameters and the opcode specific outcome buffer in turn.
     See \ref{sec:Device Types / Crypto Device / Device Operation / Control Virtqueue}.
@@ -726,7 +914,7 @@ Operation / Control Virtqueue / Session operation / Session operation: create se
 Operation / Control Virtqueue / Session operation / Session operation: destroy session}
 
 \begin{itemize*}
-\item The driver MUST set the \field{opcode} field based on service type: CIPHER, HASH, MAC, or AEAD.
+\item The driver MUST set the \field{opcode} field based on service type: CIPHER, HASH, MAC, AEAD or AKCIPHER.
 \item The driver MUST set the \field{session_id} to a valid value assigned by the device
     when the session was created.
 \end{itemize*}
@@ -764,6 +952,14 @@ struct virtio_crypto_op_header {
     VIRTIO_CRYPTO_OPCODE(VIRTIO_CRYPTO_SERVICE_AEAD, 0x00)
 #define VIRTIO_CRYPTO_AEAD_DECRYPT \
     VIRTIO_CRYPTO_OPCODE(VIRTIO_CRYPTO_SERVICE_AEAD, 0x01)
+#define VIRTIO_CRYPTO_AKCIPHER_ENCRYPT \
+    VIRTIO_CRYPTO_OPCODE(VIRTIO_CRYPTO_SERVICE_AKCIPHER, 0x00)
+#define VIRTIO_CRYPTO_AKCIPHER_DECRYPT \
+    VIRTIO_CRYPTO_OPCODE(VIRTIO_CRYPTO_SERVICE_AKCIPHER, 0x01)
+#define VIRTIO_CRYPTO_AKCIPHER_SIGN \
+    VIRTIO_CRYPTO_OPCODE(VIRTIO_CRYPTO_SERVICE_AKCIPHER, 0x02)
+#define VIRTIO_CRYPTO_AKCIPHER_VERIFY \
+    VIRTIO_CRYPTO_OPCODE(VIRTIO_CRYPTO_SERVICE_AKCIPHER, 0x03)
     le32 opcode;
     /* algo should be service-specific algorithms */
     le32 algo;
@@ -856,6 +1052,17 @@ struct virtio_crypto_op_data_req {
         is struct virtio_crypto_aead_data_flf if VIRTIO_CRYPTO_F_REVISION_1 is negotiated
         and struct virtio_crypto_aead_data_flf is padded to 48 bytes if NOT negotiated,
         and \field{op_vlf} is struct virtio_crypto_aead_data_vlf.
+    \end{itemize*}
+\item If the opcode (in \field{header}) is VIRTIO_CRYPTO_AKCIPHER_ENCRYPT, VIRTIO_CRYPTO_AKCIPHER_DECRYPT,
+    VIRTIO_CRYPTO_AKCIPHER_SIGN or VIRTIO_CRYPTO_AKCIPHER_VERIFY then:
+    \begin{itemize*}
+    \item If VIRTIO_CRYPTO_F_AKCIPHER_STATELESS_MODE is negotiated, \field{op_flf} is
+        struct virtio_crypto_akcipher_data_flf_statless, and \field{op_vlf} is struct
+        virtio_crypto_akcipher_data_vlf_stateless.
+    \item If VIRTIO_CRYPTO_F_AKCIPHER_STATELESS_MODE is NOT negotiated, \field{op_flf}
+        is struct virtio_crypto_akcipher_data_flf if VIRTIO_CRYPTO_F_REVISION_1 is negotiated
+        and struct virtio_crypto_akcipher_data_flf is padded to 48 bytes if NOT negotiated,
+        and \field{op_vlf} is struct virtio_crypto_akcipher_data_vlf.
     \end{itemize*}
 \end{itemize*}
 
@@ -1530,6 +1737,138 @@ struct virtio_crypto_aead_data_vlf_stateless {
 \item VIRTIO_CRYPTO_NOTSUPP if the requested algorithm or operation is unsupported.
 \item VIRTIO_CRYPTO_BADMSG if the verification result is incorrect.
 \item VIRTIO_CRYPTO_INVSESS if the session ID invalid when in session mode.
+\item VIRTIO_CRYPTO_ERR if any failure not mentioned above occurs.
+\end{itemize*}
+\end{itemize*}
+
+\subsubsection{AKCIPHER Service Operation}\label{sec:Device Types / Crypto Device / Device Operation / AKCIPHER Service Operation}
+
+Session mode AKCIPHER requests are as follows:
+
+\begin{lstlisting}
+struct virtio_crypto_akcipher_data_flf {
+    /* length of source data */
+    le32 src_data_len;
+    /* length of dst data */
+    le32 dst_data_len;
+};
+
+struct virtio_crypto_akcipher_data_vlf {
+    /* Device read only portion */
+    /* Source data */
+    u8 src_data[src_data_len];
+
+    /* Device write only portion */
+    /* Pointer to output data */
+    u8 dst_data[dst_data_len];
+};
+\end{lstlisting}
+
+Each data request uses the virtio_crypto_akcipher_flf structure and the virtio_crypto_akcipher_data_vlf
+structure to store information used to run the AKCIPHER operations.
+
+For encryption, decryption, and signing:
+\field{src_data} is the source data that will be processed, note that for signing operations,
+src_data stores the data to be signed, which usually is the digest of some data rather than the
+data itself.
+\field{src_data_len} is the length of source data.
+\field{dst_result} is the result data and \field{dst_data_len} is the length of it. Note that the
+length of the result is not always exactly equal to dst_data_len, the driver needs to check how
+many bytes the device has written and calculate the actual length of the result.
+
+For verification:
+\field{src_data_len} refers to the length of the signature, and \field{dst_data_len} refers to
+the length of signed data, where the signed data is usually the digest of some data.
+\field{src_data} is spliced by the signature and the signed data, the src_data with the lower
+address stores the signature, and the higher address stores the signed data.
+\field{dst_data} is always empty for verification.
+
+Different algorithms have different signature formats.
+For the RSA algorithm, the result is determined by the padding algorithm specified by
+\field{padding_algo} in structure virtio_crypto_rsa_session_para.
+
+For the ECDSA algorithm, the signature is composed of the following
+ASN.1 structure (see \hyperref[intro:rfc3279]{RFC3279})
+and MUST be DER encoded (see \hyperref[intro:rfc6025]{rfc6025}).
+
+\begin{lstlisting}
+Ecdsa-Sig-Value ::= SEQUENCE {
+    r INTEGER,
+    s INTEGER
+}
+\end{lstlisting}
+
+Stateless mode AKCIPHER service requests are as follows:
+\begin{lstlisting}
+struct virtio_crypto_akcipher_data_flf_stateless {
+    struct {
+        /* See VIRTIO_CYRPTO_AKCIPHER* above */
+        le32 algo;
+        /* See VIRTIO_CRYPTO_AKCIPHER_KEY_TYPE_* above */
+        le32 key_type;
+        /* length of key */
+        le32 key_len;
+
+        /* algothrim specific parameters described above */
+        union {
+            struct virtio_crypto_rsa_session_para rsa;
+            struct virtio_crypto_ecdsa_session_para ecdsa;
+        } u;
+    } sess_para;
+
+    /* length of source data */
+    le32 src_data_len;
+    /* length of destination data */
+    le32 dst_data_len;
+};
+
+struct virtio_crypto_akcipher_data_vlf_stateless {
+    /* Device read only portion */
+    u8 akcipher_key[key_len];
+
+    /* Source data */
+    u8 src_data[src_data_len];
+
+    /* Device write only portion */
+    u8 dst_data[dst_data_len];
+};
+\end{lstlisting}
+
+In stateless mode, the format of key and signature, the meaning of src_data and dst_data, are all the same
+with session mode.
+
+\drivernormative{\paragraph}{AKCIPHER Service Operation}{Device Types / Crypto Device / Device Operation / AKCIPHER Service Operation}
+
+\begin{itemize*}
+\item If the driver uses the session mode, then the driver MUST set
+    \field{session_id} in struct virtio_crypto_op_header to a valid
+    value assigned by the device when the session was created.
+\item If the VIRTIO_CRYPTO_F_AKCIPHER_STATELESS_MODE feature bit is negotiated, 1) if the
+    driver uses the stateless mode, then the driver MUST set the \field{flag} field in
+    struct virtio_crypto_op_header to ZERO and MUST set the fields in struct
+    virtio_crypto_akcipher_flf_stateless.sess_para, 2) if the driver uses the session
+    mode, then the driver MUST set the \field{flag} field in struct virtio_crypto_op_header
+    to VIRTIO_CRYPTO_FLAG_SESSION_MODE.
+\item The driver MUST set the \field{opcode} field in struct virtio_crypto_op_header
+    to one of VIRTIO_CRYPTO_AKCIPHER_ENCRYPT, VIRTIO_CRYPTO_AKCIPHER_DESTROY_SESSION,
+    VIRTIO_CRYPTO_AKCIPHER_SIGN, and VIRTIO_CRYPTO_AKCIPHER_VERIFY.
+\end{itemize*}
+
+\devicenormative{\paragraph}{AKCIPHER Service Operation}{Device Types / Crypto Device / Device Operation / AKCIPHER Service Operation}
+
+\begin{itemize*}
+\item If the VIRTIO_CRYPTO_F_AKCIPHER_STATELESS_MODE feature bit is negotiated, the
+    device MUST parse the virtio_crypto_akcipher_data_vlf_stateless based on the \field{opcode}
+    field in general header.
+\item The device MUST copy the result of cryptographic operation in the dst_data[].
+\item The device MUST set the \field{status} field in struct virtio_crypto_inhdr to
+    one of the following values of enum VIRTIO_CRYPTO_STATUS:
+\begin{itemize*}
+\item VIRTIO_CRYPTO_OK if the operation success.
+\item VIRTIO_CRYPTO_NOTSUPP if the requested algorithm or operation is unsupported.
+\item VIRTIO_CRYPTO_BADMSG if the verification result is incorrect.
+\item VIRTIO_CRYPTO_INVSESS if the session ID invalid when in session mode.
+\item VIRTIO_CRYPTO_KEY_REJECTED if the signature verification failed.
 \item VIRTIO_CRYPTO_ERR if any failure not mentioned above occurs.
 \end{itemize*}
 \end{itemize*}
