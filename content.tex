@@ -3092,6 +3092,8 @@ features.
 \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
     channel.
 
+\item[VIRTIO_NET_F_NOTF_COAL(53)] Device supports notifications coalescing.
+
 \item[VIRTIO_NET_F_GUEST_USO4 (54)] Driver can receive USOv4 packets.
 
 \item[VIRTIO_NET_F_GUEST_USO6 (55)] Driver can receive USOv6 packets.
@@ -3143,6 +3145,7 @@ Some networking feature bits require other networking feature bits
 \item[VIRTIO_NET_F_GUEST_ANNOUNCE] Requires VIRTIO_NET_F_CTRL_VQ.
 \item[VIRTIO_NET_F_MQ] Requires VIRTIO_NET_F_CTRL_VQ.
 \item[VIRTIO_NET_F_CTRL_MAC_ADDR] Requires VIRTIO_NET_F_CTRL_VQ.
+\item[VIRTIO_NET_F_NOTF_COAL] Requires VIRTIO_NET_F_CTRL_VQ.
 \item[VIRTIO_NET_F_RSC_EXT] Requires VIRTIO_NET_F_HOST_TSO4 or VIRTIO_NET_F_HOST_TSO6.
 \item[VIRTIO_NET_F_RSS] Requires VIRTIO_NET_F_CTRL_VQ.
 \end{description}
@@ -4488,6 +4491,84 @@ MUST format \field{offloads}
 according to the native endian of the guest rather than
 (necessarily when not using the legacy interface) little-endian.
 
+
+\paragraph{Notifications Coalescing}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}
+
+If the VIRTIO_NET_F_NOTF_COAL feature is negotiated, the driver can
+send control commands for dynamically changing the coalescing parameters.
+
+\begin{lstlisting}
+struct virtio_net_ctrl_coal_rx {
+    le32 rx_max_packets;
+    le32 rx_usecs;
+};
+
+struct virtio_net_ctrl_coal_tx {
+    le32 tx_max_packets;
+    le32 tx_usecs;
+};
+
+#define VIRTIO_NET_CTRL_NOTF_COAL 6
+ #define VIRTIO_NET_CTRL_NOTF_COAL_TX_SET  0
+ #define VIRTIO_NET_CTRL_NOTF_COAL_RX_SET 1
+\end{lstlisting}
+
+Coalescing parameters:
+\begin{itemize}
+\item \field{rx_usecs}: Maximum number of usecs to delay a RX notification.
+\item \field{tx_usecs}: Maximum number of usecs to delay a TX notification.
+\item \field{rx_max_packets}: Maximum number of packets to receive before a RX notification.
+\item \field{tx_max_packets}: Maximum number of packets to send before a TX notification.
+\end{itemize}
+
+
+The class VIRTIO_NET_CTRL_NOTF_COAL has 2 commands:
+\begin{enumerate}
+\item VIRTIO_NET_CTRL_NOTF_COAL_TX_SET: set the \field{tx_usecs} and \field{tx_max_packets} parameters.
+\item VIRTIO_NET_CTRL_NOTF_COAL_RX_SET: set the \field{rx_usecs} and \field{rx_max_packets} parameters.
+\end{enumerate}
+
+\subparagraph{RX Notifications}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing / RX Notifications}
+
+If, for example:
+\begin{itemize}
+\item \field{rx_usecs} = 10.
+\item \field{rx_max_packets} = 15.
+\end{itemize}
+
+The device will operate as follows:
+
+\begin{itemize}
+\item The device will count received packets until it accumulates 15, or until 10 usecs elapsed since the first one was received.
+\item If the notifications are not suppressed by the driver, the device will send an used buffer notification, otherwise, the device will not send an used buffer notification as long as the notifications are suppressed.
+\end{itemize}
+
+\subparagraph{TX Notifications}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing / TX Notifications}
+
+If, for example:
+\begin{itemize}
+\item \field{tx_usecs} = 10.
+\item \field{tx_max_packets} = 15.
+\end{itemize}
+
+The device will operate as follows:
+
+\begin{itemize}
+\item The device will count sent packets until it accumulates 15, or until 10 usecs elapsed since the first one was sent.
+\item If the notifications are not suppressed by the driver, the device will send an used buffer notification, otherwise, the device will not send an used buffer notification as long as the notifications are suppressed.
+\end{itemize}
+
+\drivernormative{\subparagraph}{Notifications Coalescing}{Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}
+
+If the VIRTIO_NET_F_NOTF_COAL feature has not been negotiated, the driver MUST NOT issue VIRTIO_NET_CTRL_NOTF_COAL commands.
+
+\devicenormative{\subparagraph}{Notifications Coalescing}{Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}
+
+A device SHOULD respond to the VIRTIO_NET_CTRL_NOTF_COAL commands with VIRTIO_NET_ERR if it was not able to change the parameters.
+
+A device SHOULD NOT send used buffer notifications to the driver, if the notifications are suppressed as explained in \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Used Buffer Notification Suppression}, even if the coalescing counters expired.
+
+Upon reset, a device MUST initialize all coalescing parameters to 0.
 
 \subsubsection{Legacy Interface: Framing Requirements}\label{sec:Device
 Types / Network Device / Legacy Interface: Framing Requirements}
