@@ -2,7 +2,7 @@ export SPECDOC=${SPECDOC:-`cat REVISION`}
 export DATESTR=${DATESTR:-`cat REVISION-DATE`}
 export FROMVERSION=${FROMVERSION:-`cat DIFFVERSION`}
 ./makezip.sh
-mv -f $SPECDOC.zip $SPECDOC-diff-from-${FROMVERSION}.pdf
+mv -f $SPECDOC.zip $SPECDOC-diff-from-${FROMVERSION}.zip
 ./makediffhtml.sh
 ./makediffpdf.sh
 zip $SPECDOC-diff-from-${FROMVERSION}.zip \
