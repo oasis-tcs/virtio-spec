@@ -16,14 +16,34 @@ Ethernet or IP protocols.
 
 \subsection{Feature bits}\label{sec:Device Types / Socket Device / Feature bits}
 
-If no feature bit is set, only stream socket type is supported.
-If VIRTIO_VSOCK_F_SEQPACKET has been negotiated, the device MAY act
-as if VIRTIO_VSOCK_F_STREAM has also been negotiated.
-
 \begin{description}
 \item[VIRTIO_VSOCK_F_STREAM (0)] stream socket type is supported.
 \item[VIRTIO_VSOCK_F_SEQPACKET (1)] seqpacket socket type is supported.
+\item[VIRTIO_VSOCK_F_NO_IMPLIED_STREAM (2)] stream socket type is not implied.
 \end{description}
+
+\drivernormative{\subsubsection}{Feature bits}{Device Types / Socket Device / Feature bits}
+
+The driver SHOULD accept the VIRTIO_VSOCK_F_NO_IMPLIED_STREAM feature if
+offered by the device.
+
+If no feature bit has been negotiated, the driver SHOULD act as if
+VIRTIO_VSOCK_F_STREAM has been negotiated.
+
+If VIRTIO_VSOCK_F_SEQPACKET has been negotiated, but not
+VIRTIO_VSOCK_F_NO_IMPLIED_STREAM, the driver MAY act as if
+VIRTIO_VSOCK_F_STREAM has also been negotiated.
+
+\devicenormative{\subsubsection}{Feature bits}{Device Types / Socket Device / Feature bits}
+
+The device SHOULD offer the VIRTIO_VSOCK_F_NO_IMPLIED_STREAM feature.
+
+If no feature bit has been negotiated, the device SHOULD act as if
+VIRTIO_VSOCK_F_STREAM has been negotiated.
+
+If VIRTIO_VSOCK_F_SEQPACKET has been negotiated, but not
+VIRTIO_VSOCK_F_NO_IMPLIED_STREAM, the device MAY act as if
+VIRTIO_VSOCK_F_STREAM has also been negotiated.
 
 \subsection{Device configuration layout}\label{sec:Device Types / Socket Device / Device configuration layout}
 
