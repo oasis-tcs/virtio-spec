@@ -3084,6 +3084,12 @@ features.
 \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
     channel.
 
+\item[VIRTIO_NET_F_NOTF_COAL(53)] Device supports notifications coalescing.
+
+\item[VIRTIO_NET_F_GUEST_USO4 (54)] Driver can receive USOv4 packets.
+
+\item[VIRTIO_NET_F_GUEST_USO6 (55)] Driver can receive USOv6 packets.
+
 \item[VIRTIO_NET_F_HOST_USO (56)] Device can receive USO packets. Unlike UFO
  (fragmenting the packet) the USO splits large UDP packet
  to several segments when each of these smaller packets has UDP header.
@@ -3117,6 +3123,8 @@ Some networking feature bits require other networking feature bits
 \item[VIRTIO_NET_F_GUEST_TSO6] Requires VIRTIO_NET_F_GUEST_CSUM.
 \item[VIRTIO_NET_F_GUEST_ECN] Requires VIRTIO_NET_F_GUEST_TSO4 or VIRTIO_NET_F_GUEST_TSO6.
 \item[VIRTIO_NET_F_GUEST_UFO] Requires VIRTIO_NET_F_GUEST_CSUM.
+\item[VIRTIO_NET_F_GUEST_USO4] Requires VIRTIO_NET_F_GUEST_CSUM.
+\item[VIRTIO_NET_F_GUEST_USO6] Requires VIRTIO_NET_F_GUEST_CSUM.
 
 \item[VIRTIO_NET_F_HOST_TSO4] Requires VIRTIO_NET_F_CSUM.
 \item[VIRTIO_NET_F_HOST_TSO6] Requires VIRTIO_NET_F_CSUM.
@@ -3129,6 +3137,7 @@ Some networking feature bits require other networking feature bits
 \item[VIRTIO_NET_F_GUEST_ANNOUNCE] Requires VIRTIO_NET_F_CTRL_VQ.
 \item[VIRTIO_NET_F_MQ] Requires VIRTIO_NET_F_CTRL_VQ.
 \item[VIRTIO_NET_F_CTRL_MAC_ADDR] Requires VIRTIO_NET_F_CTRL_VQ.
+\item[VIRTIO_NET_F_NOTF_COAL] Requires VIRTIO_NET_F_CTRL_VQ.
 \item[VIRTIO_NET_F_RSC_EXT] Requires VIRTIO_NET_F_HOST_TSO4 or VIRTIO_NET_F_HOST_TSO6.
 \item[VIRTIO_NET_F_RSS] Requires VIRTIO_NET_F_CTRL_VQ.
 \end{description}
@@ -3337,8 +3346,8 @@ if both guests are amenable.}
    The VIRTIO_NET_F_GUEST_CSUM feature indicates that partially
   checksummed packets can be received, and if it can do that then
   the VIRTIO_NET_F_GUEST_TSO4, VIRTIO_NET_F_GUEST_TSO6,
-  VIRTIO_NET_F_GUEST_UFO and VIRTIO_NET_F_GUEST_ECN are the input
-  equivalents of the features described above.
+  VIRTIO_NET_F_GUEST_UFO, VIRTIO_NET_F_GUEST_ECN, VIRTIO_NET_F_GUEST_USO4
+  and VIRTIO_NET_F_GUEST_USO6 are the input equivalents of the features described above.
   See \ref{sec:Device Types / Network Device / Device Operation /
 Setting Up Receive Buffers}~\nameref{sec:Device Types / Network
 Device / Device Operation / Setting Up Receive Buffers} and
@@ -3606,8 +3615,9 @@ It is generally a good idea to keep the receive virtqueue as
 fully populated as possible: if it runs out, network performance
 will suffer.
 
-If the VIRTIO_NET_F_GUEST_TSO4, VIRTIO_NET_F_GUEST_TSO6 or
-VIRTIO_NET_F_GUEST_UFO features are used, the maximum incoming packet
+If the VIRTIO_NET_F_GUEST_TSO4, VIRTIO_NET_F_GUEST_TSO6,
+VIRTIO_NET_F_GUEST_UFO, VIRTIO_NET_F_GUEST_USO4 or VIRTIO_NET_F_GUEST_USO6
+features are used, the maximum incoming packet
 will be to 65550 bytes long (the maximum size of a
 TCP or UDP packet, plus the 14 byte ethernet header), otherwise
 1514 bytes.  The 12-byte struct virtio_net_hdr is prepended to this,
@@ -3618,8 +3628,8 @@ making for 65562 or 1526 bytes.
 \begin{itemize}
 \item If VIRTIO_NET_F_MRG_RXBUF is not negotiated:
   \begin{itemize}
-    \item If VIRTIO_NET_F_GUEST_TSO4, VIRTIO_NET_F_GUEST_TSO6 or
-      VIRTIO_NET_F_GUEST_UFO are negotiated, the driver SHOULD populate
+    \item If VIRTIO_NET_F_GUEST_TSO4, VIRTIO_NET_F_GUEST_TSO6, VIRTIO_NET_F_GUEST_UFO,
+	VIRTIO_NET_F_GUEST_USO4 or VIRTIO_NET_F_GUEST_USO6 are negotiated, the driver SHOULD populate
       the receive queue(s) with buffers of at least 65562 bytes.
     \item Otherwise, the driver SHOULD populate the receive queue(s)
       with buffers of at least 1526 bytes.
@@ -3688,7 +3698,7 @@ transmit segmentation offloading and ECN features, as described
 in \ref{sec:Device Types / Network Device / Device Operation /
 Packet Transmission}:
 \begin{enumerate}
-\item If the VIRTIO_NET_F_GUEST_TSO4, TSO6 or UFO options were
+\item If the VIRTIO_NET_F_GUEST_TSO4, TSO6, UFO, USO4 or USO6 options were
   negotiated, then \field{gso_type} MAY be something other than
   VIRTIO_NET_HDR_GSO_NONE, and \field{gso_size} field indicates the
   desired MSS (see Packet Transmission point 2).
@@ -3747,6 +3757,9 @@ If VIRTIO_NET_F_GUEST_UDP is not negotiated, the device MUST NOT set
 If VIRTIO_NET_F_GUEST_TSO6 is not negotiated, the device MUST NOT set
 \field{gso_type} to VIRTIO_NET_HDR_GSO_TCPV6.
 
+If none of VIRTIO_NET_F_GUEST_USO4 or VIRTIO_NET_F_GUEST_USO6 have been negotiated,
+the device MUST NOT set \field{gso_type} to VIRTIO_NET_HDR_GSO_UDP_L4.
+
 The device SHOULD NOT send to the driver TCP packets requiring segmentation offload
 which have the Explicit Congestion Notification bit set, unless the
 VIRTIO_NET_F_GUEST_ECN feature is negotiated, in which case the
@@ -3770,7 +3783,7 @@ device MAY set the VIRTIO_NET_HDR_F_NEEDS_CSUM bit in
 	fully checksummed packet;
 \end{enumerate}
 
-If none of the VIRTIO_NET_F_GUEST_TSO4, TSO6 or UFO options have
+If none of the VIRTIO_NET_F_GUEST_TSO4, TSO6, UFO, USO4 or USO6 options have
 been negotiated, the device MUST set \field{gso_type} to
 VIRTIO_NET_HDR_GSO_NONE.
 
@@ -3785,7 +3798,7 @@ set \field{csum_offset} to number of received duplicated ACK segments.
 If VIRTIO_NET_F_RSC_EXT was not negotiated, the device MUST
 not set VIRTIO_NET_HDR_F_RSC_INFO bit in \field{flags}.
 
-If one of the VIRTIO_NET_F_GUEST_TSO4, TSO6 or UFO options have
+If one of the VIRTIO_NET_F_GUEST_TSO4, TSO6, UFO, USO4 or USO6 options have
 been negotiated, the device SHOULD set \field{hdr_len} to a value
 not less than the length of the headers, including the transport
 header.
@@ -3806,7 +3819,7 @@ If VIRTIO_NET_HDR_F_NEEDS_CSUM bit in \field{flags} is not set or
 if VIRTIO_NET_HDR_F_RSC_INFO bit \field{flags} is set, the
 driver MUST NOT use the \field{csum_start} and \field{csum_offset}.
 
-If one of the VIRTIO_NET_F_GUEST_TSO4, TSO6 or UFO options have
+If one of the VIRTIO_NET_F_GUEST_TSO4, TSO6, UFO, USO4 or USO6 options have
 been negotiated, the driver MAY use \field{hdr_len} only as a hint about the
 transport header size.
 The driver MUST NOT rely on \field{hdr_len} to be correct.
@@ -4329,6 +4342,10 @@ The device MUST NOT queue packets on receive queues greater than
 \field{virtqueue_pairs} once it has placed the
 VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command in a used buffer.
 
+If the destination receive queue is being reset (See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}),
+the device SHOULD re-select another random queue. If all receive queues are
+being reset, the device MUST drop the packet.
+
 \subparagraph{Legacy Interface: Automatic receive steering in multiqueue mode}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode / Legacy Interface: Automatic receive steering in multiqueue mode}
 When using the legacy interface, transitional devices and drivers
 MUST format \field{virtqueue_pairs}
@@ -4417,6 +4434,7 @@ The device MUST determine the destination queue for a network packet as follows:
 \item Calculate the hash of the packet as defined in \ref{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash calculation for incoming packets}.
 \item If the device did not calculate the hash for the specific packet, the device directs the packet to the receiveq specified by \field{unclassified_queue} of virtio_net_rss_config structure (value of 0 corresponds to receiveq1).
 \item Apply \field{indirection_table_mask} to the calculated hash and use the result as the index in the indirection table to get 0-based number of destination receiveq (value of 0 corresponds to receiveq1).
+\item If the destination receive queue is being reset (See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}), the device MUST drop the packet.
 \end{itemize}
 
 \paragraph{Offloads State Configuration}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Offloads State Configuration}
@@ -4437,6 +4455,8 @@ le64 offloads;
 #define VIRTIO_NET_F_GUEST_TSO6       8
 #define VIRTIO_NET_F_GUEST_ECN        9
 #define VIRTIO_NET_F_GUEST_UFO        10
+#define VIRTIO_NET_F_GUEST_USO4       54
+#define VIRTIO_NET_F_GUEST_USO6       55
 
 #define VIRTIO_NET_CTRL_GUEST_OFFLOADS       5
  #define VIRTIO_NET_CTRL_GUEST_OFFLOADS_SET   0
@@ -4463,6 +4483,84 @@ MUST format \field{offloads}
 according to the native endian of the guest rather than
 (necessarily when not using the legacy interface) little-endian.
 
+
+\paragraph{Notifications Coalescing}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}
+
+If the VIRTIO_NET_F_NOTF_COAL feature is negotiated, the driver can
+send control commands for dynamically changing the coalescing parameters.
+
+\begin{lstlisting}
+struct virtio_net_ctrl_coal_rx {
+    le32 rx_max_packets;
+    le32 rx_usecs;
+};
+
+struct virtio_net_ctrl_coal_tx {
+    le32 tx_max_packets;
+    le32 tx_usecs;
+};
+
+#define VIRTIO_NET_CTRL_NOTF_COAL 6
+ #define VIRTIO_NET_CTRL_NOTF_COAL_TX_SET  0
+ #define VIRTIO_NET_CTRL_NOTF_COAL_RX_SET 1
+\end{lstlisting}
+
+Coalescing parameters:
+\begin{itemize}
+\item \field{rx_usecs}: Maximum number of usecs to delay a RX notification.
+\item \field{tx_usecs}: Maximum number of usecs to delay a TX notification.
+\item \field{rx_max_packets}: Maximum number of packets to receive before a RX notification.
+\item \field{tx_max_packets}: Maximum number of packets to send before a TX notification.
+\end{itemize}
+
+
+The class VIRTIO_NET_CTRL_NOTF_COAL has 2 commands:
+\begin{enumerate}
+\item VIRTIO_NET_CTRL_NOTF_COAL_TX_SET: set the \field{tx_usecs} and \field{tx_max_packets} parameters.
+\item VIRTIO_NET_CTRL_NOTF_COAL_RX_SET: set the \field{rx_usecs} and \field{rx_max_packets} parameters.
+\end{enumerate}
+
+\subparagraph{RX Notifications}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing / RX Notifications}
+
+If, for example:
+\begin{itemize}
+\item \field{rx_usecs} = 10.
+\item \field{rx_max_packets} = 15.
+\end{itemize}
+
+The device will operate as follows:
+
+\begin{itemize}
+\item The device will count received packets until it accumulates 15, or until 10 usecs elapsed since the first one was received.
+\item If the notifications are not suppressed by the driver, the device will send an used buffer notification, otherwise, the device will not send an used buffer notification as long as the notifications are suppressed.
+\end{itemize}
+
+\subparagraph{TX Notifications}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing / TX Notifications}
+
+If, for example:
+\begin{itemize}
+\item \field{tx_usecs} = 10.
+\item \field{tx_max_packets} = 15.
+\end{itemize}
+
+The device will operate as follows:
+
+\begin{itemize}
+\item The device will count sent packets until it accumulates 15, or until 10 usecs elapsed since the first one was sent.
+\item If the notifications are not suppressed by the driver, the device will send an used buffer notification, otherwise, the device will not send an used buffer notification as long as the notifications are suppressed.
+\end{itemize}
+
+\drivernormative{\subparagraph}{Notifications Coalescing}{Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}
+
+If the VIRTIO_NET_F_NOTF_COAL feature has not been negotiated, the driver MUST NOT issue VIRTIO_NET_CTRL_NOTF_COAL commands.
+
+\devicenormative{\subparagraph}{Notifications Coalescing}{Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}
+
+A device SHOULD respond to the VIRTIO_NET_CTRL_NOTF_COAL commands with VIRTIO_NET_ERR if it was not able to change the parameters.
+
+A device SHOULD NOT send used buffer notifications to the driver, if the notifications are suppressed as explained in \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Used Buffer Notification Suppression}, even if the coalescing counters expired.
+
+Upon reset, a device MUST initialize all coalescing parameters to 0.
 
 \subsubsection{Legacy Interface: Framing Requirements}\label{sec:Device
 Types / Network Device / Legacy Interface: Framing Requirements}
@@ -4855,6 +4953,9 @@ successfully, failed, or not been processed by the device.
 
 \drivernormative{\subsubsection}{Device Operation}{Device Types / Block Device / Device Operation}
 
+The driver SHOULD check if the content of the \field{capacity} field has
+changed upon receiving a configuration change notification.
+
 A driver MUST NOT submit a request which would cause a read or write
 beyond \field{capacity}.
 
@@ -4900,6 +5001,10 @@ successfully, failed, or were processed by the device at all if the request
 failed with VIRTIO_BLK_S_IOERR.
 
 \devicenormative{\subsubsection}{Device Operation}{Device Types / Block Device / Device Operation}
+
+The device MAY change the content of the \field{capacity} field during
+operation of the device. When this happens, the device SHOULD trigger a
+configuration change notification.
 
 A device MUST set the \field{status} byte to VIRTIO_BLK_S_IOERR
 for a write request if the VIRTIO_BLK_F_RO feature if offered, and MUST NOT
