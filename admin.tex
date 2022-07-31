@@ -182,3 +182,78 @@ Each command uses a different \field{command_specific_data} and
 \field{command_specific_data} and \field{command_specific_result}
 depends on these structures and is described separately or is
 implicit in the structure description.
+
+\section{Administration Virtqueues}\label{sec:Basic Facilities of a Virtio Device / Administration Virtqueues}
+
+An administration virtqueue of an owner device is used to submit
+group administration commands. An owner device can have more
+than one administration virtqueue.
+
+If VIRTIO_F_ADMIN_VQ has been negotiated, an owner device exposes one
+or more adminstration virtqueues. The number and locations of the
+administration virtqueues are exposed by the owner device in a transport
+specific manner.
+
+The driver enqueues requests to an arbitrary administration
+virtqueue, and they are used by the device on that same
+virtqueue. It is the responsibility of the driver to ensure
+strict request ordering for commands, because they will be
+consumed with no order constraints.  For example, if consistency
+is required then the driver can wait for the processing of a
+first command by the device to be completed before submitting
+another command depending on the first one.
+
+Administration virtqueues are used as follows:
+\begin{itemize}
+\item The driver submits the command using the \field{struct virtio_admin_cmd}
+structure using a buffer consisting of two parts: a device-readable one followed by a
+device-writable one.
+\item the device-readable part includes fields from \field{opcode}
+through \field{command_specific_data}.
+\item the device-writeable buffer includes fields from \field{status}
+through \field{command_specific_result} inclusive.
+\end{itemize}
+
+For each command, this specification describes a distinct
+format structure used for \field{command_specific_data} and
+\field{command_specific_result}, the length of these fields
+depends on the command.
+
+However, to ensure forward compatibility
+\begin{itemize}
+\item drivers are allowed to submit buffers that are longer
+than the device expects
+(that is, longer than the length of
+\field{opcode} through \field{command_specific_data}).
+This allows the driver to maintain
+a single format structure even if some structure fields are
+unused by the device.
+\item drivers are allowed to submit buffers that are shorter
+than what the device expects
+(that is, shorter than the length of \field{status} through
+\field{command_specific_result}). This allows the device to maintain
+a single format structure even if some structure fields are
+unused by the driver.
+\end{itemize}
+
+The device compares the length of each part (device-readable and
+device-writeable) of the buffer as submitted by driver to what it
+expects and then silently truncates the structures to either the
+length submitted by the driver, or the length described in this
+specification, whichever is shorter.  The device silently ignores
+any data falling outside the shorter of the two lengths. Any
+missing fields are interpreted as set to zero.
+
+Similarly, the driver compares the used buffer length
+of the buffer to what it expects and then silently
+truncates the structure to the used buffer length.
+The driver silently ignores any data falling outside
+the used buffer length reported by the device.  Any missing
+fields are interpreted as set to zero.
+
+This simplifies driver and device implementations since the
+driver/device can simply maintain a single large structure (such
+as a C structure) for a command and its result. As new versions
+of the specification are designed, new fields can be added to the
+tail of a structure, with the driver/device using the full
+structure without concern for versioning.
