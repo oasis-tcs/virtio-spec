@@ -60,4 +60,125 @@ Both owner and member devices for this group type use the Virtio
 PCI transport (see \ref{sec:Virtio Transport Options / Virtio Over PCI Bus}).
 \end{description}
 
+\subsection{Group administration commands}\label{sec:Basic Facilities of a Virtio Device / Device groups / Group administration commands}
 
+The driver sends group administration commands to the owner device of
+a group to control member devices of the group.
+This mechanism can
+be used, for example, to configure a member device before it is
+initialized by its driver.
+\footnote{The term "administration" is intended to be interpreted
+widely to include any kind of control. See specific commands
+for detail.}
+
+All the group administration commands are of the following form:
+
+\begin{lstlisting}
+struct virtio_admin_cmd {
+        /* Device-readable part */
+        le16 opcode;
+        /*
+         * 1       - SR-IOV
+         * 2-65535 - reserved
+         */
+        le16 group_type;
+        /* unused, reserved for future extensions */
+        u8 reserved1[12];
+        le64 group_member_id;
+        le64 command_specific_data[];
+
+        /* Device-writable part */
+        le16 status;
+        le16 status_qualifier;
+        /* unused, reserved for future extensions */
+        u8 reserved2[4];
+        u8 command_specific_result[];
+};
+\end{lstlisting}
+
+For all commands, \field{opcode}, \field{group_type} and if
+necessary \field{group_member_id} and \field{command_specific_data} are
+set by the driver, and the owner device sets \field{status} and if
+needed \field{status_qualifier} and
+\field{command_specific_result}.
+
+Generally, any unused device-readable fields are set to zero by the driver
+and ignored by the device.  Any unused device-writeable fields are set to zero
+by the device and ignored by the driver.
+
+\field{opcode} specifies the command. The valid
+values for \field{opcode} can be found in the following table:
+
+\begin{tabular}{|l|l|}
+\hline
+opcode & Name & Command Description \\
+\hline \hline
+0x0000 - 0x7FFF & - & Commands using \field{struct virtio_admin_cmd}    \\
+\hline
+0x8000 - 0xFFFF & - & Reserved for future commands (possibly using a different structure)    \\
+\hline
+\end{tabular}
+
+The \field{group_type} specifies the group type identifier.
+The \field{group_member_id} specifies the member identifier within the group.
+See section \ref{sec:Introduction / Terminology / Device group}
+for the definition of the group type identifier and group member
+identifier.
+
+The \field{status} describes the command result and possibly
+failure reason at an abstract level, this is appropriate for
+forwarding to applications. The \field{status_qualifier} describes
+failures at a low virtio specific level, as appropriate for debugging.
+The following table describes possible \field{status} values;
+to simplify common implementations, they are intentionally
+matching common \hyperref[intro:errno]{Linux error names and numbers}:
+
+\begin{tabular}{|l|l|l|}
+\hline
+Status (decimal) & Name & Description \\
+\hline \hline
+00   & VIRTIO_ADMIN_STATUS_OK    & successful completion  \\
+\hline
+11   & VIRTIO_ADMIN_STATUS_EAGAIN    & try again \\
+\hline
+12   & VIRTIO_ADMIN_STATUS_ENOMEM    & insufficient resources \\
+\hline
+22   & VIRTIO_ADMIN_STATUS_EINVAL    & invalid command \\
+\hline
+other   & -    & group administration command error  \\
+\hline
+\end{tabular}
+
+When \field{status} is VIRTIO_ADMIN_STATUS_OK, \field{status_qualifier}
+is reserved and set to zero by the device.
+
+The following table describes possible \field{status_qualifier} values:
+\begin{tabular}{|l|l|l|}
+\hline
+Status & Name & Description \\
+\hline \hline
+0x00   & VIRTIO_ADMIN_STATUS_Q_OK               & used with VIRTIO_ADMIN_STATUS_OK  \\
+\hline
+0x01   & VIRTIO_ADMIN_STATUS_Q_INVALID_COMMAND  & command error: no additional information  \\
+\hline
+0x02   & VIRTIO_ADMIN_STATUS_Q_INVALID_OPCODE   & unsupported or invalid \field{opcode}  \\
+\hline
+0x03   & VIRTIO_ADMIN_STATUS_Q_INVALID_FIELD    & unsupported or invalid field within \field{command_specific_data}  \\
+\hline
+0x04   & VIRTIO_ADMIN_STATUS_Q_INVALID_GROUP    & unsupported or invalid \field{group_type} \\
+\hline
+0x05   & VIRTIO_ADMIN_STATUS_Q_INVALID_MEMBER   & unsupported or invalid \field{group_member_id} \\
+\hline
+0x06   & VIRTIO_ADMIN_STATUS_Q_NORESOURCE       & out of internal resources: ok to retry \\
+\hline
+0x07   & VIRTIO_ADMIN_STATUS_Q_TRYAGAIN         & command blocks for too long: should retry \\
+\hline
+0x08-0xFFFF   & -    & reserved for future use \\
+\hline
+\end{tabular}
+
+Each command uses a different \field{command_specific_data} and
+\field{command_specific_result} structures and the length of
+\field{command_specific_data} and \field{command_specific_result}
+depends on these structures and is described separately or is
+implicit in the structure description.
