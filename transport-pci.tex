@@ -484,6 +484,13 @@ If VIRTIO_F_RING_PACKED has not been negotiated, the device MUST
 present either a value of 0 or a power of 2 in
 \field{queue_size}.
 
+If VIRTIO_F_ADMIN_VQ has been negotiated, the value
+\field{admin_queue_index} MUST be equal to, or bigger than
+\field{num_queues}; also, \field{admin_queue_num} MUST be
+smaller than, or equal to 0x10000 - \field{admin_queue_index},
+to ensure that indices of valid admin queues fit into
+a 16 bit range beyond all other virtqueues.
+
 \drivernormative{\paragraph}{Common configuration structure layout}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common configuration structure layout}
 
 The driver MUST NOT write to \field{device_feature}, \field{num_queues}, \field{config_generation}, \field{queue_notify_off} or \field{queue_notify_data}.
@@ -515,7 +522,7 @@ configures any administration virtqueues, the driver MUST
 configure the administration virtqueues using the index
 in the range \field{admin_queue_index} to
 \field{admin_queue_index} + \field{admin_queue_num} - 1 inclusive.
-The driver MAY configure less administration virtqueues than
+The driver MAY configure fewer administration virtqueues than
 supported by the device.
 
 \subsubsection{Notification structure layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability}
