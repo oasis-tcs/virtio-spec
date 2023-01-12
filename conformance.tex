@@ -142,17 +142,7 @@ A Channel I/O driver MUST conform to the following normative statements:
 \input{device-types/scsi/driver-conformance.tex}
 \input{device-types/input/driver-conformance.tex}
 \input{device-types/crypto/driver-conformance.tex}
-
-\conformance{\subsection}{Socket Driver Conformance}\label{sec:Conformance / Driver Conformance / Socket Driver Conformance}
-
-A socket driver MUST conform to the following normative statements:
-
-\begin{itemize}
-\item \ref{drivernormative:Device Types / Socket Device / Feature bits}
-\item \ref{drivernormative:Device Types / Socket Device / Device Operation / Buffer Space Management}
-\item \ref{drivernormative:Device Types / Socket Device / Device Operation / Receive and Transmit}
-\item \ref{drivernormative:Device Types / Socket Device / Device Operation / Device Events}
-\end{itemize}
+\input{device-types/vsock/driver-conformance.tex}
 
 \conformance{\subsection}{File System Driver Conformance}\label{sec:Conformance / Driver Conformance / File System Driver Conformance}
 
@@ -328,16 +318,7 @@ A Channel I/O device MUST conform to the following normative statements:
 \input{device-types/gpu/device-conformance.tex}
 \input{device-types/input/device-conformance.tex}
 \input{device-types/crypto/device-conformance.tex}
-
-\conformance{\subsection}{Socket Device Conformance}\label{sec:Conformance / Device Conformance / Socket Device Conformance}
-
-A socket device MUST conform to the following normative statements:
-
-\begin{itemize}
-\item \ref{devicenormative:Device Types / Socket Device / Feature bits}
-\item \ref{devicenormative:Device Types / Socket Device / Device Operation / Buffer Space Management}
-\item \ref{devicenormative:Device Types / Socket Device / Device Operation / Receive and Transmit}
-\end{itemize}
+\input{device-types/vsock/device-conformance.tex}
 
 \conformance{\subsection}{File System Device Conformance}\label{sec:Conformance / Device Conformance / File System Device Conformance}
 
