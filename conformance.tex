@@ -143,17 +143,7 @@ A Channel I/O driver MUST conform to the following normative statements:
 \input{device-types/input/driver-conformance.tex}
 \input{device-types/crypto/driver-conformance.tex}
 \input{device-types/vsock/driver-conformance.tex}
-
-\conformance{\subsection}{File System Driver Conformance}\label{sec:Conformance / Driver Conformance / File System Driver Conformance}
-
-A file system driver MUST conform to the following normative statements:
-
-\begin{itemize}
-\item \ref{drivernormative:Device Types / File System Device / Device configuration layout}
-\item \ref{drivernormative:Device Types / File System Device / Device Operation / Device Operation: High Priority Queue}
-\item \ref{drivernormative:Device Types / File System Device / Device Operation / Device Operation: Notification Queue}
-\item \ref{drivernormative:Device Types / File System Device / Device Operation / Device Operation: DAX Window}
-\end{itemize}
+\input{device-types/fs/driver-conformance.tex}
 
 \conformance{\subsection}{RPMB Driver Conformance}\label{sec:Conformance / Driver Conformance / RPMB Driver Conformance}
 
@@ -319,16 +309,7 @@ A Channel I/O device MUST conform to the following normative statements:
 \input{device-types/input/device-conformance.tex}
 \input{device-types/crypto/device-conformance.tex}
 \input{device-types/vsock/device-conformance.tex}
-
-\conformance{\subsection}{File System Device Conformance}\label{sec:Conformance / Device Conformance / File System Device Conformance}
-
-A file system device MUST conform to the following normative statements:
-
-\begin{itemize}
-\item \ref{devicenormative:Device Types / File System Device / Device configuration layout}
-\item \ref{devicenormative:Device Types / File System Device / Device Operation / Device Operation: High Priority Queue}
-\item \ref{devicenormative:Device Types / File System Device / Device Operation / Device Operation: DAX Window}
-\end{itemize}
+\input{device-types/fs/device-conformance.tex}
 
 \conformance{\subsection}{RPMB Device Conformance}\label{sec:Conformance / Device Conformance / RPMB Device Conformance}
 
