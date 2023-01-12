@@ -141,21 +141,7 @@ A Channel I/O driver MUST conform to the following normative statements:
 \input{device-types/balloon/driver-conformance.tex}
 \input{device-types/scsi/driver-conformance.tex}
 \input{device-types/input/driver-conformance.tex}
-
-\conformance{\subsection}{Crypto Driver Conformance}\label{sec:Conformance / Driver Conformance / Crypto Driver Conformance}
-
-A Crypto driver MUST conform to the following normative statements:
-
-\begin{itemize}
-\item \ref{drivernormative:Device Types / Crypto Device / Device configuration layout}
-\item \ref{drivernormative:Device Types / Crypto Device / Device Initialization}
-\item \ref{drivernormative:Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation / Session operation: create session}
-\item \ref{drivernormative:Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation / Session operation: destroy session}
-\item \ref{drivernormative:Device Types / Crypto Device / Device Operation / HASH Service Operation}
-\item \ref{drivernormative:Device Types / Crypto Device / Device Operation / MAC Service Operation}
-\item \ref{drivernormative:Device Types / Crypto Device / Device Operation / Symmetric algorithms Operation}
-\item \ref{drivernormative:Device Types / Crypto Device / Device Operation / AEAD Service Operation}
-\end{itemize}
+\input{device-types/crypto/driver-conformance.tex}
 
 \conformance{\subsection}{Socket Driver Conformance}\label{sec:Conformance / Driver Conformance / Socket Driver Conformance}
 
@@ -341,20 +327,7 @@ A Channel I/O device MUST conform to the following normative statements:
 \input{device-types/scsi/device-conformance.tex}
 \input{device-types/gpu/device-conformance.tex}
 \input{device-types/input/device-conformance.tex}
-
-\conformance{\subsection}{Crypto Device Conformance}\label{sec:Conformance / Device Conformance / Crypto Device Conformance}
-
-A Crypto device MUST conform to the following normative statements:
-
-\begin{itemize}
-\item \ref{devicenormative:Device Types / Crypto Device / Device configuration layout}
-\item \ref{devicenormative:Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation / Session operation: create session}
-\item \ref{devicenormative:Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation / Session operation: destroy session}
-\item \ref{devicenormative:Device Types / Crypto Device / Device Operation / HASH Service Operation}
-\item \ref{devicenormative:Device Types / Crypto Device / Device Operation / MAC Service Operation}
-\item \ref{devicenormative:Device Types / Crypto Device / Device Operation / Symmetric algorithms Operation}
-\item \ref{devicenormative:Device Types / Crypto Device / Device Operation / AEAD Service Operation}
-\end{itemize}
+\input{device-types/crypto/device-conformance.tex}
 
 \conformance{\subsection}{Socket Device Conformance}\label{sec:Conformance / Device Conformance / Socket Device Conformance}
 
