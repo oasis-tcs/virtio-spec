@@ -134,23 +134,7 @@ A Channel I/O driver MUST conform to the following normative statements:
 \item \ref{drivernormative:Virtio Transport Options / Virtio over channel I/O / Device Operation / Resetting Devices}
 \end{itemize}
 
-\conformance{\subsection}{Network Driver Conformance}\label{sec:Conformance / Driver Conformance / Network Driver Conformance}
-
-A network driver MUST conform to the following normative statements:
-
-\begin{itemize}
-\item \ref{drivernormative:Device Types / Network Device / Device configuration layout}
-\item \ref{drivernormative:Device Types / Network Device / Device Operation / Packet Transmission}
-\item \ref{drivernormative:Device Types / Network Device / Device Operation / Setting Up Receive Buffers}
-\item \ref{drivernormative:Device Types / Network Device / Device Operation / Processing of Incoming Packets}
-\item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Packet Receive Filtering}
-\item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Setting MAC Address Filtering}
-\item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Gratuitous Packet Sending}
-\item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode}
-\item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Offloads State Configuration / Setting Offloads State}
-\item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Receive-side scaling (RSS) }
-\item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}
-\end{itemize}
+\input{device-types/net/driver-conformance.tex}
 
 \conformance{\subsection}{Block Driver Conformance}\label{sec:Conformance / Driver Conformance / Block Driver Conformance}
 
@@ -401,22 +385,7 @@ A Channel I/O device MUST conform to the following normative statements:
 \item \ref{devicenormative:Virtio Transport Options / Virtio over channel I/O / Device Operation / Resetting Devices}
 \end{itemize}
 
-\conformance{\subsection}{Network Device Conformance}\label{sec:Conformance / Device Conformance / Network Device Conformance}
-
-A network device MUST conform to the following normative statements:
-
-\begin{itemize}
-\item \ref{devicenormative:Device Types / Network Device / Device configuration layout}
-\item \ref{devicenormative:Device Types / Network Device / Device Operation / Packet Transmission}
-\item \ref{devicenormative:Device Types / Network Device / Device Operation / Setting Up Receive Buffers}
-\item \ref{devicenormative:Device Types / Network Device / Device Operation / Processing of Incoming Packets}
-\item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Packet Receive Filtering}
-\item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Setting MAC Address Filtering}
-\item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Gratuitous Packet Sending}
-\item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode}
-\item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Receive-side scaling (RSS) / RSS processing}
-\item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}
-\end{itemize}
+\input{device-types/net/device-conformance.tex}
 
 \conformance{\subsection}{Block Device Conformance}\label{sec:Conformance / Device Conformance / Block Device Conformance}
 
