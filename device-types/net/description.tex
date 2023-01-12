@@ -331,7 +331,7 @@ A driver would perform a typical initialization routine like so:
   Otherwise, the driver assumes it's active.
 
 \item A performant driver would indicate that it will generate checksumless
-  packets by negotating the VIRTIO_NET_F_CSUM feature.
+  packets by negotiating the VIRTIO_NET_F_CSUM feature.
 
 \item If that feature is negotiated, a driver can use TCP segmentation or UDP
   segmentation/fragmentation offload by negotiating the VIRTIO_NET_F_HOST_TSO4 (IPv4
@@ -1062,7 +1062,7 @@ commands:
 \begin{itemize}
 \item VIRTIO_NET_CTRL_RX_PROMISC turns promiscuous mode on and
 off. The command-specific-data is one byte containing 0 (off) or
-1 (on). If promiscous mode is on, the device SHOULD receive all
+1 (on). If promiscuous mode is on, the device SHOULD receive all
 incoming packets.
 This SHOULD take effect even if one of the other modes set by
 a VIRTIO_NET_CTRL_RX class command is on.
