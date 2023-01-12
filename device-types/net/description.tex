@@ -1194,7 +1194,11 @@ of \field{mac} in the config space.
 \paragraph{VLAN Filtering}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / VLAN Filtering}
 
 If the driver negotiates the VIRTIO_NET_F_CTRL_VLAN feature, it
-can control a VLAN filter table in the device.
+can control a VLAN filter table in the device. The VLAN filter
+table applies only to VLAN tagged packets.
+
+When VIRTIO_NET_F_CTRL_VLAN is negotiated, the device starts with
+an empty VLAN filter table.
 
 \begin{note}
 Similar to the MAC address based filtering, the VLAN filtering
@@ -1209,6 +1213,22 @@ is also best-effort: unwanted packets could still arrive.
 
 Both the VIRTIO_NET_CTRL_VLAN_ADD and VIRTIO_NET_CTRL_VLAN_DEL
 command take a little-endian 16-bit VLAN id as the command-specific-data.
+
+VIRTIO_NET_CTRL_VLAN_ADD command adds the specified VLAN to the
+VLAN filter table.
+
+VIRTIO_NET_CTRL_VLAN_DEL command removes the specified VLAN from
+the VLAN filter table.
+
+\devicenormative{\subparagraph}{VLAN Filtering}{Device Types / Network Device / Device Operation / Control Virtqueue / VLAN Filtering}
+
+When VIRTIO_NET_F_CTRL_VLAN is not negotiated, the device MUST
+accept all VLAN tagged packets as per the device configuration.
+
+When VIRTIO_NET_F_CTRL_VLAN is negotiated, the device MUST
+accept all VLAN tagged packets whose VLAN tag is present in
+the VLAN filter table and SHOULD drop all VLAN tagged packets
+whose VLAN tag is absent in the VLAN filter table.
 
 \subparagraph{Legacy Interface: VLAN Filtering}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / VLAN Filtering / Legacy Interface: VLAN Filtering}
 When using the legacy interface, transitional devices and drivers
