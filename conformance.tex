@@ -144,14 +144,8 @@ A Channel I/O driver MUST conform to the following normative statements:
 \input{device-types/crypto/driver-conformance.tex}
 \input{device-types/vsock/driver-conformance.tex}
 \input{device-types/fs/driver-conformance.tex}
+\input{device-types/rpmb/driver-conformance.tex}
 
-\conformance{\subsection}{RPMB Driver Conformance}\label{sec:Conformance / Driver Conformance / RPMB Driver Conformance}
-
-A RPMB driver MUST conform to the following normative statements:
-
-\begin{itemize}
-\item \ref{drivernormative:Device Types / RPMB Device / Device Operation}
-\end{itemize}
 \conformance{\subsection}{IOMMU Driver Conformance}\label{sec:Conformance / Driver Conformance / IOMMU Driver Conformance}
 
 An IOMMU driver MUST conform to the following normative statements:
@@ -310,20 +304,7 @@ A Channel I/O device MUST conform to the following normative statements:
 \input{device-types/crypto/device-conformance.tex}
 \input{device-types/vsock/device-conformance.tex}
 \input{device-types/fs/device-conformance.tex}
-
-\conformance{\subsection}{RPMB Device Conformance}\label{sec:Conformance / Device Conformance / RPMB Device Conformance}
-
-An RPMB device MUST conform to the following normative statements:
-
-\begin{itemize}
-\item \ref{devicenormative:Device Types / RPMB Device / Device Initialization}
-\item \ref{devicenormative:Device Types / RPMB Device / Device Operation / Device Operation: Program Key}
-\item \ref{devicenormative:Device Types / RPMB Device / Device Operation / Device Operation: Get Write Counter}
-\item \ref{devicenormative:Device Types / RPMB Device / Device Operation / Device Operation: Data Write}
-\item \ref{devicenormative:Device Types / RPMB Device / Device Operation / Device Operation: Data Read}
-\item \ref{devicenormative:Device Types / RPMB Device / Device Operation / Device Operation: Result Read}
-\item \ref{devicenormative:Device Types / RPMB Device / Device Operation}
-\end{itemize}
+\input{device-types/rpmb/device-conformance.tex}
 
 \conformance{\subsection}{IOMMU Device Conformance}\label{sec:Conformance / Device Conformance / IOMMU Device Conformance}
 
