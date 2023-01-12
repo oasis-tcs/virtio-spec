@@ -1,0 +1,709 @@
+\section{SCSI Host Device}\label{sec:Device Types / SCSI Host Device}
+
+The virtio SCSI host device groups together one or more virtual
+logical units (such as disks), and allows communicating to them
+using the SCSI protocol. An instance of the device represents a
+SCSI host to which many targets and LUNs are attached.
+
+The virtio SCSI device services two kinds of requests:
+\begin{itemize}
+\item command requests for a logical unit;
+
+\item task management functions related to a logical unit, target or
+  command.
+\end{itemize}
+
+The device is also able to send out notifications about added and
+removed logical units. Together, these capabilities provide a
+SCSI transport protocol that uses virtqueues as the transfer
+medium. In the transport protocol, the virtio driver acts as the
+initiator, while the virtio SCSI host provides one or more
+targets that receive and process the requests.
+
+This section relies on definitions from \hyperref[intro:SAM]{SAM}.
+
+\subsection{Device ID}\label{sec:Device Types / SCSI Host Device / Device ID}
+  8
+
+\subsection{Virtqueues}\label{sec:Device Types / SCSI Host Device / Virtqueues}
+
+\begin{description}
+\item[0] controlq
+\item[1] eventq
+\item[2\ldots n] request queues
+\end{description}
+
+\subsection{Feature bits}\label{sec:Device Types / SCSI Host Device / Feature bits}
+
+\begin{description}
+\item[VIRTIO_SCSI_F_INOUT (0)] A single request can include both
+    device-readable and device-writable data buffers.
+
+\item[VIRTIO_SCSI_F_HOTPLUG (1)] The host SHOULD enable reporting of
+    hot-plug and hot-unplug events for LUNs and targets on the SCSI bus.
+    The guest SHOULD handle hot-plug and hot-unplug events.
+
+\item[VIRTIO_SCSI_F_CHANGE (2)] The host will report changes to LUN
+    parameters via a VIRTIO_SCSI_T_PARAM_CHANGE event; the guest
+    SHOULD handle them.
+
+\item[VIRTIO_SCSI_F_T10_PI (3)] The extended fields for T10 protection
+    information (DIF/DIX) are included in the SCSI request header.
+\end{description}
+
+\subsection{Device configuration layout}\label{sec:Device Types / SCSI Host Device / Device configuration layout}
+
+  All fields of this configuration are always available.
+
+\begin{lstlisting}
+struct virtio_scsi_config {
+        le32 num_queues;
+        le32 seg_max;
+        le32 max_sectors;
+        le32 cmd_per_lun;
+        le32 event_info_size;
+        le32 sense_size;
+        le32 cdb_size;
+        le16 max_channel;
+        le16 max_target;
+        le32 max_lun;
+};
+\end{lstlisting}
+
+\begin{description}
+\item[\field{num_queues}] is the total number of request virtqueues exposed by
+    the device. The driver MAY use only one request queue,
+    or it can use more to achieve better performance.
+
+\item[\field{seg_max}] is the maximum number of segments that can be in a
+    command. A bidirectional command can include \field{seg_max} input
+    segments and \field{seg_max} output segments.
+
+\item[\field{max_sectors}] is a hint to the driver about the maximum transfer
+    size to use.
+
+\item[\field{cmd_per_lun}] tells the driver the maximum number of
+    linked commands it can send to one LUN.
+
+\item[\field{event_info_size}] is the maximum size that the device will fill
+    for buffers that the driver places in the eventq. It is
+    written by the device depending on the set of negotiated
+    features.
+
+\item[\field{sense_size}] is the maximum size of the sense data that the
+    device will write. The default value is written by the device
+    and MUST be 96, but the driver can modify it. It is
+    restored to the default when the device is reset.
+
+\item[\field{cdb_size}] is the maximum size of the CDB that the driver will
+    write. The default value is written by the device and MUST
+    be 32, but the driver can likewise modify it. It is
+    restored to the default when the device is reset.
+
+\item[\field{max_channel}, \field{max_target} and \field{max_lun}] can be
+    used by the driver as hints to constrain scanning the logical units
+    on the host to channel/target/logical unit numbers that are less than
+    or equal to the value of the fields.  \field{max_channel} SHOULD
+    be zero.  \field{max_target} SHOULD be less than or equal to 255.
+    \field{max_lun} SHOULD be less than or equal to 16383.
+\end{description}
+
+\drivernormative{\subsubsection}{Device configuration layout}{Device Types / SCSI Host Device / Device configuration layout}
+
+The driver MUST NOT write to device configuration fields other than
+\field{sense_size} and \field{cdb_size}.
+
+The driver MUST NOT send more than \field{cmd_per_lun} linked commands
+to one LUN, and MUST NOT send more than the virtqueue size number of
+linked commands to one LUN.
+
+\devicenormative{\subsubsection}{Device configuration layout}{Device Types / SCSI Host Device / Device configuration layout}
+
+On reset, the device MUST set \field{sense_size} to 96 and
+\field{cdb_size} to 32.
+
+\subsubsection{Legacy Interface: Device configuration layout}\label{sec:Device Types / SCSI Host Device / Device configuration layout / Legacy Interface: Device configuration layout}
+When using the legacy interface, transitional devices and drivers
+MUST format the fields in struct virtio_scsi_config
+according to the native endian of the guest rather than
+(necessarily when not using the legacy interface) little-endian.
+
+\devicenormative{\subsection}{Device Initialization}{Device Types / SCSI Host Device / Device Initialization}
+
+On initialization the driver SHOULD first discover the
+device's virtqueues.
+
+If the driver uses the eventq, the driver SHOULD place at least one
+buffer in the eventq.
+
+The driver MAY immediately issue requests\footnote{For example, INQUIRY
+or REPORT LUNS.} or task management functions\footnote{For example, I_T
+RESET.}.
+
+\subsection{Device Operation}\label{sec:Device Types / SCSI Host Device / Device Operation}
+
+Device operation consists of operating request queues, the control
+queue and the event queue.
+
+\paragraph{Legacy Interface: Device Operation}\label{sec:Device
+Types / SCSI Host Device / Device Operation / Legacy
+Interface: Device Operation}
+When using the legacy interface, the driver SHOULD ignore the
+used length values.
+\begin{note}
+Historically, devices put the total descriptor length,
+or the total length of device-writable buffers there,
+even when only part of the buffers were actually written.
+\end{note}
+
+\subsubsection{Device Operation: Request Queues}\label{sec:Device Types / SCSI Host Device / Device Operation / Device Operation: Request Queues}
+
+The driver queues requests to an arbitrary request queue, and
+they are used by the device on that same queue. It is the
+responsibility of the driver to ensure strict request ordering
+for commands placed on different queues, because they will be
+consumed with no order constraints.
+
+Requests have the following format:
+
+\begin{lstlisting}
+struct virtio_scsi_req_cmd {
+        // Device-readable part
+        u8 lun[8];
+        le64 id;
+        u8 task_attr;
+        u8 prio;
+        u8 crn;
+        u8 cdb[cdb_size];
+        // The next three fields are only present if VIRTIO_SCSI_F_T10_PI
+        // is negotiated.
+        le32 pi_bytesout;
+        le32 pi_bytesin;
+        u8 pi_out[pi_bytesout];
+        u8 dataout[];
+
+        // Device-writable part
+        le32 sense_len;
+        le32 residual;
+        le16 status_qualifier;
+        u8 status;
+        u8 response;
+        u8 sense[sense_size];
+        // The next field is only present if VIRTIO_SCSI_F_T10_PI
+        // is negotiated
+        u8 pi_in[pi_bytesin];
+        u8 datain[];
+};
+
+
+/* command-specific response values */
+#define VIRTIO_SCSI_S_OK                0
+#define VIRTIO_SCSI_S_OVERRUN           1
+#define VIRTIO_SCSI_S_ABORTED           2
+#define VIRTIO_SCSI_S_BAD_TARGET        3
+#define VIRTIO_SCSI_S_RESET             4
+#define VIRTIO_SCSI_S_BUSY              5
+#define VIRTIO_SCSI_S_TRANSPORT_FAILURE 6
+#define VIRTIO_SCSI_S_TARGET_FAILURE    7
+#define VIRTIO_SCSI_S_NEXUS_FAILURE     8
+#define VIRTIO_SCSI_S_FAILURE           9
+
+/* task_attr */
+#define VIRTIO_SCSI_S_SIMPLE            0
+#define VIRTIO_SCSI_S_ORDERED           1
+#define VIRTIO_SCSI_S_HEAD              2
+#define VIRTIO_SCSI_S_ACA               3
+\end{lstlisting}
+
+\field{lun} addresses the REPORT LUNS well-known logical unit, or
+a target and logical unit in the virtio-scsi device's SCSI domain.
+When used to address the REPORT LUNS logical unit, \field{lun} is 0xC1,
+0x01 and six zero bytes.  The virtio-scsi device SHOULD implement the
+REPORT LUNS well-known logical unit.
+
+When used to address a target and logical unit, the only supported format
+for \field{lun} is: first byte set to 1, second byte set to target,
+third and fourth byte representing a single level LUN structure, followed
+by four zero bytes. With this representation, a virtio-scsi device can
+serve up to 256 targets and 16384 LUNs per target.  The device MAY also
+support having a well-known logical units in the third and fourth byte.
+
+\field{id} is the command identifier (``tag'').
+
+\field{task_attr} defines the task attribute as in the table above, but
+all task attributes MAY be mapped to SIMPLE by the device.  Some commands
+are defined by SCSI standards as "implicit head of queue"; for such
+commands, all task attributes MAY also be mapped to HEAD OF QUEUE.
+Drivers and applications SHOULD NOT send a command with the ORDERED
+task attribute if the command has an implicit HEAD OF QUEUE attribute,
+because whether the ORDERED task attribute is honored is vendor-specific.
+
+\field{crn} may also be provided by clients, but is generally expected
+to be 0. The maximum CRN value defined by the protocol is 255, since
+CRN is stored in an 8-bit integer.
+
+The CDB is included in \field{cdb} and its size, \field{cdb_size},
+is taken from the configuration space.
+
+All of these fields are defined in \hyperref[intro:SAM]{SAM} and are
+always device-readable.
+
+\field{pi_bytesout} determines the size of the \field{pi_out} field
+in bytes.  If it is nonzero, the \field{pi_out} field contains outgoing
+protection information for write operations.  \field{pi_bytesin} determines
+the size of the \field{pi_in} field in the device-writable section, in bytes.
+All three fields are only present if VIRTIO_SCSI_F_T10_PI has been negotiated.
+
+The remainder of the device-readable part is the data output buffer,
+\field{dataout}.
+
+\field{sense} and subsequent fields are always device-writable. \field{sense_len}
+indicates the number of bytes actually written to the sense
+buffer.
+
+\field{residual} indicates the residual size,
+calculated as ``data_length - number_of_transferred_bytes'', for
+read or write operations. For bidirectional commands, the
+number_of_transferred_bytes includes both read and written bytes.
+A \field{residual} that is less than the size of \field{datain} means that
+\field{dataout} was processed entirely. A \field{residual} that
+exceeds the size of \field{datain} means that \field{dataout} was
+processed partially and \field{datain} was not processed at
+all.
+
+If the \field{pi_bytesin} is nonzero, the \field{pi_in} field contains
+incoming protection information for read operations.  \field{pi_in} is
+only present if VIRTIO_SCSI_F_T10_PI has been negotiated\footnote{There
+  is no separate residual size for \field{pi_bytesout} and
+  \field{pi_bytesin}.  It can be computed from the \field{residual} field,
+  the size of the data integrity information per sector, and the sizes
+  of \field{pi_out}, \field{pi_in}, \field{dataout} and \field{datain}.}.
+
+The remainder of the device-writable part is the data input buffer,
+\field{datain}.
+
+
+\devicenormative{\paragraph}{Device Operation: Request Queues}{Device Types / SCSI Host Device / Device Operation / Device Operation: Request Queues}
+
+The device MUST write the \field{status} byte as the status code as
+defined in \hyperref[intro:SAM]{SAM}.
+
+The device MUST write the \field{response} byte as one of the following:
+
+\begin{description}
+
+\item[VIRTIO_SCSI_S_OK] when the request was completed and the \field{status}
+  byte is filled with a SCSI status code (not necessarily
+  ``GOOD'').
+
+\item[VIRTIO_SCSI_S_OVERRUN] if the content of the CDB (such as the
+  allocation length, parameter length or transfer size) requires
+  more data than is available in the datain and dataout buffers.
+
+\item[VIRTIO_SCSI_S_ABORTED] if the request was cancelled due to an
+  ABORT TASK or ABORT TASK SET task management function.
+
+\item[VIRTIO_SCSI_S_BAD_TARGET] if the request was never processed
+  because the target indicated by \field{lun} does not exist.
+
+\item[VIRTIO_SCSI_S_RESET] if the request was cancelled due to a bus
+  or device reset (including a task management function).
+
+\item[VIRTIO_SCSI_S_TRANSPORT_FAILURE] if the request failed due to a
+  problem in the connection between the host and the target
+  (severed link).
+
+\item[VIRTIO_SCSI_S_TARGET_FAILURE] if the target is suffering a
+  failure and to tell the driver not to retry on other paths.
+
+\item[VIRTIO_SCSI_S_NEXUS_FAILURE] if the nexus is suffering a failure
+  but retrying on other paths might yield a different result.
+
+\item[VIRTIO_SCSI_S_BUSY] if the request failed but retrying on the
+  same path is likely to work.
+
+\item[VIRTIO_SCSI_S_FAILURE] for other host or driver error. In
+  particular, if neither \field{dataout} nor \field{datain} is empty, and the
+  VIRTIO_SCSI_F_INOUT feature has not been negotiated, the
+  request will be immediately returned with a response equal to
+  VIRTIO_SCSI_S_FAILURE.
+\end{description}
+
+All commands must be completed before the virtio-scsi device is
+reset or unplugged.  The device MAY choose to abort them, or if
+it does not do so MUST pick the VIRTIO_SCSI_S_FAILURE response.
+
+\drivernormative{\paragraph}{Device Operation: Request Queues}{Device Types / SCSI Host Device / Device Operation / Device Operation: Request Queues}
+
+\field{task_attr}, \field{prio} and \field{crn} SHOULD be zero.
+
+Upon receiving a VIRTIO_SCSI_S_TARGET_FAILURE response, the driver
+SHOULD NOT retry the request on other paths.
+
+\paragraph{Legacy Interface: Device Operation: Request Queues}\label{sec:Device Types / SCSI Host Device / Device Operation / Device Operation: Request Queues / Legacy Interface: Device Operation: Request Queues}
+When using the legacy interface, transitional devices and drivers
+MUST format the fields in struct virtio_scsi_req_cmd
+according to the native endian of the guest rather than
+(necessarily when not using the legacy interface) little-endian.
+
+\subsubsection{Device Operation: controlq}\label{sec:Device Types / SCSI Host Device / Device Operation / Device Operation: controlq}
+
+The controlq is used for other SCSI transport operations.
+Requests have the following format:
+
+{
+\lstset{escapechar=\$}
+\begin{lstlisting}
+struct virtio_scsi_ctrl {
+        le32 type;
+$\ldots$
+        u8 response;
+};
+
+/* response values valid for all commands */
+#define VIRTIO_SCSI_S_OK                       0
+#define VIRTIO_SCSI_S_BAD_TARGET               3
+#define VIRTIO_SCSI_S_BUSY                     5
+#define VIRTIO_SCSI_S_TRANSPORT_FAILURE        6
+#define VIRTIO_SCSI_S_TARGET_FAILURE           7
+#define VIRTIO_SCSI_S_NEXUS_FAILURE            8
+#define VIRTIO_SCSI_S_FAILURE                  9
+#define VIRTIO_SCSI_S_INCORRECT_LUN            12
+\end{lstlisting}
+}
+
+The \field{type} identifies the remaining fields.
+
+The following commands are defined:
+
+\begin{itemize}
+\item Task management function.
+\begin{lstlisting}
+#define VIRTIO_SCSI_T_TMF                      0
+
+#define VIRTIO_SCSI_T_TMF_ABORT_TASK           0
+#define VIRTIO_SCSI_T_TMF_ABORT_TASK_SET       1
+#define VIRTIO_SCSI_T_TMF_CLEAR_ACA            2
+#define VIRTIO_SCSI_T_TMF_CLEAR_TASK_SET       3
+#define VIRTIO_SCSI_T_TMF_I_T_NEXUS_RESET      4
+#define VIRTIO_SCSI_T_TMF_LOGICAL_UNIT_RESET   5
+#define VIRTIO_SCSI_T_TMF_QUERY_TASK           6
+#define VIRTIO_SCSI_T_TMF_QUERY_TASK_SET       7
+
+struct virtio_scsi_ctrl_tmf {
+        // Device-readable part
+        le32 type;
+        le32 subtype;
+        u8   lun[8];
+        le64 id;
+        // Device-writable part
+        u8   response;
+};
+
+/* command-specific response values */
+#define VIRTIO_SCSI_S_FUNCTION_COMPLETE        0
+#define VIRTIO_SCSI_S_FUNCTION_SUCCEEDED       10
+#define VIRTIO_SCSI_S_FUNCTION_REJECTED        11
+\end{lstlisting}
+
+  The \field{type} is VIRTIO_SCSI_T_TMF; \field{subtype} defines which
+  task management function. All
+  fields except \field{response} are filled by the driver.
+
+  Other fields which are irrelevant for the requested TMF
+  are ignored but they are still present. \field{lun}
+  is in the same format specified for request queues; the
+  single level LUN is ignored when the task management function
+  addresses a whole I_T nexus. When relevant, the value of \field{id}
+  is matched against the id values passed on the requestq.
+
+  The outcome of the task management function is written by the
+  device in \field{response}. The command-specific response
+  values map 1-to-1 with those defined in \hyperref[intro:SAM]{SAM}.
+
+  Task management function can affect the response value for commands that
+  are in the request queue and have not been completed yet.  For example,
+  the device MUST complete all active commands on a logical unit
+  or target (possibly with a VIRTIO_SCSI_S_RESET response code)
+  upon receiving a "logical unit reset" or "I_T nexus reset" TMF.
+  Similarly, the device MUST complete the selected commands (possibly
+  with a VIRTIO_SCSI_S_ABORTED response code) upon receiving an "abort
+  task" or "abort task set" TMF.  Such effects MUST take place before
+  the TMF itself is successfully completed, and the device MUST use
+  memory barriers appropriately in order to ensure that the driver sees
+  these writes in the correct order.
+
+\item Asynchronous notification query.
+\begin{lstlisting}
+#define VIRTIO_SCSI_T_AN_QUERY                    1
+
+struct virtio_scsi_ctrl_an {
+    // Device-readable part
+    le32 type;
+    u8   lun[8];
+    le32 event_requested;
+    // Device-writable part
+    le32 event_actual;
+    u8   response;
+};
+
+#define VIRTIO_SCSI_EVT_ASYNC_OPERATIONAL_CHANGE  2
+#define VIRTIO_SCSI_EVT_ASYNC_POWER_MGMT          4
+#define VIRTIO_SCSI_EVT_ASYNC_EXTERNAL_REQUEST    8
+#define VIRTIO_SCSI_EVT_ASYNC_MEDIA_CHANGE        16
+#define VIRTIO_SCSI_EVT_ASYNC_MULTI_HOST          32
+#define VIRTIO_SCSI_EVT_ASYNC_DEVICE_BUSY         64
+\end{lstlisting}
+
+  By sending this command, the driver asks the device which
+  events the given LUN can report, as described in paragraphs 6.6
+  and A.6 of \hyperref[intro:SCSI MMC]{SCSI MMC}. The driver writes the
+  events it is interested in into \field{event_requested}; the device
+  responds by writing the events that it supports into
+  \field{event_actual}.
+
+  The \field{type} is VIRTIO_SCSI_T_AN_QUERY. \field{lun} and \field{event_requested}
+  are written by the driver. \field{event_actual} and \field{response}
+  fields are written by the device.
+
+  No command-specific values are defined for the \field{response} byte.
+
+\item Asynchronous notification subscription.
+\begin{lstlisting}
+#define VIRTIO_SCSI_T_AN_SUBSCRIBE                2
+
+struct virtio_scsi_ctrl_an {
+        // Device-readable part
+        le32 type;
+        u8   lun[8];
+        le32 event_requested;
+        // Device-writable part
+        le32 event_actual;
+        u8   response;
+};
+\end{lstlisting}
+
+  By sending this command, the driver asks the specified LUN to
+  report events for its physical interface, again as described in
+   \hyperref[intro:SCSI MMC]{SCSI MMC}. The driver writes the events it is
+  interested in into \field{event_requested}; the device responds by
+  writing the events that it supports into \field{event_actual}.
+
+  Event types are the same as for the asynchronous notification
+  query message.
+
+  The \field{type} is VIRTIO_SCSI_T_AN_SUBSCRIBE. \field{lun} and
+  \field{event_requested} are written by the driver.
+  \field{event_actual} and \field{response} are written by the device.
+
+  No command-specific values are defined for the response byte.
+\end{itemize}
+
+\paragraph{Legacy Interface: Device Operation: controlq}\label{sec:Device Types / SCSI Host Device / Device Operation / Device Operation: controlq / Legacy Interface: Device Operation: controlq}
+
+When using the legacy interface, transitional devices and drivers
+MUST format the fields in struct virtio_scsi_ctrl, struct
+virtio_scsi_ctrl_tmf, struct virtio_scsi_ctrl_an and struct
+virtio_scsi_ctrl_an
+according to the native endian of the guest rather than
+(necessarily when not using the legacy interface) little-endian.
+
+
+\subsubsection{Device Operation: eventq}\label{sec:Device Types / SCSI Host Device / Device Operation / Device Operation: eventq}
+
+The eventq is populated by the driver for the device to report information on logical
+units that are attached to it. In general, the device will not
+queue events to cope with an empty eventq, and will end up
+dropping events if it finds no buffer ready. However, when
+reporting events for many LUNs (e.g. when a whole target
+disappears), the device can throttle events to avoid dropping
+them. For this reason, placing 10-15 buffers on the event queue
+is sufficient.
+
+Buffers returned by the device on the eventq will be referred to
+as ``events'' in the rest of this section. Events have the
+following format:
+
+\begin{lstlisting}
+#define VIRTIO_SCSI_T_EVENTS_MISSED   0x80000000
+
+struct virtio_scsi_event {
+        // Device-writable part
+        le32 event;
+        u8  lun[8];
+        le32 reason;
+};
+\end{lstlisting}
+
+The devices sets bit 31 in \field{event} to report lost events
+due to missing buffers.
+
+The meaning of \field{reason} depends on the
+contents of \field{event}. The following events are defined:
+
+\begin{itemize}
+\item No event.
+\begin{lstlisting}
+#define VIRTIO_SCSI_T_NO_EVENT         0
+\end{lstlisting}
+
+  This event is fired in the following cases:
+
+\begin{itemize}
+\item When the device detects in the eventq a buffer that is
+    shorter than what is indicated in the configuration field, it
+    MAY use it immediately and put this dummy value in \field{event}.
+    A well-written driver will never observe this
+    situation.
+
+\item When events are dropped, the device MAY signal this event as
+    soon as the drivers makes a buffer available, in order to
+    request action from the driver. In this case, of course, this
+    event will be reported with the VIRTIO_SCSI_T_EVENTS_MISSED
+    flag.
+\end{itemize}
+
+\item Transport reset
+\begin{lstlisting}
+#define VIRTIO_SCSI_T_TRANSPORT_RESET  1
+
+#define VIRTIO_SCSI_EVT_RESET_HARD         0
+#define VIRTIO_SCSI_EVT_RESET_RESCAN       1
+#define VIRTIO_SCSI_EVT_RESET_REMOVED      2
+\end{lstlisting}
+
+  By sending this event, the device signals that a logical unit
+  on a target has been reset, including the case of a new device
+  appearing or disappearing on the bus. The device fills in all
+  fields. \field{event} is set to
+  VIRTIO_SCSI_T_TRANSPORT_RESET. \field{lun} addresses a
+  logical unit in the SCSI host.
+
+  The \field{reason} value is one of the three \#define values appearing
+  above:
+
+  \begin{description}
+  \item[VIRTIO_SCSI_EVT_RESET_REMOVED] (``LUN/target removed'') is used
+    if the target or logical unit is no longer able to receive
+    commands.
+
+  \item[VIRTIO_SCSI_EVT_RESET_HARD] (``LUN hard reset'') is used if the
+    logical unit has been reset, but is still present.
+
+  \item[VIRTIO_SCSI_EVT_RESET_RESCAN] (``rescan LUN/target'') is used if
+    a target or logical unit has just appeared on the device.
+  \end{description}
+
+  The ``removed'' and ``rescan'' events can happen when
+  VIRTIO_SCSI_F_HOTPLUG feature was negotiated; when sent for LUN 0,
+  they MAY apply to the entire target so the driver can ask the
+  initiator to rescan the target to detect this.
+
+  Events will also be reported via sense codes (this obviously
+  does not apply to newly appeared buses or targets, since the
+  application has never discovered them):
+
+  \begin{itemize}
+  \item ``LUN/target removed'' maps to sense key ILLEGAL REQUEST, asc
+    0x25, ascq 0x00 (LOGICAL UNIT NOT SUPPORTED)
+
+  \item ``LUN hard reset'' maps to sense key UNIT ATTENTION, asc 0x29
+    (POWER ON, RESET OR BUS DEVICE RESET OCCURRED)
+
+  \item ``rescan LUN/target'' maps to sense key UNIT ATTENTION, asc
+    0x3f, ascq 0x0e (REPORTED LUNS DATA HAS CHANGED)
+  \end{itemize}
+
+  The preferred way to detect transport reset is always to use
+  events, because sense codes are only seen by the driver when it
+  sends a SCSI command to the logical unit or target. However, in
+  case events are dropped, the initiator will still be able to
+  synchronize with the actual state of the controller if the
+  driver asks the initiator to rescan of the SCSI bus. During the
+  rescan, the initiator will be able to observe the above sense
+  codes, and it will process them as if it the driver had
+  received the equivalent event.
+
+  \item Asynchronous notification
+\begin{lstlisting}
+#define VIRTIO_SCSI_T_ASYNC_NOTIFY     2
+\end{lstlisting}
+
+  By sending this event, the device signals that an asynchronous
+  event was fired from a physical interface.
+
+  All fields are written by the device. \field{event} is set to
+  VIRTIO_SCSI_T_ASYNC_NOTIFY. \field{lun} addresses a logical
+  unit in the SCSI host. \field{reason} is a subset of the
+  events that the driver has subscribed to via the ``Asynchronous
+  notification subscription'' command.
+
+  \item LUN parameter change
+\begin{lstlisting}
+#define VIRTIO_SCSI_T_PARAM_CHANGE  3
+\end{lstlisting}
+
+  By sending this event, the device signals a change in the configuration parameters
+  of a logical unit, for example the capacity or cache mode.
+  \field{event} is set to VIRTIO_SCSI_T_PARAM_CHANGE.
+  \field{lun} addresses a logical unit in the SCSI host.
+
+  The same event SHOULD also be reported as a unit attention condition.
+  \field{reason} contains the additional sense code and additional sense code qualifier,
+  respectively in bits 0\ldots 7 and 8\ldots 15.
+  \begin{note}
+  For example, a change in capacity will be reported as asc 0x2a, ascq 0x09
+  (CAPACITY DATA HAS CHANGED).
+  \end{note}
+
+  For MMC devices (inquiry type 5) there would be some overlap between this
+  event and the asynchronous notification event, so for simplicity the host never
+  reports this event for MMC devices.
+\end{itemize}
+
+\drivernormative{\paragraph}{Device Operation: eventq}{Device Types / SCSI Host Device / Device Operation / Device Operation: eventq}
+
+The driver SHOULD keep the eventq populated with buffers.  These
+buffers MUST be device-writable, and SHOULD be at least
+\field{event_info_size} bytes long, and MUST be at least the size of
+struct virtio_scsi_event.
+
+If \field{event} has bit 31 set, the driver SHOULD
+poll the logical units for unit attention conditions, and/or do
+whatever form of bus scan is appropriate for the guest operating
+system and SHOULD poll for asynchronous events manually using SCSI commands.
+
+When receiving a VIRTIO_SCSI_T_TRANSPORT_RESET message with
+\field{reason} set to VIRTIO_SCSI_EVT_RESET_REMOVED or
+VIRTIO_SCSI_EVT_RESET_RESCAN for LUN 0, the driver SHOULD ask the
+initiator to rescan the target, in order to detect the case when an
+entire target has appeared or disappeared.
+
+\devicenormative{\paragraph}{Device Operation: eventq}{Device Types / SCSI Host Device / Device Operation / Device Operation: eventq}
+
+The device MUST set bit 31 in \field{event} if events were lost due to
+missing buffers, and it MAY use a VIRTIO_SCSI_T_NO_EVENT event to report
+this.
+
+The device MUST NOT send VIRTIO_SCSI_T_TRANSPORT_RESET messages
+with \field{reason} set to VIRTIO_SCSI_EVT_RESET_REMOVED or
+VIRTIO_SCSI_EVT_RESET_RESCAN unless VIRTIO_SCSI_F_HOTPLUG was negotiated.
+
+The device MUST NOT report VIRTIO_SCSI_T_PARAM_CHANGE for MMC devices.
+
+\paragraph{Legacy Interface: Device Operation: eventq}\label{sec:Device Types / SCSI Host Device / Device Operation / Device Operation: eventq / Legacy Interface: Device Operation: eventq}
+When using the legacy interface, transitional devices and drivers
+MUST format the fields in struct virtio_scsi_event
+according to the native endian of the guest rather than
+(necessarily when not using the legacy interface) little-endian.
+
+\subsubsection{Legacy Interface: Framing Requirements}\label{sec:Device
+Types / SCSI Host Device / Legacy Interface: Framing Requirements}
+
+When using legacy interfaces, transitional drivers which have not
+negotiated VIRTIO_F_ANY_LAYOUT MUST use a single descriptor for the
+\field{lun}, \field{id}, \field{task_attr}, \field{prio},
+\field{crn} and \field{cdb} fields, and MUST only use a single
+descriptor for the \field{sense_len}, \field{residual},
+\field{status_qualifier}, \field{status}, \field{response} and
+\field{sense} fields.
