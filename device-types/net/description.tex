@@ -1,13 +1,14 @@
 \section{Network Device}\label{sec:Device Types / Network Device}
 
-The virtio network device is a virtual ethernet card, and is the
-most complex of the devices supported so far by virtio. It has
-enhanced rapidly and demonstrates clearly how support for new
-features are added to an existing device. Empty buffers are
-placed in one virtqueue for receiving packets, and outgoing
-packets are enqueued into another for transmission in that order.
-A third command queue is used to control advanced filtering
-features.
+The virtio network device is a virtual network interface controller.
+It consists of a virtual Ethernet link which connects the device
+to the Ethernet network. It is the most complex of the devices
+supported so far by virtio. It has enhanced rapidly and demonstrates
+clearly how support for new features are added to an existing
+device. Empty buffers are placed in one virtqueue for receiving
+packets, and outgoing packets are enqueued into another for
+transmission in that order. A third command queue is used to
+control advanced filtering features.
 
 \subsection{Device ID}\label{sec:Device Types / Network Device / Device ID}
 
@@ -32,8 +33,7 @@ features.
 \subsection{Feature bits}\label{sec:Device Types / Network Device / Feature bits}
 
 \begin{description}
-\item[VIRTIO_NET_F_CSUM (0)] Device handles packets with partial checksum.   This
-  ``checksum offload'' is a common feature on modern network cards.
+\item[VIRTIO_NET_F_CSUM (0)] Device handles packets with partial checksum offload.
 
 \item[VIRTIO_NET_F_GUEST_CSUM (1)] Driver handles packets with partial checksum.
 
@@ -323,7 +323,7 @@ A driver would perform a typical initialization routine like so:
 
 \item If the VIRTIO_NET_F_MAC feature bit is set, the configuration
   space \field{mac} entry indicates the ``physical'' address of the
-  network card, otherwise the driver would typically generate a random
+  device, otherwise the driver would typically generate a random
   local MAC address.
 
 \item If the VIRTIO_NET_F_STATUS feature bit is negotiated, the link
