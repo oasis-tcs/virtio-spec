@@ -396,7 +396,7 @@ parameters.
 
 \input{packed-ring.tex}
 
-\section{Driver Notifications} \label{sec:Virtqueues / Driver notifications}
+\section{Driver Notifications} \label{sec:Basic Facilities of a Virtio Device / Driver notifications}
 The driver is sometimes required to send an available buffer
 notification to the device.
 
@@ -1624,7 +1624,7 @@ the driver sends an available buffer notification to the device by writing
 the following 32-bit value to the Queue Notify address:
 \lstinputlisting{notifications-le.c}
 
-See \ref{sec:Virtqueues / Driver notifications}~\nameref{sec:Virtqueues / Driver notifications}
+See \ref{sec:Basic Facilities of a Virtio Device / Driver notifications}~\nameref{sec:Basic Facilities of a Virtio Device / Driver notifications}
 for the definition of the components.
 
 See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability}
@@ -1879,7 +1879,7 @@ All register values are organized as Little Endian.
 
     \lstinputlisting{notifications-le.c}
 
-    See \ref{sec:Virtqueues / Driver notifications}~\nameref{sec:Virtqueues / Driver notifications}
+    See \ref{sec:Basic Facilities of a Virtio Device / Driver notifications}~\nameref{sec:Basic Facilities of a Virtio Device / Driver notifications}
     for the definition of the components.
   }
   \hline 
@@ -2123,7 +2123,7 @@ the driver sends an available buffer notification to the device by writing
 the following 32-bit value to \field{QueueNotify}:
 \lstinputlisting{notifications-le.c}
 
-See \ref{sec:Virtqueues / Driver notifications}~\nameref{sec:Virtqueues / Driver notifications}
+See \ref{sec:Basic Facilities of a Virtio Device / Driver notifications}~\nameref{sec:Basic Facilities of a Virtio Device / Driver notifications}
 for the definition of the components.
 
 \subsubsection{Notifications From The Device}\label{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Notifications From The Device}
@@ -2845,7 +2845,7 @@ When VIRTIO_F_NOTIFICATION_DATA has been negotiated,
 the value has the following format:
 \lstinputlisting{notifications-be.c}
 
-See \ref{sec:Virtqueues / Driver notifications}~\nameref{sec:Virtqueues / Driver notifications}
+See \ref{sec:Basic Facilities of a Virtio Device / Driver notifications}~\nameref{sec:Basic Facilities of a Virtio Device / Driver notifications}
 for the definition of the components.
 
 \devicenormative{\paragraph}{Guest->Host Notification}{Virtio Transport Options / Virtio over channel I/O / Device Operation / Guest->Host Notification}
@@ -3091,12 +3091,12 @@ Descriptors} and \ref{sec:Packed Virtqueues / Indirect Flag: Scatter-Gather Supp
   \item[VIRTIO_F_NOTIFICATION_DATA(38)] This feature indicates
   that the driver passes extra data (besides identifying the virtqueue)
   in its device notifications.
-  See \ref{sec:Virtqueues / Driver notifications}~\nameref{sec:Virtqueues / Driver notifications}.
+  See \ref{sec:Basic Facilities of a Virtio Device / Driver notifications}~\nameref{sec:Basic Facilities of a Virtio Device / Driver notifications}.
 
   \item[VIRTIO_F_NOTIF_CONFIG_DATA(39)] This feature indicates that the driver
   uses the data provided by the device as a virtqueue identifier in available
   buffer notifications.
-  As mentioned in section \ref{sec:Virtqueues / Driver notifications}, when the
+  As mentioned in section \ref{sec:Basic Facilities of a Virtio Device / Driver notifications}, when the
   driver is required to send an available buffer notification to the device, it
   sends the virtqueue number to be notified. The method of delivering
   notifications is transport specific.
