@@ -256,6 +256,9 @@ been negotiated, the device SHOULD NOT change the \field{speed} and
 \field{duplex} fields as long as VIRTIO_NET_S_LINK_UP is set in
 the \field{status}.
 
+The device SHOULD NOT offer VIRTIO_NET_F_HASH_REPORT if it
+does not offer VIRTIO_NET_F_CTRL_VQ.
+
 \drivernormative{\subsubsection}{Device configuration layout}{Device Types / Network Device / Device configuration layout}
 
 A driver SHOULD negotiate VIRTIO_NET_F_MAC if the device offers it.
@@ -288,6 +291,9 @@ matching 0x00 or 0x01 as an unknown value.
 If VIRTIO_NET_F_SPEED_DUPLEX has been negotiated, the driver
 SHOULD re-read \field{speed} and \field{duplex} after a
 configuration change notification.
+
+A driver SHOULD NOT negotiate VIRTIO_NET_F_HASH_REPORT if it
+does not negotiate VIRTIO_NET_F_CTRL_VQ.
 
 \subsubsection{Legacy Interface: Device configuration layout}\label{sec:Device Types / Network Device / Device configuration layout / Legacy Interface: Device configuration layout}
 \label{sec:Device Types / Block Device / Feature bits / Device configuration layout / Legacy Interface: Device configuration layout}
