@@ -2,13 +2,15 @@
 
 The virtio network device is a virtual network interface controller.
 It consists of a virtual Ethernet link which connects the device
-to the Ethernet network. It is the most complex of the devices
-supported so far by virtio. It has enhanced rapidly and demonstrates
-clearly how support for new features are added to an existing
-device. Empty buffers are placed in one virtqueue for receiving
-packets, and outgoing packets are enqueued into another for
-transmission in that order. A third command queue is used to
-control advanced filtering features.
+to the Ethernet network. The device has transmit and receive
+queues. The driver adds empty buffers to the receive virtqueue.
+The device receives incoming packets from the link; the device
+places these incoming packets in the receive virtqueue buffers.
+The driver adds outgoing packets to the transmit virtqueue. The device
+removes these packets from the transmit virtqueue and sends them to
+the link. The device may have a control virtqueue. The driver
+uses the control virtqueue to dynamically manipulate various
+features of the initialized device.
 
 \subsection{Device ID}\label{sec:Device Types / Network Device / Device ID}
 
@@ -28,7 +30,8 @@ control advanced filtering features.
  N=1 if neither VIRTIO_NET_F_MQ nor VIRTIO_NET_F_RSS are negotiated, otherwise N is set by
  \field{max_virtqueue_pairs}.
 
- controlq only exists if VIRTIO_NET_F_CTRL_VQ set.
+controlq is optional; it only exists if VIRTIO_NET_F_CTRL_VQ is
+negotiated.
 
 \subsection{Feature bits}\label{sec:Device Types / Network Device / Feature bits}
 
@@ -395,8 +398,8 @@ struct virtio_net_hdr {
 };
 \end{lstlisting}
 
-The controlq is used to control device features such as
-filtering.
+The controlq is used to control various device features described further in
+section \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue}.
 
 \subsubsection{Legacy Interface: Device Operation}\label{sec:Device Types / Network Device / Device Operation / Legacy Interface: Device Operation}
 When using the legacy interface, transitional devices and drivers
