@@ -1514,15 +1514,15 @@ according to the native endian of the guest rather than
 If the VIRTIO_NET_F_NOTF_COAL feature is negotiated, the driver can
 send control commands for dynamically changing the coalescing parameters.
 
-\begin{lstlisting}
-struct virtio_net_ctrl_coal_rx {
-    le32 rx_max_packets;
-    le32 rx_usecs;
-};
+\begin{note}
+The behavior of the device in response to these commands is best-effort:
+the device may generate notifications more or less frequently than specified.
+\end{note}
 
-struct virtio_net_ctrl_coal_tx {
-    le32 tx_max_packets;
-    le32 tx_usecs;
+\begin{lstlisting}
+struct virtio_net_ctrl_coal {
+    le32 max_packets;
+    le32 max_usecs;
 };
 
 #define VIRTIO_NET_CTRL_NOTF_COAL 6
@@ -1532,48 +1532,62 @@ struct virtio_net_ctrl_coal_tx {
 
 Coalescing parameters:
 \begin{itemize}
-\item \field{rx_usecs}: Maximum number of usecs to delay a RX notification.
-\item \field{tx_usecs}: Maximum number of usecs to delay a TX notification.
-\item \field{rx_max_packets}: Maximum number of packets to receive before a RX notification.
-\item \field{tx_max_packets}: Maximum number of packets to send before a TX notification.
+\item \field{max_usecs} for RX: Maximum number of microseconds to delay a RX notification.
+\item \field{max_usecs} for TX: Maximum number of microseconds to delay a TX notification.
+\item \field{max_packets} for RX: Maximum number of packets to receive before a RX notification.
+\item \field{max_packets} for TX: Maximum number of packets to send before a TX notification.
 \end{itemize}
-
 
 The class VIRTIO_NET_CTRL_NOTF_COAL has 2 commands:
 \begin{enumerate}
-\item VIRTIO_NET_CTRL_NOTF_COAL_TX_SET: set the \field{tx_usecs} and \field{tx_max_packets} parameters.
-\item VIRTIO_NET_CTRL_NOTF_COAL_RX_SET: set the \field{rx_usecs} and \field{rx_max_packets} parameters.
+\item VIRTIO_NET_CTRL_NOTF_COAL_TX_SET: set the \field{max_usecs} and \field{max_packets} parameters for all transmit virtqueues.
+\item VIRTIO_NET_CTRL_NOTF_COAL_RX_SET: set the \field{max_usecs} and \field{max_packets} parameters for all receive virtqueues.
 \end{enumerate}
 
-\subparagraph{RX Notifications}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing / RX Notifications}
+\subparagraph{Operation}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing / Operation}
+
+The device sends a used buffer notification once the notification conditions are met and if the notifications are not suppressed as explained in \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Used Buffer Notification Suppression}.
+
+When the device has non-zero \field{max_usecs} and non-zero \field{max_packets}, it starts counting microseconds and packets upon receiving/sending a packet.
+The device counts packets and microseconds for each receive virtqueue and transmit virtqueue separately.
+In this case, the notification conditions are met when \field{max_usecs} microseconds elapse, or upon sending/receiving \field{max_packets} packets, whichever happens first.
+Afterwards, the device waits for the next packet and starts counting packets and microseconds again.
+
+When the device has \field{max_usecs} = 0 or \field{max_packets} = 0, the notification conditions are met after every packet received/sent.
+
+\subparagraph{RX Example}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing / RX Example}
 
 If, for example:
 \begin{itemize}
-\item \field{rx_usecs} = 10.
-\item \field{rx_max_packets} = 15.
+\item \field{max_usecs} = 10.
+\item \field{max_packets} = 15.
 \end{itemize}
-
-The device will operate as follows:
-
+then each receive virtqueue of a device will operate as follows:
 \begin{itemize}
-\item The device will count received packets until it accumulates 15, or until 10 usecs elapsed since the first one was received.
+\item The device will count packets received on each virtqueue until it accumulates 15, or until 10 microseconds elapsed since the first one was received.
 \item If the notifications are not suppressed by the driver, the device will send an used buffer notification, otherwise, the device will not send an used buffer notification as long as the notifications are suppressed.
 \end{itemize}
 
-\subparagraph{TX Notifications}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing / TX Notifications}
+\subparagraph{TX Example}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing / TX Example}
 
 If, for example:
 \begin{itemize}
-\item \field{tx_usecs} = 10.
-\item \field{tx_max_packets} = 15.
+\item \field{max_usecs} = 10.
+\item \field{max_packets} = 15.
 \end{itemize}
-
-The device will operate as follows:
-
+then each transmit virtqueue of a device will operate as follows:
 \begin{itemize}
-\item The device will count sent packets until it accumulates 15, or until 10 usecs elapsed since the first one was sent.
+\item The device will count packets sent on each virtqueue until it accumulates 15, or until 10 microseconds elapsed since the first one was sent.
 \item If the notifications are not suppressed by the driver, the device will send an used buffer notification, otherwise, the device will not send an used buffer notification as long as the notifications are suppressed.
 \end{itemize}
+
+\subparagraph{Notifications When Coalescing Parameters Change}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing / Notifications When Coalescing Parameters Change}
+
+When the coalescing parameters of a device change, the device needs to check if the new notification conditions are met and send a used buffer notification if so.
+
+For example, \field{max_packets} = 15 for a device with a single transmit virtqueue: if the device sends 10 packets and afterwards receives a
+VIRTIO_NET_CTRL_NOTF_COAL_TX_SET command with \field{max_packets} = 8, then the notification condition is immediately considered to be met;
+the device needs to immediately send a used buffer notification, if the notifications are not suppressed by the driver.
 
 \drivernormative{\subparagraph}{Notifications Coalescing}{Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}
 
@@ -1583,7 +1597,7 @@ If the VIRTIO_NET_F_NOTF_COAL feature has not been negotiated, the driver MUST N
 
 A device SHOULD respond to the VIRTIO_NET_CTRL_NOTF_COAL commands with VIRTIO_NET_ERR if it was not able to change the parameters.
 
-A device SHOULD NOT send used buffer notifications to the driver, if the notifications are suppressed as explained in \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Used Buffer Notification Suppression}, even if the coalescing counters expired.
+A device SHOULD NOT send used buffer notifications to the driver if the notifications are suppressed, even if the notification conditions are met.
 
 Upon reset, a device MUST initialize all coalescing parameters to 0.
 
