@@ -77,6 +77,8 @@ negotiated.
 
 \item[VIRTIO_NET_F_CTRL_VLAN (19)] Control channel VLAN filtering.
 
+\item[VIRTIO_NET_F_CTRL_RX_EXTRA (20)]	Control channel RX extra mode support.
+
 \item[VIRTIO_NET_F_GUEST_ANNOUNCE(21)] Driver can send gratuitous
     packets.
 
@@ -270,6 +272,9 @@ the \field{status}.
 The device SHOULD NOT offer VIRTIO_NET_F_HASH_REPORT if it
 does not offer VIRTIO_NET_F_CTRL_VQ.
 
+The device SHOULD NOT offer VIRTIO_NET_F_CTRL_RX_EXTRA if it
+does not offer VIRTIO_NET_F_CTRL_VQ.
+
 \drivernormative{\subsubsection}{Device configuration layout}{Device Types / Network Device / Device configuration layout}
 
 The driver MUST NOT write to any of the device configuration fields.
@@ -306,6 +311,9 @@ SHOULD re-read \field{speed} and \field{duplex} after a
 configuration change notification.
 
 A driver SHOULD NOT negotiate VIRTIO_NET_F_HASH_REPORT if it
+does not negotiate VIRTIO_NET_F_CTRL_VQ.
+
+A driver SHOULD NOT negotiate VIRTIO_NET_F_CTRL_RX_EXTRA if it
 does not negotiate VIRTIO_NET_F_CTRL_VQ.
 
 \subsubsection{Legacy Interface: Device configuration layout}\label{sec:Device Types / Network Device / Device configuration layout / Legacy Interface: Device configuration layout}
