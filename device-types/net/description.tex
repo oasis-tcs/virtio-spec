@@ -156,14 +156,29 @@ purposes and current Windows driver depends on it. It will not function if virti
 \subsection{Device configuration layout}\label{sec:Device Types / Network Device / Device configuration layout}
 \label{sec:Device Types / Block Device / Feature bits / Device configuration layout}
 
-Device configuration fields are listed below. All of the device
-configuration fields are read-only for the driver.
+The network device has the following device configuration layout.
+All of the device configuration fields are read-only for the driver.
 
-The \field{mac} address field always exists (though is only
-valid if VIRTIO_NET_F_MAC is set), and \field{status} only
-exists if VIRTIO_NET_F_STATUS is set. Two bits are currently
-defined for the status field: VIRTIO_NET_S_LINK_UP and
-VIRTIO_NET_S_ANNOUNCE.
+\begin{lstlisting}
+struct virtio_net_config {
+        u8 mac[6];
+        le16 status;
+        le16 max_virtqueue_pairs;
+        le16 mtu;
+        le32 speed;
+        u8 duplex;
+        u8 rss_max_key_size;
+        le16 rss_max_indirection_table_length;
+        le32 supported_hash_types;
+};
+\end{lstlisting}
+
+The \field{mac} address field always exists (although it is only
+valid if VIRTIO_NET_F_MAC is set).
+
+The \field{status} only exists if VIRTIO_NET_F_STATUS is set.
+Two bits are currently defined for the status field: VIRTIO_NET_S_LINK_UP
+and VIRTIO_NET_S_ANNOUNCE.
 
 \begin{lstlisting}
 #define VIRTIO_NET_S_LINK_UP     1
@@ -193,19 +208,6 @@ Both \field{speed} and \field{duplex} can change, thus the driver
 is expected to re-read these values after receiving a
 configuration change notification.
 
-\begin{lstlisting}
-struct virtio_net_config {
-        u8 mac[6];
-        le16 status;
-        le16 max_virtqueue_pairs;
-        le16 mtu;
-        le32 speed;
-        u8 duplex;
-        u8 rss_max_key_size;
-        le16 rss_max_indirection_table_length;
-        le32 supported_hash_types;
-};
-\end{lstlisting}
 The following field, \field{rss_max_key_size} only exists if VIRTIO_NET_F_RSS or VIRTIO_NET_F_HASH_REPORT is set.
 It specifies the maximum supported length of RSS key in bytes.
 
