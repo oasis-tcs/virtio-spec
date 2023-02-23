@@ -83,6 +83,54 @@ device except where noted.
 
 \subsection{Device configuration layout}\label{sec:Device Types / Block Device / Device configuration layout}
 
+The block device has the following device configuration layout.
+
+\begin{lstlisting}
+struct virtio_blk_config {
+        le64 capacity;
+        le32 size_max;
+        le32 seg_max;
+        struct virtio_blk_geometry {
+                le16 cylinders;
+                u8 heads;
+                u8 sectors;
+        } geometry;
+        le32 blk_size;
+        struct virtio_blk_topology {
+                // # of logical blocks per physical block (log2)
+                u8 physical_block_exp;
+                // offset of first aligned logical block
+                u8 alignment_offset;
+                // suggested minimum I/O size in blocks
+                le16 min_io_size;
+                // optimal (suggested maximum) I/O size in blocks
+                le32 opt_io_size;
+        } topology;
+        u8 writeback;
+        u8 unused0;
+        u16 num_queues;
+        le32 max_discard_sectors;
+        le32 max_discard_seg;
+        le32 discard_sector_alignment;
+        le32 max_write_zeroes_sectors;
+        le32 max_write_zeroes_seg;
+        u8 write_zeroes_may_unmap;
+        u8 unused1[3];
+        le32 max_secure_erase_sectors;
+        le32 max_secure_erase_seg;
+        le32 secure_erase_sector_alignment;
+        struct virtio_blk_zoned_characteristics {
+                le32 zone_sectors;
+                le32 max_open_zones;
+                le32 max_active_zones;
+                le32 max_append_sectors;
+                le32 write_granularity;
+                u8 model;
+                u8 unused2[3];
+        } zoned;
+};
+\end{lstlisting}
+
 The \field{capacity} of the device (expressed in 512-byte sectors) is always
 present. The availability of the others all depend on various feature
 bits as indicated above.
@@ -166,53 +214,6 @@ to a state that doesn't consume the same resource decrements the counter. Any
 request that causes the device to exceed the reported zone resource limits is
 terminated by the device with a "zone resources exceeded" error as defined for
 specific commands later.
-
-\begin{lstlisting}
-struct virtio_blk_config {
-        le64 capacity;
-        le32 size_max;
-        le32 seg_max;
-        struct virtio_blk_geometry {
-                le16 cylinders;
-                u8 heads;
-                u8 sectors;
-        } geometry;
-        le32 blk_size;
-        struct virtio_blk_topology {
-                // # of logical blocks per physical block (log2)
-                u8 physical_block_exp;
-                // offset of first aligned logical block
-                u8 alignment_offset;
-                // suggested minimum I/O size in blocks
-                le16 min_io_size;
-                // optimal (suggested maximum) I/O size in blocks
-                le32 opt_io_size;
-        } topology;
-        u8 writeback;
-        u8 unused0;
-        u16 num_queues;
-        le32 max_discard_sectors;
-        le32 max_discard_seg;
-        le32 discard_sector_alignment;
-        le32 max_write_zeroes_sectors;
-        le32 max_write_zeroes_seg;
-        u8 write_zeroes_may_unmap;
-        u8 unused1[3];
-        le32 max_secure_erase_sectors;
-        le32 max_secure_erase_seg;
-        le32 secure_erase_sector_alignment;
-        struct virtio_blk_zoned_characteristics {
-                le32 zone_sectors;
-                le32 max_open_zones;
-                le32 max_active_zones;
-                le32 max_append_sectors;
-                le32 write_granularity;
-                u8 model;
-                u8 unused2[3];
-        } zoned;
-};
-\end{lstlisting}
-
 
 \subsubsection{Legacy Interface: Device configuration layout}\label{sec:Device Types / Block Device / Device configuration layout / Legacy Interface: Device configuration layout}
 When using the legacy interface, transitional devices and drivers
