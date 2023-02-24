@@ -56,13 +56,13 @@ Bytes & Description & Contents \\
 \end{tabular}
 
 A virtio-ccw proxy device facilitates:
-\begin{itemize} 
+\begin{itemize}
 \item Discovery and attachment of virtio devices (as described above).
 \item Initialization of virtqueues and transport-specific facilities (using
       virtio-specific channel commands).
 \item Notifications (via hypercall and a combination of I/O interrupts
       and indicator bits).
-\end{itemize} 
+\end{itemize}
 
 \subsubsection{Channel Commands for Virtio}\label{sec:Virtio Transport Options / Virtio
 over channel I/O / Basic Concepts/ Channel Commands for Virtio}
@@ -107,7 +107,7 @@ Transport Options / Virtio over channel I/O / Device Operation /
 Host->Guest Notification / Notification via Classic I/O Interrupts} and
 \ref{sec:Virtio Transport Options / Virtio over channel I/O / Device
 Operation / Host->Guest Notification / Notification via Adapter I/O
-Interrupts} respectively. 
+Interrupts} respectively.
 
 Configuration change notifications are done using so-called classic I/O
 interrupts. The initialization is described in section \ref{sec:Virtio
@@ -413,7 +413,7 @@ two stages:
 \begin{itemize}
 \item a summary indicator byte covering the virtqueues for one or more
   virtio-ccw proxy devices
-\item a set of contigous indicator bits for the virtqueues for a
+\item a set of contiguous indicator bits for the virtqueues for a
   virtio-ccw proxy device
 \end{itemize}
 
@@ -563,7 +563,7 @@ notification execution.
 
 \drivernormative{\paragraph}{Guest->Host Notification}{Virtio Transport Options / Virtio over channel I/O / Device Operation / Guest->Host Notification}
 
-For each notification, the driver SHOULD use GPR4 to pass the host cookie received in GPR2 from the previous notication.
+For each notification, the driver SHOULD use GPR4 to pass the host cookie received in GPR2 from the previous notification.
 
 \begin{note}
 For example:
