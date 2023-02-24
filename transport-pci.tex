@@ -5,7 +5,7 @@ Virtio devices are commonly implemented as PCI devices.
 A Virtio device can be implemented as any kind of PCI device:
 a Conventional PCI device or a PCI Express
 device.  To assure designs meet the latest level
-requirements, see 
+requirements, see
 the PCI-SIG home page at \url{http://www.pcisig.com} for any
 approved changes.
 
@@ -14,7 +14,7 @@ A Virtio device using Virtio Over PCI Bus MUST expose to
 guest an interface that meets the specification requirements of
 the appropriate PCI specification: \hyperref[intro:PCI]{[PCI]}
 and \hyperref[intro:PCIe]{[PCIe]}
-respectively. 
+respectively.
 
 \subsection{PCI Device Discovery}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Discovery}
 
@@ -586,7 +586,7 @@ See sections \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-speci
 
 \devicenormative{\paragraph}{ISR status capability}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / ISR status capability}
 
-The device MUST present at least one VIRTIO_PCI_CAP_ISR_CFG capability.  
+The device MUST present at least one VIRTIO_PCI_CAP_ISR_CFG capability.
 
 The device MUST set the Device Configuration Interrupt bit
 in \field{ISR status} before sending a device configuration
@@ -945,7 +945,7 @@ value:
 \end{lstlisting}
 
 Note that mapping an event to vector might require device to
-allocate internal device resources, and thus could fail. 
+allocate internal device resources, and thus could fail.
 
 \devicenormative{\subparagraph}{MSI-X Vector Configuration}{Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / MSI-X Vector Configuration}
 
@@ -973,7 +973,7 @@ Devices SHOULD NOT cause mapping an event to vector to fail
 unless it is impossible for the device to satisfy the mapping
 request.  Devices MUST report mapping
 failures by returning the NO_VECTOR value when the relevant
-\field{config_msix_vector}/\field{queue_msix_vector} field is read. 
+\field{config_msix_vector}/\field{queue_msix_vector} field is read.
 
 \drivernormative{\subparagraph}{MSI-X Vector Configuration}{Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / MSI-X Vector Configuration}
 
@@ -981,7 +981,7 @@ Driver MUST support device with any MSI-X Table Size 0 to 0x7FF.
 Driver MAY fall back on using INT\#x interrupts for a device
 which only supports one MSI-X vector (MSI-X Table Size = 0).
 
-Driver MAY intepret the Table Size as a hint from the device
+Driver MAY interpret the Table Size as a hint from the device
 for the suggested number of MSI-X vectors to use.
 
 Driver MUST NOT attempt to map an event to a vector
