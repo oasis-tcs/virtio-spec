@@ -44,7 +44,7 @@ latexpand $MAIN -o flat.tex
 cd "${cur}"
 #wget http://mirror.math.ku.edu/tex-archive/support/latexdiff/latexdiff-fast
 #chmod +x latexdiff-fast
-git submodule update latexdiff
+git submodule update --init latexdiff
 make -C latexdiff mkdirs dist/latexdiff-fast
 ln -fs ./latexdiff/dist/latexdiff-fast ./latexdiff-fast
 ./latexdiff-fast \
