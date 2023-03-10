@@ -813,7 +813,7 @@ Purpose (MSI-X) & \field{config_msix_vector}  & \field{queue_msix_vector} \\
 \end{tabular}
 
 Note: When MSI-X capability is enabled, device-specific configuration starts at
-byte offset 24 in virtio common configuration structure structure. When MSI-X capability is not
+byte offset 24 in virtio common configuration structure. When MSI-X capability is not
 enabled, device-specific configuration starts at byte offset 20 in virtio
 header.  ie. once you enable MSI-X on the device, the other fields move.
 If you turn it off again, they move back!
