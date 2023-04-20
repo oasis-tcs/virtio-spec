@@ -158,7 +158,7 @@ even when only part of the buffers were actually written.
 
 \subsubsection{Device Operation: Request Queues}\label{sec:Device Types / SCSI Host Device / Device Operation / Device Operation: Request Queues}
 
-The driver queues requests to an arbitrary request queue, and
+The driver enqueues requests to an arbitrary request queue, and
 they are used by the device on that same queue. It is the
 responsibility of the driver to ensure strict request ordering
 for commands placed on different queues, because they will be

@@ -47,7 +47,7 @@ None currently defined.
 
 \subsubsection{Device Operation: Request Queue}\label{sec:Device Types / I2C Adapter Device / Device Operation: Request Queue}
 
-The driver queues requests to the virtqueue, and they are used by the
+The driver enqueues requests to the virtqueue, and they are used by the
 device. The request is the representation of segments of an I2C
 transaction. Each request is of the form:
 

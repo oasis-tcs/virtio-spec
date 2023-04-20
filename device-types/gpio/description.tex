@@ -358,7 +358,7 @@ to \field{VIRTIO_GPIO_IRQ_STATUS_INVALID}. This also masks the interrupt.
 \subsubsection{requestq Operation: Message Flow}\label{sec:Device Types / GPIO Device / requestq Operation / Message Flow}
 
 \begin{itemize}
-\item The driver queues \field{struct virtio_gpio_request} and
+\item The driver enqueues \field{struct virtio_gpio_request} and
     \field{virtio_gpio_response} buffers to the \field{requestq} virtqueue,
     after filling all fields of the \field{struct virtio_gpio_request} buffer as
     defined by the specific message type.
@@ -458,7 +458,7 @@ to \field{VIRTIO_GPIO_IRQ_STATUS_INVALID}. This also masks the interrupt.
 
 The \field{eventq} virtqueue is used by the driver to unmask the interrupts and
 used by the device to notify the driver of newly sensed interrupts. In order to
-unmask interrupt on a GPIO line, the driver queues a pair of buffers,
+unmask interrupt on a GPIO line, the driver enqueues a pair of buffers,
 \field{struct virtio_gpio_irq_request} (filled by driver) and \field{struct
 virtio_gpio_irq_response} (to be filled by device later), to the \field{eventq}
 virtqueue. A separate pair of buffers must be queued for each GPIO line, the

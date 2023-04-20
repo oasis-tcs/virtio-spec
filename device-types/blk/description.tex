@@ -427,7 +427,7 @@ legacy interface:
 
 \subsection{Device Operation}\label{sec:Device Types / Block Device / Device Operation}
 
-The driver queues requests to the virtqueues, and they are used by
+The driver enqueues requests to the virtqueues, and they are used by
 the device (not necessarily in order). Each request except
 VIRTIO_BLK_T_ZONE_APPEND is of form:
 
