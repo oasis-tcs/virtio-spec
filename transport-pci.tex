@@ -347,7 +347,7 @@ struct virtio_pci_common_cfg {
         Driver Feature Bits selected by \field{driver_feature_select}.
 
 \item[\field{config_msix_vector}]
-        The driver sets the Configuration Vector for MSI-X.
+        Set by the driver to the MSI-X vector for configuration change notifications.
 
 \item[\field{num_queues}]
         The device specifies the maximum number of virtqueues supported here.
