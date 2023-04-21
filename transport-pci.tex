@@ -371,7 +371,7 @@ struct virtio_pci_common_cfg {
         A 0 means the queue is unavailable.
 
 \item[\field{queue_msix_vector}]
-        The driver uses this to specify the queue vector for MSI-X.
+        Set by the driver to the MSI-X vector for virtqueue notifications.
 
 \item[\field{queue_enable}]
         The driver uses this to selectively prevent the device from executing requests from this virtqueue.
