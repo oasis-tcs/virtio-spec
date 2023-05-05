@@ -109,7 +109,7 @@ by the device and ignored by the driver.
 \field{opcode} specifies the command. The valid
 values for \field{opcode} can be found in the following table:
 
-\begin{tabular}{|l|l|}
+\begin{tabularx}{\textwidth}{ |l||l|X| }
 \hline
 opcode & Name & Command Description \\
 \hline \hline
@@ -119,11 +119,11 @@ opcode & Name & Command Description \\
 \hline
 0x8000 - 0xFFFF & - & Reserved for future commands (possibly using a different structure)    \\
 \hline
-\end{tabular}
+\end{tabularx}
 
 The \field{group_type} specifies the group type identifier.
 The \field{group_member_id} specifies the member identifier within the group.
-See section \ref{sec:Introduction / Terminology / Device group}
+See section \ref{sec:Basic Facilities of a Virtio Device / Device groups}
 for the definition of the group type identifier and group member
 identifier.
 
@@ -155,7 +155,8 @@ When \field{status} is VIRTIO_ADMIN_STATUS_OK, \field{status_qualifier}
 is reserved and set to zero by the device.
 
 The following table describes possible \field{status_qualifier} values:
-\begin{tabular}{|l|l|l|}
+
+\begin{tabularx}{\textwidth}{ |l||l|X| }
 \hline
 Status & Name & Description \\
 \hline \hline
@@ -177,7 +178,7 @@ Status & Name & Description \\
 \hline
 0x08-0xFFFF   & -    & reserved for future use \\
 \hline
-\end{tabular}
+\end{tabularx}
 
 Each command uses a different \field{command_specific_data} and
 \field{command_specific_result} structures and the length of
