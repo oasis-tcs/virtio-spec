@@ -449,8 +449,12 @@ The driver is sometimes required to send an available buffer
 notification to the device.
 
 When VIRTIO_F_NOTIFICATION_DATA has not been negotiated,
-this notification involves sending the
-virtqueue index to the device (method depending on the transport).
+this notification contains either a virtqueue index if
+VIRTIO_F_NOTIF_CONFIG_DATA is not negotiated or device supplied virtqueue
+notification config data if VIRTIO_F_NOTIF_CONFIG_DATA is negotiated.
+
+The notification method and supplying any such virtqueue notification config data
+is transport specific.
 
 However, some devices benefit from the ability to find out the
 amount of available data in the queue without accessing the virtqueue in memory:
@@ -461,7 +465,8 @@ has been negotiated, driver notifications to the device include
 the following information:
 
 \begin{description}
-\item [vqn] VQ number to be notified.
+\item [vq_index or vq_notif_config_data] Either virtqueue index or device
+      supplied queue notification config data corresponding to a virtqueue.
 \item [next_off] Offset
       within the ring where the next available ring entry
       will be written.
