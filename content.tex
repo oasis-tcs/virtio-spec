@@ -342,6 +342,10 @@ pretentiously called a virtqueue. Each device can have zero or more
 virtqueues\footnote{For example, the simplest network device has one virtqueue for
 transmit and one for receive.}.
 
+A virtio device can have maximum of 65536 virtqueues. Each virtqueue is
+identified by a virtqueue index. A virtqueue index has a value in the
+range of 0 to 65535.
+
 Driver makes requests available to device by adding
 an available buffer to the queue, i.e., adding a buffer
 describing the request to a virtqueue, and optionally triggering
