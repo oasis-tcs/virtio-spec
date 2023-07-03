@@ -88,6 +88,8 @@ negotiated.
 \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
     channel.
 
+\item[VIRTIO_NET_F_HASH_TUNNEL(51)] Device supports inner header hash for encapsulated packets.
+
 \item[VIRTIO_NET_F_VQ_NOTF_COAL(52)] Device supports virtqueue notification coalescing.
 
 \item[VIRTIO_NET_F_NOTF_COAL(53)] Device supports notifications coalescing.
@@ -147,6 +149,7 @@ Some networking feature bits require other networking feature bits
 \item[VIRTIO_NET_F_RSC_EXT] Requires VIRTIO_NET_F_HOST_TSO4 or VIRTIO_NET_F_HOST_TSO6.
 \item[VIRTIO_NET_F_RSS] Requires VIRTIO_NET_F_CTRL_VQ.
 \item[VIRTIO_NET_F_VQ_NOTF_COAL] Requires VIRTIO_NET_F_CTRL_VQ.
+\item[VIRTIO_NET_F_HASH_TUNNEL] Requires VIRTIO_NET_F_CTRL_VQ along with VIRTIO_NET_F_RSS or VIRTIO_NET_F_HASH_REPORT.
 \end{description}
 
 \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Network Device / Feature bits / Legacy Interface: Feature bits}
@@ -175,6 +178,7 @@ struct virtio_net_config {
         u8 rss_max_key_size;
         le16 rss_max_indirection_table_length;
         le32 supported_hash_types;
+        le32 supported_tunnel_types;
 };
 \end{lstlisting}
 
@@ -224,6 +228,12 @@ i.e. if VIRTIO_NET_F_RSS or VIRTIO_NET_F_HASH_REPORT is set.
 
 Field \field{supported_hash_types} contains the bitmask of supported hash types.
 See \ref{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash calculation for incoming packets / Supported/enabled hash types} for details of supported hash types.
+
+Field \field{supported_tunnel_types} only exists if the device supports inner header hash, i.e. if VIRTIO_NET_F_HASH_TUNNEL is set.
+
+Field \field{supported_tunnel_types} contains the bitmask of encapsulation types supported by the device for inner header hash.
+Encapsulation types are defined in \ref{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets /
+Hash calculation for incoming packets / Encapsulation types supported/enabled for inner header hash}.
 
 \devicenormative{\subsubsection}{Device configuration layout}{Device Types / Network Device / Device configuration layout}
 
@@ -869,6 +879,8 @@ A device attempts to calculate a per-packet hash in the following cases:
 If the feature VIRTIO_NET_F_RSS was negotiated:
 \begin{itemize}
 \item The device uses \field{hash_types} of the virtio_net_rss_config structure as 'Enabled hash types' bitmask.
+\item If additionally the feature VIRTIO_NET_F_HASH_TUNNEL was negotiated, the device uses \field{enabled_tunnel_types} of the
+      virtnet_hash_tunnel structure as 'Encapsulation types enabled for inner header hash' bitmask.
 \item The device uses a key as defined in \field{hash_key_data} and \field{hash_key_length} of the virtio_net_rss_config structure (see
 \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Receive-side scaling (RSS) / Setting RSS parameters}).
 \end{itemize}
@@ -876,6 +888,8 @@ If the feature VIRTIO_NET_F_RSS was negotiated:
 If the feature VIRTIO_NET_F_RSS was not negotiated:
 \begin{itemize}
 \item The device uses \field{hash_types} of the virtio_net_hash_config structure as 'Enabled hash types' bitmask.
+\item If additionally the feature VIRTIO_NET_F_HASH_TUNNEL was negotiated, the device uses \field{enabled_tunnel_types} of the
+      virtnet_hash_tunnel structure as 'Encapsulation types enabled for inner header hash' bitmask.
 \item The device uses a key as defined in \field{hash_key_data} and \field{hash_key_length} of the virtio_net_hash_config structure (see
 \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode / Hash calculation}).
 \end{itemize}
@@ -888,6 +902,9 @@ at least one of commands of VIRTIO_NET_CTRL_MQ class to configure reported hash 
 \item Otherwise the device MUST support VIRTIO_NET_CTRL_MQ_HASH_CONFIG command per
  \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode / Hash calculation}.
 \end{itemize}
+
+The per-packet hash calculation can depend on the IP packet type. See
+\hyperref[intro:IP]{[IP]}, \hyperref[intro:UDP]{[UDP]} and \hyperref[intro:TCP]{[TCP]}.
 
 \subparagraph{Supported/enabled hash types}
 \label{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash calculation for incoming packets / Supported/enabled hash types}
@@ -1000,6 +1017,99 @@ calculated over the following fields:
 defined for an IPv6 packet without extension headers
 (see \ref{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash calculation for incoming packets / IPv6 packets without extension header}).
 \end{itemize}
+
+\paragraph{Inner Header Hash}
+\label{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Inner Header Hash}
+
+If VIRTIO_NET_F_HASH_TUNNEL has been negotiated, the driver can send the command
+VIRTIO_NET_CTRL_HASH_TUNNEL_SET to configure the calculation of the inner header hash.
+
+\begin{lstlisting}
+struct virtnet_hash_tunnel {
+    le32 enabled_tunnel_types;
+};
+
+#define VIRTIO_NET_CTRL_HASH_TUNNEL 7
+ #define VIRTIO_NET_CTRL_HASH_TUNNEL_SET 0
+\end{lstlisting}
+
+Field \field{enabled_tunnel_types} contains the bitmask of encapsulation types enabled for inner header hash.
+See \ref{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets /
+Hash calculation for incoming packets / Encapsulation types supported/enabled for inner header hash}.
+
+The class VIRTIO_NET_CTRL_HASH_TUNNEL has one command:
+VIRTIO_NET_CTRL_HASH_TUNNEL_SET sets \field{enabled_tunnel_types} for the device using the
+virtnet_hash_tunnel structure, which is read-only for the device.
+
+Inner header hash is disabled by VIRTIO_NET_CTRL_HASH_TUNNEL_SET with \field{enabled_tunnel_types} set to 0.
+
+Initially (before the driver sends any VIRTIO_NET_CTRL_HASH_TUNNEL_SET command) all
+encapsulation types are disabled for inner header hash.
+
+\subparagraph{Encapsulated packet}
+\label{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash calculation for incoming packets / Encapsulated packet}
+
+Multiple tunneling protocols allow encapsulating an inner, payload packet in an outer, encapsulated packet.
+The encapsulated packet thus contains an outer header and an inner header, and the device calculates the
+hash over either the inner header or the outer header.
+
+If VIRTIO_NET_F_HASH_TUNNEL is negotiated and a received encapsulated packet's outer header matches one of the
+encapsulation types enabled in \field{enabled_tunnel_types}, then the device uses the inner header for hash
+calculations (only a single level of encapsulation is currently supported).
+
+If VIRTIO_NET_F_HASH_TUNNEL is negotiated and a received packet's (outer) header does not match any encapsulation
+types enabled in \field{enabled_tunnel_types}, then the device uses the outer header for hash calculations.
+
+\subparagraph{Encapsulation types supported/enabled for inner header hash}
+\label{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets /
+Hash calculation for incoming packets / Encapsulation types supported/enabled for inner header hash}
+
+Encapsulation types applicable for inner header hash:
+\begin{lstlisting}[escapechar=|]
+#define VIRTIO_NET_HASH_TUNNEL_TYPE_GRE_2784    (1 << 0) /* |\hyperref[intro:rfc2784]{[RFC2784]}| */
+#define VIRTIO_NET_HASH_TUNNEL_TYPE_GRE_2890    (1 << 1) /* |\hyperref[intro:rfc2890]{[RFC2890]}| */
+#define VIRTIO_NET_HASH_TUNNEL_TYPE_GRE_7676    (1 << 2) /* |\hyperref[intro:rfc7676]{[RFC7676]}| */
+#define VIRTIO_NET_HASH_TUNNEL_TYPE_GRE_UDP     (1 << 3) /* |\hyperref[intro:rfc8086]{[GRE-in-UDP]}| */
+#define VIRTIO_NET_HASH_TUNNEL_TYPE_VXLAN       (1 << 4) /* |\hyperref[intro:vxlan]{[VXLAN]}| */
+#define VIRTIO_NET_HASH_TUNNEL_TYPE_VXLAN_GPE   (1 << 5) /* |\hyperref[intro:vxlan-gpe]{[VXLAN-GPE]}| */
+#define VIRTIO_NET_HASH_TUNNEL_TYPE_GENEVE      (1 << 6) /* |\hyperref[intro:geneve]{[GENEVE]}| */
+#define VIRTIO_NET_HASH_TUNNEL_TYPE_IPIP        (1 << 7) /* |\hyperref[intro:ipip]{[IPIP]}| */
+#define VIRTIO_NET_HASH_TUNNEL_TYPE_NVGRE       (1 << 8) /* |\hyperref[intro:nvgre]{[NVGRE]}| */
+\end{lstlisting}
+
+\subparagraph{Advice}
+Example uses of the inner header hash:
+\begin{itemize}
+\item Legacy tunneling protocols, lacking the outer header entropy, can use RSS with the inner header hash to
+      distribute flows with identical outer but different inner headers across various queues, improving performance.
+\item Identify an inner flow distributed across multiple outer tunnels.
+\end{itemize}
+
+As using the inner header hash completely discards the outer header entropy, care must be taken
+if the inner header is controlled by an adversary, as the adversary can then intentionally create
+configurations with insufficient entropy.
+
+Besides disabling the inner header hash, mitigations would depend on how the hash is used. When the hash
+use is limited to the RSS queue selection, the inner header hash may have quality of service (QoS) limitations.
+
+\devicenormative{\subparagraph}{Inner Header Hash}{Device Types / Network Device / Device Operation / Control Virtqueue / Inner Header Hash}
+
+If the (outer) header of the received packet does not match any encapsulation types enabled
+in \field{enabled_tunnel_types}, the device MUST calculate the hash on the outer header.
+
+If the device receives any bits in \field{enabled_tunnel_types} which are not set in \field{supported_tunnel_types},
+it SHOULD respond to the VIRTIO_NET_CTRL_HASH_TUNNEL_SET command with VIRTIO_NET_ERR.
+
+If the driver sets \field{enabled_tunnel_types} to 0 through VIRTIO_NET_CTRL_HASH_TUNNEL_SET or upon the device reset,
+the device MUST disable the inner header hash for all encapsulation types.
+
+\drivernormative{\subparagraph}{Inner Header Hash}{Device Types / Network Device / Device Operation / Control Virtqueue / Inner Header Hash}
+
+The driver MUST have negotiated the VIRTIO_NET_F_HASH_TUNNEL feature when issuing the VIRTIO_NET_CTRL_HASH_TUNNEL_SET command.
+
+The driver MUST NOT set any bits in \field{enabled_tunnel_types} which are not set in \field{supported_tunnel_types}.
+
+The driver MUST ignore bits in \field{supported_tunnel_types} which are not documented in this specification.
 
 \paragraph{Hash reporting for incoming packets}
 \label{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash reporting for incoming packets}
