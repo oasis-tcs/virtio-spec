@@ -286,7 +286,7 @@ with the same list of commands. However, for owner devices
 supporting multiple group types, the list of supported commands
 might differ between different group types.
 
-\devicenormative{\paragraph}{Group administration commands}{Basic Facilities of a Virtio Device / Device groups / Group administration commands}
+\devicenormative{\subsubsection}{Group administration commands}{Basic Facilities of a Virtio Device / Device groups / Group administration commands}
 
 The device MUST validate \field{opcode}, \field{group_type} and
 \field{group_member_id}, and if any of these has an invalid or
@@ -378,7 +378,7 @@ VIRTIO_ADMIN_STATUS_Q_INVALID_MEMBER;
 \field{VF Enable} refer to registers within the SR-IOV Extended
 Capability as specified by \hyperref[intro:PCIe]{[PCIe]}.
 
-\drivernormative{\paragraph}{Group administration commands}{Basic Facilities of a Virtio Device / Device groups / Group administration commands}
+\drivernormative{\subsubsection}{Group administration commands}{Basic Facilities of a Virtio Device / Device groups / Group administration commands}
 
 The driver MAY discover whether device supports a specific group type
 by issuing VIRTIO_ADMIN_CMD_LIST_QUERY with the matching
@@ -506,7 +506,7 @@ of the specification are designed, new fields can be added to the
 tail of a structure, with the driver/device using the full
 structure without concern for versioning.
 
-\devicenormative{\paragraph}{Group administration commands}{Basic Facilities of a Virtio Device / Administration virtqueues}
+\devicenormative{\subsection}{Group administration commands}{Basic Facilities of a Virtio Device / Administration virtqueues}
 
 The device MUST support device-readable and device-writeable buffers
 shorter than described in this specification, by
@@ -555,7 +555,7 @@ If the device sets \field{status} to either VIRTIO_ADMIN_STATUS_EAGAIN
 or VIRTIO_ADMIN_STATUS_ENOMEM, then the command MUST NOT
 have any side effects, making it safe to retry.
 
-\drivernormative{\paragraph}{Group administration commands}{Basic Facilities of a Virtio Device / Administration virtqueues}
+\drivernormative{\subsection}{Group administration commands}{Basic Facilities of a Virtio Device / Administration virtqueues}
 
 The driver MAY supply device-readable or device-writeable parts
 of \field{struct virtio_admin_cmd} that are longer than described in
