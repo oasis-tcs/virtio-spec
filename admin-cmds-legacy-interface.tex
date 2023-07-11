@@ -1,0 +1,362 @@
+\subsubsection{Legacy Interfaces}\label{sec:Basic Facilities of a Virtio Device / Device groups / Group
+administration commands / Legacy Interface}
+
+In some systems, there is a need to support utilizing a legacy driver with
+a device that does not directly support the legacy interface. In such scenarios,
+a group owner device can provide the legacy interface functionality for the
+group member devices. The driver of the owner device can then access the legacy
+interface of a member device on behalf of the legacy member device driver.
+
+For example, with the SR-IOV group type, group members (VFs) can not present
+the legacy interface in an I/O BAR in BAR0 as expected by the legacy pci driver.
+If the legacy driver is running inside a virtual machine, the hypervisor
+executing the virtual machine can present a virtual device with an I/O BAR in
+BAR0. The hypervisor intercepts the legacy driver accesses to this I/O BAR and
+forwards them to the group owner device (PF) using group administration commands.
+
+The following commands support such a legacy interface functionality:
+
+\begin{enumerate}
+\item Legacy Common Configuration Write Command
+\item Legacy Common Configuration Read Command
+\item Legacy Device Configuration Write Command
+\item Legacy Device Configuration Read Command
+\end{enumerate}
+
+These commands are currently only defined for the SR-IOV group type and
+have, generally, the same effect as member device accesses through a legacy
+interface listed in section \ref{sec:Virtio Transport Options / Virtio Over PCI
+Bus / PCI Device Layout / Legacy Interfaces: A Note on PCI Device Layout} except
+that little-endian format is assumed unconditionally.
+
+\paragraph{Legacy Common Configuration Write Command}\label{par:Basic Facilities of a Virtio Device / Device groups / Group
+administration commands / Legacy Interface / Legacy Common Configuration Write Command}
+
+This command has the same effect as writing into the virtio common configuration
+structure through the legacy interface. The \field{command_specific_data} is in
+the format \field{struct virtio_admin_cmd_legacy_common_cfg_wr_data} describing
+the access to be performed.
+
+\begin{lstlisting}
+struct virtio_admin_cmd_legacy_common_cfg_wr_data {
+        u8 offset; /* Starting byte offset within the common configuration structure to write */
+        u8 reserved[7];
+        u8 data[];
+};
+\end{lstlisting}
+
+For the command VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE, \field{opcode}
+is set to 0x2.
+The \field{group_member_id} refers to the member device to be accessed.
+The \field{offset} refers to the offset for the write within the virtio common
+configuration structure, and excluding the device-specific configuration.
+The length of the data to write is simply the length of \field{data}.
+
+No length or alignment restrictions are placed on the value of the
+\field{offset} and the length of the \field{data}, except that the resulting
+access refers to a single field and is completely within the virtio common
+configuration structure, excluding the device-specific configuration.
+
+This command has no command specific result.
+
+\paragraph{Legacy Common Configuration Read Command}\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface / Legacy Common Configuration Read Command}
+
+This command has the same effect as reading from the virtio common configuration
+structure through the legacy interface. The \field{command_specific_data} is in
+the format \field{struct virtio_admin_cmd_legacy_common_cfg_rd_data} describing
+the access to be performed.
+
+\begin{lstlisting}
+struct virtio_admin_cmd_legacy_common_cfg_rd_data {
+        u8 offset; /* Starting byte offset within the common configuration structure to read */
+};
+\end{lstlisting}
+
+For the command VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ, \field{opcode}
+is set to 0x3.
+The \field{group_member_id} refers to the member device to be accessed.
+The \field{offset} refers to the offset for the read from the virtio common
+configuration structure, and excluding the device-specific configuration.
+
+\begin{lstlisting}
+struct virtio_admin_cmd_legacy_common_cfg_rd_result {
+        u8 data[];
+};
+\end{lstlisting}
+
+No length or alignment restrictions are placed on the value of the
+\field{offset} and the length of the \field{data}, except that the resulting
+access refers to a single field and is completely within the virtio common
+configuration structure, excluding the device-specific configuration.
+
+When the command completes successfully, \field{command_specific_result}
+is in the format \field{struct virtio_admin_cmd_legacy_common_cfg_rd_result}
+returned by the device. The length of the data read is simply the length of
+\field{data}.
+
+\paragraph{Legacy Device Configuration Write Command}\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface / Legacy Device Configuration Write Command}
+
+This command has the same effect as writing into the virtio device-specific
+configuration through the legacy interface. The \field{command_specific_data} is in
+the format \field{struct virtio_admin_cmd_legacy_dev_reg_wr_data} describing
+the access to be performed.
+
+\begin{lstlisting}
+struct virtio_admin_cmd_legacy_dev_reg_wr_data {
+        u8 offset; /* Starting byte offset within the device-specific configuration to write */
+        u8 reserved[7];
+        u8 data[];
+};
+\end{lstlisting}
+
+For the command VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE, \field{opcode}
+is set to 0x4.
+The \field{group_member_id} refers to the member device to be accessed.
+The \field{offset} refers to the offset for the write within the virtio
+device-specific configuration. The length of the data to write is simply
+the length of \field{data}.
+
+No length or alignment restrictions are placed on the value of the
+\field{offset} and the length of the \field{data}, except that the resulting
+access refers to a single field and is completely within the device-specific
+configuration.
+
+This command has no command specific result.
+
+\paragraph{Legacy Device Configuration Read Command}\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface / Legacy Device Configuration Read Command}
+
+This command has the same effect as reading from the virtio device-specific
+configuration through the legacy interface. The \field{command_specific_data} is in
+the format \field{struct virtio_admin_cmd_legacy_common_cfg_rd_data} describing
+the access to be performed.
+
+\begin{lstlisting}
+struct virtio_admin_cmd_legacy_dev_cfg_rd_data {
+        u8 offset; /* Starting byte offset within the device-specific configuration to read */
+};
+\end{lstlisting}
+
+For the command VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ, \field{opcode}
+is set to 0x5.
+The \field{group_member_id} refers to the member device to be accessed.
+The \field{offset} refers to the offset for the read from the virtio device-specific
+configuration.
+
+\begin{lstlisting}
+struct virtio_admin_cmd_legacy_dev_reg_rd_result {
+        u8 data[];
+};
+\end{lstlisting}
+
+No length or alignment restrictions are placed on the value of the
+\field{offset} and the length of the \field{data}, except that the resulting
+access refers to a single field and is completely within the device-specific
+configuration.
+
+When the command completes successfully, \field{command_specific_result} is in
+the format \field{struct virtio_admin_cmd_legacy_dev_reg_rd_result}
+returned by the device.
+
+The length of the data read is simply the length of \field{data}.
+
+\paragraph{Legacy Driver Notification}\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface / Legacy Driver Notifications}
+
+The driver of the owner device can send a driver notification to the member
+device operated using the legacy interface by executing
+VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE with the \field{offset} matching
+\field{Queue Notify} and the \field{data} containing a 16-bit virtqueue index to
+be notified.
+
+However, as VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE is also used for slow path
+configuration a separate dedicated mechanism for sending such driver
+notifications to the member device can be made available by the owner device.
+For the SR-IOV group type, the optional command
+VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO addresses this need by returning to the
+driver one or more addresses which can be used to send such driver
+notifications. The notification address returned can be in the device memory
+(PCI BAR or VF BAR) of the device.
+
+In this alternative approach, driver notifications are sent by
+writing a 16-bit virtqueue index to be notified, in the little-endian
+format, to the notification address returned by
+the VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO command.
+
+Any driver notification sent through the notification address has the same effect
+as if it was sent using the VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE command with
+the \field{offset} matching \field{Queue Notify}.
+
+This command is only defined for the SR-IOV group type.
+
+For the command VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO, \field{opcode}
+is set to 0x6.
+The \field{group_member_id} refers to the member device to be accessed.
+This command does not use \field{command_specific_data}.
+
+When the device supports the VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO command, the
+group owner device hardwires VF BAR0 to zero in the SR-IOV Extended capability.
+
+\begin{lstlisting}
+struct virtio_pci_legacy_notify_info {
+        u8 flags;  /* 0 = end of list, 1 = owner device, 2 = member device */
+        u8 bar;    /* BAR of the member or the owner device */
+        u8 padding[6];
+        le64 offset; /* Offset within bar. */
+};
+
+struct virtio_admin_cmd_legacy_notify_info_result {
+        struct virtio_pci_legacy_notify_info entries[4];
+};
+\end{lstlisting}
+
+A \field{flags} value of 0x1 indicates that the notification address is of
+the owner device, the value of 0x2 indicates that the notification address is of
+the member device and the value of 0x0 indicates that all the entries starting
+from that entry are invalid entries in \field{entries}. All other values in
+\field{flags} are reserved.
+
+The \field{bar} values 0x1 to 0x5 specify BAR1 to BAR5 respectively:
+when the \field{flags} is 0x1 this is specified by the Base Address Registers
+in the PCI header of the device,
+when the \field{flags} is 0x2 this is specified by the VF BARn
+registers in the SR-IOV Extended Capability of the device.
+
+The \field{offset} indicates the notification address relative to BAR indicated
+in \field{bar}. This value is 2-byte aligned.
+
+When the command completes successfully, \field{command_specific_result} is in
+the format \field{struct virtio_admin_cmd_legacy_notify_info_result}. The
+device can supply up to 4 entries each with a different notification
+address. In this case, any of the entries can be used by the driver. The order
+of the entries serves as a preference hint to the driver. The driver is expected
+to utilize the entries placed earlier in the array in preference to the later
+ones. The driver is also expected to ignore any invalid entries, as well as
+the end of list entry if present and any entries following the end of list.
+
+\devicenormative{\paragraph}{Legacy Interface}{Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface}
+
+A device MUST either support all of, or none of
+VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE,
+VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ,
+VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE and
+VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ commands.
+
+For VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE,
+VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ,
+VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE and
+VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ commands,
+the device MUST decode and encode (respectively) the value of the
+\field{data} using the little-endian format.
+
+For the VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE and
+VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ commands, 
+the device MUST fail the command when the value of the
+\field{offset} and the length of the \field{data} do not refer to a
+single field or are not completely within the virtio common configuration
+excluding the device-specific configuration.
+
+For the VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE and
+VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ commands,
+the device MUST fail the command when the value of the
+\field{offset} and the length of the \field{data} do not refer to a
+single field or are not completely within the virtio device-specific
+configuration.
+
+The command VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE MUST have the same effect
+as writing into the virtio common configuration structure through the legacy
+interface.
+
+The command VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ MUST have the same effect as
+reading from the virtio common configuration structure through the legacy
+interface.
+
+The command VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE MUST have the same effect as
+writing into the virtio device-specific configuration through the legacy
+interface.
+
+The command VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ MUST have the same effect as
+reading from the virtio device-specific configuration through the legacy
+interface.
+
+For the SR-IOV group type, when the owner device supports
+VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ,
+VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE, VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ,
+VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE and VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO
+commands,
+\begin{itemize}
+\item the owner device and the group member device SHOULD follow the rules
+for the PCI Revision ID and Subsystem Device ID of the non-transitional devices
+documented in section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Discovery}.
+
+\item the owner device SHOULD follow the rules for the PCI Device ID of the non-transitional
+devices documented in section
+\ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Discovery}.
+
+\item any driver notification received by the device at any of the notification
+address supplied in the command result of
+VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO MUST function as if the device received
+the notification through VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE
+command at an offset \field{offset} matching \field{Queue Notify}.
+\end{itemize}
+
+If the device supports the VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO command,
+\begin{itemize}
+\item the device MUST also support all of VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE,
+VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ,
+VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE and
+VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ commands.
+
+\item in the command result of VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO, the last
+\field{struct virtio_pci_legacy_notify_info} entry MUST have \field{flags} of
+zero.
+
+\item in the command result of VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO, valid
+entries MUST have a \field{bar} which is not hardwired to zero.
+
+\item in the command result of VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO, valid
+entries MUST have an \field{offset} aligned to 2-byte.
+
+\item the device MAY support VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO with entries
+of the owner device or the member device or both of them.
+
+\item for the SR-IOV group type, the group owner device MUST hardwire VF BAR0
+to zero in the SR-IOV Extended capability.
+\end{itemize}
+
+\drivernormative{\paragraph}{Legacy Interface}{Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface}
+
+For VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE,
+VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ,
+VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE and
+VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ commands,
+the driver MUST encode and decode (respectively) the value of the \field{data}
+using the little-endian format.
+
+For the VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE and
+VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ commands,
+the driver SHOULD set \field{offset} and the length of the \field{data}
+to refer to a single field within the virtio common configuration structure
+excluding the device-specific configuration.
+
+For the VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE and
+VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ commands,
+the driver SHOULD set \field{offset} and the length of the \field{data}
+to refer to a single field within device specific configuration.
+
+If VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO command is supported, the driver
+SHOULD use the notification address to send all driver notifications to the
+device.
+
+If within \field{struct virtio_admin_cmd_legacy_notify_info_result} returned by
+VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO, the \field{flags} value
+for a specific \field{struct virtio_pci_legacy_notify_info} entry is 0x0, the
+driver MUST ignore this entry and all the following \field{entries}.
+Additionally, for all other entries, the driver MUST validate that
+\begin{itemize}
+\item the \field{flags} is either 0x1 or 0x2
+\item the \field{bar} corresponds to a valid BAR of either the owner or the
+member device, depending on the \field{flags}
+\item the \field{offset} is 2-byte aligned and corresponds to an address
+within the BAR specified by the \field{bar}
+on \field{flags}
+\end{itemize}, any entry which does not meet these constraints MUST be ignored
+by the driver.
