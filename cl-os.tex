@@ -1647,17 +1647,13 @@ internal virtqueue identifier/index/data/cookie,
 
 \end{enumerate}
 
-\begin{enumerate}[label=\alph*.]
+a. rename queue_notify_data to queue_notif_config_data.
 
-\item rename queue_notify_data to queue_notif_config_data.
+b. rename ambiguous vqn to a union of vq_index and vq_config_data
 
-\item rename ambiguous vqn to a union of vq_index and vq_config_data
-
-\item The driver notification section assumes that queue notification contains
+c. The driver notification section assumes that queue notification contains
 vq index always. CONFIG_DATA feature bit introduction missed to
 update the driver notification section. Hence, correct it.
-
-\end{enumerate}
 
 \vspace{\baselineskip}
 Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/163}
