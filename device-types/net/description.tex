@@ -122,6 +122,8 @@ negotiated.
     device with the same MAC address.
 
 \item[VIRTIO_NET_F_SPEED_DUPLEX(63)] Device reports speed and duplex.
+
+\item[VIRTIO_NET_F_RSS_CONTEXT(64)] Device supports multiple RSS contexts.
 \end{description}
 
 \subsubsection{Feature bit requirements}\label{sec:Device Types / Network Device / Feature bits / Feature bit requirements}
@@ -153,6 +155,7 @@ Some networking feature bits require other networking feature bits
 \item[VIRTIO_NET_F_RSS] Requires VIRTIO_NET_F_CTRL_VQ.
 \item[VIRTIO_NET_F_VQ_NOTF_COAL] Requires VIRTIO_NET_F_CTRL_VQ.
 \item[VIRTIO_NET_F_HASH_TUNNEL] Requires VIRTIO_NET_F_CTRL_VQ along with VIRTIO_NET_F_RSS or VIRTIO_NET_F_HASH_REPORT.
+\item[VIRTIO_NET_F_RSS_CONTEXT] Requires VIRTIO_NET_F_CTRL_VQ and VIRTIO_NET_F_RSS.
 \end{description}
 
 \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Network Device / Feature bits / Legacy Interface: Feature bits}
@@ -1612,6 +1615,88 @@ and use the result as the index in the indirection table to get
 the destination receive virtqueue id.
 \item If the destination receive queue is being reset (See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}), the device MUST drop the packet.
 \end{itemize}
+
+\paragraph{RSS Context}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / RSS Context}
+
+An RSS context consists of configurable parameters specified by \ref{sec:Device Types / Network Device
+/ Device Operation / Control Virtqueue / Receive-side scaling (RSS)}.
+
+The RSS configuration supported by VIRTIO_NET_F_RSS is considered the default RSS configuration.
+
+The device offers the feature VIRTIO_NET_F_RSS_CONTEXT if it supports one or multiple RSS contexts
+(excluding the default RSS configuration) and configurable parameters.
+
+\subparagraph{Querying RSS Context Capability}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / RSS Context / Querying RSS Context Capability}
+
+\begin{lstlisting}
+#define VIRTNET_RSS_CTX_CTRL 9
+ #define VIRTNET_RSS_CTX_CTRL_CAP_GET  0
+ #define VIRTNET_RSS_CTX_CTRL_ADD      1
+ #define VIRTNET_RSS_CTX_CTRL_MOD      2
+ #define VIRTNET_RSS_CTX_CTRL_DEL      3
+
+struct virtnet_rss_ctx_cap {
+    le16 max_rss_contexts;
+}
+\end{lstlisting}
+
+Field \field{max_rss_contexts} specifies the maximum number of RSS contexts \ref{sec:Device Types / Network Device /
+Device Operation / Control Virtqueue / RSS Context} supported by the device.
+
+The driver queries the RSS context capability of the device by sending the command VIRTNET_RSS_CTX_CTRL_CAP_GET
+with the structure virtnet_rss_ctx_cap.
+
+For the command VIRTNET_RSS_CTX_CTRL_CAP_GET, the structure virtnet_rss_ctx_cap is write-only for the device.
+
+\subparagraph{Setting RSS Context Parameters}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / RSS Context / Setting RSS Context Parameters}
+
+\begin{lstlisting}
+struct virtnet_rss_ctx_add_modify {
+    le16 rss_ctx_id;
+    u8 reserved[6];
+    struct virtio_net_rss_config rss;
+};
+
+struct virtnet_rss_ctx_del {
+    le16 rss_ctx_id;
+};
+\end{lstlisting}
+
+RSS context parameters:
+\begin{itemize}
+\item  \field{rss_ctx_id}: ID of the specific RSS context.
+\item  \field{rss}: RSS context parameters of the specific RSS context whose id is \field{rss_ctx_id}.
+\end{itemize}
+
+\field{reserved} is reserved and it is ignored by the device.
+
+If the feature VIRTIO_NET_F_RSS_CONTEXT has been negotiated, the driver can send the following
+VIRTNET_RSS_CTX_CTRL class commands:
+\begin{enumerate}
+\item VIRTNET_RSS_CTX_CTRL_ADD: use the structure virtnet_rss_ctx_add_modify to
+       add an RSS context configured as \field{rss} and id as \field{rss_ctx_id} for the device.
+\item VIRTNET_RSS_CTX_CTRL_MOD: use the structure virtnet_rss_ctx_add_modify to
+       configure parameters of the RSS context whose id is \field{rss_ctx_id} as \field{rss} for the device.
+\item VIRTNET_RSS_CTX_CTRL_DEL: use the structure virtnet_rss_ctx_del to delete
+       the RSS context whose id is \field{rss_ctx_id} for the device.
+\end{enumerate}
+
+For commands VIRTNET_RSS_CTX_CTRL_ADD and VIRTNET_RSS_CTX_CTRL_MOD, the structure virtnet_rss_ctx_add_modify is read-only for the device.
+For the command VIRTNET_RSS_CTX_CTRL_DEL, the structure virtnet_rss_ctx_del is read-only for the device.
+
+\devicenormative{\subparagraph}{RSS Context}{Device Types / Network Device / Device Operation / Control Virtqueue / RSS Context}
+
+The device MUST set \field{max_rss_contexts} to at least 1 if it offers VIRTIO_NET_F_RSS_CONTEXT.
+
+Upon reset, the device MUST clear all previously configured RSS contexts.
+
+\drivernormative{\subparagraph}{RSS Context}{Device Types / Network Device / Device Operation / Control Virtqueue / RSS Context}
+
+The driver MUST have negotiated the VIRTIO_NET_F_RSS_CONTEXT feature when issuing the VIRTNET_RSS_CTX_CTRL class commands.
+
+The driver MUST set \field{rss_ctx_id} to between 1 and \field{max_rss_contexts} inclusive.
+
+The driver MUST NOT send the command VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET when the device has successfully configured at least one RSS context.
 
 \paragraph{Offloads State Configuration}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Offloads State Configuration}
 
