@@ -33,8 +33,9 @@ Conformance targets:
 \ref{sec:Conformance / Driver Conformance / I2C Adapter Driver Conformance},
 \ref{sec:Conformance / Driver Conformance / SCMI Driver Conformance},
 \ref{sec:Conformance / Driver Conformance / GPIO Driver Conformance},
-\ref{sec:Conformance / Driver Conformance / PMEM Driver Conformance} or
-\ref{sec:Conformance / Driver Conformance / CAN Driver Conformance}.
+\ref{sec:Conformance / Driver Conformance / PMEM Driver Conformance},
+\ref{sec:Conformance / Driver Conformance / CAN Driver Conformance} or
+\ref{sec:Conformance / Driver Conformance / SPI Controller Driver Conformance}.
 
     \item Clause \ref{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}.
   \end{itemize}
@@ -61,8 +62,9 @@ Conformance targets:
 \ref{sec:Conformance / Device Conformance / I2C Adapter Device Conformance},
 \ref{sec:Conformance / Device Conformance / SCMI Device Conformance},
 \ref{sec:Conformance / Device Conformance / GPIO Device Conformance},
-\ref{sec:Conformance / Device Conformance / PMEM Device Conformance} or
-\ref{sec:Conformance / Device Conformance / CAN Device Conformance}.
+\ref{sec:Conformance / Device Conformance / PMEM Device Conformance},
+\ref{sec:Conformance / Device Conformance / CAN Device Conformance} or
+\ref{sec:Conformance / Device Conformance / SPI Controller Device Conformance}.
 
     \item Clause \ref{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}.
   \end{itemize}
@@ -156,6 +158,7 @@ A Channel I/O driver MUST conform to the following normative statements:
 \input{device-types/gpio/driver-conformance.tex}
 \input{device-types/pmem/driver-conformance.tex}
 \input{device-types/can/driver-conformance.tex}
+\input{device-types/spi/driver-conformance.tex}
 
 \conformance{\section}{Device Conformance}\label{sec:Conformance / Device Conformance}
 
@@ -244,6 +247,7 @@ A Channel I/O device MUST conform to the following normative statements:
 \input{device-types/gpio/device-conformance.tex}
 \input{device-types/pmem/device-conformance.tex}
 \input{device-types/can/device-conformance.tex}
+\input{device-types/spi/device-conformance.tex}
 
 \conformance{\section}{Legacy Interface: Transitional Device and Transitional Driver Conformance}\label{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}
 A conformant implementation MUST be either transitional or
