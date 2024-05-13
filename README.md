@@ -76,11 +76,12 @@ font packages.
 <dd>
 </dl>
 <h4>Providing Feedback</h4>
-Feedback must be provided the <strong>virtio-comment</strong> mailing list,
-and archived in the mailing list archives.
-<p>See <A
-HREF="https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=virtio#feedback">
-https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=virtio#feedback</A>
+Informal feedback is accepted through the <strong>virtio-comment</strong> mailing list,
+and is archived in <A HREF="https://lore.kernel.org/virtio-comment/">the mailing list archives</A>.
+To provide feedback, subscribe by sending mail to
+<HREF="mailto:virtio-comment+subscribe@lists.linux.dev">virtio-comment+subscribe@lists.linux.dev</A>,
+then after confirming you agree to the IPR sending your feedback to
+<HREF="mailto:virtio-comment@lists.linux.dev">virtio-comment@lists.linux.dev</A>.
 <p>Note that only plain text part of the message is archived, and all
 attachments are stripped. Accordingly, messages sent to the
 mailing list should use text/plain encoding and not
@@ -106,8 +107,38 @@ Signed-off-by: Name &lt;email&gt;<br>
 git format-patch -o proposal1/ HEAD~1..<br>
 ... generates a new directory proposal1/ and a file starting with 0001- ...<br>
 <p>
-git send-email --to=virtio-comment@lists.oasis-open.org proposal1/0001-*
+git send-email --to=virtio-comment@lists.linux.dev proposal1/0001-*
 </code>
+
+<dl>
+<dt>When to use the virtio-comment mailing list:</dt>
+<dd>
+  questions and change proposals for the Virtio specification,
+  including the specification of basic functionality, transports and
+  devices.
+</dd>
+
+<dt>When <em>not</em> to use the virtio-comment mailing list:</dt>
+<dd>
+  questions and change proposals for Virtio drivers and devices
+  implementing the specification.
+  (please use the <A HREF="mailto:virtio-dev@lists.linux.dev"> virtio-dev mailing list</A> for this).
+</dd>
+
+<dt>To do:</dt>
+<dd>
+ send email preferably in text format (best for archiving).
+</dd>
+
+<dt>Not to do:</dt>
+<dd>
+<ul>
+<li> copy both virtio-dev and virtio-comment mailing lists (instead, pick one);
+<li> send full copies of the virtio spec (in any format).
+</ul>
+</dd>
+
+</dl>
 <h4>Note for TC Members</h4>
 <p>TC Members should review TC specific
 process rules under "Further Description of this Repository"
@@ -116,16 +147,43 @@ HREF="https://github.com/oasis-tcs/virtio-admin">https://github.com/oasis-tcs/vi
 
 </div>
 <h4>Implementation discussion</h4>
-Implementation discussion should take place on the <strong>virtio-dev</strong> mailing list,
-and be archived in the mailing list archives.
-<p>See <A
-HREF="https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=virtio#feedback">
-https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=virtio#feedback</A>
+Implementation discussion takes place on the <strong>virtio-dev</strong> mailing list,
+and is archived in <A HREF="https://lore.kernel.org/virtio-dev/">the mailing list archives</A>.
+To participate in the discussion, subscribe by sending mail to
+<HREF="mailto:virtio-dev+subscribe@lists.linux.dev">
+virtio-dev+subscribe@lists.linux.dev</A>.
+After agreeing to the IPR, to participate in the discussion, send
+mail to <HREF="mailto:virtio-dev@lists.linux.dev">virtio-dev@lists.linux.dev</A>.
 <p>This is the correct list to copy on Linux virtio UAPI change proposals.
 <p>Note that only the plain text part of the message is archived, and all
 attachments are stripped. Accordingly, messages sent to the
 mailing list should use text/plain encoding and not
 have any attachments.
+
+<dl>
+<dt>When to use the virtio-dev mailing list:</dt>
+<dd>
+  questions and change proposals for Virtio drivers and devices
+  implementing the specification.
+</dd>
+
+<dt>When <em>not</em> to use the virtio-dev mailing list:</dt>
+<dd>
+  questions and change proposals for the Virtio specification,
+  including the specification of basic functionality, transports and
+  devices (please use the <A HREF="mailto:virtio-comment@lists.linux.dev"> virtio-comment mailing list</A> for this).
+</dd>
+<dt>To do:</dt>
+<dd>
+ send email preferably in text format (best for archiving).
+</dd>
+
+<dt>Not to do:</dt>
+<dd>
+copy both virtio-dev and virtio-comment mailing lists (instead, pick one).
+</dd>
+</dl>
+
 <h4>Use of github issues</h4>
 Note: according to the virtio TC rules, all official TC communication
 is taking place on one of the TC mailing lists.
