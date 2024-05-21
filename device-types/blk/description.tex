@@ -108,7 +108,7 @@ struct virtio_blk_config {
         } topology;
         u8 writeback;
         u8 unused0;
-        u16 num_queues;
+        le16 num_queues;
         le32 max_discard_sectors;
         le32 max_discard_seg;
         le32 discard_sector_alignment;
