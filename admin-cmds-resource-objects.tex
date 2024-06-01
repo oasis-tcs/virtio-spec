@@ -69,7 +69,9 @@ destroy and recreate the resource one or multiple times. Upon device reset,
 all resource objects created by the driver are destroyed within the device.
 
 Following administration commands control device resource objects,
-they are only supported for the self group type:
+they are supported for the self group type, occasionally some resource
+objects can be created for the SR-IOV group type as well. Such sr-iov group
+type specific resource objects are listed where such objects is defined.
 
 \begin{enumerate}
 \item VIRTIO_ADMIN_CMD_RESOURCE_OBJ_CREATE
@@ -102,7 +104,8 @@ device in the related device capability. The driver assigns the unique \field{id
 for the resource for the specified \field{type}.
 
 For the command VIRTIO_ADMIN_CMD_RESOURCE_OBJ_CREATE, \field{opcode} is set to 0xa.
-\field{group_member_id} is set to zero.
+\field{group_member_id} is set to zero for self-group type and set to
+the member device to be accessed for the SR-IOV group type.
 The \field{command_specific_data} is in the format
 \field{struct virtio_admin_cmd_resource_obj_create_data}.
 \field{resource_obj_specific_data} refers to the resource object specific data.
@@ -132,7 +135,8 @@ This command modifies the attributes of an existing device resource object.
 For the command VIRTIO_ADMIN_CMD_RESOURCE_OBJ_MODIFY, \field{opcode} is set to 0xb.
 The \field{command_specific_data} is in the format
 \field{struct virtio_admin_cmd_resource_modify_data}.
-\field{group_member_id} is set to zero.
+\field{group_member_id} is set to zero for self-group type and set to
+the member device to be accessed for the SR-IOV group type.
 \field{id} identifies the resource object of type \field{type} whose attributes
 to modify.
 This command modifies the attributes supplied in \field{resource_obj_specific_data}.
@@ -154,7 +158,8 @@ set to the values supplied in \field{resource_obj_specific_data}.
 
 This command queries attributes of the existing resource object.
 For the command VIRTIO_ADMIN_CMD_RESOURCE_OBJ_QUERY, \field{opcode} is set to 0xc.
-\field{group_member_id} is set to zero.
+\field{group_member_id} is set to zero for self-group type and set to
+the member device to be accessed for the SR-IOV group type.
 The \field{command_specific_data} is in the format
 \field{struct virtio_admin_cmd_resource_obj_query_data}.
 \field{id} identifies the existing resource object of type \field{type} whose
@@ -186,7 +191,8 @@ This command destroys the previously created device resource object.
 For the command VIRTIO_ADMIN_CMD_RESOURCE_OBJ_DESTROY, \field{opcode} is set to 0xd.
 The \field{command_specific_data} is in the format
 \field{struct virtio_admin_cmd_resource_obj_cmd_hdr}.
-\field{group_member_id} is set to zero.
+\field{group_member_id} is set to zero for self-group type and set to
+the member device to be accessed for the SR-IOV group type.
 \field{id} identifies the existing resource object of type \field{type}.
 
 This command destroys the specified resource object of \field{type} identified
