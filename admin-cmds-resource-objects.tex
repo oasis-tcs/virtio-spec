@@ -63,6 +63,19 @@ Resource object type & Description \\
 \hline
 \end{tabular}
 
+Following generic resource objects are defined which are described separately.
+
+\begin{xltabular}{\textwidth}{ |X||X|X| }
+\hline
+Resource object type & Name & Description \\
+\hline \hline
+0x000 & \hyperref[par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts / VIRTIO_RESOURCE_OBJ_DEV_PARTS]{VIRTIO_RESOURCE_OBJ_DEV_PARTS} & Device parts object \\
+\hline
+0x001-0x1ff & - & Generic resource object range reserved \\
+\hline
+\hline
+\end{xltabular}
+
 When the device resets, it starts with zero resources of each type; the driver
 can create resources up to the published \field{limit}. The driver can
 destroy and recreate the resource one or multiple times. Upon device reset,

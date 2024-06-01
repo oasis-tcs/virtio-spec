@@ -150,7 +150,16 @@ opcode & Name & Command Description \\
 \hline
 0x000d & \hyperref[par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device resource objects / VIRTIO_ADMIN_CMD_RESOURCE_OBJ_DESTROY]{VIRTIO_ADMIN_CMD_RESOURCE_OBJ_DESTROY} & Destroy a device resource object \\
 \hline
-0x000e - 0x7FFF & - & Commands using \field{struct virtio_admin_cmd}    \\
+0x000e & \hyperref[par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts /  Device parts handling commands / VIRTIO_ADMIN_CMD_DEV_PARTS_METADATA_GET]{VIRTIO_ADMIN_CMD_DEV_PARTS_METADATA_GET} & Get the metadata of the device parts \\
+\hline
+0x000f & \hyperref[par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts / Device parts handling commands / VIRTIO_ADMIN_CMD_DEV_PARTS_GET]{VIRTIO_ADMIN_CMD_DEV_PARTS_GET} & Get the device parts \\
+\hline
+0x0010 & \hyperref[par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts / Device parts handling commands / VIRTIO_ADMIN_CMD_DEV_PARTS_SET]{VIRTIO_ADMIN_CMD_DEV_PARTS_SET} & Set the device parts \\
+\hline
+0x0011 & \hyperref[par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts / Device parts handling commands / VIRTIO_ADMIN_CMD_DEV_MODE_SET]{VIRTIO_ADMIN_CMD_DEV_MODE_SET} & Stop or resume the device \\
+\hline
+\hline
+0x0013 - 0x7FFF & - & Commands using \field{struct virtio_admin_cmd}    \\
 \hline
 0x8000 - 0xFFFF & - & Reserved for future commands (possibly using a different structure)    \\
 \hline

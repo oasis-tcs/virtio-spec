@@ -53,3 +53,232 @@ struct virtio_dev_parts_cap {
 resource objects for retrieving the device parts.
 \field{set_parts_resource_objects_limit} indicates the supported device parts
 resource objects for restoring the device parts.
+
+\paragraph{VIRTIO_RESOURCE_OBJ_DEV_PARTS}\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts / VIRTIO_RESOURCE_OBJ_DEV_PARTS}
+
+A device parts resource object is used to either get or set the device parts.
+Before performing any get or set operation for the device parts, the driver
+creates the device parts resource object
+VIRTIO_RESOURCE_OBJ_DEV_PARTS using the administration command
+\hyperref[par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device resource objects / VIRTIO_ADMIN_CMD_RESOURCE_OBJ_CREATE]{VIRTIO_ADMIN_CMD_RESOURCE_OBJ_CREATE}.
+The driver indicates the intended purpose (get or set) at the time of creating the
+device parts resource object.
+For the device parts resource object, both \field{resource_obj_specific_data} and
+\field{resource_obj_specific_result} are in the format
+\field{struct virtio_resource_obj_dev_parts}.
+
+\begin{lstlisting}
+struct virtio_resource_obj_dev_parts {
+        u8 type;
+#define VIRTIO_RESOURCE_OBJ_DEV_PARTS_TYPE_GET 0
+#define VIRTIO_RESOURCE_OBJ_DEV_PARTS_TYPE_SET 1
+        u8 reserved[7];
+};
+\end{lstlisting}
+
+When \field{type} is set to VIRTIO_RESOURCE_OBJ_DEV_PARTS_TYPE_GET,
+the driver can use the object to capture the device parts and the metadata of
+these device parts. When \field{type} is set to
+VIRTIO_RESOURCE_OBJ_DEV_PARTS_TYPE_SET, the driver can use the
+object to restore the device parts.
+
+\paragraph{Device parts handling commands}\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts / Device parts handling commands}
+
+The owner driver uses the following resource object handling administration
+commands. These commands are only used for the device parts resource
+object after the driver creates the VIRTIO_RESOURCE_OBJ_DEV_PARTS object.
+These commands are currently only defined for the SR-IOV group type:
+
+\begin{enumerate}
+\item VIRTIO_ADMIN_CMD_DEV_PARTS_METADATA_GET
+\item VIRTIO_ADMIN_CMD_DEV_PARTS_GET
+\item VIRTIO_ADMIN_CMD_DEV_PARTS_SET
+\end{enumerate}
+
+\subparagraph{VIRTIO_ADMIN_CMD_DEV_PARTS_METADATA_GET}
+\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts / Device parts handling commands / VIRTIO_ADMIN_CMD_DEV_PARTS_METADATA_GET}
+
+This command obtains the metadata of the device parts. This metadata includes
+the maximum size of the device parts, the count of device parts, and a list of
+the device part headers.
+
+For the command VIRTIO_ADMIN_CMD_DEV_PARTS_METADATA_GET, \field{opcode} is set
+to 0xe. The \field{command_specific_data} is in the format
+\field{struct virtio_admin_cmd_dev_parts_metadata_data}.
+\field{group_member_id} refers to the member device to be accessed.
+The resource object \field{type} in the \field{hdr} is set to
+VIRTIO_RESOURCE_OBJ_DEV_PARTS and \field{id} is set to the ID of the
+device parts resource object.
+
+\begin{lstlisting}
+struct virtio_admin_cmd_dev_parts_metadata_data {
+        struct virtio_admin_cmd_resource_obj_cmd_hdr hdr;
+        u8 type;
+        u8 reserved[7];
+};
+
+#define VIRTIO_ADMIN_CMD_DEV_PARTS_METADATA_TYPE_SIZE 0
+#define VIRTIO_ADMIN_CMD_DEV_PARTS_METADATA_TYPE_COUNT 1
+#define VIRTIO_ADMIN_CMD_DEV_PARTS_METADATA_TYPE_LIST  2
+
+struct virtio_admin_cmd_dev_parts_metadata_result {
+        union {
+                struct {
+                        le32 size;
+                        le32 reserved;
+                } parts_size;
+                struct {
+                        le32 count;
+                        le32 reserved;
+                } hdr_list_count;
+                {
+                        le32 count;
+                        le32 reserved;
+                        struct virtio_dev_part_hdr hdrs[];
+                } hdr_list;
+        };
+};
+\end{lstlisting}
+
+When the command completes successfully, the
+\field{command_specific_result} is in the format
+\field{struct virtio_admin_cmd_dev_parts_metadata_result}.
+
+When \field{type} is set to VIRTIO_ADMIN_CMD_DEV_PARTS_METADATA_TYPE_SIZE,
+the device responds with \field{parts_size}. \field{parts_size.size} indicates
+the maximum size in bytes for all the device parts.
+
+When \field{type} is set to VIRTIO_ADMIN_CMD_DEV_PARTS_METADATA_TYPE_COUNT, the
+device responds with \field{hdr_list_count.count}. The
+\field{hdr_list_count.count} indicates an count of
+\field{struct virtio_dev_part_hdr} metadata entries that the device can
+provide when the \field{type} is set to VIRTIO_ADMIN_CMD_DEV_PARTS_METADATA_TYPE_HDR
+in a subsequent VIRTIO_ADMIN_CMD_DEV_PARTS_METADATA_GET command.
+
+When \field{type} is set to VIRTIO_ADMIN_CMD_DEV_PARTS_METADATA_TYPE_HDR,
+the device responds with \field{hdr_list}. \field{hdr_list}
+indicates the device parts metadata.
+
+\field{reserved} is reserved and set to 0.
+
+The command responds with the \field{status} VIRTIO_ADMIN_STATUS_ENOMEM
+when the size of \field{command_specific_result} is not sufficient enough
+for the response.
+
+\subparagraph{VIRTIO_ADMIN_CMD_DEV_PARTS_GET}
+\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts /  Device parts handling commands / VIRTIO_ADMIN_CMD_DEV_PARTS_GET}
+
+This command captures the device parts. For the command
+VIRTIO_ADMIN_CMD_DEV_PARTS_GET, \field{opcode} is set to 0xf.
+The \field{command_specific_data} is in the format
+\field{struct virtio_admin_cmd_dev_parts_get_data}.
+\field{group_member_id} refers to the member device to be accessed.
+The resource object \field{type} in the \field{hdr} is set to
+VIRTIO_RESOURCE_OBJ_DEV_PARTS and \field{id} is set to the ID of the
+device parts resource object.
+
+\begin{lstlisting}
+struct virtio_admin_cmd_dev_parts_get_data {
+        struct virtio_admin_cmd_resource_obj_cmd_hdr hdr;
+        u8 type;
+        u8 reserved[7];
+        struct virtio_dev_part_hdr hdr_list[];
+};
+
+#define VIRTIO_ADMIN_CMD_DEV_PARTS_GET_TYPE_SELECTED 0
+#define VIRTIO_ADMIN_CMD_DEV_PARTS_GET_TYPE_ALL 1
+
+struct virtio_admin_cmd_dev_parts_get_result {
+        struct virtio_dev_part parts[];
+};
+
+\end{lstlisting}
+
+When the driver wants to capture specific device parts, \field{type} is set to
+VIRTIO_ADMIN_CMD_DEV_PARTS_GET_TYPE_SELECTED and \field{hdr_list} is set to the
+device parts of interest.
+
+When the driver wants to retrieve all the device parts, \field{type} is set to
+VIRTIO_ADMIN_CMD_DEV_PARTS_GET_TYPE_ALL, and \field{hdr_list} is empty.
+
+\field{reserved} is reserved and set to 0.
+
+When the command completes successfully, the \field{command_specific_result} is
+in the format \field{struct virtio_admin_cmd_dev_parts_get_result}, containing
+either the selected device parts or all the device parts.
+
+If the requested device part does not exist, the device skips the device part
+without any error.
+
+\subparagraph{VIRTIO_ADMIN_CMD_DEV_PARTS_SET}\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts / Device parts handling commands / VIRTIO_ADMIN_CMD_DEV_PARTS_SET}
+
+This command sets one or multiple device parts. For the command
+VIRTIO_ADMIN_CMD_DEV_PARTS_SET, \field{opcode} is set to 0x10.
+The \field{group_member_id} refers to the member device to be accessed.
+The resource object \field{type} in the \field{hdr} is set to
+VIRTIO_RESOURCE_OBJ_DEV_PARTS and \field{id} is set to the ID of the
+device parts resource object.
+
+\begin{lstlisting}
+struct virtio_admin_cmd_dev_parts_set_data {
+        struct virtio_admin_cmd_resource_obj_cmd_hdr hdr;
+        struct virtio_dev_part parts[];
+};
+\end{lstlisting}
+
+The \field{command_specific_data} is in the format
+\field{struct virtio_admin_cmd_dev_parts_set_data}.
+
+This command has no command specific result.
+
+The driver stops the device before setting any device parts.
+
+When the command completes successfully, the device has updated device
+parts to the value supplied in \field{virtio_admin_cmd_dev_parts_set_data}.
+
+The device parts set by this command take effect when the device is resumed
+using the VIRTIO_ADMIN_CMD_DEV_MODE_SET command.
+
+When the command fails with a status other than VIRTIO_ADMIN_STATUS_OK, the
+device does not have any side effects.
+
+\subparagraph{VIRTIO_ADMIN_CMD_DEV_MODE_SET}\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts / Device parts handling commands / VIRTIO_ADMIN_CMD_DEV_MODE_SET}
+
+This command either stops the device from initiating any transport requests or
+resumes the device operation. For the command VIRTIO_ADMIN_CMD_DEV_MODE_SET,
+\field{opcode} is set to 0x11. \field{group_member_id} indicates the member
+device to be accessed.
+
+The \field{command_specific_data} is in the format
+\field{struct virtio_admin_cmd_dev_mode_set_data}.
+
+\begin{lstlisting}
+struct virtio_admin_cmd_dev_mode_set_data {
+        u8 flags;
+};
+
+#define VIRTIO_ADMIN_CMD_DEV_MODE_F_STOPPED 0
+\end{lstlisting}
+
+This command has no command specific result.
+
+When the command completes successfully and if the \field{flags} field is set
+to VIRTIO_ADMIN_CMD_DEV_MODE_F_STOPPED (bit 0), the device is stopped.
+When the device is stopped, the device stops initiating all transport
+communications, which includes:
+
+\begin{enumerate}
+\item stopping configuration change notifications
+\item stopping all virtqueue notifications
+\item stops accessing all virtqueues and the driver buffer memory
+\end{enumerate}
+
+After the device is stopped, the device parts remain unchanged unless
+the driver initiates any transport requests.
+
+When the device is stopped, it writes back any associated descriptors for all
+observed buffers to prevent out-of-order processing if the device is resumed.
+
+When the command completes successfully and if the \field{flags} field
+is set to zero, the device resumes its operation. If the command completes
+with an error, it does not produce any side effects on the device.
