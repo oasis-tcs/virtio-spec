@@ -1,0 +1,55 @@
+\subsubsection{Device parts}\label{sec:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts}
+
+In some systems, there is a need to capture the state of all or part of
+a device and subsequently restore either the same device or a
+different one to this captured state. A group owner device can support
+administration commands to facilitate these get and set operations for
+the group member devices.
+
+For example, a hypervisor can use the administration commands to
+capture parts of the device state and save the result as part of
+a VM snapshot. Later, the hypervisor can retrieve the snapshot and use the
+administration commands to restore parts of a device to resume
+VM operation.
+
+As another example, these commands can be used to facilitate VM migration by the
+hypervisor: one (source) hypervisor can get parts of a device and send
+the results to another (destination) hypervisor, which will in turn
+set (restore) parts of (another) device to resume the VM operation on
+the destination.
+
+The device comprises many device parts which the driver can get and set.
+Administration commands are provided to either get and set all the device
+parts at once, or to get the device parts metadata that indicates which
+device parts are present, and later to get and set specific device parts.
+To get and set the device parts or their metadata, the driver first creates a
+device parts resource object, indicating whether the object should
+handle get or set operations but not both simultaneously. The device and the
+driver indicate the device parts resource objects' limit using the capability
+VIRTIO_DEV_PARTS_CAP.
+
+The device can be stopped to prevent device parts from changing.
+When the device is stopped, it does not initiate any transport requests.
+For instance, the device refrains from sending any configuration or
+virtqueue notifications and does not access any virtqueues or the driver's
+buffer memory. While the driver may remain active and continue to send
+notifications to the device, potentially updating some device parts,
+the device itself will not initiate any transport requests.
+
+\paragraph{VIRTIO_DEV_PARTS_CAP}
+\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts / VIRTIO_DEV_PARTS_CAP}
+
+The capability VIRTIO_DEV_PARTS_CAP indicates the device parts resource objects limit.
+\field{cap_specific_data} is in the format \field{struct virtio_dev_parts_cap}.
+
+\begin{lstlisting}
+struct virtio_dev_parts_cap {
+        u8 get_parts_resource_objects_limit;
+        u8 set_parts_resource_objects_limit;
+};
+\end{lstlisting}
+
+\field{get_parts_resource_objects_limit} indicates the supported device parts
+resource objects for retrieving the device parts.
+\field{set_parts_resource_objects_limit} indicates the supported device parts
+resource objects for restoring the device parts.

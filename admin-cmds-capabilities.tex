@@ -51,6 +51,22 @@ Id & Description  \\
 \end{tabularx}
 \end{table}
 
+Common capabilities are listed:
+
+\begin{table}[H]
+\caption{Common capability ids}
+\label{table:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device and driver capabilities / Common capability ids}
+\begin{tabularx}{\textwidth}{ |l|l|X| }
+\hline
+Id & Name & Description  \\
+\hline \hline
+0x0000 & \hyperref[par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts / VIRTIO_DEV_PARTS_CAP]{VIRTIO_DEV_PARTS_CAP} & Device parts capability \\
+\hline
+0x0001-0x07ff & - & Generic capability for all device types \\
+\hline
+\end{tabularx}
+\end{table}
+
 Device type specific capabilities are described separately for each device
 type under \field{Device and driver capabilities}.
 
