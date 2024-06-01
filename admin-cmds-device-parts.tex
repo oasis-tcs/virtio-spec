@@ -319,3 +319,151 @@ VIRTIO_DEV_PART_VQ_NOTIFY_CFG & - & VIRTIO_DEV_PART_DEV_FEATURES, VIRTIO_DEV_PAR
 \hline
 \end{xltabular}
 \end{table}
+
+\devicenormative{\subparagraph}{Device parts}{Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts}
+
+A device MUST either support all of, or none of
+VIRTIO_ADMIN_CMD_DEV_PARTS_METADATA_GET,
+VIRTIO_ADMIN_CMD_DEV_PARTS_GET, VIRTIO_ADMIN_CMD_DEV_PARTS_SET,
+VIRTIO_ADMIN_CMD_RESOURCE_OBJ_CREATE,
+VIRTIO_ADMIN_CMD_RESOURCE_OBJ_DESTROY, VIRTIO_ADMIN_CMD_RESOURCE_OBJ_MODIFY
+VIRTIO_ADMIN_CMD_RESOURCE_OBJ_QUERY, and
+VIRTIO_ADMIN_CMD_DEV_MODE_SET commands, where resource commands apply to
+the resource object VIRTIO_RESOURCE_OBJ_DEV_PARTS.
+
+The device MUST support getting the device parts multiple times
+with the command VIRTIO_ADMIN_CMD_DEV_PARTS_GET.
+
+When there are multiple device parts in the command
+VIRTIO_ADMIN_CMD_DEV_PARTS_GET, the device MUST respond the device parts in the
+same order as listed in the table
+\hyperref[table:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts / Device parts order/ Device parts order]{device parts order}.
+
+The device SHOULD respond with an error status for the command
+VIRTIO_ADMIN_CMD_DEV_PARTS_SET if the device is not stopped.
+
+The device MUST support the command VIRTIO_ADMIN_CMD_DEV_PARTS_SET,
+allowing the same or different device parts to be set multiple times.
+
+The device MUST respond with an error for the command
+VIRTIO_ADMIN_CMD_DEV_PARTS_SET, if there is a mismatch between the
+device part length supplied in the VIRTIO_ADMIN_CMD_DEV_PARTS_SET
+and the device part length in the device.
+
+The device MUST NOT set the device part VIRTIO_DEV_PART_DEV_FEATURES in
+the command VIRTIO_ADMIN_CMD_DEV_PARTS_SET; instead,
+it must verify that the device features supplied in
+VIRTIO_DEV_PART_DEV_FEATURES match those the device has.
+
+The device may ignore the setting of a device part that has the
+VIRTIO_DEV_PART_F_OPTIONAL bit set.
+
+For the SR-IOV group type, when the device is stopped using the command
+VIRTIO_ADMIN_CMD_DEV_MODE_SET,
+\begin{itemize}
+\item the device MUST not initiate any PCI transaction,
+\item the device MUST finish all the outstanding PCI transactions before completing
+      the command VIRTIO_ADMIN_CMD_DEV_MODE_SET,
+\item the device MUST write any associated descriptors to the driver memory for
+      all the observed buffers,
+\item the device MUST accept driver notifications and the device MAY update any
+      device parts,
+\item the device MUST respond with valid values for PCI read requests,
+\item the device MUST operate in the same way for the PCI architected interfaces
+      regardless of the device mode.
+\item the device MUST not generate any PCI PME.
+\end{itemize}
+
+When the device is stopped,
+\begin{itemize}
+\item the device MUST not access any virtqueue memory or any memory referred
+      by the virtqueue.
+\item the device MUST not generate any configuration change notification
+      or any virtqueue notification.
+\end{itemize}
+
+For the SR-IOV group type,
+\begin{itemize}
+\item the device MUST respond to the commands
+VIRTIO_ADMIN_CMD_DEV_MODE_SET, VIRTIO_ADMIN_CMD_DEV_PARTS_SET
+after the member device completes FLR, if the FLR is in progress on the device
+when the device receives any of these commands.
+
+\item the member device MUST respond to the commands
+VIRTIO_ADMIN_CMD_DEV_MODE_SET and VIRTIO_ADMIN_CMD_DEV_PARTS_SET
+after the device reset completes in the device, if the
+device reset is in progress when the device receives any of these commands.
+
+\item the member device MUST respond to commands
+VIRTIO_ADMIN_CMD_DEV_MODE_SET and VIRTIO_ADMIN_CMD_DEV_PARTS_SET
+after the device power management state
+transition completes on the device, if the power management state transition
+is in progress when the device receives any of these commands.
+\end{itemize}
+
+When the \field{flags} is set to VIRTIO_ADMIN_CMD_DEV_MODE_FLAGS_STOPPED
+in the command VIRTIO_ADMIN_CMD_DEV_MODE_SET, and if the device is already
+stopped before, the device MUST complete the command successfully.
+
+When the VIRTIO_ADMIN_CMD_DEV_MODE_FLAGS_STOPPED \field{flags} clear,
+in the command VIRTIO_ADMIN_CMD_DEV_MODE_SET, and if the device is
+not stopped before, the device MUST complete the command successfully.
+
+For the SR-IOV group type, the device MUST clear all the device parts to
+the default value when the member device is reset or undergo an PCI FLR.
+
+The device MAY NOT respond to the selected device part in \field{hdr_list}
+in the command VIRTIO_ADMIN_CMD_DEV_PARTS_GET if the device part is invalid
+in the device.
+
+For the commands VIRTIO_ADMIN_CMD_DEV_PARTS_GET and
+VIRTIO_ADMIN_CMD_DEV_PARTS_METADATA_GET, when the device responds with:
+\begin{itemize}
+\item
+VIRTIO_DEV_PART_DRV_FEATURES or VIRTIO_DEV_PART_PCI_COMMON_CFG, it MUST be
+preceded by VIRTIO_DEV_PART_DEV_FEATURES.
+
+\item VIRTIO_DEV_PART_PCI_COMMON_CFG, it MUST be preceded by
+VIRTIO_DEV_PART_DEV_FEATURES.
+
+\item VIRTIO_DEV_PART_PCI_COMMON_CFG, it MUST be preceded by
+VIRTIO_DEV_PART_DEV_FEATURES and VIRTIO_DEV_PART_DRV_FEATURES.
+
+\item VIRTIO_DEV_PART_DEV_CFG, it MUST be preceded by VIRTIO_DEV_PART_DEV_FEATURES.
+
+\item VIRTIO_DEV_PART_DRV_CFG, it be preceded by VIRTIO_DEV_PART_DEV_FEATURES,
+VIRTIO_DEV_PART_DRV_FEATURES and VIRTIO_DEV_PART_DEV_CFG.
+
+\item VIRTIO_DEV_PART_DEVICE_STAtUS, it is preceded by VIRTIO_DEV_PART_DEV_FEATURES,
+VIRTIO_DEV_PART_DRV_FEATURES, and VIRTIO_DEV_PART_DEV_CFG.
+\end{itemize}
+
+When the device receives a VIRTIO_ADMIN_CMD_DEV_PARTS_SET command containing the
+parts VIRTIO_DEV_PART_DEV_FEATURES, VIRTIO_DEV_PART_PCI_COMMON_CFG and
+VIRTIO_DEV_PART_DEV_CFG, the device SHOULD only verify that the provided configuration is
+correct but SHOULD NOT apply it, especially for the fields that are designated
+as read-only and invariant. This ensures that the device respects the
+immutability of certain configuration aspects while still performing necessary
+validation checks.
+
+\drivernormative{\subparagraph}{Device parts}{Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts}
+
+The driver MUST set the mode to VIRTIO_ADMIN_CMD_DEV_MODE_F_STOPPED in
+the command VIRTIO_ADMIN_CMD_DEV_MODE_SET before setting parts using the command
+VIRTIO_ADMIN_CMD_DEV_PARTS_SET.
+
+When there are multiple device parts in the command
+VIRTIO_ADMIN_CMD_DEV_PARTS_SET, the driver MUST set the device parts in the same
+order as listed in the table
+\hyperref[table:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts / Device parts order/ Device parts order]{device parts order}.
+
+For the SR-IOV group type, the driver SHOULD NOT access the device configuration
+space described in section
+\ref{sec:Basic Facilities of a Virtio Device / Device Configuration Space}
+when the device is stopped.
+
+The driver SHOULD allocate sufficient response buffer to receive all the device
+parts metadata in the command VIRTIO_ADMIN_CMD_DEV_PARTS_METADATA_GET.
+
+The driver SHOULD allocate sufficient response buffer to receive all the device
+parts in the command VIRTIO_ADMIN_CMD_DEV_PARTS_GET.
