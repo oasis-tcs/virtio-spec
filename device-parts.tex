@@ -1,0 +1,231 @@
+\section{Device parts}\label{sec:Basic Facilities of a Virtio Device / Device parts}
+
+Device parts represent the device state, with parts for basic
+device facilities such as driver features, as well as transport specific
+and device type specific parts. In memory, each device part consists
+of a header \field{struct virtio_dev_part_hdr} followed by
+the device part data in \field{value}. The driver can get and set
+these device parts using administration commands.
+
+\begin{lstlisting}
+struct virtio_dev_part_hdr {
+        le16 part_type;
+        u8 flags;
+        u8 reserved;
+        union {
+                struct {
+                        le32 offset;
+                        le32 reserved;
+                } pci_common_cfg;
+                struct  {
+                        le16 index;
+                        u8 reserved[6];
+                } vq_index;
+        } selector;
+        le32 length;
+};
+
+#define VIRTIO_DEV_PART_F_OPTIONAL 0
+
+struct virtio_dev_part {
+        struct virtio_dev_part_hdr hdr;
+        u8 value[];
+};
+
+\end{lstlisting}
+
+Each device part consists of a fixed size \field{hdr} followed by optional
+part data in field \field{value}. The device parts are divided into
+two categories and identified by \field{part_type}. The common device parts are
+independent of the device type and, are in the range \field{0x0000 - 0x01FF}. Common
+device parts are listed in
+\ref{table:Basic Facilities of a Virtio Device / Device parts / Common device parts}
+The device parts in the range \field{0x0200 - 0x05FF} are specific to a device type
+such as a network or console device.
+The device part is identified by the \field{part_type} field as listed:
+
+\begin{description}
+\item[0x0000 - 0x01FF] - common part - used to describe a part of the device that
+                         is independent of the device type
+\item[0x0200 - 0x05FF] - device type specific part - used to indicate parts
+                         that are device type specific
+\item[0x0600 - 0xFFFF] - reserved
+\end{description}
+
+Some device parts are optional, the device can function without them.
+For example, such parts can help improve performance, with the device working
+slower, yet still correctly, even without the parts. In another example,
+optional parts can be used for validation, with the device being able to deduce
+the part itself, the part being helpful to detect driver or user errors.
+Such device parts are marked optional by setting bit 0
+(VIRTIO_DEV_PART_F_OPTIONAL) in the \field{flags}.
+
+\field{reserved} is reserved and set to zero.
+
+\field{length} indicates the length of the \field{value} in bytes. The length
+of the device part depends on the device part itself and is described separately.
+The device part data is in \field{value} and is \field{part_type} specific.
+
+\field{selector} further specifies the part. It is only used for some
+\field{part_type} values.
+
+\field{selector.pci_common_cfg.offset} is the offset of the
+field in the \hyperref[sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common configuration structure layout]{Virtio PCI common config space}. It is valid only when the \field{part_type} is set to VIRTIO_DEV_PART_PCI_COMMON_CFG,
+otherwise it is reserved and set to 0.
+
+\field{selector.vq_index.index} is the index of the virtqueue. It is valid
+only when the \field{part_type} is VIRTIO_DEV_PART_VQ_CFG or
+VIRTIO_DEV_PART_VQ_CFG.
+
+\subsection{Common device parts}\label{sec:Basic Facilities of a Virtio Device / Device parts / Common device parts}
+
+Common parts are independent of the device type.
+\field{part_type} and \field{value} for each part are documented as follows:
+
+\begin{table}
+\caption{Common device parts}
+\label{table:Basic Facilities of a Virtio Device / Device parts / Common device parts}
+\begin{xltabular}{\textwidth}{ |l||l|X| }
+\hline
+Type & Name & Description \\
+\hline \hline
+0x100 & \hyperref[sec:Basic Facilities of a Virtio Device / Device parts / Common device parts / VIRTIO_DEV_PART_DEV_FEATURES]{VIRTIO_DEV_PART_DEV_FEATURES} & Device features \\
+\hline
+0x101 & \hyperref[sec:Basic Facilities of a Virtio Device / Device parts / Common device parts / VIRTIO_DEV_PART_DRV_FEATURES]{VIRTIO_DEV_PART_DRV_FEATURES} & Driver features \\
+\hline
+0x102 & \hyperref[sec:Basic Facilities of a Virtio Device / Device parts / Common device parts / VIRTIO_DEV_PART_PCI_COMMON_CFG]{VIRTIO_DEV_PART_PCI_COMMON_CFG} & PCI common configuration \\
+\hline
+0x103 & \hyperref[sec:Basic Facilities of a Virtio Device / Device parts / Common device parts / VIRTIO_DEV_PART_DEVICE_STATUS]{VIRTIO_DEV_PART_DEVICE_STATUS} & Device status \\
+\hline
+0x104 & \hyperref[sec:Basic Facilities of a Virtio Device / Device parts / Common device parts / VIRTIO_DEV_PART_VQ_CFG]{VIRTIO_DEV_PART_VQ_CFG} & Virtqueue configuration \\
+\hline
+0x105 & \hyperref[sec:Basic Facilities of a Virtio Device / Device parts / Common device parts / VIRTIO_DEV_PART_VQ_NOTIFY_CFG]{VIRTIO_DEV_PART_VQ_NOTIFY_CFG} & Virtqueue notification configuration \\
+\hline
+0x106 - 0x2FF & - & Common device parts range reserved for future \\
+\hline
+\hline
+\end{xltabular}
+\end{table}
+
+\subsubsection{VIRTIO_DEV_PART_DEV_FEATURES}
+\label{sec:Basic Facilities of a Virtio Device / Device parts / Common device parts / VIRTIO_DEV_PART_DEV_FEATURES}
+
+For VIRTIO_DEV_PART_DEV_FEATURES, \field{part_type} is set to 0x100.
+The VIRTIO_DEV_PART_DEV_FEATURES field indicates features offered by the device.
+\field{value} is in the format of \field{struct virtio_dev_part_features}.
+\field{feature_bits} is in the format listed in
+\ref{sec:Basic Facilities of a Virtio Device / Feature Bits}.
+\field{length} is the length of the \field{struct virtio_dev_part_features}.
+
+If the VIRTIO_DEV_PART_DEV_FEATURES device part is present, there is exactly
+one instance of it in the get or set commands.
+
+The VIRTIO_DEV_PART_DEV_FEATURES part is optional for which
+the VIRTIO_DEV_PART_F_OPTIONAL (bit 0) \field{flags} is set.
+
+\begin{lstlisting}
+struct virtio_dev_part_features {
+        le64 feature_bits[];
+};
+\end{lstlisting}
+
+\subsubsection{VIRTIO_DEV_PART_DRV_FEATURES}
+\label{sec:Basic Facilities of a Virtio Device / Device parts / Common device parts / VIRTIO_DEV_PART_DRV_FEATURES}
+
+For VIRTIO_DEV_PART_DRV_FEATURES, \field{part_type} is set to 0x101.
+The VIRTIO_DEV_PART_DRV_FEATURES field indicates features set by the driver.
+\field{value} is in the format of \field{struct virtio_dev_part_features}.
+\field{feature_bits} is in the format listed in
+\ref{sec:Basic Facilities of a Virtio Device / Feature Bits}.
+\field{length} is the length of the \field{struct virtio_dev_part_features}.
+
+If the VIRTIO_DEV_PART_DEV_FEATURES device part present, there is exactly
+one instance of it in the get or set commands.
+
+\subsubsection{VIRTIO_DEV_PART_PCI_COMMON_CFG}
+\label{sec:Basic Facilities of a Virtio Device / Device parts / Common device parts / VIRTIO_DEV_PART_PCI_COMMON_CFG}
+
+For VIRTIO_DEV_PART_PCI_COMMON_CFG, \field{part_type} is set to 0x102.
+VIRTIO_DEV_PART_PCI_COMMON_CFG refers to the common device configuration
+fields. \field{offset} refers to the
+byte offset of single field in the common configuration layout described in
+\field{struct virtio_pci_common_cfg}. \field{value} is in the format depending on
+the \field{offset}, for example when \field{cfg_offset = 18}, \field{value}
+is in the format of \field{num_queues}. \field{length} is the length of
+\field{value} in bytes of a single structure field whose offset is \field{offset}.
+
+One or multiple VIRTIO_DEV_PART_PCI_COMMON_CFG parts may exist in the
+get or set commands; each such part corresponds to a unique \field{offset}.
+
+\subsubsection{VIRTIO_DEV_PART_DEVICE_STATUS}\label{par:VIRTIO_DEV_PART_DEVICE_STATUS}
+
+For VIRTIO_DEV_PART_DEVICE_STATUS, \field{part_type} is set to 0x103.
+The VIRTIO_DEV_PART_DEVICE_STATUS field indicates the device status as listed in
+\ref{sec:Basic Facilities of a Virtio Device / Device Status Field}.
+\field{value} is in the format \field{device_status} of
+\field{struct virtio_pci_common_cfg}.
+
+If the VIRTIO_DEV_PART_DEV_FEATURES device part is present, there is exactly
+one instance of it in the get or set commands.
+
+There is exactly one part may exist in the get or set
+commands.
+
+\subsubsection{VIRTIO_DEV_PART_VQ_CFG}
+\label{sec:Basic Facilities of a Virtio Device / Device parts / Common device parts / VIRTIO_DEV_PART_VQ_CFG}
+
+For VIRTIO_DEV_PART_VQ_CFG, \field{part_type} is set to 0x104.
+\field{value} is in the format \field{struct virtio_dev_part_vq_cfg}.
+\field{length} is the length of \field{struct virtio_dev_part_vq_cfg}.
+
+\begin{lstlisting}
+struct virtio_dev_part_vq_cfg {
+        le16 queue_size;
+        le16 vector;
+        le16 enabled;
+        le16 reserved;
+        le64 queue_desc;
+        le64 queue_driver;
+        le64 queue_device;
+};
+\end{lstlisting}
+
+\field{queue_size}, \field{vector}, \field{queue_desc},
+\field{queue_driver} and \field{queue_device} correspond to the
+fields of \field{struct virtio_pci_common_cfg} when used for PCI transport.
+
+One or multiple instances of the device part VIRTIO_DEV_PART_VQ_CFG may exist in
+the get and set commands. Each such device part corresponds to a unique virtqueue identified
+by the \field{vq_index.index}.
+
+\subsubsection{VIRTIO_DEV_PART_VQ_NOTIFY_CFG}
+\label{sec:Basic Facilities of a Virtio Device / Device parts / Common device parts / VIRTIO_DEV_PART_VQ_NOTIFY_CFG}
+
+For VIRTIO_DEV_PART_VQ_NOTIFY_CFG, \field{part_type} is set to 0x105.
+\field{value} is in the format \field{struct virtio_dev_part_vq_notify_data}.
+\field{length} is the length of \field{struct virtio_dev_part_vq_notify_data}.
+
+\begin{lstlisting}
+struct virtio_dev_part_vq_notify_data {
+        le16 queue_notify_off;
+        le16 queue_notif_config_data;
+        u8 reserved[4];
+};
+\end{lstlisting}
+
+\field{queue_notify_off} and \field{queue_notif_config_data} corresponds to the
+fields in \field{struct virtio_pci_common_cfg} described in
+\hyperref[sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common configuration structure layout]{Virtio PCI common configuration space}.
+
+One or multiple instance of the device part VIRTIO_DEV_PART_VQ_NOTIFY_CFG may exist
+in the get and set commands, each such device part corresponds to a unique
+virtqueue identified by the \field{vq_index.index}.
+
+\field{reserved} is reserved and set to 0.
+
+\subsection{Assumptions}
+For the SR-IOV group type, some hypervisors do not allow the driver to access
+the PCI configuration space and the MSI-X Table space directly. Such hypervisors
+query and save these fields without the need for this device parts.
+Therefore, this version of the specification does not have it in the device parts. A future
+extension of the device part may further include them as new device part.

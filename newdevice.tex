@@ -65,4 +65,26 @@ can use a single bit, but if one feature makes sense without the
 others they should not be gratuitously grouped together to
 conserve feature bits.
 
+\section{How to define a new device part?}\label{sec:Creating New Device Types or Extending the Device / How to define a new device part?}
+Few considerations are necessary when creating new device part or
+when extending the device part structure.
+If the new field is generic for all the device types or most of the device types,
+a new device part should be defined as common device part by claiming a new \field{type} value.
+If the new field is unique to a device type, a new device specific device part should
+be added.
+range.
 
+\section{When to define a new device part?}\label{sec:Creating New Device Types or Extending the Device / When to define a new device part?}
+When the device part for a specific field does not exists, one should
+define a new device part.
+
+\section{How to avoid device part duplication with existing structure?}\label{sec:Creating New Device Types or Extending the Device / How to avoid device part duplication with existing structure?}
+Each device should reuse any existing field definition that may exists as part
+of device control virtqueue or any other existing structure definition.
+
+\section{How to extend the existing device part definition?}\label{sec:Creating New Device Types or Extending the Device / How to extend the existing device part definition?}
+
+When a field is missing in already defined device part, a new field should be added at
+the end of the existing device part. New field MUST not be added at beginning or in
+the middle of the device part structure. Any field which is already present MUST NOT
+be removed.

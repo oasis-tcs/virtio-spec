@@ -282,3 +282,40 @@ observed buffers to prevent out-of-order processing if the device is resumed.
 When the command completes successfully and if the \field{flags} field
 is set to zero, the device resumes its operation. If the command completes
 with an error, it does not produce any side effects on the device.
+
+\paragraph{Device parts order}\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts / Device parts order}
+
+Device parts are usually captured and restored using get and set administration
+commands respectively; when multiple device parts are captured or restored,
+they are arranged in the specific order listed:
+
+Some of the device parts do not need to be written to the device when restored, such
+device parts are listed as \field{O}. When a such an optional device part is
+exchanged using \field{struct virtio_dev_part}, it is marked as optional by
+setting VIRTIO_DEV_PART_F_OPTIONAL(bit 0) in the \field{flags}.
+
+\begin{table}[H]
+\caption{Device parts order}
+\label{table:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts / Device parts order/ Device parts order}
+\begin{xltabular}{\textwidth}{ |l|l|X| }
+\hline
+Part name & Optional & Mandatory preceding parts \\
+\hline \hline
+\hline
+VIRTIO_DEV_PART_DEV_FEATURES & O & Nil \\
+\hline
+VIRTIO_DEV_PART_DRV_FEATURES & - & Nil \\
+\hline
+VIRTIO_DEV_PART_PCI_COMMON_CFG & - & VIRTIO_DEV_PART_DEV_FEATURES, VIRTIO_DEV_PART_DRV_FEATURES \\
+\hline
+VIRTIO_DEV_PART_DEVICE_STATUS & - & VIRTIO_DEV_PART_DEV_FEATURES, VIRTIO_DEV_PART_DRV_FEATURES, VIRTIO_DEV_PART_PCI_COMMON_CFG \\
+\hline
+VIRTIO_DEV_PART_VQ_CFG & - & VIRTIO_DEV_PART_DEV_FEATURES, VIRTIO_DEV_PART_DRV_FEATURES, VIRTIO_DEV_PART_PCI_COMMON_CFG,
+                             VIRTIO_DEV_PART_DEVICE_STATUS \\
+\hline
+VIRTIO_DEV_PART_VQ_NOTIFY_CFG & - & VIRTIO_DEV_PART_DEV_FEATURES, VIRTIO_DEV_PART_DRV_FEATURES, VIRTIO_DEV_PART_PCI_COMMON_CFG,
+                             VIRTIO_DEV_PART_DEVICE_STATUS, VIRTIO_DEV_PART_VQ_CFG \\
+\hline
+\hline
+\end{xltabular}
+\end{table}
