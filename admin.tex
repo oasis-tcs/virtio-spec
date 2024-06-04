@@ -1,7 +1,10 @@
 \section{Device groups}\label{sec:Basic Facilities of a Virtio Device / Device groups}
 
 It is occasionally useful to have a device control a group of
-other devices. Terminology used in such cases:
+other devices (the group may occasionally include the device
+itself) within a group. The owner device itself is not a
+member of the group (except in the special case of the self group).
+Terminology used in such cases:
 
 \begin{description}
 \item[Device group]
@@ -10,7 +13,7 @@ other devices. Terminology used in such cases:
         or owner, the device controlling the group.
 \item[Member device]
         a device within a group. The owner device itself is not
-	a member of the group.
+	a member of the group except for the \field{Self group type}.
 \item[Member identifier]
         each member has this identifier, unique within the group
 	and used to address it through the owner device.
@@ -37,6 +40,11 @@ driver" refers to the driver of a member device.
 
 The following group types, and their identifiers, are currently specified:
 \begin{description}
+\item[Self group type (0x0)]
+This device group includes the owner device itself and no other devices.
+The group type identifier for this group is 0x0.
+The member identifier for this group has a value of 0x0.
+
 \item[SR-IOV group type (0x1)]
 This device group has a PCI Single Root I/O Virtualization
 (SR-IOV) physical function (PF) device as the owner and includes
@@ -78,6 +86,7 @@ struct virtio_admin_cmd {
         /* Device-readable part */
         le16 opcode;
         /*
+         * 0       - Self
          * 1       - SR-IOV
          * 2-65535 - reserved
          */
