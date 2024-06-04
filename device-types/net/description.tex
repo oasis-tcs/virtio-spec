@@ -401,6 +401,22 @@ Network Device / Device Operation / Processing of Incoming Packets} below.
 A truly minimal driver would only accept VIRTIO_NET_F_MAC and ignore
 everything else.
 
+\subsection{Device and driver capabilities}\label{sec:Device Types / Network Device / Device and driver capabilities}
+
+The network device has the following capabilities.
+
+\begin{tabularx}{\textwidth}{ |l||l|X| }
+\hline
+Identifier & Name & Description \\
+\hline \hline
+0x0800 & \hyperref[par:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO_NET_FF_RESOURCE_CAP]{VIRTIO_NET_FF_RESOURCE_CAP} & Flow filter resource capability \\
+\hline
+0x0801 & \hyperref[par:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO_NET_FF_SELECTOR_CAP]{VIRTIO_NET_FF_SELECTOR_CAP} & Flow filter classifier capability \\
+\hline
+0x0802 & \hyperref[par:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO_NET_FF_ACTION_CAP]{VIRTIO_NET_FF_ACTION_CAP} & Flow filter action capability \\
+\hline
+\end{tabularx}
+
 \subsection{Device Operation}\label{sec:Device Types / Network Device / Device Operation}
 
 Packets are transmitted by placing them in the
@@ -2442,6 +2458,14 @@ rules are applied from highest to lowest priority, until one of the rules
 matches the packet and an action is taken. If all the rules within a group
 are ignored, the group with the next highest priority is selected, and so on.
 
+The device and the driver indicates flow filter resource limits using the capability
+\ref{par:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO_NET_FF_RESOURCE_CAP} specifying the limits on the number of flow filter rule,
+group and classifier resource objects. The capability \ref{par:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO_NET_FF_SELECTOR_CAP} specifies which selectors the device supports.
+The driver indicates the selectors it is using by setting the flow
+filter selector capability, prior to adding any resource objects.
+
+The capability \ref{par:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO_NET_FF_ACTION_CAP} specifies which actions the device supports.
+
 The driver controls the flow filter rule, classifier and group resource objects using
 administration commands described in
 \ref{sec:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device resource objects}.
@@ -2478,6 +2502,176 @@ Some incoming packet processing examples:
       the flow filter rules of group_A are ignored; if there is no match for
       the flow filter rules in group_B, the flow filter rules of next level group_A are applied.
 \end{itemize}
+
+\paragraph{Device and driver capabilities}
+\label{par:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities}
+
+\subparagraph{VIRTIO_NET_FF_RESOURCE_CAP}
+\label{par:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO_NET_FF_RESOURCE_CAP}
+
+The capability VIRTIO_NET_FF_RESOURCE_CAP indicates the flow filter resource limits.
+\field{cap_specific_data} is in the format
+\field{struct virtio_net_ff_cap_data}.
+
+\begin{lstlisting}
+struct virtio_net_ff_cap_data {
+        le32 groups_limit;
+        le32 selectors_limit;
+        le32 rules_limit;
+        le32 rules_per_group_limit;
+        u8 last_rule_priority;
+        u8 selectors_per_classifier_limit;
+};
+\end{lstlisting}
+
+\field{groups_limit}, and \field{selectors_limit} represent the maximum
+number of flow filter groups and selectors, respectively, that the driver can create.
+ \field{rules_limit} is the maximum number of
+flow fiilter rules that the driver can create across all the groups.
+\field{rules_per_group_limit} is the maximum number of flow filter rules that the driver
+can create for each flow filter group.
+
+\field{last_rule_priority} is the highest priority that can be assigned to a
+flow filter rule.
+
+\field{selectors_per_classifier_limit} is the maximum number of selectors
+that a classifier can have.
+
+\subparagraph{VIRTIO_NET_FF_SELECTOR_CAP}
+\label{par:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO_NET_FF_SELECTOR_CAP}
+
+The capability VIRTIO_NET_FF_SELECTOR_CAP lists the supported selectors and the
+supported packet header fields for each selector.
+\field{cap_specific_data} is in the format \field{struct virtio_net_ff_cap_mask_data}.
+
+\begin{lstlisting}[label={lst:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO_NET_FF_SELECTOR_CAP / virtio_net_ff_selector}]
+struct virtio_net_ff_selector {
+        u8 type;
+        u8 flags;
+        u8 reserved[2];
+        u8 length;
+        u8 reserved1[3];
+        u8 mask[];
+};
+
+struct virtio_net_ff_cap_mask_data {
+        u8 count;
+        u8 reserved[7];
+        struct virtio_net_ff_selector selectors[];
+};
+
+#define VIRTIO_NET_FF_MASK_F_PARTIAL_MASK (1 << 0)
+\end{lstlisting}
+
+\field{count} indicates number of valid entries in the \field{selectors} array.
+\field{selectors[]} is an array of supported selectors. Within each array entry:
+\field{type} specifies the type of the packet header, as defined in table
+\ref{table:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO_NET_FF_SELECTOR_CAP / flow filter selector types}. \field{mask} specifies which fields of the
+packet header can be matched in a flow filter rule.
+
+Each \field{type} is also listed in table
+\ref{table:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO_NET_FF_SELECTOR_CAP / flow filter selector types}. \field{mask} is a byte array
+in network byte order. For example, when \field{type} is VIRTIO_NET_FF_MASK_TYPE_IPV6,
+the \field{mask} is in the format \hyperref[intro:IPv6-Header-Format]{IPv6 Header Format}.
+
+If partial masking is not set, then all bits in each field have to be either all 0s
+to ignore this field or all 1s to match on this field. If partial masking is set,
+then any combination of bits can bit set to match on these bits.
+For example, when a selector \field{type} is VIRTIO_NET_FF_MASK_TYPE_ETH, if
+\field{mask[0-12]} are zero and \field{mask[13-14]} are 0xff (all 1s), it
+indicates that matching is only supported for \field{EtherType} of
+\field{Ethernet MAC frame}, matching is not supported for
+\field{Destination Address} and \field{Source Address}.
+
+The entries in the array \field{selectors} are ordered by
+\field{type}, with each \field{type} value only appearing once.
+
+\field{length} is the length of a dynamic array \field{mask} in bytes.
+\field{reserved} and \field{reserved1} are reserved and set to zero.
+
+\begin{table}[H]
+\caption{Flow filter selector types}
+\label{table:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO_NET_FF_SELECTOR_CAP / flow filter selector types}
+\begin{tabularx}{\textwidth}{ |l|X|X| }
+\hline
+Type & Name & Description \\
+\hline \hline
+0x0 & - & Reserved \\
+\hline
+0x1 & VIRTIO_NET_FF_MASK_TYPE_ETH & 14 bytes of frame header starting from destination address described in \hyperref[intro:IEEE 802.3-2022]{IEEE 802.3-2022} \\
+\hline
+0x2 & VIRTIO_NET_FF_MASK_TYPE_IPV4 & 20 bytes of \hyperref[intro:Internet-Header-Format]{IPv4: Internet Header Format} \\
+\hline
+0x3 & VIRTIO_NET_FF_MASK_TYPE_IPV6 & 40 bytes of \hyperref[intro:IPv6-Header-Format]{IPv6 Header Format} \\
+\hline
+0x4 & VIRTIO_NET_FF_MASK_TYPE_TCP & 20 bytes of \hyperref[intro:TCP-Header-Format]{TCP Header Format} \\
+\hline
+0x5 & VIRTIO_NET_FF_MASK_TYPE_UDP & 8 bytes of UDP header described in \hyperref[intro:UDP]{UDP} \\
+\hline
+0x6 - 0xFF & & Reserved for future \\
+\hline
+\end{tabularx}
+\end{table}
+
+When VIRTIO_NET_FF_MASK_F_PARTIAL_MASK (bit 0) is set, it indicates that
+partial masking is supported for all the fields of the selector identified by \field{type}.
+
+For the selector \field{type} VIRTIO_NET_FF_MASK_TYPE_IPV4, if a partial mask is unsupported,
+then matching on an individual bit of \field{Flags} in the
+\field{IPv4: Internet Header Format} is unsupported. \field{Flags} has to match as a whole
+if it is supported.
+
+For the selector \field{type} VIRTIO_NET_FF_MASK_TYPE_IPV4, \field{mask} includes fields
+up to the \field{Destination Address}; that is, \field{Options} and
+\field{Padding} are excluded.
+
+For the selector \field{type} VIRTIO_NET_FF_MASK_TYPE_IPV6, the \field{Next Header} field
+of the \field{mask} corresponds to the \field{Next Header} in the packet
+when \field{IPv6 Extension Headers} are not present. When the packet includes
+one or more \field{IPv6 Extension Headers}, the \field{Next Header} field of
+the \field{mask} corresponds to the \field{Next Header} of the last
+\field{IPv6 Extension Header} in the packet.
+
+For the selector \field{type} VIRTIO_NET_FF_MASK_TYPE_TCP, \field{Control bits}
+are treated as individual fields for matching; that is, matching individual
+\field{Control bits} does not depend on the partial mask support.
+
+\subparagraph{VIRTIO_NET_FF_ACTION_CAP}
+\label{par:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO_NET_FF_ACTION_CAP}
+
+The capability VIRTIO_NET_FF_ACTION_CAP lists the supported actions in a rule.
+\field{cap_specific_data} is in the format \field{struct virtio_net_ff_cap_actions}.
+
+\begin{lstlisting}
+struct virtio_net_ff_actions {
+        u8 count;
+        u8 reserved[7];
+        u8 actions[];
+};
+\end{lstlisting}
+
+\field{actions} is an array listing all possible actions.
+The entries in the array are ordered from the smallest to the largest,
+with each supported value appearing exactly once. Each entry can have the
+following values:
+
+\begin{table}[H]
+\caption{Flow filter rule actions}
+\label{table:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO_NET_FF_ACTION_CAP / flow filter rule actions}
+\begin{tabularx}{\textwidth}{ |l|X|X| }
+\hline
+Action & Name & Description \\
+\hline \hline
+0x0 & - & reserved \\
+\hline
+0x1 & VIRTIO_NET_FF_ACTION_DROP & Matching packet will be dropped by the device \\
+\hline
+0x2 & VIRTIO_NET_FF_ACTION_DIRECT_RX_VQ & Matching packet will be directed to a receive queue \\
+\hline
+0x3 - 0xFF & & Reserved for future \\
+\hline
+\end{tabularx}
+\end{table}
 
 \subsubsection{Legacy Interface: Framing Requirements}\label{sec:Device
 Types / Network Device / Legacy Interface: Framing Requirements}
