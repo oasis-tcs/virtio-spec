@@ -136,7 +136,13 @@ opcode & Name & Command Description \\
 \hline
 0x0006 & \hyperref[par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface / VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO]{VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO} & Query the notification region information \\
 \hline
-0x0007 - 0x7FFF & - & Commands using \field{struct virtio_admin_cmd}    \\
+0x0007 & \hyperref[par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device and driver capabilities / VIRTIO_ADMIN_CMD_CAP_ID_LIST_QUERY]{VIRTIO_ADMIN_CMD_CAP_ID_LIST_QUERY} & Query the supported device capabilities bitmap \\
+\hline
+0x0008 & \hyperref[par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device and driver capabilities / VIRTIO_ADMIN_CMD_DEVICE_CAP_GET]{VIRTIO_ADMIN_CMD_DEVICE_CAP_GET} & Get the device capabilities \\
+\hline
+0x0009 & \hyperref[par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device and driver capabilities / VIRTIO_ADMIN_CMD_DRIVER_CAP_SET]{VIRTIO_ADMIN_CMD_DRIVER_CAP_SET} & Set the driver capabilities \\
+\hline
+0x000a - 0x7FFF & - & Commands using \field{struct virtio_admin_cmd}    \\
 \hline
 0x8000 - 0xFFFF & - & Reserved for future commands (possibly using a different structure)    \\
 \hline
@@ -162,9 +168,13 @@ Status (decimal) & Name & Description \\
 \hline \hline
 00   & VIRTIO_ADMIN_STATUS_OK    & successful completion  \\
 \hline
+06   & VIRTIO_ADMIN_STATUS_ENXIO & no such capability \\
+\hline
 11   & VIRTIO_ADMIN_STATUS_EAGAIN    & try again \\
 \hline
 12   & VIRTIO_ADMIN_STATUS_ENOMEM    & insufficient resources \\
+\hline
+16   & VIRTIO_ADMIN_STATUS_EBUSY     & device busy \\
 \hline
 22   & VIRTIO_ADMIN_STATUS_EINVAL    & invalid command \\
 \hline

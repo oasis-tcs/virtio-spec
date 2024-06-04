@@ -32,3 +32,199 @@ compatibility between the device and driver. Furthermore, to avoid
 indefinite growth of a single capability, it is expected that new
 functionality will lead to the creation of new capability rather
 than expanding existing ones.
+
+Capabilities are categorized into two ranges by their IDs, as listed:
+
+\begin{table}[H]
+\caption{Capability ids}
+\label{table:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device and driver capabilities / capability ids}
+\begin{tabularx}{\textwidth}{ |l|X| }
+\hline
+Id & Description  \\
+\hline \hline
+0x0000-0x07ff & Generic capability for all device types \\
+\hline
+0x0800-0x0fff & Device type specific capability \\
+\hline
+0x1000 - 0xFFFF & Reserved for future \\
+\hline
+\end{tabularx}
+\end{table}
+
+Device type specific capabilities are described separately for each device
+type under \field{Device and driver capabilities}.
+
+The device and driver capabilities commands are currently defined for self group
+type.
+
+\begin{enumerate}
+\item VIRTIO_ADMIN_CMD_CAP_ID_LIST_QUERY
+\item VIRTIO_ADMIN_CMD_DEVICE_CAP_GET
+\item VIRTIO_ADMIN_CMD_DRIVER_CAP_SET
+\end{enumerate}
+
+\paragraph{VIRTIO_ADMIN_CMD_CAP_ID_LIST_QUERY}\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device and driver capabilities / VIRTIO_ADMIN_CMD_CAP_ID_LIST_QUERY}
+
+This command queries the bitmap of capability ids
+listed in \ref{table:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device and driver capabilities / capability ids}.
+
+For the command VIRTIO_ADMIN_CMD_CAP_ID_LIST_QUERY, \field{opcode} is set to 0x7.
+\field{group_member_id} is set to zero.
+
+This command has no command specific data.
+
+\begin{lstlisting}
+struct virtio_admin_cmd_query_cap_id_result {
+        le64 supported_caps[];
+};
+\end{lstlisting}
+
+When the command completes successfully, \field{command_specific_result}
+is in the format \field{struct virtio_admin_cmd_query_cap_id_result}.
+
+\field{supported_caps} is an array of 64 bit values in little-endian byte
+order, in which a bit is set if the specific capability is supported.
+Thus, \field{supported_caps[0]} refers to the first 64-bit value in this
+array corresponding to capability ids 0 to
+63, \field{supported_caps[1]} is the second 64-bit value corresponding to
+capability ids 64 to 127, etc. For example, the array of size 2 including
+the values 0x3 in \field{supported_caps[0]} and 0x1 in
+\field{supported_caps[1]} indicates that only capability id 0, 1
+and 64 are supported.
+The length of the array depends on the supported capabilities - it is
+large enough to include bits set for all supported capability ids,
+that is the length can be calculated by starting with the largest
+supported capability id adding one, dividing by 64 and rounding up.
+In other words, for VIRTIO_ADMIN_CMD_CAP_ID_LIST_QUERY the length of
+\field{command_specific_result} will be
+$DIV_ROUND_UP(max_cap_id, 64) * 8$ where DIV_ROUND_UP is integer division
+with round up and \field{max_cap_id} is the largest available capability id.
+
+The array is also allowed to be larger and to additionally include an arbitrary
+number of all-zero entries.
+
+\paragraph{VIRTIO_ADMIN_CMD_DEVICE_CAP_GET}\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device and driver capabilities / VIRTIO_ADMIN_CMD_DEVICE_CAP_GET}
+
+This command gets the device capability for the specified capability
+id \field{id}.
+
+For the command VIRTIO_ADMIN_CMD_DEVICE_CAP_GET, \field{opcode} is set to 0x8.
+\field{group_member_id} is set to zero.
+
+\field{command_specific_data} is in format
+\field{struct virtio_admin_cmd_cap_get_data}.
+
+\begin{lstlisting}
+struct virtio_admin_cmd_cap_get_data {
+        le16 id;
+        u8 reserved[6];
+};
+\end{lstlisting}
+
+\field{id} refers to the capability id listed in \ref{table:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device and driver capabilities / capability ids}.
+\field{reserved} is reserved for future use and set to zero.
+
+\begin{lstlisting}
+struct virtio_admin_cmd_cap_get_result {
+        u8 cap_specific_data[];
+};
+\end{lstlisting}
+
+When the command completes successfully, \field{command_specific_result}
+is in the format \field{struct virtio_admin_cmd_cap_get_result} responded
+by the device. Each capability uses different capability specific
+\field{cap_specific_data} and is described separately.
+
+\paragraph{VIRTIO_ADMIN_CMD_DRIVER_CAP_SET}\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device and driver capabilities / VIRTIO_ADMIN_CMD_DRIVER_CAP_SET}
+
+This command sets the driver capability, indicating to the device which capability
+the driver uses. The driver can set a resource object limit capability that is smaller
+than or equal to the value published by the device capability.
+If the capability is a set of flags, the driver sets the flag bits that are set
+in the device capability; the driver does not set any flag bits that are not
+set by the device.
+
+For the command VIRTIO_ADMIN_CMD_DRIVER_CAP_SET, \field{opcode} is set to 0x9.
+\field{group_member_id} is set to zero.
+The \field{command_specific_data} is in the format
+\field{struct virtio_admin_cmd_cap_set_data}.
+
+\begin{lstlisting}
+struct virtio_admin_cmd_cap_set_data {
+        le16 id;
+        u8 reserved[6];
+        u8 cap_specific_data[];
+};
+\end{lstlisting}
+
+\field{id} refers to the capability id listed in \ref{table:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device and driver capabilities / capability ids}.
+\field{reserved} is reserved for future use and set to zero.
+
+There is no command specific result.
+When the command completes successfully, the driver capability is updated to
+the values supplied in \field{cap_specific_data}.
+
+\devicenormative{\paragraph}{Device and driver capabilities}{Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device and driver capabilities}
+
+If the device supports capabilities, it MUST support the commands
+VIRTIO_ADMIN_CMD_CAP_ID_LIST_QUERY,
+VIRTIO_ADMIN_CMD_DRIVER_CAP_SET, and
+VIRTIO_ADMIN_CMD_DEVICE_CAP_GET.
+
+For the VIRTIO_ADMIN_CMD_DRIVER_CAP_SET command,
+\begin{itemize}
+\item the device MUST support the setting of resource object limit driver capability to a
+value that is same as or smaller than the one reported in the device
+capability,
+\item the device MUST support the setting of capability flags bits to
+all or fewer bits than the one reported in the device capability;
+\end{itemize}
+this is applicable unless specific capability fields are explicitly
+stated as non-writable in the VIRTIO_ADMIN_CMD_DEVICE_CAP_GET command.
+
+The device MAY complete the command VIRTIO_ADMIN_CMD_DRIVER_CAP_SET with
+\field{status} set to VIRTIO_ADMIN_STATUS_EINVAL,
+if the capability resource object limit is larger than the value reported by the
+device's capability, or the capability flag bit is set, which is not set in
+the device's capability.
+
+The device MUST complete the commands VIRTIO_ADMIN_CMD_CAP_ID_LIST_QUERY,
+VIRTIO_ADMIN_CMD_DRIVER_CAP_GET, and VIRTIO_ADMIN_CMD_DRIVER_CAP_SET
+with \field{status} set to VIRTIO_ADMIN_STATUS_EINVAL if the commands are not
+for the self group type.
+
+The device SHOULD complete the commands VIRTIO_ADMIN_CMD_CAP_ID_LIST_QUERY,
+VIRTIO_ADMIN_CMD_DRIVER_CAP_GET, VIRTIO_ADMIN_CMD_DRIVER_CAP_SET with
+\field{status} set to VIRTIO_ADMIN_STATUS_EINVAL if the commands are not for the
+self group type.
+
+The device SHOULD complete the command VIRTIO_ADMIN_CMD_DRIVER_CAP_SET with
+\field{status} set to VIRTIO_ADMIN_STATUS_EBUSY if the command requests to disable
+a capability while the device still has valid resource objects related to the
+capability being disabled.
+
+The device SHOULD complete the comands VIRTIO_ADMIN_CMD_DEVICE_CAP_GET and
+VIRTIO_ADMIN_CMD_DRIVER_CAP_SET with \field{status} set to
+VIRTIO_ADMIN_STATUS_ENXIO if the capability id is not reported
+in command VIRTIO_ADMIN_CMD_CAP_ID_LIST_QUERY.
+
+Upon a device reset, the device MUST reset all driver capabilities.
+
+\drivernormative{\paragraph}{Device and driver capabilities}{Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device and driver capabilities}
+
+The driver MUST send the command VIRTIO_ADMIN_CMD_DRIVER_CAP_SET before
+using any resource objects that depend on such a capability.
+
+In VIRTIO_ADMIN_CMD_DRIVER_CAP_SET command, the driver MUST NOT set
+\begin{itemize}
+\item the resource object limit value larger than the value reported
+by the device in the command VIRTIO_ADMIN_CMD_DEVICE_CAP_GET,
+\item flags bits which was not reported by the device in the command
+VIRTIO_ADMIN_CMD_DEVICE_CAP_GET,
+\item array entries not reported by the device in the command
+VIRTIO_ADMIN_CMD_DEVICE_CAP_GET.
+\end{itemize}
+
+The driver MUST NOT disable any of the driver capability using the command
+VIRTIO_ADMIN_CMD_DRIVER_CAP_SET when related resource objects
+are created but not destroyed.
