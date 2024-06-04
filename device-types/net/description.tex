@@ -417,6 +417,22 @@ Identifier & Name & Description \\
 \hline
 \end{tabularx}
 
+\subsection{Device resource objects}\label{sec:Device Types / Network Device / Device resource objects}
+
+The network device has the following resource objects.
+
+\begin{tabularx}{\textwidth}{ |l||l|X| }
+\hline
+type & Name & Description \\
+\hline \hline
+0x0200 & \hyperref[par:Device Types / Network Device / Device Operation / Flow filter / Resource objects / VIRTIO_NET_RESOURCE_OBJ_FF_GROUP]{VIRTIO_NET_RESOURCE_OBJ_FF_GROUP} & Flow filter group resource object \\
+\hline
+0x0201 & \hyperref[par:Device Types / Network Device / Device Operation / Flow filter / Resource objects / VIRTIO_NET_RESOURCE_OBJ_FF_CLASSIFIER]{VIRTIO_NET_RESOURCE_OBJ_FF_CLASSIFIER} & Flow filter mask object \\
+\hline
+0x0202 & \hyperref[par:Device Types / Network Device / Device Operation / Flow filter / Resource objects / VIRTIO_NET_RESOURCE_OBJ_FF_RULE]{VIRTIO_NET_RESOURCE_OBJ_FF_RULE} & Flow filter rule object \\
+\hline
+\end{tabularx}
+
 \subsection{Device Operation}\label{sec:Device Types / Network Device / Device Operation}
 
 Packets are transmitted by placing them in the
@@ -2672,6 +2688,163 @@ Action & Name & Description \\
 \hline
 \end{tabularx}
 \end{table}
+
+\paragraph{Resource objects}
+\label{par:Device Types / Network Device / Device Operation / Flow filter / Resource objects}
+
+\subparagraph{VIRTIO_NET_RESOURCE_OBJ_FF_GROUP}\label{par:Device Types / Network Device / Device Operation / Flow filter / Resource objects / VIRTIO_NET_RESOURCE_OBJ_FF_GROUP}
+
+A flow filter group contains between 0 and \field{rules_limit} rules, as specified by the
+capability VIRTIO_NET_FF_RESOURCE_CAP. For the flow filter group object both
+\field{resource_obj_specific_data} and
+\field{resource_obj_specific_result} are in the format
+\field{struct virtio_net_resource_obj_ff_group}.
+
+\begin{lstlisting}
+struct virtio_net_resource_obj_ff_group {
+        le16 group_priority;
+};
+\end{lstlisting}
+
+\field{group_priority} specifies the priority for the group. Each group has a
+distinct priority. For each incoming packet, the device tries to apply rules
+from groups from higher \field{group_priority} value to lower, until either a
+rule matches the packet or all groups have been tried.
+
+\subparagraph{VIRTIO_NET_RESOURCE_OBJ_FF_CLASSIFIER}\label{par:Device Types / Network Device / Device Operation / Flow filter / Resource objects / VIRTIO_NET_RESOURCE_OBJ_FF_CLASSIFIER}
+
+A classifier is used to match a flow filter key against a packet. The
+classifier defines the desired packet fields to match, and is represented by
+the VIRTIO_NET_RESOURCE_OBJ_FF_CLASSIFIER device resource object.
+
+For the flow filter classifier object both \field{resource_obj_specific_data} and
+\field{resource_obj_specific_result} are in the format
+\field{struct virtio_net_resource_obj_ff_classifier}.
+
+\begin{lstlisting}
+struct virtio_net_resource_obj_ff_classifier {
+        u8 count;
+        u8 reserved[7];
+        struct virtio_net_ff_selector selectors[];
+};
+\end{lstlisting}
+
+A classifier is an array of \field{selectors}. The number of selectors in the
+array is indicated by \field{count}. The selector has a type that specifies
+the header fields to be matched against, and a mask.
+See \ref{lst:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO_NET_FF_SELECTOR_CAP / virtio_net_ff_selector}
+for details about selectors.
+
+The first selector is always VIRTIO_NET_FF_MASK_TYPE_ETH. When there are multiple
+selectors, a second selector can be either VIRTIO_NET_FF_MASK_TYPE_IPV4
+or VIRTIO_NET_FF_MASK_TYPE_IPV6. If the third selector exists, the third
+selector can be either VIRTIO_NET_FF_MASK_TYPE_UDP or VIRTIO_NET_FF_MASK_TYPE_TCP.
+For example, to match a Ethernet IPv6 UDP packet,
+\field{selectors[0].type} is set to VIRTIO_NET_FF_MASK_TYPE_ETH, \field{selectors[1].type}
+is set to VIRTIO_NET_FF_MASK_TYPE_IPV6 and \field{selectors[2].type} is
+set to VIRTIO_NET_FF_MASK_TYPE_UDP; accordingly, \field{selectors[0].mask[0-13]} is
+for Ethernet header fields, \field{selectors[1].mask[0-39]} is set for IPV6 header
+and \field{selectors[2].mask[0-7]} is set for UDP header.
+
+When there are multiple selectors, the type of the (N+1)\textsuperscript{th} selector
+affects the mask of the (N)\textsuperscript{th} selector. If
+\field{count} is 2 or more, all the mask bits within \field{selectors[0]}
+corresponding to \field{EtherType} of an Ethernet header are set.
+
+If \field{count} is more than 2:
+\begin{itemize}
+\item if \field{selector[1].type} is, VIRTIO_NET_FF_MASK_TYPE_IPV4, then, all the mask bits within
+\field{selector[1]} for \field{Protocol} is set.
+\item if \field{selector[1].type} is, VIRTIO_NET_FF_MASK_TYPE_IPV6, then, all the mask bits within
+\field{selector[1]} for \field{Next Header} is set.
+\end{itemize}
+
+If for a given packet header field, a subset of bits of a field is to be matched,
+and if the partial mask is supported, the flow filter
+mask object can specify a mask which has fewer bits set than the packet header
+field size. For example, a partial mask for the Ethernet header source mac
+address can be of 1-bit for multicast detection instead of 48-bits.
+
+\subparagraph{VIRTIO_NET_RESOURCE_OBJ_FF_RULE}\label{par:Device Types / Network Device / Device Operation / Flow filter / Resource objects / VIRTIO_NET_RESOURCE_OBJ_FF_RULE}
+
+Each flow filter rule resource object comprises a key, a priority, and an action.
+For the flow filter rule object,
+\field{resource_obj_specific_data} and
+\field{resource_obj_specific_result} are in the format
+\field{struct virtio_net_resource_obj_ff_rule}.
+
+\begin{lstlisting}
+struct virtio_net_resource_obj_ff_rule {
+        le32 group_id;
+        le32 classifier_id;
+        u8 rule_priority;
+        u8 key_length; /* length of key in bytes */
+        u8 action;
+        u8 reserved;
+        le16 vq_index;
+        u8 reserved1[2];
+        u8 keys[][];
+};
+\end{lstlisting}
+
+\field{group_id} is the resource object ID of the flow filter group to which
+this rule belongs. \field{classifier_id} is the resource object ID of the
+classifier used to match a packet against the \field{key}.
+
+\field{rule_priority} denotes the priority of the rule within the group
+specified by the \field{group_id}.
+Rules within the group are applied from the highest to the lowest priority
+until a rule matches the packet and an
+action is taken. Rules with the same priority can be applied in any order.
+
+\field{reserved} and \field{reserved1} are reserved and set to 0.
+
+\field{keys[][]} is an array of keys to match against packets, using
+the classifier specified by \field{classifier_id}. Each entry (key) comprises
+a byte array, and they are located one immediately after another.
+The size (number of entries) of the array is exactly the same as that of
+\field{selectors} in the classifier, or in other words, \field{count}
+in the classifier.
+
+\field{key_length} specifies the total length of \field{keys} in bytes.
+In other words, it equals the sum total of \field{length} of all
+selectors in \field{selectors} in the classifier specified by
+\field{classifier_id}.
+
+For example, if a classifier object's \field{selectors[0].type} is
+VIRTIO_NET_FF_MASK_TYPE_ETH and \field{selectors[1].type} is
+VIRTIO_NET_FF_MASK_TYPE_IPV6,
+then selectors[0].length is 14 and selectors[1].length is 40.
+Accordingly, the \field{key_length} is set to 54.
+This setting indicates that the \field{key} array's length is 54 bytes
+comprising a first byte array of 14 bytes for the
+Ethernet MAC header in bytes 0-13, immediately followed by 40 bytes for the
+IPv6 header in bytes 14-53.
+
+When there are multiple selectors in the classifier object, the key bytes
+for (N)\textsuperscript{th} selector are set so that
+(N+1)\textsuperscript{th} selector can be matched.
+
+If \field{count} is 2 or more, key bytes of \field{EtherType}
+are set according to \hyperref[intro:IEEE 802 Ethertypes]{IEEE 802 Ethertypes}
+for VIRTIO_NET_FF_MASK_TYPE_IPV4 or VIRTIO_NET_FF_MASK_TYPE_IPV6 respectively.
+
+If \field{count} is more than 2, when \field{selector[1].type} is
+VIRTIO_NET_FF_MASK_TYPE_IPV4 or VIRTIO_NET_FF_MASK_TYPE_IPV6, key
+bytes of \field{Protocol} or \field{Next Header} is set as per
+\field{Protocol Numbers} defined \hyperref[intro:IANA Protocol Numbers]{IANA Protocol Numbers}
+respectively.
+
+\field{action} is the action to take when a packet matches the
+\field{key} using the \field{classifier_id}. Supported actions are described in
+\ref{table:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO_NET_FF_ACTION_CAP / flow filter rule actions}.
+
+\field{vq_index} specifies a receive virtqueue. When the \field{action} is set
+to VIRTIO_NET_FF_ACTION_DIRECT_RX_VQ, and the packet matches the \field{key},
+the matching packet is directed to this virtqueue.
+
+Note that at most one action is ever taken for a given packet. If a rule is
+applied and an action is taken, the action of other rules is not taken.
 
 \subsubsection{Legacy Interface: Framing Requirements}\label{sec:Device
 Types / Network Device / Legacy Interface: Framing Requirements}
