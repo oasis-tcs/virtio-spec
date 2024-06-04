@@ -1,0 +1,34 @@
+\subsubsection{Device and driver capabilities}\label{sec:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device and driver capabilities}
+
+Device and driver capabilities are implemented as structured groupings for
+specific device functionality and their related resource objects. The device exposes
+its supported functionality and resource object limits through an administration
+command, utilizing the 'self group type.' Each capability possesses a
+unique ID. Through an administration command, also employing the
+'self group type,' the driver reports the functionality and
+resource object limits it intends to use. Before executing any operations
+related to the capabilities, the driver communicates these
+capabilities to the device. The driver is allowed to set the
+capability at any time, provided there are no pending operations
+at the device level associated with that capability.
+
+The device presents the supported capability IDs to the driver as a bitmap.
+The driver uses the administration command to learn about the
+supported capabilities bitmap.
+
+A capability consists of one or more fields, where each field can be a
+limit number, a bitmap, or an array of entries. In an array field,
+the structure depends on the specific array and the capability type.
+For each bitmap field, the driver sets the desired bits - but only out of
+those bits in a bitmap that the device has presented.
+The driver sets each limit number field to a desired value that
+is smaller than or equal to the value the device presented.
+Similarly, for an array field, the driver sets the desired capability
+entries but only out of the capability entries that the device has presented.
+
+It is anticipated that any necessary new fields for a capability will be
+appended to the structure's end, ensuring both forward and backward
+compatibility between the device and driver. Furthermore, to avoid
+indefinite growth of a single capability, it is expected that new
+functionality will lead to the creation of new capability rather
+than expanding existing ones.
