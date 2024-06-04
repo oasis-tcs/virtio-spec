@@ -2846,6 +2846,180 @@ the matching packet is directed to this virtqueue.
 Note that at most one action is ever taken for a given packet. If a rule is
 applied and an action is taken, the action of other rules is not taken.
 
+\devicenormative{\paragraph}{Flow filter}{Device Types / Network Device / Device Operation / Flow filter}
+
+When the device supports flow filter operations,
+\begin{itemize}
+\item the device MUST set VIRTIO_NET_FF_RESOURCE_CAP, VIRTIO_NET_FF_SELECTOR_CAP
+and VIRTIO_NET_FF_ACTION_CAP capability in the \field{supported_caps} in the
+command VIRTIO_ADMIN_CMD_CAP_SUPPORT_QUERY.
+\item the device MUST support the administration commands
+VIRTIO_ADMIN_CMD_RESOURCE_OBJ_CREATE,
+VIRTIO_ADMIN_CMD_RESOURCE_OBJ_MODIFY, VIRTIO_ADMIN_CMD_RESOURCE_OBJ_QUERY,
+VIRTIO_ADMIN_CMD_RESOURCE_OBJ_DESTROY for the resource types
+VIRTIO_NET_RESOURCE_OBJ_FF_GROUP, VIRTIO_NET_RESOURCE_OBJ_FF_CLASSIFIER and
+VIRTIO_NET_RESOURCE_OBJ_FF_RULE.
+\end{itemize}
+
+When any of the VIRTIO_NET_FF_RESOURCE_CAP, VIRTIO_NET_FF_SELECTOR_CAP, or
+VIRTIO_NET_FF_ACTION_CAP capability is disabled, the device SHOULD set
+\field{status} to VIRTIO_ADMIN_STATUS_Q_INVALID_OPCODE for the commands
+VIRTIO_ADMIN_CMD_RESOURCE_OBJ_CREATE,
+VIRTIO_ADMIN_CMD_RESOURCE_OBJ_MODIFY, VIRTIO_ADMIN_CMD_RESOURCE_OBJ_QUERY,
+and VIRTIO_ADMIN_CMD_RESOURCE_OBJ_DESTROY. These commands apply to the resource
+\field{type} of VIRTIO_NET_RESOURCE_OBJ_FF_GROUP, VIRTIO_NET_RESOURCE_OBJ_FF_CLASSIFIER, and
+VIRTIO_NET_RESOURCE_OBJ_FF_RULE.
+
+The device SHOULD set \field{status} to VIRTIO_ADMIN_STATUS_EINVAL for the
+command VIRTIO_ADMIN_CMD_RESOURCE_OBJ_CREATE when the resource \field{type}
+is VIRTIO_NET_RESOURCE_OBJ_FF_GROUP, if a flow filter group already exists
+with the supplied \field{group_priority}.
+
+The device SHOULD set \field{status} to VIRTIO_ADMIN_STATUS_ENOSPC for the
+command VIRTIO_ADMIN_CMD_RESOURCE_OBJ_CREATE when the resource \field{type}
+is VIRTIO_NET_RESOURCE_OBJ_FF_GROUP, if the number of flow filter group
+objects in the device exceeds the lower of the configured driver
+capabilities \field{groups_limit} and \field{rules_per_group_limit}.
+
+The device SHOULD set \field{status} to VIRTIO_ADMIN_STATUS_ENOSPC for the
+command VIRTIO_ADMIN_CMD_RESOURCE_OBJ_CREATE when the resource \field{type} is
+VIRTIO_NET_RESOURCE_OBJ_FF_CLASSIFIER, if the number of flow filter selector
+objects in the device exceeds the configured driver capability
+\field{selectors_limit}.
+
+The device SHOULD set \field{status} to VIRTIO_ADMIN_STATUS_EBUSY for the
+command VIRTIO_ADMIN_CMD_RESOURCE_OBJ_DESTROY for a flow filter group when
+the flow filter group has one or more flow filter rules depending on it.
+
+The device SHOULD set \field{status} to VIRTIO_ADMIN_STATUS_EBUSY for the
+command VIRTIO_ADMIN_CMD_RESOURCE_OBJ_DESTROY for a flow filter classifier when
+the flow filter classifier has one or more flow filter rules depending on it.
+
+The device SHOULD fail the command VIRTIO_ADMIN_CMD_RESOURCE_OBJ_CREATE for the
+flow filter rule resource object if,
+\begin{itemize}
+\item \field{vq_index} is not a valid receive virtqueue index for
+the VIRTIO_NET_FF_ACTION_DIRECT_RX_VQ action,
+\item \field{priority} is greater than or equal to
+      \field{last_rule_priority},
+\item \field{id} is greater than or equal to \field{rules_limit} or
+      greater than or equal to \field{rules_per_group_limit}, whichever is lower,
+\item the length of \field{keys} and the length of all the mask bytes of
+      \field{selectors[].mask} as referred by \field{classifier_id} differs,
+\item the supplied \field{action} is not supported in the capability VIRTIO_NET_FF_ACTION_CAP.
+\end{itemize}
+
+When the flow filter directs a packet to the virtqueue identified by
+\field{vq_index} and if the receive virtqueue is reset, the device
+MUST drop such packets.
+
+Upon applying a flow filter rule to a packet, the device MUST STOP any further
+application of rules and cease applying any other steering configurations.
+
+For multiple flow filter groups, the device MUST apply the rules from
+the group with the highest priority. If any rule from this group is applied,
+the device MUST ignore the remaining groups. If none of the rules from the
+highest priority group match, the device MUST apply the rules from
+the group with the next highest priority, until either a rule matches or
+all groups have been attempted.
+
+The device MUST apply the rules within the group from the highest to the
+lowest priority until a rule matches the packet, and the device MUST take
+the action. If an action is taken, the device MUST not take any other
+action for this packet.
+
+The device MAY apply the rules with the same \field{rule_priority} in any
+order within the group.
+
+The device MUST process incoming packets in the following order:
+\begin{itemize}
+\item apply the steering configuration received using control virtqueue
+      commands VIRTIO_NET_CTRL_RX, VIRTIO_NET_CTRL_MAC, and
+      VIRTIO_NET_CTRL_VLAN.
+\item apply flow filter rules if any.
+\item if no filter rule is applied, apply the steering configuration
+      received using the command VIRTIO_NET_CTRL_MQ_RSS_CONFIG
+      or according to automatic receive steering.
+\end{itemize}
+
+When processing an incoming packet, if the packet is dropped at any stage, the device
+MUST skip further processing.
+
+When the device drops the packet due to the configuration done using the control
+virtqueue commands VIRTIO_NET_CTRL_RX or VIRTIO_NET_CTRL_MAC or VIRTIO_NET_CTRL_VLAN,
+the device MUST skip flow filter rules for this packet.
+
+When the device performs flow filter match operations and if the operation
+result did not have any match in all the groups, the receive packet processing
+continues to next level, i.e. to apply configuration done using
+VIRTIO_NET_CTRL_MQ_RSS_CONFIG command.
+
+The device MUST support the creation of flow filter classifier objects
+using the command VIRTIO_ADMIN_CMD_RESOURCE_OBJ_CREATE with \field{flags}
+set to VIRTIO_NET_FF_MASK_F_PARTIAL_MASK;
+this support is required even if all the bits of the masks are set for
+a field in \field{selectors}, provided that partial masking is supported
+for the selectors.
+
+\drivernormative{\paragraph}{Flow filter}{Device Types / Network Device / Device Operation / Flow filter}
+
+The driver MUST enable VIRTIO_NET_FF_RESOURCE_CAP, VIRTIO_NET_FF_SELECTOR_CAP,
+and VIRTIO_NET_FF_ACTION_CAP capabilities to use flow filter.
+
+The driver SHOULD NOT remove a flow filter group using the command
+VIRTIO_ADMIN_CMD_RESOURCE_OBJ_DESTROY when one or more flow filter rules
+depend on that group. The driver SHOULD only destroy the group after
+all the associated rules have been destroyed.
+
+The driver SHOULD NOT remove a flow filter classifier using the command
+VIRTIO_ADMIN_CMD_RESOURCE_OBJ_DESTROY when one or more flow filter rules
+depend on the classifier. The driver SHOULD only destroy the classifier
+after all the associated rules have been destroyed.
+
+The driver SHOULD NOT add multiple flow filter rules with the same
+\field{rule_priority} within a flow filter group, as these rules MAY match
+the same packet. The driver SHOULD assign different \field{rule_priority}
+values to different flow filter rules if multiple rules may match a single
+packet.
+
+For the command VIRTIO_ADMIN_CMD_RESOURCE_OBJ_CREATE, when creating a resource
+of \field{type} VIRTIO_NET_RESOURCE_OBJ_FF_CLASSIFIER, the driver MUST set:
+\begin{itemize}
+\item \field{selectors[0].type} to VIRTIO_NET_FF_MASK_TYPE_ETH.
+\item \field{selectors[1].type} to VIRTIO_NET_FF_MASK_TYPE_IPV4 or
+      VIRTIO_NET_FF_MASK_TYPE_IPV6 when \field{count} is more than 1,
+\item \field{selectors[2].type} VIRTIO_NET_FF_MASK_TYPE_UDP or
+      VIRTIO_NET_FF_MASK_TYPE_TCP when \field{count} is more than 2.
+\end{itemize}
+
+For the command VIRTIO_ADMIN_CMD_RESOURCE_OBJ_CREATE, when creating a resource
+of \field{type} VIRTIO_NET_RESOURCE_OBJ_FF_CLASSIFIER, the driver MUST set:
+\begin{itemize}
+\item \field{selectors[0].mask} bytes to all 1s for the \field{EtherType}
+       when \field{count} is 2 or more.
+\item \field{selectors[1].mask} bytes to all 1s for \field{Protocol} or \field{Next Header}
+       when \field{selector[1].type} is VIRTIO_NET_FF_MASK_TYPE_IPV4 or VIRTIO_NET_FF_MASK_TYPE_IPV6,
+       and when \field{count} is more than 2.
+\end{itemize}
+
+For the command VIRTIO_ADMIN_CMD_RESOURCE_OBJ_CREATE, the resource \field{type}
+VIRTIO_NET_RESOURCE_OBJ_FF_RULE, if the corresponding classifier object's
+\field{count} is 2 or more, the driver MUST SET the \field{keys} bytes of
+\field{EtherType} in accordance with
+\hyperref[intro:IEEE 802 Ethertypes]{IEEE 802 Ethertypes}
+for either VIRTIO_NET_FF_MASK_TYPE_IPV4 or VIRTIO_NET_FF_MASK_TYPE_IPV6.
+
+For the command VIRTIO_ADMIN_CMD_RESOURCE_OBJ_CREATE, when creating a resource of
+\field{type} VIRTIO_NET_RESOURCE_OBJ_FF_RULE, if the corresponding classifier
+object's \field{count} is more than 2, and the \field{selector[1].type} is either
+VIRTIO_NET_FF_MASK_TYPE_IPV4 or VIRTIO_NET_FF_MASK_TYPE_IPV6, the driver MUST
+set the \field{keys} bytes for the \field{Protocol} or \field{Next Header}
+according to \hyperref[intro:IANA Protocol Numbers]{IANA Protocol Numbers} respectively.
+
+The driver SHOULD set all the bits for a field in the mask of a selector in both the
+capability and the classifier object, unless the VIRTIO_NET_FF_MASK_F_PARTIAL_MASK
+is enabled.
+
 \subsubsection{Legacy Interface: Framing Requirements}\label{sec:Device
 Types / Network Device / Legacy Interface: Framing Requirements}
 
