@@ -2411,6 +2411,74 @@ replies are missed, it is possible that some statistics may exceed the capacity
 of the driver's records. In such cases, the driver should allocate additional
 space for the \field{command-specific-result} buffer.
 
+\subsubsection{Flow filter}\label{sec:Device Types / Network Device / Device Operation / Flow filter}
+
+A network device can support one or more flow filter rules. Each flow filter rule
+is applied by matching a packet and then taking an action, such as directing the packet
+to a specific receiveq or dropping the packet. An example of a match is
+matching on specific source and destination IP addresses.
+
+A flow filter rule is a device resource object that consists of a key,
+a processing priority, and an action to either direct a packet to a
+receive queue or drop the packet.
+
+Each rule uses a classifier. The key is matched against the packet using
+a classifier, defining which fields in the packet are matched.
+A classifier resource object consists of one or more field selectors, each with
+a type that specifies the header fields to be matched against, and a mask.
+The mask can match whole fields or parts of a field in a header. Each
+rule resource object depends on the classifier resource object.
+
+When a packet is received, relevant fields are extracted
+(in the same way) from both the packet and the key according to the
+classifier. The resulting field contents are then compared -
+if they are identical the rule action is taken, if they are not, the rule is ignored.
+
+Multiple flow filter rules are part of a group. The rule resource object
+depends on the group. Each rule within a
+group has a rule priority, and each group also has a group priority. For a
+packet, a group with the highest priority is selected first. Within a group,
+rules are applied from highest to lowest priority, until one of the rules
+matches the packet and an action is taken. If all the rules within a group
+are ignored, the group with the next highest priority is selected, and so on.
+
+The driver controls the flow filter rule, classifier and group resource objects using
+administration commands described in
+\ref{sec:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device resource objects}.
+
+\paragraph{Packet processing order}\label{sec:sec:Device Types / Network Device / Device Operation / Flow filter / Packet processing order}
+
+Note that flow filter rules are applied after MAC/VLAN filtering. Flow filter
+rules take precedence over steering: if a flow filter rule results in an action,
+the steering configuration does not apply. The steering configuration only applies
+to packets for which no flow filter rule action was performed. For example,
+incoming packets can be processed in the following order:
+
+\begin{itemize}
+\item apply steering configuration received using control virtqueue commands
+      VIRTIO_NET_CTRL_RX, VIRTIO_NET_CTRL_MAC and VIRTIO_NET_CTRL_VLAN.
+\item apply flow filter rules if any.
+\item if no filter rule applied, apply steering configuration received using command
+      VIRTIO_NET_CTRL_MQ_RSS_CONFIG or as per automatic receive steering.
+\end{itemize}
+
+Some incoming packet processing examples:
+\begin{itemize}
+\item If the packet is dropped by the flow filter rule, RSS
+      steering is ignored for the packet.
+\item If the packet is directed to a specific receiveq using flow filter rule,
+      the RSS steering is ignored for the packet.
+\item If a packet is dropped due to the VIRTIO_NET_CTRL_MAC configuration,
+      both flow filter rules and the RSS steering are ignored for the packet.
+\item If a packet does not match any flow filter rules,
+      the RSS steering is used to select the receiveq for the packet (if enabled).
+\item If there are two flow filter groups configured as group_A and group_B
+      with respective group priorities as 4, and 5; flow filter rules of
+      group_B are applied first having highest group priority, if there is a match,
+      the flow filter rules of group_A are ignored; if there is no match for
+      the flow filter rules in group_B, the flow filter rules of next level group_A are applied.
+\end{itemize}
+
 \subsubsection{Legacy Interface: Framing Requirements}\label{sec:Device
 Types / Network Device / Legacy Interface: Framing Requirements}
 
