@@ -142,7 +142,15 @@ opcode & Name & Command Description \\
 \hline
 0x0009 & \hyperref[par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device and driver capabilities / VIRTIO_ADMIN_CMD_DRIVER_CAP_SET]{VIRTIO_ADMIN_CMD_DRIVER_CAP_SET} & Set the driver capabilities \\
 \hline
-0x000a - 0x7FFF & - & Commands using \field{struct virtio_admin_cmd}    \\
+0x000a & \hyperref[par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device resource objects / VIRTIO_ADMIN_CMD_RESOURCE_OBJ_CREATE]{VIRTIO_ADMIN_CMD_RESOURCE_OBJ_CREATE} & Create a device resource object \\
+\hline
+0x000c & \hyperref[par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device resource objects / VIRTIO_ADMIN_CMD_RESOURCE_OBJ_MODIFY]{VIRTIO_ADMIN_CMD_RESOURCE_OBJ_MODIFY} & Modify a device resource object \\
+\hline
+0x000b & \hyperref[par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device resource objects / VIRTIO_ADMIN_CMD_RESOURCE_OBJ_QUERY]{VIRTIO_ADMIN_CMD_RESOURCE_OBJ_QUERY} & Query a device resource object \\
+\hline
+0x000d & \hyperref[par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device resource objects / VIRTIO_ADMIN_CMD_RESOURCE_OBJ_DESTROY]{VIRTIO_ADMIN_CMD_RESOURCE_OBJ_DESTROY} & Destroy a device resource object \\
+\hline
+0x000e - 0x7FFF & - & Commands using \field{struct virtio_admin_cmd}    \\
 \hline
 0x8000 - 0xFFFF & - & Reserved for future commands (possibly using a different structure)    \\
 \hline
@@ -168,7 +176,7 @@ Status (decimal) & Name & Description \\
 \hline \hline
 00   & VIRTIO_ADMIN_STATUS_OK    & successful completion  \\
 \hline
-06   & VIRTIO_ADMIN_STATUS_ENXIO & no such capability \\
+06   & VIRTIO_ADMIN_STATUS_ENXIO & no such capability or resource\\
 \hline
 11   & VIRTIO_ADMIN_STATUS_EAGAIN    & try again \\
 \hline
@@ -177,6 +185,8 @@ Status (decimal) & Name & Description \\
 16   & VIRTIO_ADMIN_STATUS_EBUSY     & device busy \\
 \hline
 22   & VIRTIO_ADMIN_STATUS_EINVAL    & invalid command \\
+\hline
+28   & VIRTIO_ADMIN_STATUS_ENOSPC    & resources exhausted on device \\
 \hline
 other   & -    & group administration command error  \\
 \hline

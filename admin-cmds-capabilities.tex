@@ -210,6 +210,9 @@ in command VIRTIO_ADMIN_CMD_CAP_ID_LIST_QUERY.
 
 Upon a device reset, the device MUST reset all driver capabilities.
 
+The device SHOULD treat the driver resource limits as zero if the
+driver has not set such capability, unless otherwise explicitly stated.
+
 \drivernormative{\paragraph}{Device and driver capabilities}{Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device and driver capabilities}
 
 The driver MUST send the command VIRTIO_ADMIN_CMD_DRIVER_CAP_SET before

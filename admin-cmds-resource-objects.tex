@@ -67,3 +67,202 @@ When the device resets, it starts with zero resources of each type; the driver
 can create resources up to the published \field{limit}. The driver can
 destroy and recreate the resource one or multiple times. Upon device reset,
 all resource objects created by the driver are destroyed within the device.
+
+Following administration commands control device resource objects,
+they are only supported for the self group type:
+
+\begin{enumerate}
+\item VIRTIO_ADMIN_CMD_RESOURCE_OBJ_CREATE
+\item VIRTIO_ADMIN_CMD_RESOURCE_OBJ_MODIFY
+\item VIRTIO_ADMIN_CMD_RESOURCE_OBJ_QUERY
+\item VIRTIO_ADMIN_CMD_RESOURCE_OBJ_DESTROY
+\end{enumerate}
+
+Each resource object administration command uses a common header
+\field{struct virtio_admin_cmd_resource_obj_cmd_hdr}.
+
+\begin{lstlisting}
+struct virtio_admin_cmd_resource_obj_cmd_hdr {
+        le16 type;
+        u8 reserved[2];
+        le32 id; /* Indicates unique resource object id per resource object type */
+};
+
+\end{lstlisting}
+
+\field{type} refers to the device resource object type.
+\field{id} uniquely identifies the resource object of a specified \field{type}.
+
+\paragraph{VIRTIO_ADMIN_CMD_RESOURCE_OBJ_CREATE}
+\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device resource objects / VIRTIO_ADMIN_CMD_RESOURCE_OBJ_CREATE}
+
+This command creates the specified resource object of \field{type} identified by the
+resource id \field{id}. The valid range of \field{id} is defined by the
+device in the related device capability. The driver assigns the unique \field{id}
+for the resource for the specified \field{type}.
+
+For the command VIRTIO_ADMIN_CMD_RESOURCE_OBJ_CREATE, \field{opcode} is set to 0xa.
+\field{group_member_id} is set to zero.
+The \field{command_specific_data} is in the format
+\field{struct virtio_admin_cmd_resource_obj_create_data}.
+\field{resource_obj_specific_data} refers to the resource object specific data.
+Each resource uses a different \field{resource_obj_specific_data} and is described
+separately.
+
+\field{flags} is reserved for future extension for optional resource object attributes and
+is set to 0. Each resource object uses a different value for
+\field{flags} and it is described separately.
+
+\begin{lstlisting}
+struct virtio_admin_cmd_resource_obj_create_data {
+        struct virtio_admin_cmd_resource_obj_cmd_hdr hdr;
+        le64 flags;
+        u8 resource_obj_specific_data[];
+};
+\end{lstlisting}
+
+When the command completes successfully, the resource object is created by the
+device and the device can immediately begin using it.
+This command has no command specific result.
+
+\paragraph{VIRTIO_ADMIN_CMD_RESOURCE_OBJ_MODIFY}
+\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device resource objects / VIRTIO_ADMIN_CMD_RESOURCE_OBJ_MODIFY}
+
+This command modifies the attributes of an existing device resource object.
+For the command VIRTIO_ADMIN_CMD_RESOURCE_OBJ_MODIFY, \field{opcode} is set to 0xb.
+The \field{command_specific_data} is in the format
+\field{struct virtio_admin_cmd_resource_modify_data}.
+\field{group_member_id} is set to zero.
+\field{id} identifies the resource object of type \field{type} whose attributes
+to modify.
+This command modifies the attributes supplied in \field{resource_obj_specific_data}.
+
+\begin{lstlisting}
+struct virtio_admin_cmd_resource_modify_data {
+        struct virtio_admin_cmd_resource_obj_cmd_hdr hdr;
+        le64 flags;
+        u8 resource_obj_specific_data[];
+};
+\end{lstlisting}
+
+This command has no command specific result.
+When the command completes successfully, attributes of the resource object is
+set to the values supplied in \field{resource_obj_specific_data}.
+
+\paragraph{VIRTIO_ADMIN_CMD_RESOURCE_OBJ_QUERY}
+\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device resource objects / VIRTIO_ADMIN_CMD_RESOURCE_OBJ_QUERY}
+
+This command queries attributes of the existing resource object.
+For the command VIRTIO_ADMIN_CMD_RESOURCE_OBJ_QUERY, \field{opcode} is set to 0xc.
+\field{group_member_id} is set to zero.
+The \field{command_specific_data} is in the format
+\field{struct virtio_admin_cmd_resource_obj_query_data}.
+\field{id} identifies the existing resource object of type \field{type} whose
+attributes to query.
+
+\begin{lstlisting}
+struct virtio_admin_cmd_resource_obj_query_data {
+        struct virtio_admin_cmd_resource_obj_cmd_hdr hdr;
+        le64 flags;
+};
+\end{lstlisting}
+
+\begin{lstlisting}
+struct virtio_admin_cmd_resource_obj_query_result {
+        u8 resource_obj_specific_result[];
+};
+\end{lstlisting}
+
+\field{command_specific_result} is in the format
+\field{virtio_admin_cmd_resource_obj_query_result}.
+
+When the command completes successfully, the attributes of the specified
+resource object are are set in \field{resource_obj_specific_data}.
+
+\paragraph{VIRTIO_ADMIN_CMD_RESOURCE_OBJ_DESTROY}
+\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device resource objects / VIRTIO_ADMIN_CMD_RESOURCE_OBJ_DESTROY}
+
+This command destroys the previously created device resource object.
+For the command VIRTIO_ADMIN_CMD_RESOURCE_OBJ_DESTROY, \field{opcode} is set to 0xd.
+The \field{command_specific_data} is in the format
+\field{struct virtio_admin_cmd_resource_obj_cmd_hdr}.
+\field{group_member_id} is set to zero.
+\field{id} identifies the existing resource object of type \field{type}.
+
+This command destroys the specified resource object of \field{type} identified
+by \field{id}, which is previously created using
+VIRTIO_ADMIN_CMD_RESOURCE_OBJ_CREATE command.
+
+This command has no command specific result.
+When the command completes successfully, the resource object is destroyed from the device.
+
+\devicenormative{\paragraph}{Device resource objects}{Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device resource objects}
+
+The device SHOULD complete the command VIRTIO_ADMIN_CMD_RESOURCE_OBJ_CREATE
+with \field{status} set to VIRTIO_ADMIN_STATUS_EEXIST if a resource object already exists
+with supplied resource \field{id} for the specified \field{type}.
+
+The device SHOULD complete the commands VIRTIO_ADMIN_CMD_RESOURCE_OBJ_MODIFY,
+VIRTIO_ADMIN_CMD_RESOURCE_QUERY and
+VIRTIO_ADMIN_CMD_RESOURCE_OBJ_DESTROY with \field{status} set to
+VIRTIO_ADMIN_STATUS_ENXIO if the specified resource object does not exist.
+
+The device SHOULD set \field{status} to VIRTIO_ADMIN_STATUS_ENOSPC for the
+command VIRTIO_ADMIN_CMD_RESOURCE_OBJ_CREATE if the device fail to create the
+resource object.
+
+The device SHOULD complete the commands VIRTIO_ADMIN_CMD_RESOURCE_OBJ_MODIFY or
+VIRTIO_ADMIN_CMD_RESOURCE_OBJ_DESTROY commands with \field{status} set to
+VIRTIO_ADMIN_STATUS_EBUSY if other resource objects depend on the resource object
+being modified or destroyed.
+
+The device MUST allow recreating the resource object using the command
+VIRTIO_ADMIN_CMD_RESOURCE_OBJ_CREATE which was previously
+destroyed using the command VIRTIO_ADMIN_CMD_RESOURCE_OBJ_DESTROY respectively
+without undergoing a device reset.
+
+The device SHOULD allow creating the resource object using
+the command VIRTIO_ADMIN_CMD_RESOURCE_OBJ_CREATE with any resource
+id as long as the resource object is not created.
+
+The device MAY fail the command VIRTIO_ADMIN_CMD_RESOURCE_OBJ_CREATE even if the
+resources within the device have not reached up to the \field{max_limit}
+but the device MAY have reached an internal limit.
+
+When a capability represents a number of resource objects, the device SHOULD
+allow creating as many resource objects as represented by the driver capability.
+
+The device MUST NOT have any side effects on the resource object when the command
+VIRTIO_ADMIN_CMD_RESOURCE_OBJ_MODIFY fails.
+
+The device MUST complete the command VIRTIO_ADMIN_CMD_RESOURCE_OBJ_QUERY
+with \field{resource_obj_specific_data} which is matching the
+\field{resource_obj_specific_data} of last VIRTIO_ADMIN_CMD_RESOURCE_OBJ_CREATE
+or VIRTIO_ADMIN_CMD_RESOURCE_OBJ_MODIFY command.
+
+On device reset, the device MUST destroy all the resource objects which
+have been created.
+
+\drivernormative{\paragraph}{Device resource objects}{Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device resource objects}
+
+The driver MUST not create a second resource object of the same type with same
+ID using command VIRTIO_ADMIN_CMD_RESOURCE_OBJ_CREATE before destroying the
+previously created resource object.
+
+The driver MUST NOT create more resource objects of a specified \field{type} using
+command VIRTIO_ADMIN_CMD_RESOURCE_OBJ_CREATE than the maximum limit set by the
+driver capability.
+
+The driver SHOULD NOT modify, query and destroy the resource object which is
+already destroyed previously by the driver.
+
+The driver SHOULD NOT destroy the resource object on which other resource objects
+are depending; the driver SHOULD destroy all the resource objects which do not depend
+on other resource objects.
+
+The driver MUST NOT set the capability related to the resource objects if the
+resource objects have been created using the command VIRTIO_ADMIN_CMD_RESOURCE_OBJ_CREATE
+and not yet destroyed.
+
+The driver MUST send the command VIRTIO_ADMIN_CMD_DRIVER_CAP_SET before using
+any resources related to such capability.
