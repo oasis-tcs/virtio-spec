@@ -1,0 +1,69 @@
+\subsubsection{Device resource objects}\label{sec:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device resource objects}
+
+Providing certain functionality consumes limited device resources such as
+memory, processing units, buffer memory, or end-to-end credits. A device may
+support multiple types of resource objects, each controlling different device
+functionality. To manage this, virtio provides
+\field{Device resource objects} that the driver can create, modify, and
+destroy using administration commands with the self group type. Creating and
+destroying a resource object consume and release device resources, respectively.
+The device resource object query command returns the resource object as
+maintained by the device.
+
+For each resource type, the number of resource objects that can be created
+is reported by the device as part of a device capability
+\ref{sec:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device and driver capabilities}.
+The driver reports the desired (same or lower) number of resource objects
+as part of a driver capability \ref{sec:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device and driver capabilities}.
+For each device object type, resource object limit is defined by field
+\field{limit} using \field{Device and driver capabilities}.
+
+\begin{lstlisting}
+le32 limit; /* maximum resource id = limit - 1 */
+\end{lstlisting}
+
+Each resource object has a unique resource object ID - a driver-assigned number
+in the range of 0 to \field{limit - 1}, where the \field{limit} is the maximum
+number set by the driver for this resource object type. These resource IDs are unique within
+each resource object type. The driver assigns the resource ID when creating a
+device resource object. Once the resource object is successfully created,
+subsequent resource modification, query, and destroy commands use this
+resource object ID. No two resource objects share the same ID. Destroying a
+resource object allows for the reuse of its ID for another resource object
+of the same type.
+
+A valid resource object id is \field{limit - 1}. For example, when a device
+reports a \field{limit = 10} capability for a resource object, and drivers sets
+\field{limit = 8}, the valid resource object id range for the device and the
+driver is 0 to 7 for all the resource object commands. In this example,
+the driver can only create 8 resource objects of a specified type.
+
+A resource object of one type may depend on the resource object of another type.
+Such dependency between resource objects is established by referring to the unique
+resource ID in the administration commands. For example, a driver creates a
+resource object identified by ID A of one type, then creates another resource
+object identified by ID B of a different type, which depends on resource object
+A. This dependency establishes the lifecycle of these resource objects. The driver
+that creates the dependent resource object must destroy the resource objects in the
+exact reverse order of their creation. In this example, the driver would
+destroy resource object B before destroying resource object A.
+
+Some resource object types are generic, common across multiple devices.
+Others are specific for one device type.
+
+\begin{tabular}{|l|l|}
+\hline
+Resource object type & Description \\
+\hline \hline
+0x000-0x1ff & Generic resource object type common across all devices \\
+\hline
+0x200-0x4ff & Device type specific resource object \\
+\hline
+0x500-0xffff & Reserved for future use  \\
+\hline
+\end{tabular}
+
+When the device resets, it starts with zero resources of each type; the driver
+can create resources up to the published \field{limit}. The driver can
+destroy and recreate the resource one or multiple times. Upon device reset,
+all resource objects created by the driver are destroyed within the device.
