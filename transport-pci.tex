@@ -252,8 +252,8 @@ those capabilities that require offsets or lengths larger than
 \begin{lstlisting}
 struct virtio_pci_cap64 {
         struct virtio_pci_cap cap;
-        u32 offset_hi;
-        u32 length_hi;
+        le32 offset_hi;
+        le32 length_hi;
 };
 \end{lstlisting}
 
