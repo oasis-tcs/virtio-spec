@@ -20,6 +20,7 @@ while read -r rev; do
 	echo "Applying $rev"
 	git cherry-pick --keep-redundant-commits --allow-empty `git rev-list -1 -F --grep "$rev" $newrev` || exit 1
 done << 'EOF'
+content.tex Fix Driver notifications label
 editorial: update "Computer Language Definitions" URL
 EOF
 
