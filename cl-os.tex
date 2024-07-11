@@ -1,1050 +1,13 @@
-d519c224ba69 & 20 Jun 2019 & Stefan Hajnoczi & { content: reserve virtio device ID for file system devices
+5da7c1414e7e & 13 Jun 2022 & Stefan Hajnoczi & {\noindent virtio-blk: document that the capacity field can change\vspace{\baselineskip}
 
 
-Reserve device ID 26 for virtio-fs devices.
+Block devices can change size during operation. A configuration change
+notification is sent by the device and the driver detects that the field
+has changed. Document this behavior that has already been implemented in
+Linux and QEMU since 2011.
 
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/31}
-
-Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-See \ref{sec:Device Types}.
- } \\
-\hline
-9454b568c29b & 20 Jun 2019 & Pankaj Gupta & { content: reserve device ID for virtio-pmem devices
-
-
-We need a device ID for virtio-pmem devices. As 25 is requested by
-audio device and 26 is requested by virtio-fs, so requesting
-next available(27). Also, updated the previously requested github
-issue[1] for voting.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/38}
-
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-
-Signed-off-by: Pankaj Gupta <pagupta@redhat.com>
-
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-See \ref{sec:Device Types}.
- } \\
-\hline
-efd4028b7aec & 25 Jul 2019 & Dr. David Alan Gilbert & { shared memory: Define shared memory regions
-
-
-Define the requirements and idea behind shared memory regions.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/40}
-
-Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
-
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-See \ref{sec:Basic Facilities of a Virtio Device / Shared Memory Regions}.
- } \\
-\hline
-39dfc8afc0b9 & 25 Jul 2019 & Dr. David Alan Gilbert & { pci: Define id field
-
-
-For the virtio-fs device we require multiple large shared memory
-
-regions.  Differentiate these by an 'id' field in the base capability.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/40}
-
-Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
-
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / Virtio Structure PCI Capabilities}.
- } \\
-\hline
-8100dcfcd622 & 25 Jul 2019 & Dr. David Alan Gilbert & { pci: Define virtio_pci_cap64
-
-
-Define 'virtio_pci_cap64' to allow capabilities to describe
-memory regions larger than, or with an offset larger than 4GiB.
-
-This will be used by the shared memory region capability.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/40}
-
-Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
-
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / Virtio Structure PCI Capabilities}.
- } \\
-\hline
-855ad7af2bd6 & 25 Jul 2019 & Dr. David Alan Gilbert & { shared memory: Define PCI capability
-
-
-Define the PCI capability used for enumerating shared memory regions.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/40}
-
-Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Shared memory capability}.
- } \\
-\hline
-2dd2d468f69b & 25 Jul 2019 & Dr. David Alan Gilbert & { shared memory: Define mmio registers
-
-
-Define an MMIO interface to discover and map shared
-memory regions.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/40}
-
-Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
-
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-See \ref{sec:Virtio Transport Options / Virtio Over MMIO / MMIO Device Register Layout}.
- } \\
-\hline
-4237d22cd5b1 & 08 Sep 2019 & Nikos Dragazis & { content: fix typo
-
-
-Signed-off-by: Nikos Dragazis <ndragazis@arrikto.com>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / Virtio Structure PCI Capabilities}.
- } \\
-\hline
-1571d741f300 & 08 Sep 2019 & Dr. David Alan Gilbert & { shared memory: Typo fix
-
-
-Fix double hex in SHM*High defs.
-
-Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-
-See \ref{sec:Virtio Transport Options / Virtio Over MMIO / MMIO Device Register Layout}.
- } \\
-\hline
-7a25d74962d3 & 08 Sep 2019 & Tiwei Bie & { content: fix typo in feature bit name
-
-
-Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/46}
-
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-
-See \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue / VLAN Filtering}.
- } \\
-\hline
-6aecd69eb90b & 08 Sep 2019 & Tiwei Bie & { content: explicitly document the VLAN filtering as best-effort
-
-
-Similar to the MAC address based filtering, the VLAN filtering
-is also best-effort in implementations, but it's not quite clear
-in the spec. So document this behaviour explicitly to reflect
-the way implementations behave.
-
-Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
-
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
-
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/47}
-
-See \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue / VLAN Filtering}.
- } \\
-\hline
-29540779e4fd & 25 Sep 2019 & Stefan Hajnoczi & { content: add virtio file system device
-
-
-The virtio file system device transports Linux FUSE requests between a
-FUSE daemon running on the host and the FUSE driver inside the guest.
-
-The actual FUSE request definitions are not duplicated in the virtio
-specification, similar to how virtio-scsi does not document SCSI
-command details.  FUSE request definitions are available here:
-\url{https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/uapi/linux/fuse.h}
-
-This patch documents the core virtio file system device, which is
-functional but lacks the DAX feature introduced in the next patch.
-
-Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
-
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/49}
-
-See \ref{sec:Device Types / File System Device}.
- } \\
-\hline
-ef5a7f405b95 & 25 Sep 2019 & Stefan Hajnoczi & { virtio-fs: add DAX window
-
-
-Describe how shared memory region ID 0 is the DAX window and how
-FUSE_SETUPMAPPING maps file ranges into the window.
-
-Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/49}
-
-See \ref{sec:Device Types / File System Device / Device Operation / Device Operation: DAX Window},
-and \ref{sec:Device Types / File System Device / Security Considerations}.
- } \\
-\hline
-1e30753d53d2 & 12 Oct 2019 & Jan Kiszka & { Fix \textasciicircum= in example code
-
-
-Trying to escaping \textasciicircum\space here only leaves the backslash in the output.
-
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-See \ref{sec:Basic Facilities of a Virtio Device / Packed Virtqueues / Supplying Buffers to The Device / Implementation Example},
-and \ref{sec:Basic Facilities of a Virtio Device / Packed Virtqueues / Receiving Used Buffers From The Device}.
- } \\
-\hline
-f9bed5bcb25e & 12 Oct 2019 & Jan Kiszka & { Lift "Driver Notifications" to section level
-
-
-Currently, it slips under the Packed Virtqueues section while it is not
-specific to this format.
-
-At this chance, capitalize "Notifications".
-
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-See \ref{sec:Virtqueues / Driver notifications}.
- } \\
-\hline
-8f2c4e03eae8 & 27 Oct 2019 & Eugenio Pérez & { block: Add multiqueue
-
-
-The spec miss that field. Add the field, some description around.
-
-I've followed the network device's multiqueue mentions, and copied /
-adapted when needed.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/50}
-
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-
-Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-See \ref{sec:Device Types / Block Device},
-\ref{sec:Device Types / Block Device / Virtqueues},
-\ref{sec:Device Types / Block Device / Feature bits},
-\ref{sec:Device Types / Block Device / Device configuration layout},
-\ref{sec:Device Types / Block Device / Device Initialization},
-and \ref{sec:Device Types / Block Device / Device Operation}.
- } \\
-\hline
-f1f2f85c1482 & 27 Oct 2019 & Jan Kiszka & { Console Device: Add a missing word
-
-
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-
-See \ref{sec:Device Types / Console Device / Device Operation}.
- } \\
-\hline
-da17c7fc4e12 & 27 Oct 2019 & Paolo Bonzini & { virtio_pci_common_cfg: fix field name
-
-
-The field is named config_msix_vector in the rest of the document,
-use the same name in the struct.
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/41}
-
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-
-See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common configuration structure layout}.
- } \\
-\hline
-f459b9e0ea60 & 27 Oct 2019 & Eugenio Pérez & { virtio-blk: typo: Capitalization in Device Initialization item
-
-
-Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/51}
-
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-
-See \ref{sec:Device Types / Block Device / Device Initialization}.
- } \\
-\hline
-30d8e1ad22f7 & 27 Oct 2019 & Philipp Hahn & { Balloon: Fix Memory Statistics structure size
-
-
-5.5.6.3 Memory Statistics: 6 -> 10 byte
-
-> Within the buffer, statistics are an array of 6-byte entries.
-
-                                                \textasciicircum
-
-> Each statistic consists of a 16 bit tag and a 64 bit value.
-
-...
-
-> struct virtio_balloon_stat .
-
-...
-
->         le16 tag;
-
->         le64 val;
-
-> \} __attribute__((packed));
-
-If my calculation is right that is a (16 + 64) = 80 bits which is a
-10-byte sized entry - not 6-byte.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/45}
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-See \ref{sec:Device Types / Memory Balloon Device / Device Operation / Memory Statistics}.
- } \\
-\hline
-acfe7bd5bcbe & 27 Oct 2019 & Michael S. Tsirkin & { README.md: document the minor cleanups standing rule
-
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
- } \\
-\hline
-a610121f250b & 24 Nov 2019 & Jan Kiszka & { virtio-mmio: Rename remaining QueueAvail/Used references
-
-
-These have been changed in ae98c6bc21bc. Convert the rest.
-
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/52}
-
-See \ref{sec:Virtio Transport Options / Virtio Over MMIO / MMIO Device Register Layout}.
- } \\
-\hline
-4be5d38ad692 & 24 Nov 2019 & Stefan Fritsch & { Fix typo
-
-
-It's balloon, not ballon.
-
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-
-Signed-off-by: Stefan Fritsch <sf@sfritsch.de>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-See \ref{sec:Device Types / Memory Balloon Device / Virtqueues}.
- } \\
-\hline
-3109be870170 & 24 Nov 2019 & Paolo Bonzini & { Reserve id for virtio-audio device
-
-
-Project ACRN has a virtio-audio device. Unfortunately, the id they are using is
-already reserved in the virtio specification, but it is nevertheless useful to
-have one.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/42}
-
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-See \ref{sec:Device Types}.
- } \\
-\hline
-4f1981a1ff46 & 24 Nov 2019 & Vitaly Mireyno & { virtio-net: Add support for correct hdr_len field.
-
-
-Includes device implementation note for using hdr_len
-
-Signed-off-by: Vitaly Mireyno <vmireyno@marvell.com>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/57}
-
-See \ref{sec:Device Types / Network Device / Feature bits},
-and \ref{sec:Device Types / Network Device / Device Operation / Packet Transmission}.
- } \\
-\hline
-2c77526beb13 & 24 Nov 2019 & Cornelia Huck & { virtio-net: add missing articles for new hdr_len feature
-
-
-And tweak a sentence slightly.
-
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-
-See \ref{sec:Device Types / Network Device / Device Operation / Packet Transmission}.
- } \\
-\hline
-8c6acac22a99 & 27 Nov 2019 & Huang Yang & { Add virtio rpmb device specification
-
-
-Add virtio RPMB (Replay Protected Memory Block) device documentation to
-spec.
-
-Signed-off-by: Yang Huang <yang.huang@intel.com>
-
-Reviewed-by: Bing Zhu <bing.zhu@intel.com>
-
-Reviewed-by: Tomas Winkler <tomas.winkler@intel.com>
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/53}
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-See \ref{sec:Device Types / RPMB Device}.
- } \\
-\hline
-e8ba780bd7ab & 27 Nov 2019 & Huang Yang & { Reserve device id 28 for virtio RPMB device
-
-
-Signed-off-by: Huang Yang <yang.huang@intel.com>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/58}
-
-See \ref{sec:Device Types}.
- } \\
-\hline
-356aeeb40d7a & 20 Jan 2020 & Michael S. Tsirkin & { content: add vendor specific cfg type
-
-
-Vendors might want to add their own capability in the PCI capability
-list. However, Virtio already uses the vendor specific capability ID
-(0x09) for its own purposes.
-
-Provide a structure for vendor specific extensions.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/62}
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / Virtio Structure PCI Capabilities},
-and \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Vendor data capability}.
- } \\
-\hline
-50049af040d4 & 20 Jan 2020 & Michael S. Tsirkin & { virtio_pci_cap64: bar/BAR cleanups
-
-
-When we mean PCI register we should say BAR.
-When we mean a virtio config register we should say \textbackslash field\{cap.bar\}.
-
-Finally, offset_hi/length_hi are not within the cap structure.
-
-Tweak wording slightly: "A,B,C" are fields, there's no need
-to say that.
-
-Reported-by: Christophe de Dinechin <cdupontd@redhat.com>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / Virtio Structure PCI Capabilities},
-and \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Shared memory capability}.
- } \\
-\hline
-b6e992c7af88 & 20 Jan 2020 & Yuri Benditovich & { virtio-net: define support for receive-side scaling
-
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/48}
-Added support for RSS receive steering mode.
-
-Signed-off-by: Yuri Benditovich <yuri.benditovich@daynix.com>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-See \ref{sec:Device Types / Network Device / Virtqueues},
-\ref{sec:Device Types / Network Device / Feature bits},
-\ref{sec:Device Types / Network Device / Feature bits / Feature bit requirements},
-\ref{sec:Device Types / Network Device / Device configuration layout},
-and \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue}.
- } \\
-\hline
-8361dd6eb0f4 & 20 Jan 2020 & Michael S. Tsirkin & { virtio-net: receive-side scaling
-
-
-Typo/grammar fixes as suggested by Cornelia (and a couple
-noticed by myself).
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-See \ref{sec:Device Types / Network Device / Device configuration layout},
-and \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue}.
- } \\
-\hline
-1efcda892193 & 20 Jan 2020 & Michael S. Tsirkin & { virtio-net: missing "." for feature descriptions
-
-
-At end of each sentence, for consistency.
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-See \ref{sec:Device Types / Network Device / Feature bits}.
- } \\
-\hline
-652237ea2839 & 20 Jan 2020 & Jean-Philippe Brucker & { Add virtio-iommu device specification
-
-
-The IOMMU device allows a guest to manage DMA mappings for physical,
-emulated and paravirtualized endpoints. Add device description for the
-virtio-iommu device and driver. Introduce PROBE, ATTACH, DETACH, MAP and
-UNMAP requests, as well as translation error reporting.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/37}
-
-Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-See \ref{sec:Device Types / IOMMU Device}.
- } \\
-\hline
-6914d2df75ec & 28 Jan 2020 & Keiichi Watanabe & { content: Reserve device ID for video encoder and decoder device
-
-
-Reserve device ID 30 for video encoder device and 31 for video decoder device.
-
-Signed-off-by: Keiichi Watanabe <keiichiw@chromium.org>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-Acked-by: Gerd Hoffmann <kraxel@redhat.com>
-
-See \ref{sec:Device Types}.
- } \\
-\hline
-d7e91b5469fb & 28 Jan 2020 & Michael S. Tsirkin & { virtio-rng: fix device/driver confusion
-
-
-The point of rng is to give data to driver so of course
-all buffers are driver readable. What shouldn't be there
-is device readable buffers - this matches our terminology
-elsewhere too (read/write-ability is from POV of device).
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/55}
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-Reviewed-by: Pankaj Gupta <pagupta@redhat.com>
-
-See \ref{sec:Device Types / Entropy Device / Device Operation}.
- } \\
-\hline
-da60923ce164 & 28 Jan 2020 & Michael S. Tsirkin & { content: document speed, duplex
-
-
-Document as used by Linux.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/59}
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types / Network Device / Feature bits},
-and \ref{sec:Device Types / Network Device / Device configuration layout}.
- } \\
-\hline
-61124330bf1c & 27 Feb 2020 & Gerd Hoffmann & { virtio-gpu: add 3d command overview
-
-
-Add 3d commands to the command enumeration.
-Add a section with a very short overview.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/65}
-
-Signed-off-by: Gerd Hoffmann <kraxel@redhat.com>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-See \ref{sec:Device Types / GPU Device / Device Operation / Device Operation: Request header},
-and \ref{sec:Device Types / GPU Device / Device Operation / Device Operation: controlq}.
- } \\
-\hline
-0c0dd715152c & 27 Feb 2020 & Gerd Hoffmann & { virtio-gpu: some edid clarifications
-
-
-Add some notes about fetching the EDID information.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/64}
-
-Signed-off-by: Gerd Hoffmann <kraxel@redhat.com>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-See \ref{sec:Device Types / GPU Device / Device configuration layout},
-and \ref{devicenormative:Device Types / GPU Device / Device Initialization}.
- } \\
-\hline
-f42cc75d0725 & 01 Mar 2020 & Michael S. Tsirkin & { virtio-net/rss: maximal -> maximum
-
-
-Maximal can mean "local as opposed to a global maximum".  Rest of the
-spec says maximum everywhere.  Let's be consistent.
-
-Cc: Yuri Benditovich <yuri.benditovich@daynix.com>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-See \ref{sec:Device Types / Network Device / Device configuration layout}.
- } \\
-\hline
-089bc5911dea & 04 May 2020 & Jean-Philippe Brucker & { virtio-iommu: Remove invalid requirement about padding
-
-
-This reference to 'padding' is a leftover from a previous draft of the
-virtio-iommu device. The field doesn't exist anymore, remove the
-requirement.
-
-Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-See \ref{sec:Device Types / IOMMU Device / Device configuration layout}.
- } \\
-\hline
-e73c8cdf3e82 & 01 Sep 2020 & Anton Yakovlev & { virtio-snd: add virtio sound device specification
-
-
-This patch proposes virtio specification for a new virtio sound device,
-that may be useful in case when having audio is required but a device
-passthrough or emulation is not an option.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/54}
-
-Signed-off-by: Anton Yakovlev <anton.yakovlev@opensynergy.com>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-See \ref{sec:Device Types / Network Device / Device configuration layout}.
- } \\
-\hline
-3f27648d9c66 & 01 Sep 2020 & Jan Kiszka & { split-ring: Demand that a device must not change descriptor entries
-
-
-So far the spec only indirectly says that a descriptor table entry is
-not modified by a device when processing it. Make this explicit by
-adding it as normative requirement. Existing drivers already depend on
-this.
-
-See also \url{https://lists.oasis-open.org/archives/virtio-dev/201910/msg00057.html}.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/56}
-
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table}.
- } \\
-\hline
-3353ed1c255a & 01 Sep 2020 & Yuri Benditovich & { virtio-net: Define per-packet hash reporting feature
-
-
-Define respective feature bit for virtio-net.
-Extend packet layout to populate hash value and type.
-Move the definition of IP/TCP/UDP header fields to
-calculate the hash out of RSS section to common network
-device section.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/66}
-
-Signed-off-by: Yuri Benditovich <yuri.benditovich@daynix.com>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-See \ref{sec:Device Types / Network Device / Feature bits},
-\ref{sec:Device Types / Network Device / Device configuration layout},
-\ref{sec:Device Types / Network Device / Device Operation},
-\ref{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets},
-and \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue}.
- } \\
-\hline
-51cad55ea64d & 01 Sep 2020 & Johannes Berg & { reserve device ID for hwsim wireless simulation
-
-
-The Linux mac80211-hwsim module currently allows simulation of
-multiple wireless radios on a shared medium, and has an existing
-API for this to work through a userspace implementation of the
-medium simulation (e.g. implemented by wmediumd).
-
-In order to simplify working with virtual machines and to enable
-(time-compressed) simulation use cases, allocate a virtio device
-ID to allow carrying this protocol over virtio in addition to
-the current netlink sockets.
-
-Since device ID 28 was previously requested, use 29.
-
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/68}
-
-See \ref{sec:Device Types}.
- } \\
-\hline
-832099d5df8c & 01 Sep 2020 & Vitaly Mireyno & { virtio-net: Fix VIRTIO_NET_F_GUEST_HDRLEN feature definition.
-
-
-Fix driver and device requirements with regards to the VIRTIO_NET_F_GUEST_HDRLEN feature - 'hdr_len' must be accurate only for TSO/UFO packets.
-
-Signed-off-by: Vitaly Mireyno <vmireyno@marvell.com>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/72}
-
-See \ref{sec:Device Types / Network Device / Device Operation / Packet Transmission}.
- } \\
-\hline
-5d9444d699e5 & 01 Sep 2020 & Peter Hilber & { Reserve device ID 32 for SCMI device
-
-
-Signed-off-by: Peter Hilber <peter.hilber@opensynergy.com>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/74}
-
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-
-See \ref{sec:Device Types}.
- } \\
-\hline
-68f66ff7a3d9 & 01 Sep 2020 & David Stevens & { content: define what an exported object is
-
-
-Define a mechanism for sharing objects between different virtio
-devices.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/76}
-
-Signed-off-by: David Stevens <stevensd@chromium.org>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-See \ref{sec:Basic Facilities of a Virtio Device / Exporting Objects}.
- } \\
-\hline
-162578b7e26c & 01 Sep 2020 & David Stevens & { virtio-gpu: add the ability to export resources
-
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/76}
-
-Signed-off-by: David Stevens <stevensd@chromium.org>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-See \ref{sec:Device Types / GPU Device / Feature bits},
-\ref{sec:Device Types / GPU Device / Device Operation / Device Operation: Request header},
-and \ref{sec:Device Types / GPU Device / Device Operation / Device Operation: controlq}.
- } \\
-\hline
-12d74846a6ee & 01 Sep 2020 & Petre Eftime & { content: Reserve virtio-nsm device ID
-
-
-The NitroSecureModule is a device with a very stripped down
-Trusted Platform Module functionality, which is used in the
-context of a Nitro Enclave (see \url{https://lkml.org/lkml/2020/4/21/1020})
-to provide boot time measurement and attestation.
-
-Since this device provides some critical cryptographic operations,
-there are a series of operations which are required to have guarantees
-of atomicity, ordering and consistency: operations fully succeed or fully
-fail, including when some external events might interfere in the
-process: live migration, crashes, etc; any failure in the critical
-section requires termination of the enclave it is attached to, so
-the device needs to be as resilient as possible, simplicity is
-strongly desired.
-
-To account for that, the device and driver are made to have very few
-error cases in the critical path and the operations themselves can be
-rolled back and retried if events happen outside the critical
-area, while processing a request. The driver itself can be made very
-simple and thus is easily portable.
-
-Since the requests can be handled directly in the virtio queue, serving
-most requests requires no additional buffering or memory allocations
-on the host side.
-
-Signed-off-by: Petre Eftime <epetre@amazon.com>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/81}
-
-See \ref{sec:Device Types}.
- } \\
-\hline
-7a46ee550d70 & 01 Sep 2020 & David Hildenbrand & { conformance: make driver conformance list easier to read and maintain
-
-
-Let's define it just like the device conformance list.
-
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-
-Signed-off-by: David Hildenbrand <david@redhat.com>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-See \ref{sec:Conformance / Conformance Targets}.
- } \\
-\hline
-9abf00ff4654 & 01 Sep 2020 & David Hildenbrand & { conformance: Reference RPMB Driver Conformance
-
-
-We forgot to reference the driver conformance.
-
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-
-Cc: Yang Huang <yang.huang@intel.com>
-
-Signed-off-by: David Hildenbrand <david@redhat.com>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-Reviewed-by: Alex Bennée <alex.bennee@linaro.org>
-
-See \ref{sec:Conformance / Conformance Targets}.
- } \\
-\hline
-af6b93bfd9a0 & 01 Sep 2020 & David Hildenbrand & { Add virtio-mem device specification
-
-
-The virtio memory device provides and manages a memory region in guest
-physical address space. This memory region is partitioned into memory
-blocks of fixed size that can either be in the state plugged or unplugged.
-
-Specify the device configuration, initialization, and operation.
-Introduce PLUG, UNPLUG, UNPLUG ALL and STATE requests.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/82}
-
-Cc: teawater <teawaterz@linux.alibaba.com>
-
-Signed-off-by: David Hildenbrand <david@redhat.com>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-See \ref{sec:Device Types / Memory Device}.
- } \\
-\hline
-28ea45d8d79f & 11 Nov 2020 & Jie Deng & { content: Reserve device ID 34 for I2C adapter
-
-
-Request the ID 34 for I2C adapter.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/85}
-
-Signed-off-by: Jie Deng <jie.deng@intel.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types}.
- } \\
-\hline
-d44895cdadc0 & 11 Nov 2020 & Rob Bradford & { content: Reserve virtio-watchog device ID
-
-
-Reserve an ID for a watchdog device which may be used to ensure that the
-guest is responsive. This is equivalent of a hardware watchdog device
-and will trigger the reboot of the guest if the the host does not
-periodic ping from the the guest.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/87}
-
-Signed-off-by: Rob Bradford <robert.bradford@intel.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types}.
- } \\
-\hline
-38448268eba0 & 11 Nov 2020 & Alexander Duyck & { content: Document balloon feature free page hints
-
-
-Free page hints allow the balloon driver to provide information on what
-pages are not currently in use so that we can avoid the cost of copying
-them in migration scenarios. Add a feature description for free page hints
-describing basic functioning and requirements.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/84}
-
-Acked-by: Cornelia Huck <cohuck@redhat.com>
-
-Reviewed-by: David Hildenbrand <david@redhat.com>
-
-Signed-off-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types / Memory Balloon Device / Virtqueues},
-\ref{sec:Device Types / Memory Balloon Device / Feature bits},
-\ref{sec:Device Types / Memory Balloon Device / Device configuration layout},
-\ref{sec:Device Types / Memory Balloon Device / Device Initialization},
-and \ref{sec:Device Types / Memory Balloon Device / Device Operation / Free Page Hinting}.
- } \\
-\hline
-4749f03e72f8 & 11 Nov 2020 & Alexander Duyck & { content: Document balloon feature page poison
-
-
-Page poison provides a way for the guest to notify the host that it is
-initializing or poisoning freed pages with some specific poison value. As a
-result of this we can infer a couple traits about the guest:
-
-1. Free pages will contain a specific pattern within the guest.
-2. Modifying free pages from this value may cause an error in the guest.
-3. Pages will be immediately written to by the driver when deflated.
-
-There are currently no existing features that make use of this data. In the
-upcoming feature free page reporting we will need to make use of this to
-identify if we can evict pages from the guest without causing data
-corruption.
-
-Add documentation for the page poison feature describing the basic
-functionality and requirements.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/84}
-
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-
-Reviewed-by: David Hildenbrand <david@redhat.com>
-
-Signed-off-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types / Memory Balloon Device / Feature bits},
-\ref{sec:Device Types / Memory Balloon Device / Device configuration layout},
-\ref{sec:Device Types / Memory Balloon Device / Device Initialization},
-and \ref{sec:Device Types / Memory Balloon Device / Device Operation / Page Poison}.
- } \\
-\hline
-d917d4a8d552 & 11 Nov 2020 & Alexander Duyck & { content: Document balloon feature free page reporting
-
-
-Free page reporting is a feature that allows the guest to proactively
-report unused pages to the host. By making use of this feature is is
-possible to reduce the overall memory footprint of the guest in cases where
-some significant portion of the memory is idle. Add documentation for the
-free page reporting feature describing the functionality and requirements.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/84}
-
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-
-Reviewed-by: David Hildenbrand <david@redhat.com>
-
-Signed-off-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types / Memory Balloon Device / Virtqueues},
-\ref{sec:Device Types / Memory Balloon Device / Feature bits},
-\ref{sec:Device Types / Memory Balloon Device / Device Initialization},
-\ref{sec:Device Types / Memory Balloon Device / Device Operation / Page Poison},
-and \ref{sec:Device Types / Memory Balloon Device / Device Operation / Free Page Reporting}.
- } \\
-\hline
-9164d35e4b2a & 13 Nov 2020 & Alexander Duyck & { content: Minor change to clarify free_page_hint_cmd_id
-
-
-The original wording was a bit unclear and could have been misinterpreted
-as indicating that VIRTIO_BALLOON_FREE_PAGE_HINT was read-only instead of
-the field free_page_hint_cmd_id. To clarify that break it up into two
-sentences making it clear that the field is only available if the feature
-is negotiated, and that the field is read-only.
-
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-
-Signed-off-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
-
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
-
-[CH: included under the minor cleanup rule]
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types / Memory Balloon Device / Device configuration layout}.
- } \\
-\hline
-b342d29aaf9f & 19 Nov 2020 & Stefan Hajnoczi & { virtio-blk: document VIRTIO_BLK_T_GET_ID
-
-
-The VIRTIO_BLK_T_GET_ID request type was implemented in Linux and QEMU
-in 2010.  It does not have a feature bit but devices respond with
-VIRTIO_BLK_S_UNSUPP if a request type is unimplemented.
-
-This patch documents the VIRTIO_BLK_T_GET_ID request type as currently
-implemented in Linux and QEMU.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/63}
-
-Suggested-by: Jan Kiszka <jan.kiszka@siemens.com>
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/136}
 
 Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
 
@@ -1053,1541 +16,2105 @@ Signed-off-by: Cornelia Huck <cohuck@redhat.com>
 See \ref{sec:Device Types / Block Device / Device Operation}.
  } \\
 \hline
-89e7eb5b9a76 & 19 Nov 2020 & Gurchetan Singh & { virtio-gpu: add resource create blob
+ad2e1674bb69 & 13 Jun 2022 & Laura Loghin & {\noindent vsock: add documentation about len header field\vspace{\baselineskip}
 
 
-Blob resources are size-based containers for host, guest, or
-host+guest allocations.  These resources are designed with
-mulit-process 3D support in mind, but also usable in virtio-gpu 2d
-with guest memory.
-
-Many hypercalls are reused, since a image view into the blob resource
-is possible.
-
-Blob resources are both forward and backward looking.
-
-v2: Add TRANSFER_BLOB, SET_SCANOUT_BLOB, SCANOUT_FLUSH
-v3: Remove SCANOUT_FLUSH and add notes
-v4: Remove TRANSFER_BLOB for now.
-v5: clarify interactions with ATTACH_BACKING / DETACH_BACKING.
-    This is to preserve the possibility of guest swap-in and guest
-    swap-out, while acknowledging this feature may never be implemented
-    and may not be applicable for all future planned values of
-    `blob_mem` or context types.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/86}
-
-Signed-off-by: Gurchetan Singh <gurchetansingh@chromium.org>
-
-Acked-by: Chia-I Wu <olvaffe@gmail.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types / GPU Device / Feature bits},
-and \ref{sec:Device Types / GPU Device / Device Operation / Device Operation: controlq}.
- } \\
-\hline
-87fa6b5d8155 & 19 Nov 2020 & Gurchetan Singh & { virtio-gpu: add support for mapping/unmapping blob resources
-
-
-This defines a virtgpu shared memory region, with the possibilty
-of more in the future.  This is required to implement VK/GL coherent
-memory semantics, among other things.
-
-v6: disallow mapping an already mapped blob resource as a
-    simplification
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/86}
-
-Signed-off-by: Gurchetan Singh <gurchetansingh@chromium.org>
-
-Acked-by: Gerd Hoffmann <kraxel@redhat.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types / GPU Device / Device configuration layout},
-and \ref{sec:Device Types / GPU Device / Device Operation}.
- } \\
-\hline
-2ff0d5c68af2 & 03 Dec 2020 & Vitaly Mireyno & { virtio-net: Add support for the flexible driver notification structure.
-
-
-When the driver is required to send an available buffer notification
-to the device, it sends the virtqueue number to be notified.
-
-With this new feature, the device can optionally provide a per-virtqueue
-value for the driver to use in driver notifications, instead of the
-virtqueue number.
-
-Some devices may benefit from this flexibility by providing, for example,
-an internal virtqueue identifier, or an internal offset related to the
-virtqueue number.
-
-Changes from v8:
- * Incorporated comments for v8:
-     - moved the feature from a network device to a global section
-     - few minor changes
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/89}
-
-Signed-off-by: Vitaly Mireyno <vmireyno@marvell.com>
-
-[CH: wrapped overlong lines in commit message]
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common configuration structure layout},
-\ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Available Buffer Notifications},
-and \ref{sec:Reserved Feature Bits}.
- } \\
-\hline
-bccdda7fb41a & 15 Dec 2020 & Michael S. Tsirkin & { typo: VIRTIO_NET_F_MAC_ADDR -> VIRTIO_NET_F_MAC
-
-
-VIRTIO_NET_F_MAC_ADDR isn't defined. It's clear from context
-that what is meant is VIRTIO_NET_F_MAC which controls whether
-mac in config space is valid.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/90}
-
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Setting MAC Address Filtering}.
- } \\
-\hline
-87de7136382e & 15 Dec 2020 & David Hildenbrand & { virtio-mem: minor clarification regarding read-access to unplugged blocks
-
-
-Let's clarify that we don't expect all DMA to work with unplugged blocks.
-We really only give guarantees when reading from unplugged memory blocks
-via the CPU, e.g., as done by Linux when creating a system dump via
-kdump: the new kernel will copy the content of the old (crashed) kernel
-via the CPU to user space, from where it will find its final destination
-inside the dump file. Note that dumping via makedumpfile under Linux will
-avoid reading unplugged blocks completely.
-
-This is a preparation for device passthrough to VMs, whereby such
-dedicated devices might not be able to read from unplugged memory blocks.
-
-Let's document that this scenario is possible, and why this handling is
-in place at all.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/91}
-
-Cc: teawater <teawaterz@linux.alibaba.com>
-
-Cc: Marek Kedzierski <mkedzier@redhat.com>
-
-Cc: Michael S. Tsirkin <mst@redhat.com>
-
-Cc: Cornelia Huck <cohuck@redhat.com>
-
-Acked-by: Cornelia Huck <cohuck@redhat.com>
-
-Signed-off-by: David Hildenbrand <david@redhat.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types / Memory Device / Device Operation}.
- } \\
-\hline
-f725281ebba7 & 25 Jan 2021 & Jie Deng & { virtio-i2c: add the device specification
-
-
-virtio-i2c is a virtual I2C adapter device. It provides a way
-to flexibly communicate with the host I2C slave devices from
-the guest.
-
-This patch adds the specification for this device.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/88}
-
-Signed-off-by: Jie Deng <jie.deng@intel.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types / Memory Device / Device Operation}.
- } \\
-\hline
-6ee5e4b54c8e & 26 Jan 2021 & Felipe Franciosi & { content: Fix driver/device wording on ISR bits
-
-
-Section "ISR status capability" incorrectly worded that the bits part of
-the register allows the device to distinguish between interrupt types.
-It is the driver that needs access to that distinction, not the device.
-
-Signed-off-by: Felipe Franciosi <felipe@nutanix.com>
-
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / ISR status capability}.
- } \\
-\hline
-a17c29e2201b & 26 Jan 2021 & Alex Bennée & { virtio-gpu.tex: fix some UTF-8 damage
-
-
-While building I got a warning about:
-
-  ! Package utf8x Error: MalformedUTF-8sequence.
-
-Fixes: 87fa6b5 ("virtio-gpu: add support for mapping/unmapping blob resources")
-
-Signed-off-by: Alex Bennée <alex.bennee@linaro.org>
-
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types / GPU Device / Device Operation / Device Operation: controlq (3d)}.
- } \\
-\hline
-a306bf467850 & 09 Feb 2021 & Cornelia Huck & { clarify device reset
-
-
-Properly specify that the method for the driver to request a
-device reset is transport specific, and some action the device
-has to take.
-
-Reviewed-by: Jason Wang <jasowang@redhat.com>
-
-Reviewed-by: Halil Pasic <pasic@linux.ibm.com>
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/93}
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Basic Facilities of a Virtio Device / Device Status Field},
-and \ref{sec:Basic Facilities of a Virtio Device / Device Reset}.
- } \\
-\hline
-f5fd3fca7e40 & 10 Feb 2021 & Peter Hilber & { content: reserve device ID 36 for CAN device
-
-
-The CAN device sends and receives CAN (Controller Area Network)
-messages. CAN is a communication protocol used in embedded systems.
-
-Signed-off-by: Peter Hilber <peter.hilber@opensynergy.com>
-
-Reviewed-by: Matti Möll <matti.moell@opensynergy.com>
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/95}
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types}.
- } \\
-\hline
-30e6526f4d8e & 25 Feb 2021 & Cornelia Huck & { virtio-ccw: relax device requirement for revision-specific command rejection
-
-
-The device is currently required to reject any command that is
-not contained in the negotiated revision. Some implementations
-did not actively check for the revision when processing a command;
-retroactively changing these implementations can break existing
-drivers.
-
-Relaxing the rejection requirement to SHOULD makes these existing
-device implementations compliant, and will not have any effect on
-drivers that did not send any commands for wrong revisions.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/96}
-
-Reviewed-by: Halil Pasic <pasic@linux.ibm.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Setting the Virtio Revision}.
- } \\
-\hline
-5e9a37b9a559 & 30 Mar 2021 & Enrico Granata & { Add lifetime metrics to virtio-blk
-
-
-In many embedded systems, virtio-blk implementations are
-backed by eMMC or UFS storage devices, which are subject to
-predictable and measurable wear over time due to repeated write
-cycles.
-
-For such systems, it can be important to be able to track
-accurately the amount of wear imposed on the storage over
-time and surface it to applications. In a native deployments
-this is generally handled by the physical block device driver
-but no such provision is made in virtio-blk to expose these
-metrics for devices where it makes sense to do so.
-
-This patch adds support to virtio-blk for lifetime and wear
-metrics to be exposed to the guest when a deployment of
-virtio-blk is done over compatible eMMC or UFS storage.
-
-Signed-off-by: Enrico Granata <egranata@google.com>
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/97}
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types / Block Device / Feature bits},
-and \ref{sec:Device Types / Block Device / Device Operation}.
- } \\
-\hline
-80b54cfd10a3 & 30 Mar 2021 & Peter Hilber & { Add virtio SCMI device specification
-
-
-This patch proposes a new virtio device for the Arm SCMI protocol.
-
-The device provides a simple transport for the Arm SCMI protocol[1]. The
-*S*ystem *C*ontrol and *M*anagement *I*nterface protocol allows speaking
-to system controllers that allow orchestrating things like power
-management, system state management and sensor access. The SCMI protocol
-is used on SoCs where multiple cores and co-processors need access to
-these resources.
-
-The virtio transport allows making use of this protocol in virtualized
-systems.
-
-[1] \url{https://developer.arm.com/docs/den0056/c}
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/100}
-
-Signed-off-by: Peter Hilber <peter.hilber@opensynergy.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types / Block Device / Device Operation}.
- } \\
-\hline
-f144e1847b95 & 06 Apr 2021 & Cornelia Huck & { title: list myself as Chair
-
-
-Reflect my position in the document as well.
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Chair}.
- } \\
-\hline
-2d827b06874d & 14 Apr 2021 & Michael S. Tsirkin & { introduction: document \#define syntax
-
-
-We use the C \#define syntax to refer to numeric values.
-Let's document that.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/101}
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Constant Specifications}.
- } \\
-\hline
-b19f28ed5076 & 14 Apr 2021 & Hao Chen & { Reserve device id for parameter server
-
-
-Use device ID 38
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/102}
-
-Signed-off-by: Hao Chen <chenhaosjtuacm@google.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types}.
- } \\
-\hline
-22179bb0875c & 14 Apr 2021 & Hao Chen & { Reserve device id for audio policy device
-
-
-Use device ID 39
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/103}
-
-Signed-off-by: Hao Chen <chenhaosjtuacm@google.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types}.
- } \\
-\hline
-0711d7f18fa7 & 14 Apr 2021 & Cornelia Huck & { editorial: fix missing escape of '\#'
-
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Constant Specifications}.
- } \\
-\hline
-3590a075a5fd & 03 May 2021 & Marcel Holtmann & { Reserve device id for Bluetooth device
-
-
-Use device ID 40
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/108}
-
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types}.
- } \\
-\hline
-5749014a3d50 & 17 May 2021 & Yuri Benditovich & { virtio-net: fix mistake: segmentation -> fragmentation
-
-
-The VIRTIO_NET_F_HOST_UFO feature fragments the packet. Only
-first fragment has a UDP header.
-
-Signed-off-by: Yuri Benditovich <yuri.benditovich@daynix.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types / Network Device / Device Operation / Packet Transmission}.
- } \\
-\hline
-d1471fdf932b & 17 May 2021 & Yuri Benditovich & { virtio-net: define USO feature
-
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/104}
-
-Unlike UFO (fragmenting the packet) the USO splits large UDP packet
-to several segments when each of these smaller packets has UDP
-header. In Linux see SKB_GSO_UDP_L4.
-
-Signed-off-by: Yuri Benditovich <yuri.benditovich@daynix.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types / Network Device / Feature bits},
-\ref{sec:Device Types / Network Device / Device Initialization},
-and \ref{sec:Device Types / Network Device / Device Operation}.
- } \\
-\hline
-c6f7149d08a1 & 10 Jun 2021 & Joel Nider & { Make global flag names consistent
-
-
-The global flags VIRTIO_F_EVENT_IDX and VIRTIO_F_INDIRECT_DESC
-have inconsistent naming throughout the document. This change
-removes the _RING designation from the flag names to make the
-usage consistent.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/36}
-
-Signed-off-by: Joel Nider <joel@nider.org>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Reserved Feature Bits},
-\ref{sec:Packed Virtqueues / Driver and Device Event Suppression},
-and \ref{sec:Basic Facilities of a Virtio Device / Packed Virtqueues / Supplying Buffers to The Device / Implementation Example}.
- } \\
-\hline
-a57fb86cdb03 & 10 Jun 2021 & Jiang Wang & { virtio-net: fix a display for num_buffers
-
-
-One of num_buffers does not display correctly in
-the html. The _b becomes a subscript b. This will
-prevent it from being searched by using keyword num_buffers.
-
-Fix it by adding a field keyword.
-
-Signed-off-by: Jiang Wang <jiang.wang@bytedance.com>
-
-Message-Id: <20210601172139.3725854-1-jiang.wang@bytedance.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets}.
- } \\
-\hline
-eddd5558447d & 17 Jun 2021 & Viresh Kumar & { Reserve device id for GPIO device
-
-
-Use device ID 41
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/109}
-
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types}.
- } \\
-\hline
-63236f177602 & 08 Jul 2021 & Stefan Hajnoczi & { virtio-fs: add file system device to Conformance chapter
-
-
-The file system device is not listed in the Conformance chapter. Fix
-this.
-
-Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Conformance / Conformance Targets}.
- } \\
-\hline
-3881c6b6fca9 & 08 Jul 2021 & Stefan Hajnoczi & { virtio-fs: add notification queue
-
-
-The FUSE protocol allows the file server (device) to initiate
-communication with the client (driver) using FUSE notify messages.
-Normally only the client can initiate communication. This feature is
-used to report asynchronous events that are not related to an in-flight
-request.
-
-This patch adds a notification queue that works like an rx queue in
-other VIRTIO device types. The device can emit FUSE notify messages by
-using a buffer from this queue.
-
-This mechanism was designed by Vivek Goyal <vgoyal@redhat.com>.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/111}
-
-Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types / File System Device / Virtqueues},
-\ref{sec:Device Types / File System Device / Device configuration layout},
-\ref{Device Types / File System Device / Device Initialization},
-and \ref{sec:Device Types / File System Device / Device Operation}.
- } \\
-\hline
-eb6ef453af9b & 26 Jul 2021 & Cornelia Huck & { Reserved feature bits: fix missing verb
-
-
-Reviewed-by: David Hildenbrand <david@redhat.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Reserved Feature Bits}.
- } \\
-\hline
-74822ee60ea9 & 27 Jul 2021 & Gaetan Harter & { content: fix a typo
-
-
-Signed-off-by: Gaetan Harter <gaetan.harter@opensynergy.com>
-
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue}.
- } \\
-\hline
-23d3f7a3a7c9 & 27 Jul 2021 & Gaetan Harter & { virtio-gpu: fix a typo
-
-
-Signed-off-by: Gaetan Harter <gaetan.harter@opensynergy.com>
-
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types / GPU Device / Virtqueues}.
- } \\
-\hline
-247709f69260 & 29 Jul 2021 & Gaetan Harter & { virtio-crypto: fix missing conjunction and verb
-
-
-The condition sentences were incomplete:
-"guarantee THAT the size IS within the max_len".
-
-Signed-off-by: Gaetan Harter <gaetan.harter@opensynergy.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types / Crypto Device / Device configuration layout}.
- } \\
-\hline
-1dc3ff82ab18 & 10 Aug 2021 & Max Gurtovoy & { virtio-blk: fix virtqueues accounting
-
-
-Virtqueue index is zero based, thus virtqueue (N-1) refers to requestqN.
-
-Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types / Block Device / Virtqueues}.
- } \\
-\hline
-b73b74aaca01 & 16 Aug 2021 & Alex Bennée & { virtio-rpmb: fix the description for multi-block reads
-
-
-Previously the text said we fail if block count is set to 1 despite
-language elsewhere in the text referring to:
-
-  "For RPMB read request, one virtio buffer including request command
-  and the subsequent [block_count] virtio buffers for response data
-  are placed in the queue."
-
-and the existence of both max_wr_cnt and max_rd_cnt configuration
-variables certainly implying devices should be able to handle
-multi-block reads just like writes.
-
-Fix the description as well as format the steps as an enumerated list
-to match the style of the previous section describing write handling.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/113}
-
-Reported-by: Ruchika Gupta <ruchika.gupta@linaro.org>
-
-Signed-off-by: Alex Bennée <alex.bennee@linaro.org>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types / RPMB Device / Device Operation / Device Operation: Request Queue}.
- } \\
-\hline
-9547f52400c6 & 18 Aug 2021 & Viresh Kumar & { virtio-gpio: Add the device specification
-
-
-virtio-gpio is a virtual GPIO controller. It provides a way to flexibly
-communicate with the host GPIO controllers from the guest.
-
-Note that the current implementation doesn't provide atomic APIs for
-GPIO configurations. i.e. the driver (guest) would need to implement
-sleep-able versions of the APIs as the guest will respond asynchronously
-over the virtqueue.
-
-This patch adds the specification for it.
-
-Based on the initial work posted by:
-"Enrico Weigelt, metux IT consult" <lkml@metux.net>.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/110}
-
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types / GPIO Device}.
- } \\
-\hline
-4b65fb2f74fa & 17 Sep 2021 & Viresh Kumar & { virtio-gpio: Specify character encoding for gpio names
-
-
-Specify 7-bit ASCII character encoding for GPIO names strings.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/115}
-
-Suggested-by: Stefan Hajnoczi <stefanha@redhat.com>
-
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types / GPIO Device / requestq Operation / Get Line Names}.
- } \\
-\hline
-c8338338edaf & 17 Sep 2021 & Michael S. Tsirkin & { virtio-net: fix speed, duplex
-
-
-Speed values have an extra "f" - they are 32 bit, not 36 bit.  Duplex is
-implemented in Linux and QEMU as 0x01 for full duplex and 0x00 for half
-duplex.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/75}
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types / Network Device / Device configuration layout}.
- } \\
-\hline
-a4bb00171010 & 24 Sep 2021 & Gurchetan Singh & { virtio-gpu: clarify spec regarding capability sets
-
-
-Capability sets will be used as a proxy for the context type,
-so add more detail regarding their use.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/117}
-
-Reviewed-by: Gerd Hoffmann <kraxel@redhat.com>
-
-Signed-off-by: Gurchetan Singh <gurchetansingh@chromium.org>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types / GPU Device / Device configuration layout},
-and \ref{sec:Device Types / GPU Device / Device Operation / Device Operation: controlq}.
- } \\
-\hline
-aad2b6f3620e & 24 Sep 2021 & Gurchetan Singh & { virtio-gpu: add context init support
-
-
-This brings explicit context initialization and different types
-to virtio-gpu.
-
-In the past, VIRTIO_GPU_F_VIRGL meant the virglrenderer support.
-With VIRTIO_GPU_F_VIRGL + VIRTIO_GPU_F_CONTEXT_INIT, this means
-generic 3D virtualization defined by the context type.  It's
-entirely possible the virglrenderer project isn't available on
-the host in this scenario.  The VIRTIO_GPU_F_VIRGL naming
-convention is kept since it's easier to redefine the meaning
-rather than changing header files.
-
-The context type is associated an particular capset id.  Virgl
-has two capsets due a prior bug, but for other cases the 1:1
-mapping between context type and capset id is valid.
-
-In addition, fencing needs to be fixed to accomodate multiple
-context types.  In the past, there was one global timeline
-associated witht the OpenGL rendering.  Now, there are multiple
-timelines which can be associated with GL, VK or even display
-contexts.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/117}
-
-Reviewed-by: Gerd Hoffmann <kraxel@redhat.com>
-
-Signed-off-by: Gurchetan Singh <gurchetansingh@chromium.org>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types / GPU Device},
-\ref{sec:Device Types / GPU Device / Feature bits},
-\ref{sec:Device Types / GPU Device / Device Operation / Device Operation: Request header},
-\ref{sec:Device Types / GPU Device / Device Operation / Device Operation: controlq},
-and \ref{sec:Device Types / GPU Device / Device Operation / Device Operation: controlq (3d)}.
- } \\
-\hline
-e0e8f9ac37c5 & 04 Oct 2021 & Junji Wei & { Reserve device id for RDMA device
-
-
-Use device ID 42
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/116}
-
-Signed-off-by: Junji Wei <weijunji@bytedance.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types}.
- } \\
-\hline
-f5a8d38acbd0 & 04 Oct 2021 & Max Gurtovoy & { Fix copy/paste bug in PCI transport paragraph
-
-
-Refer to "Shared memory capability" and not to "Device-specific
-configuration".
-
-Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Shared memory capability}.
- } \\
-\hline
-bcf4bddb256e & 07 Oct 2021 & Jean-Philippe Brucker & { content: Remove duplicate paragraph
-
-
-It looks like commit 356aeeb40d7a ("content: add vendor specific cfg
-type") had a merge issue. It includes the device normative paragraph for
-Shared memory capability, which was already added right above it by
-commit 855ad7af2bd6 ("shared memory: Define PCI capability").
-
-The two paragraphs differ, and the first paragraph is correct. It refers
-to struct virtio_pci_cap64 which embeds struct virtio_pci_cap:
-
-  struct virtio_pci_cap64 .
-
-    struct virtio_pci_cap .
-
-      ...
-      le32 offset;
-      le32 length;
-    \} cap;
-    u32 offset_hi;
-    u32 length_hi;
-  .
-
-
-Merge the two paragraph while keeping the best of both. Drop the spaces
-after \textbackslash field to stay consistent with the rest of the document.
-
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
-
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-
-Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Shared memory capability}.
- } \\
-\hline
-591eb4c2f76e & 07 Oct 2021 & Cornelia Huck & { PCI: fix level for vendor data capability
-
-
-The normative statements for the vendor data capability need
-to be at paragraph level insted of subsection level.
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Vendor data capability}.
- } \\
-\hline
-2f4a36d5e36d & 14 Oct 2021 & Enrico Granata & { Provide detailed specification of virtio-blk lifetime metrics
-
-
-In the course of review, some concerns were surfaced about the
-original virtio-blk lifetime proposal, as it depends on the eMMC
-spec which is not open
-
-Add a more detailed description of the meaning of the fields
-added by that proposal to the virtio-blk specification, as to
-make it feasible to understand and implement the new lifetime
-metrics feature without needing to refer to JEDEC's specification
-
-This patch does not change the meaning of those fields nor add
-any new fields, but it is intended to provide an open and more
-clear description of the meaning associated with those fields.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/106}
-
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-
-Signed-off-by: Enrico Granata <egranata@google.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types / Block Device / Device Operation}.
- } \\
-\hline
-fc387ffae917 & 15 Oct 2021 & Pankaj Gupta & { virtio-pmem: PMEM device spec
-
-
-Posting virtio specification for virtio pmem device. Virtio pmem is a
-paravirtualized device which allows the guest to bypass page cache.
-Virtio pmem kernel driver is merged in Upstream Kernel 5.3. Also, Qemu
-device is merged in Qemu 4.1.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/78}
-
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-
-Signed-off-by: Pankaj Gupta <pankaj.gupta.linux@gmail.com>
-
-[CH: editorial update to fix conformance section]
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types / PMEM Device}.
- } \\
-\hline
-b5115a8fc8ed & 15 Oct 2021 & David Hildenbrand & { virtio-mem: simplify statements that express unexpected behavior on memory access
-
-
-Some statements express that the device MAY allow access to memory inside
-unplugged memory blocks, although it's really just unexpected behavior and
-conforming drivers MUST NOT perform such access.
-
-Clarify that, and move the special CPU vs. DMA handling for some
-unplugged memory blocks to the driver section instead.
-
-While at it, start rephrasing our statements to clarify and prepare for
-further changes.
-
-Signed-off-by: David Hildenbrand <david@redhat.com>
-
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types / Memory Device / Device Operation}.
- } \\
-\hline
-708ef827b092 & 15 Oct 2021 & David Hildenbrand & { virtio-mem: rephrase remaining memory access statements
-
-
-Let's rephrase the remaining statements regarding memory access to unify
-and prepare for further changes.
-
-Signed-off-by: David Hildenbrand <david@redhat.com>
-
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types / Memory Device / Device Operation}.
- } \\
-\hline
-f579906e7364 & 15 Oct 2021 & David Hildenbrand & { virtio-mem: document basic memory access to plugged memory blocks
-
-
-Let's cleanly document that the driver just has to allow for access to
-plugged memory blocks.
-
-Signed-off-by: David Hildenbrand <david@redhat.com>
-
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types / Memory Device / Device Operation}.
- } \\
-\hline
-5b6a9d2a1d43 & 15 Oct 2021 & David Hildenbrand & { virtio-mem: introduce VIRTIO_MEM_F_UNPLUGGED_INACCESSIBLE
-
-
-Until now, we allowed a driver to read unplugged memory within the
-usable device-managed region: this simplified bring-up of virtio-mem in
-Linux quite a bit, especially when it came to physical memory dumping.
-
-When the device is using a memory backend that supports a shared
-zeropage, such as virtio-mem in QEMU under Linux on anonymous memory, the
-old behavior could be realized easily.
-
-However, when using other memory backends (such as hugetlbfs or shmem)
-or architectures, such as s390x, where a shared zeropage either does not
-exist or cannot be used, letting the driver read unplugged memory can
-result in undesired memory consumption in the hypervisor. The device
-wants to make sure that the guest is aware and will not read unplugged
-memory, not even in corner cases.
-
-In the meantime, the Linux implementation matured such that it will no
-longer access unplugged memory, for example, during kdump, when reading
-/proc/kcore, or via (now removed) /dev/kmem.
-
-Similar to VIRTIO_F_ACCESS_PLATFORM, this change will be disruptive and
-require driver adaptions -- even if it's just accepting the new feature.
-Devices are expected to only set the bit when really required, to keep
-existing setups working.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/118}
-
-Signed-off-by: David Hildenbrand <david@redhat.com>
-
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types / Memory Device / Feature bits},
-\ref{Device Types / Memory Device / Device Initialization},
-and \ref{sec:Device Types / Memory Device / Device Operation}.
- } \\
-\hline
-26947c3e7b05 & 15 Oct 2021 & David Hildenbrand & { virtio-mem: describe interaction with memory properties
-
-
-Let's describe how we expect the interaction with memory properties that
-might be available on a specific platform for ordinary system RAM.
-
-This is primarily a preparation for s390x support, which provides
-storage keys and may provide storage attributes, depending on the system
-configuration.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/118}
-
-Signed-off-by: David Hildenbrand <david@redhat.com>
-
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types / Memory Device},
-\ref{sec:Device Types / Memory Device / Feature bits},
-\ref{Device Types / Memory Device / Device Initialization},
-and \ref{sec:Device Types / Memory Device / Device Operation}.
- } \\
-\hline
-ca1463daea5d & 03 Nov 2021 & Viresh Kumar & { virtio: i2c: No need to have separate read-write buffers
-
-
-The virtio I2C protocol allows to contain multiple read-write requests
-in a single I2C transaction using the VIRTIO_I2C_FLAGS_FAIL_NEXT flag,
-where each request contains a header, buffer and status.
-
-There is no need to pass both read and write buffers in a single
-request, as we have a better way of combining requests into a single I2C
-transaction. Moreover, this also limits the transactions to two buffers,
-one for read operation and one for write. By using
-VIRTIO_I2C_FLAGS_FAIL_NEXT, we don't have any such limits.
-
-Remove support for multiple buffers within a single request.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/112}
-
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-
-Reviewed-by: Jie Deng <jie.deng@intel.com>
-
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-See \ref{sec:Device Types / I2C Adapter Device / Device Operation: Request Queue},
-and \ref{sec:Device Types / I2C Adapter Device / Device Operation: Operation Status}.
- } \\
-\hline
-69d399bd3f19 & 03 Nov 2021 & Viresh Kumar & { virtio: i2c: Allow zero-length transactions
-
-
-The I2C protocol allows zero-length requests with no data, like the
-SMBus Quick command, where the command is inferred based on the
-read/write flag itself.
-
-In order to allow such a request, allocate another bit,
-VIRTIO_I2C_FLAGS_M_RD(1), in the flags to pass the request type, as read
-or write. This was earlier done using the read/write permission to the
-buffer itself.
-
-Add a new feature flag for zero length requests and make it mandatory
-for it to be implemented, so we don't need to drag the old
-implementation around.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/112}
-
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-
-Reviewed-by: Jie Deng <jie.deng@intel.com>
-
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-See \ref{sec:Device Types / I2C Adapter Device / Feature bits},
-\ref{sec:Device Types / I2C Adapter Device / Device Operation: Request Queue},
-and \ref{sec:Device Types / I2C Adapter Device / Device Operation: Operation Status}.
- } \\
-\hline
-ca3252712d98 & 03 Nov 2021 & Viresh Kumar & { virtio-gpio: Add support for interrupts
-
-
-This patch adds support for interrupts to the virtio-gpio specification.
-This uses the feature bit 0 for the same.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/114}
-
-Cc: Marc Zyngier <maz@kernel.org>
-
-Cc: Thomas Gleixner <tglx@linutronix.de>
-
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-
-See \ref{sec:Device Types / GPIO Device / Virtqueues},
-\ref{sec:Device Types / GPIO Device / Feature bits},
-\ref{sec:Device Types / GPIO Device / Device configuration layout},
-and \ref{sec:Device Types / GPIO Device / requestq Operation}.
- } \\
-\hline
-48340e86b087 & 29 Nov 2021 & Halil Pasic & { split-ring: clarify the field len in the used ring
-
-
-The current description is misleading: "the descriptor chain which was
-used" generally includes both the descriptors that map the device read
-only, and descriptors that  map the device write only portions of the
-buffer described by the descriptor chain. The argument that "used" means
-"written to" does not stand because one has to "use" the descriptor
-chain even when the whole buffer is device read only.
-
-One can argue, that the most straightforward way to interpret the phrase
-"total length of that descriptor chain" (without context) like the
-length of the  list is usually defined: i.e. like the number of
-descriptors that constitute the chain. This is clearly not what we want
-here. Another intuitive way to interpret "total length of that
-descriptor chain" is size of the buffer mapped by the descriptor chain.
-This is not what we want either. In fact such wrongful interpretations
-have caused bugs in the wild.
-
-On the other hand, the text below the listing that gets modified here
-clearly describes the semantics of \textbackslash field\{len\}. So let us replace
-the ambiguous explanation in the listing, with a hopefully non-ambiguous
-one.
-
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-
-Signed-off-by: Halil Pasic <pasic@linux.ibm.com>
-
-[CH: fixed up commit message typo and tabs-vs-spaces]
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Used Ring}.
- } \\
-\hline
-795391311bb1 & 30 Nov 2021 & Taylor Stark & { virtio-pmem: Support describing pmem as shared memory region
-
-
-Update the virtio-pmem spec to add support for describing the pmem region as a
-shared memory window. This is required to support virtio-pmem in Hyper-V, since
-Hyper-V only allows PCI devices to operate on memory ranges defined via BARs.
-When using the virtio PCI transport, shared memory regions are described via
-PCI BARs.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/121}
-
-Reviewed-by: Pankaj Gupta <pankaj.gupta.linux@gmail.com>
-
-Signed-off-by: Taylor Stark <tstark@microsoft.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types / PMEM Device / Feature bits},
-\ref{sec:Device Types / PMEM Device / Device configuration layout},
-and \ref{sec:Device Types / PMEM Device / Device Initialization}.
- } \\
-\hline
-ec3997b8a402 & 30 Nov 2021 & Cornelia Huck & { pmem: correct wording
-
-
-s/guest absolute/physical/
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types / PMEM Device / Device Initialization}.
- } \\
-\hline
-d6645979da9b & 07 Dec 2021 & Cornelia Huck & { ccw: clarify device reset
-
-
-Unlike other transports, a reset triggered by the driver is actually
-complete once the command has been completed. Make this behaviour
-and the requirements more explicit.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/123}
-
-Reviewed-by: Jason Wang <jasowang@redhat.com>
-
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Virtio Transport Options / Virtio over channel I/O / Device Operation / Resetting Devices}.
- } \\
-\hline
-41644c17c971 & 09 Dec 2021 & Jean-Philippe Brucker & { virtio-iommu: Rework the bypass feature
-
-
-The VIRTIO_IOMMU_F_BYPASS feature is awkward to use and incomplete.
-Although it is implemented by QEMU, it is not supported by any driver as
-far as I know. Replace it with a new VIRTIO_IOMMU_F_BYPASS_CONFIG
-feature.
-
-Two features are missing from virtio-iommu:
-
-* The ability for an hypervisor to start the device in bypass mode. The
-  wording for VIRTIO_IOMMU_F_BYPASS is not clear enough to allow it at
-  the moment, because it only specifies the behavior after feature
-  negotiation.
-
-* The ability for a guest to set individual endpoints in bypass mode
-  when bypass is globally disabled. An OS should have the ability to
-  allow only endpoints it trusts to bypass the IOMMU, while keeping DMA
-  disabled for endpoints it isn't even aware of. At the moment this can
-  only be emulated by creating identity mappings.
-
-The VIRTIO_IOMMU_F_BYPASS_CONFIG feature adds a 'bypass' config field
-that allows to enable and disable bypass globally. It also adds a new
-flag for the ATTACH request.
-
-* The hypervisor can start the VM with bypass enabled or, if it knows
-  that the software stack supports it, disabled. The 'bypass' config
-  fields is initialized to 0 or 1. It is sticky and isn't affected by
-  device reset.
-
-* Generally the firmware won't have an IOMMU driver and will need to be
-  started in bypass mode, so the bootloader and kernel can be loaded
-  from storage endpoint.
-
-  For more security, the firmware could implement a minimal virtio-iommu
-  driver that reuses existing virtio support and only touches the config
-  space. It could enable PCI bus mastering in bridges only for the
-  endpoints that need it, enable global IOMMU bypass by flipping a bit,
-  then tear everything down before handing control over to the OS. This
-  prevents vulnerability windows where a malicious endpoint reprograms
-  the IOMMU while the OS is configuring it [1].
-
-  The isolation provided by vIOMMUs has mainly been used for securely
-  assigning endpoints to untrusted applications so far, while kernel DMA
-  bypasses the IOMMU. But we can expect boot security to become as
-  important in virtualization as it presently is on bare-metal systems,
-  where some devices are untrusted and must never be able to access
-  memory that wasn't assigned to them.
-
-* The OS can enable and disable bypass globally. It can then enable
-  bypass for individual endpoints by attaching them to bypass domains,
-  using the new VIRTIO_IOMMU_ATTACH_F_BYPASS flag. It can disable bypass
-  by attaching them to normal domains.
-
-[1] IOMMU protection against I/O attacks: a vulnerability and a proof of concept
-    Morgan, B., Alata, É., Nicomette, V. et al.
-    \url{https://link.springer.com/article/10.1186/s13173-017-0066-7}
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/119}
-
-Reviewed-by: Eric Auger <eric.auger@redhat.com>
-
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-
-Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types / IOMMU Device / Feature bits},
-\ref{sec:Device Types / IOMMU Device / Device configuration layout},
-\ref{sec:Device Types / IOMMU Device / Device initialization},
-and \ref{sec:Device Types / IOMMU Device / Device operations}.
- } \\
-\hline
-ed9152310708 & 21 Dec 2021 & Yadong Qi & { virtio-blk: add secure erase feature to specification
-
-
-There are user requests to use the Linux BLKSECDISCARD ioctl on
-virtio-blk device. A secure discard is the same as a regular discard
-except that all copies of the discarded blocks that were possibly
-created by garbage collection must also be erased. This requires
-support from the device. And "secure erase" is more commonly used
-in industry to name this feature. Hence in this proposal, extend
-virtio-blk protocol to support secure erase command.
-
-Introduced new feature flag and command type:
-    VIRTIO_BLK_F_SECURE_ERASE
-    VIRTIO_BLK_T_SECURE_ERASE
-
-This feature is a passthrough feature on backend because it is hard
-to emulate a secure erase. So virtio-blk will report this feature
-to guest OS if backend device support such kind of feature. And
-when guest OS issues a secure erase command, backend driver will
-passthrough the command to host device blocks.
-
-Introduced new fields in virtio_blk_config for secure erase commands:
-struct virtio_blk_config .
-
-    ...
-    max_secure_erase_sectors;
-    max_secure_erase_seg;
-    secure_erase_sector_alignment;
-\};
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/125}
-
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-
-Signed-off-by: Yadong Qi <yadong.qi@intel.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Device Types / Block Device / Feature bits},
-\ref{sec:Device Types / Block Device / Device configuration layout},
-\ref{sec:Device Types / Block Device / Device Initialization},
-and \ref{sec:Device Types / Block Device / Device Operation}.
- } \\
-\hline
-3b5378d70a42 & 21 Dec 2021 & Xuan Zhuo & { virtio: introduce virtqueue reset as basic facility
-
-
-This patch allows the driver to reset a queue individually.
-
-This is very common on general network equipment. By disabling a queue,
-you can quickly reclaim the buffer currently on the queue. If necessary,
-we can reinitialize the queue separately.
-
-For example, when virtio-net implements support for AF_XDP, we need to
-disable a queue to release all the original buffers when AF_XDP setup.
-And quickly release all the AF_XDP buffers that have been placed in the
-queue when AF_XDP exits.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/124}
-
-Reviewed-by: Jason Wang <jasowang@redhat.com>
-
-Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues},
-and \ref{sec:Reserved Feature Bits}.
- } \\
-\hline
-12998e738621 & 21 Dec 2021 & Xuan Zhuo & { virtio: pci support virtqueue reset
-
-
-PCI support virtqueue reset.
-
-virtio_pci_common_cfg add "queue_reset" to support virtqueue reset.
-The driver uses this to selectively reset the queue.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/124}
-
-Reviewed-by: Jason Wang <jasowang@redhat.com>
-
-Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common configuration structure layout}.
- } \\
-\hline
-a4ce81a83780 & 21 Dec 2021 & Xuan Zhuo & { virtio: mmio support virtqueue reset
-
-
-mmio support virtqueue reset.
-
-MMIO Device Register Layout "QueueReady" to support virtqueue reset.
-The driver uses this to selectively reset the queue.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/124}
-
-Reviewed-by: Jason Wang <jasowang@redhat.com>
-
-Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Virtio Transport Options / Virtio Over MMIO / MMIO Device Register Layout}.
- } \\
-\hline
-f65613a48826 & 11 Jan 2022 & Max Gurtovoy & { Fix reserved Feature bits numbering
-
-
-This should have been updated during VIRTIO_F_NOTIFICATION_DATA,
-VIRTIO_F_NOTIF_CONFIG_DATA and VIRTIO_F_RING_RESET standartization.
-
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/128}
-
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-
-Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Basic Facilities of a Virtio Device / Feature Bits}.
- } \\
-\hline
-5e1c3fa81e29 & 21 Jan 2022 & Arseny Krasnov & { virtio-vsock: use C style defines for constants
-
-
-This:
-1) Replaces enums with C style "defines", because
-   use of enums is not documented, while "defines"
-   are widely used in spec.
-2) Adds defines for some constants.
-
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-
-Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/137}
 
 Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 
-Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+Signed-off-by: Laura Loghin <lauralg@amazon.com>
 
 Signed-off-by: Cornelia Huck <cohuck@redhat.com>
 
 See \ref{sec:Device Types / Socket Device / Device Operation}.
  } \\
 \hline
-1a90fc6e4228 & 21 Jan 2022 & Stefano Garzarella & { virtio-vsock: add VIRTIO_VSOCK_F_STREAM feature bit
+fca015771bc9 & 13 Jun 2022 & Xuan Zhuo & {\noindent virtio-net: support reset queue\vspace{\baselineskip}
 
 
-Initially vsock devices only supported stream sockets, but now
-we are adding support for new types (i.e. SEQPACKET, DGRAM).
+A separate reset queue function introduced by Virtqueue Reset.
 
-Since some devices may not want to support stream sockets, we add
-a feature bit for this type.
+However, it is currently not defined what to do if the destination queue is
+being reset when virtio-net is steering in multi-queue mode.
 
-For backward compatibility, if no feature bit is set, only stream
-socket type is supported.
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/138}
+
+Reviewed-by: Jason Wang <jasowang@redhat.com>
+
+Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode},
+and \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Receive-side scaling (RSS) / Setting RSS parameters}.
+ } \\
+\hline
+6328f51e21b5 & 24 Jun 2022 & Yuri Benditovich & {\noindent virtio-net: define guest USO features\vspace{\baselineskip}
+
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/120}
+
+Add definition for large UDP packets device-to-driver.
+
+Signed-off-by: Yuri Benditovich <yuri.benditovich@daynix.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Device Types / Network Device / Feature bits},
+\ref{sec:Device Types / Network Device / Feature bits / Feature bit requirements},
+\ref{sec:Device Types / Network Device / Device Initialization},
+\ref{sec:Device Types / Network Device / Device Operation / Setting Up Receive Buffers},
+\ref{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets},
+and \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Offloads State Configuration / Setting Offloads State}.
+ } \\
+\hline
+49ff7805924c & 24 Jun 2022 & Anton Yakovlev & {\noindent virtio-snd: add support for audio controls\vspace{\baselineskip}
+
+
+This patch extends the virtio sound device specification by adding
+support for audio controls. Audio controls can be used to set the volume
+level, mute/unmute the audio signal, switch different modes/states of
+the virtual sound device, etc.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/107}
+
+Signed-off-by: Anton Yakovlev <anton.yakovlev@opensynergy.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Conformance / Driver Conformance / Sound Driver Conformance},
+\ref{sec:Conformance / Device Conformance / Sound Device Conformance},
+\ref{sec:Device Types / Sound Device / Feature Bits},
+\ref{sec:Device Types / Sound Device / Device Configuration Layout},
+\ref{sec:Device Types / Sound Device / Device Operation},
+and \ref{sec:Device Types / Sound Device / Device Operation / Control Elements}.
+ } \\
+\hline
+4d9068effa81 & 11 Jul 2022 & Alvaro Karsz & {\noindent Introduction of Virtio Network device notifications coalescing feature.\vspace{\baselineskip}
+
+
+Control a network device notifications coalescing parameters using the control virtqueue.
+A new control class was added: VIRTIO_NET_CTRL_NOTF_COAL.
+
+This class provides 2 commands:
+
+\begin{itemize}
+\item VIRTIO_NET_CTRL_NOTF_COAL_TX_SET:
+  Ask the network device to change the tx_usecs and tx_max_packets parameters.
+
+\begin{itemize}
+  \item tx_usecs: Maximum number of usecs to delay a TX notification.
+
+  \item tx_max_packets: Maximum number of packets to send before a TX notification.
+\end{itemize}
+
+
+\item VIRTIO_NET_CTRL_NOTF_COAL_RX_SET:
+  Ask the network device to change the rx_usecs and rx_max_packets parameters.
+
+\begin{itemize}
+  \item rx_usecs: Maximum number of usecs to delay a RX notification.
+
+  \item rx_max_packets: Maximum number of packets to receive before a RX notification.
+\end{itemize}
+\end{itemize}
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/141}
+
+Reviewed-by: Jason Wang <jasowang@redhat.com>
+
+Signed-off-by: Alvaro Karsz <alvaro.karsz@solid-run.com>
+
+[CH: fixed commit message]
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Conformance / Driver Conformance / Network Driver Conformance},
+\ref{sec:Conformance / Device Conformance / Network Device Conformance},
+\ref{sec:Device Types / Network Device / Feature bits},
+\ref{sec:Device Types / Network Device / Feature bits / Feature bit requirements},
+and \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}.
+ } \\
+\hline
+abbe8afda8db & 03 Aug 2022 & Lei He & {\noindent virtio-crypto: introduce akcipher service\vspace{\baselineskip}
+
+
+Introduce akcipher (asymmetric key cipher) service type, several
+asymmetric algorithms and relevent information:
+
+  - RSA(padding algorithm, ASN.1 schema definition)
+
+  - ECDSA(ECC algorithm)
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/129}
+
+Signed-off-by: zhenwei pi <pizhenwei@bytedance.com>
+
+Signed-off-by: Lei He <helei.sig11@bytedance.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Normative References},
+\ref{sec:Device Types / Crypto Device},
+\ref{sec:Device Types / Crypto Device / Feature bits},
+\ref{sec:Device Types / Crypto Device / Feature bit requirements},
+\ref{sec:Device Types / Crypto Device / Supported crypto services},
+\ref{sec: Device Types / Crypto Device / Supported crypto services / AKCIPHER services},
+\ref{sec:Device Types / Crypto Device / Device configuration layout},
+\ref{sec:Device Types / Crypto Device / Device Operation / Operation status},
+\ref{sec:Device Types / Crypto Device / Device Operation / Control Virtqueue},
+\ref{sec:Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation / Session operation: AKCIPHER session},
+\ref{sec:Device Types / Crypto Device / Device Operation / Data Virtqueue},
+and \ref{sec:Device Types / Crypto Device / Device Operation / AKCIPHER Service Operation}.
+ } \\
+\hline
+26ed30ccb049 & 03 Aug 2022 & Stefano Garzarella & {\noindent virtio-vsock: add VIRTIO_VSOCK_F_NO_IMPLIED_STREAM feature bit\vspace{\baselineskip}
+
+
+Initially virtio-vsock only supported the stream type, which is why
+there was no feature. Later we added the seqpacket type and in the future
+we may have other types (e.g. datagram).
+
+seqpacket is an extension of stream, so it might be implied that if
+seqpacket is supported, stream is too, but this might not be true for
+other types.
+
+As we discussed here [1] should be better to add a new
+VIRTIO_VSOCK_F_NO_IMPLIED_STREAM feature bit to avoid this implication.
+
+Let's also add normative sections to better define the behavior when
+VIRTIO_VSOCK_F_NO_IMPLIED_STREAM is negotiated or not.
+
+[1] \url{http://markmail.org/message/2s3qd74drgjxkvte}
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/142}
+
+Suggested-by: Michael S. Tsirkin <mst@redhat.com>
+
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+
+Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Conformance / Driver Conformance / Socket Driver Conformance},
+\ref{sec:Conformance / Device Conformance / Socket Device Conformance},
+and \ref{sec:Device Types / Socket Device / Feature bits}.
+ } \\
+\hline
+a7251b0cb4d9 & 14 Nov 2022 & Hrishivarya Bhageeradhan & {\noindent content: reserve device ID 43 for Camera device\vspace{\baselineskip}
+
+
+The virtio-camera device allows to stream a camera video with
+ability to change controls, formats and get camera captures.
+This patch is to reserve the next available device ID for
+virtio-camera.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/148}
+
+Signed-off-by: Hrishivarya Bhageeradhan <hrishivarya.bhageeradhan@opensynergy.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Device Types}.
+ } \\
+\hline
+b4e8efa0fa6c & 05 Dec 2022 & Dmitry Fomichev & {\noindent virtio-blk: add zoned block device specification\vspace{\baselineskip}
+
+
+Introduce support for Zoned Block Devices to virtio.
+
+Zoned Block Devices (ZBDs) aim to achieve a better capacity, latency
+and/or cost characteristics compared to commonly available block
+devices by getting the entire LBA space of the device divided to block
+regions that are much larger than the LBA size. These regions are
+called zones and they can only be written sequentially. More details
+about ZBDs can be found at
+
+\url{https://zonedstorage.io/docs/introduction/zoned-storage} .
+
+In its current form, the virtio protocol for block devices (virtio-blk)
+is not aware of ZBDs but it allows the driver to successfully scan a
+host-managed drive provided by the virtio block device. As the result,
+the host-managed drive is recognized by virtio driver as a regular,
+non-zoned drive that will operate erroneously under the most common
+write workloads. Host-aware ZBDs are currently usable, but their
+performance may not be optimal because the driver can only see them as
+non-zoned block devices.
+
+To fix this, the virtio-blk protocol needs to be extended to add the
+capabilities to convey the zone characteristics of ZBDs at the device
+side to the driver and to provide support for ZBD-specific commands -
+Report Zones, four zone operations (Open, Close, Finish and Reset) and
+(optionally) Zone Append. The proposed standard extension aims to
+define this new functionality.
+
+This patch extends the virtio-blk section of virtio specification with
+the minimum set of requirements that are necessary to support ZBDs.
+The resulting device model is a subset of the models defined in ZAC/ZBC
+and ZNS standards documents. The included functionality mirrors
+the existing Linux kernel block layer ZBD support and should be
+sufficient to handle the host-managed and host-aware HDDs that are on
+the market today as well as ZNS SSDs that are entering the market at
+the time of submission of this patch.
+
+I would like to thank the following people for their useful feedback
+and suggestions while working on the initial iterations of this patch.
+
+Damien Le Moal <damien.lemoal@opensource.wdc.com>
+
+Matias Bjørling <Matias.Bjorling@wdc.com>
+
+Niklas Cassel <Niklas.Cassel@wdc.com>
+
+Hans Holmberg <Hans.Holmberg@wdc.com>
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/143}
+
+Signed-off-by: Dmitry Fomichev <dmitry.fomichev@wdc.com>
 
 Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
 
-Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
 Signed-off-by: Cornelia Huck <cohuck@redhat.com>
 
-See \ref{sec:Device Types / Socket Device / Feature bits}.
+See \ref{sec:Device Types / Block Device / Feature bits},
+\ref{sec:Device Types / Block Device / Device configuration layout},
+\ref{sec:Device Types / Block Device / Device Initialization},
+and \ref{sec:Device Types / Block Device / Device Operation}.
  } \\
 \hline
-d6d9c734b42e & 21 Jan 2022 & Arseny Krasnov & { virtio-vsock: SOCK_SEQPACKET description
+985bbf397db4 & 07 Dec 2022 & Xuan Zhuo & {\noindent content: reserve device ID 44 for ISM device\vspace{\baselineskip}
 
 
-This adds description of SOCK_SEQPACKET socket type
-support for virtio-vsock.
+The virtio-ism device provides the ability to share memory between
+different guests on a host. A guest's memory got from ism device can be
+shared with multiple peers at the same time. This shared relationship
+can be dynamically created and released.
 
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/132}
+The shared memory obtained from the device is divided into multiple ism
+regions for share. ISM device provides a mechanism to notify other ism
+region referrers of content update events.
 
-Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
+This patch is to reserve the next available device ID for virtio-ism.
 
-[reworked "Message and record boundaries" paragraph]
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/150}
 
-Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+
+Signed-off-by: Jiang Liu <gerry@linux.alibaba.com>
+
+Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
+
+Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
+
+Signed-off-by: Helin Guo <helinguo@linux.alibaba.com>
+
+Signed-off-by: Hans Zhang <hans@linux.alibaba.com>
+
+Signed-off-by: He Rongguang <herongguang@linux.alibaba.com>
 
 Signed-off-by: Cornelia Huck <cohuck@redhat.com>
 
-See \ref{sec:Device Types / Socket Device / Feature bits},
-and \ref{sec:Device Types / Socket Device / Device Operation}.
+See \ref{sec:Device Types}.
  } \\
 \hline
-88895f56e642 & 24 Jan 2022 & Cornelia Huck & { Reserve more feature bits for device type usage
+f2b28698a28a & 30 Jan 2023 & Parav Pandit & {\noindent virtio-net: Maintain network device spec in separate directory\vspace{\baselineskip}
 
 
-Feature bits 41 and above are noted as being reserved for future
-extensions. However, the net device has been using bits in that space
-for some time now, as it already used up the device type specific
-range up to 23.
+Move virtio network device specification to its own file similar to
+recent virtio devices.
+While at it, place device specification, its driver and device
+conformance into its own directory to have self contained device
+specification.
 
-To avoid problems in the future, let's designate bits 50 to 127 to
-device type specific usage (which accommodates current usage by the
-net driver, and gives breathing room for future type specific bits),
-and declare bits 41 to 49 and bits 128 and above to be reserved for
-future extensions (which gives us some time before bit numbers move
-beyond 63, which would need some changes in existing device and driver
-implementations.)
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/153}
 
-Reported-by: Max Gurtovoy <mgurtovoy@nvidia.com>
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
 
-Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/131}
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Device Types / Network Device},
+\ref{sec:Conformance / Device Conformance / Network Device Conformance},
+and \ref{sec:Conformance / Driver Conformance / Network Driver Conformance}.
+ } \\
+\hline
+81694cddc4c1 & 30 Jan 2023 & Parav Pandit & {\noindent virtio-net: Fix spelling errors\vspace{\baselineskip}
+
+
+Fix two spelling errors in the virtio network device specification.
+
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Device Types / Network Device / Device Initialization},
+and \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue}.
+ } \\
+\hline
+335342f5cd88 & 30 Jan 2023 & Parav Pandit & {\noindent virtio-blk: Maintain block device spec in separate directory\vspace{\baselineskip}
+
+
+Move virtio block device specification to its own file similar to
+recent virtio devices.
+While at it, place device specification, its driver and device
+conformance into its own directory to have self contained device
+specification.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/153}
+
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Device Types / Block Device},
+\ref{sec:Conformance / Device Conformance / Block Device Conformance},
+and \ref{sec:Conformance / Driver Conformance / Block Driver Conformance}.
+ } \\
+\hline
+d3d06187eabb & 30 Jan 2023 & Parav Pandit & {\noindent virtio-console: Maintain console device spec in separate directory\vspace{\baselineskip}
+
+
+Move virtio console device specification to its own file similar to
+recent virtio devices.
+While at it, place device specification, its driver and device
+conformance into its own directory to have self contained device
+specification.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/153}
+
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Device Types / Console Device},
+\ref{sec:Conformance / Device Conformance / Console Device Conformance},
+and \ref{sec:Conformance / Driver Conformance / Console Driver Conformance}.
+ } \\
+\hline
+c71e88e86d35 & 30 Jan 2023 & Parav Pandit & {\noindent virtio-entropy: Maintain entropy device spec in separate directory\vspace{\baselineskip}
+
+
+Move virtio entropy device specification to its own file similar to
+recent virtio devices.
+While at it, place device specification, its driver and device
+conformance into its own directory to have self contained device
+specification.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/153}
+
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Device Types / Entropy Device},
+\ref{sec:Conformance / Device Conformance / Entropy Device Conformance},
+and \ref{sec:Conformance / Driver Conformance / Entropy Driver Conformance}.
+ } \\
+\hline
+c06f3b670dd6 & 30 Jan 2023 & Parav Pandit & {\noindent virtio-balloon: Maintain mem balloon device spec in separate directory\vspace{\baselineskip}
+
+
+Move virtio memory balloon device specification to its own file
+similar to recent virtio devices.
+While at it, place device specification, its driver and device
+conformance into its own directory to have self contained device
+specification.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/153}
+
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Device Types / Memory Balloon Device},
+\ref{sec:Conformance / Device Conformance / Traditional Memory Balloon Device Conformance},
+and \ref{sec:Conformance / Driver Conformance / Traditional Memory Balloon Driver Conformance}.
+ } \\
+\hline
+d404f1c4e886 & 30 Jan 2023 & Parav Pandit & {\noindent virtio-scsi: Maintain scsi host device spec in separate directory\vspace{\baselineskip}
+
+
+Move virtio SCSI host device specification to its own file similar to
+recent virtio devices.
+While at it, place device specification, its driver and device
+conformance into its own directory to have self contained device
+specification.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/153}
+
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Device Types / SCSI Host Device},
+\ref{sec:Conformance / Device Conformance / SCSI Host Device Conformance},
+and \ref{sec:Conformance / Driver Conformance / SCSI Host Driver Conformance}.
+ } \\
+\hline
+442bb643a9ad & 30 Jan 2023 & Parav Pandit & {\noindent virtio-gpu: Maintain gpu device spec in separate directory\vspace{\baselineskip}
+
+
+Move virtio gpu device specification to its own file similar to
+recent virtio devices.
+While at it, place device specification, its driver and device
+conformance into its own directory to have self contained device
+specification.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/153}
+
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Conformance / Device Conformance / GPU Device Conformance}.
+ } \\
+\hline
+c9686f241819 & 30 Jan 2023 & Parav Pandit & {\noindent virtio-input: Maintain input device spec in separate directory\vspace{\baselineskip}
+
+
+Move virtio input device specification to its own file similar to
+recent virtio devices.
+While at it, place device specification, its driver and device
+conformance into its own directory to have self contained device
+specification.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/153}
+
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Conformance / Device Conformance / Input Device Conformance},
+and \ref{sec:Conformance / Driver Conformance / Input Driver Conformance}.
+ } \\
+\hline
+8463bba27c79 & 30 Jan 2023 & Parav Pandit & {\noindent virtio-crypto: Maintain crypto device spec in separate directory\vspace{\baselineskip}
+
+
+Move virtio crypto device specification to its own file similar to
+recent virtio devices.
+While at it, place device specification, its driver and device
+conformance into its own directory to have self contained device
+specification.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/153}
+
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Conformance / Device Conformance / Crypto Device Conformance},
+and \ref{sec:Conformance / Driver Conformance / Crypto Driver Conformance}.
+ } \\
+\hline
+828754b98e3b & 30 Jan 2023 & Parav Pandit & {\noindent virtio-vsock: Maintain socket device spec in separate directory\vspace{\baselineskip}
+
+
+Place device specification, its driver and device
+conformance into its own directory to have self contained device
+specification.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/153}
+
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Conformance / Device Conformance / Socket Device Conformance},
+and \ref{sec:Conformance / Driver Conformance / Socket Driver Conformance}.
+ } \\
+\hline
+8632f80e251f & 30 Jan 2023 & Parav Pandit & {\noindent virtio-fs: Maintain file system device spec in separate directory\vspace{\baselineskip}
+
+
+Place device specification, its driver and device
+conformance into its own directory to have self contained device
+specification.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/153}
+
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Conformance / Device Conformance / File System Device Conformance},
+and \ref{sec:Conformance / Driver Conformance / File System Driver Conformance}.
+ } \\
+\hline
+b067de47a506 & 30 Jan 2023 & Parav Pandit & {\noindent virtio-rpmb: Maintain rpmb device spec in separate directory\vspace{\baselineskip}
+
+
+Place device specification, its driver and device
+conformance into its own directory to have self contained device
+specification.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/153}
+
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Conformance / Device Conformance / RPMB Device Conformance},
+and \ref{sec:Conformance / Driver Conformance / RPMB Driver Conformance}.
+ } \\
+\hline
+b1cf73e96173 & 30 Jan 2023 & Parav Pandit & {\noindent virtio-iommu: Maintain iommu device spec in separate directory\vspace{\baselineskip}
+
+
+Place device specification, its driver and device
+conformance into its own directory to have self contained device
+specification.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/153}
+
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Conformance / Device Conformance / IOMMU Device Conformance},
+and \ref{sec:Conformance / Driver Conformance / IOMMU Driver Conformance}.
+ } \\
+\hline
+6813e3cc271e & 30 Jan 2023 & Parav Pandit & {\noindent virtio-sound: Maintain sound device spec in separate directory\vspace{\baselineskip}
+
+
+Place device specification, its driver and device
+conformance into its own directory to have self contained device
+specification.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/153}
+
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Conformance / Device Conformance / Sound Device Conformance},
+and \ref{sec:Conformance / Driver Conformance / Sound Driver Conformance}.
+ } \\
+\hline
+5042a5031502 & 30 Jan 2023 & Parav Pandit & {\noindent virtio-mem: Maintain memory device spec in separate directory\vspace{\baselineskip}
+
+
+Place device specification, its driver and device
+conformance into its own directory to have self contained device
+specification.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/153}
+
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Conformance / Device Conformance / Memory Device Conformance},
+and \ref{sec:Conformance / Driver Conformance / Memory Driver Conformance}.
+ } \\
+\hline
+00b9935238bf & 30 Jan 2023 & Parav Pandit & {\noindent virtio-i2c: Maintain i2c device spec in separate directory\vspace{\baselineskip}
+
+
+Place device specification, its driver and device
+conformance into its own directory to have self contained device
+specification.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/153}
+
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Conformance / Device Conformance / I2C Adapter Device Conformance},
+and \ref{sec:Conformance / Driver Conformance / I2C Adapter Driver Conformance}.
+ } \\
+\hline
+674489b191ab & 30 Jan 2023 & Parav Pandit & {\noindent virtio-scmi: Maintain scmi device spec in separate directory\vspace{\baselineskip}
+
+
+Place device specification, its driver and device
+conformance into its own directory to have self contained device
+specification.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/153}
+
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Conformance / Device Conformance / SCMI Device Conformance},
+and \ref{sec:Conformance / Driver Conformance / SCMI Driver Conformance}.
+ } \\
+\hline
+6c9c04d2bf5e & 30 Jan 2023 & Parav Pandit & {\noindent virtio-gpio: Maintain gpio device spec in separate directory\vspace{\baselineskip}
+
+
+Place device specification, its driver and device
+conformance into its own directory to have self contained device
+specification.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/153}
+
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Conformance / Device Conformance / GPIO Device Conformance},
+and \ref{sec:Conformance / Driver Conformance / GPIO Driver Conformance}.
+ } \\
+\hline
+d04d253b1055 & 30 Jan 2023 & Parav Pandit & {\noindent virtio-pmem: Maintain pmem device spec in separate directory\vspace{\baselineskip}
+
+
+Place device specification, its driver and device
+conformance into its own directory to have self contained device
+specification.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/153}
+
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Conformance / Device Conformance / PMEM Device Conformance},
+and \ref{sec:Conformance / Driver Conformance / PMEM Driver Conformance}.
+ } \\
+\hline
+b1fb6b62495f & 02 Feb 2023 & Parav Pandit & {\noindent virtio-net: Clarify VLAN filter table configuration\vspace{\baselineskip}
+
+
+The filtering behavior of the VLAN filter commands is not very clear as
+discussed in thread [1].
+
+Hence, add the command description and device requirements for it.
+
+[1] \url{https://lists.oasis-open.org/archives/virtio-dev/202301/msg00210.html}
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/147}
+
+Suggested-by: Si-Wei Liu <si-wei.liu@oracle.com>
+
+Reviewed-by: Si-Wei Liu <si-wei.liu@oracle.com>
+
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue / VLAN Filtering},
+\ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue},
+and \ref{sec:Conformance / Device Conformance / Network Device Conformance}.
+ } \\
+\hline
+53b0cb13169c & 02 Feb 2023 & Parav Pandit & {\noindent virtio-net: Avoid confusing device configuration text\vspace{\baselineskip}
+
+
+The added text in commit of Fixes tag was redundant and
+confusing in context of VLAN filtering description.
+
+Hence remove it as discussed in [1] and [2].
+
+[1] \url{https://lists.oasis-open.org/archives/virtio-dev/202301/msg00282.html}
+[2] \url{https://lists.oasis-open.org/archives/virtio-dev/202301/msg00286.html}
+
+\vspace{\baselineskip}
+Fixes: 296303444f6b ("virtio-net: Clarify VLAN filter table configuration")
+
+Suggested-by: Halil Pasic <pasic@linux.ibm.com>
+
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+[CH: applied as editorial change]
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue}.
+ } \\
+\hline
+3b9b6acb0936 & 09 Feb 2023 & Michael S. Tsirkin & {\noindent audio->sound\vspace{\baselineskip}
+
+
+Spec calls the device "sound device". Make the name in the
+ID section match.
+
+\vspace{\baselineskip}
+MST: applied as editorial change.
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Device Types}.
+ } \\
+\hline
+0ce03bc6995a & 14 Feb 2023 & Parav Pandit & {\noindent virtio-net: Avoid confusion between a card and a device\vspace{\baselineskip}
+
+
+Historically virtio network device is documented as an Ethernet card.
+A modern card in the industry has one to multiple ports, one to multiple
+PCI functions. However the virtio network device is usually just a
+single link/port network interface controller.
+
+Hence, avoid this confusing term 'card' and align the specification
+to adhere to widely used specification term as 'device' used for all
+virtio device types.
+
+Replaced 'card' with 'network interface controller'.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/154}
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Discovery},
+\ref{sec:Device Types},
+\ref{sec:Device Types / Network Device},
+\ref{sec:Device Types / Network Device / Feature bits},
+and \ref{sec:Device Types / Network Device / Device Initialization}.
+ } \\
+\hline
+be2ce1ee17e0 & 15 Feb 2023 & Parav Pandit & {\noindent content.tex Fix Driver notifications label\vspace{\baselineskip}
+
+
+Driver notifications section is under "Basic Facilities of a Virtio
+Device". However, the label is placed under "Virtqueues" section.
+
+Fix the label references.
+
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+[CH: pushed as an editorial update]
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Basic Facilities of a Virtio Device / Driver notifications}.
+ } \\
+\hline
+2ea4627093fb & 20 Feb 2023 & Alvaro Karsz & {\noindent virtio-net: Mention VIRTIO_NET_F_HASH_REPORT dependency on VIRTIO_NET_F_CTRL_VQ\vspace{\baselineskip}
+
+
+If the VIRTIO_NET_F_HASH_REPORT feature is negotiated, the driver may
+send VIRTIO_NET_CTRL_MQ_HASH_CONFIG commands, thus, the control VQ
+feature should be negotiated.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/158}
+
+Signed-off-by: Alvaro Karsz <alvaro.karsz@solid-run.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Device Types / Network Device / Device configuration layout}.
+ } \\
+\hline
+73ce5bb02003 & 01 Mar 2023 & Alvaro Karsz & {\noindent virtio-net: Fix and update VIRTIO_NET_F_NOTF_COAL feature\vspace{\baselineskip}
+
+
+This patch makes several improvements to the notification coalescing
+feature, including:
+
+\begin{itemize}
+
+\item Consolidating virtio_net_ctrl_coal_tx and virtio_net_ctrl_coal_rx
+  into a single struct, virtio_net_ctrl_coal, as they are identical.
+
+\item Emphasizing that the coalescing commands are best-effort.
+
+\item Defining the behavior of coalescing with regards to delivering
+  notifications when a change occur.
+
+\item Stating that the commands should apply to all the receive/transmit
+  virtqueues.
+
+\item Stating that every receive/transmit virtqueue should count it's own
+  packets.
+
+\item A new intro explaining the entire coalescing operation.
+
+\end{itemize}
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/159}
+
+Signed-off-by: Alvaro Karsz <alvaro.karsz@solid-run.com>
+
+Reviewed-by: Parav Pandit <parav@nvidia.com>
+
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue}.
+ } \\
+\hline
+3508347769af & 01 Mar 2023 & Parav Pandit & {\noindent virtio-net: Improve introductory description\vspace{\baselineskip}
+
+
+The control VQ of the virtio network device is used beyond advance
+steering control. The control VQ dynamically changes multiple features
+of the initialized device.
+
+Hence, update this area of control VQ introductory description at few
+places and also place the link to its description.
+
+Also update the introduction section to better describe receive and
+transmit virtqueues.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/156}
+
+Reviewed-by: David Edmondson <david.edmondson@oracle.com>
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Device Types / Network Device},
+\ref{sec:Device Types / Network Device / Virtqueues},
+and \ref{sec:Device Types / Network Device / Device Operation}.
+ } \\
+\hline
+91a469991433 & 10 Mar 2023 & Parav Pandit & {\noindent transport-pci: Split PCI transport to its own file\vspace{\baselineskip}
+
+
+Place PCI transport specification in its own file to better maintain it.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/157}
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus}.
+ } \\
+\hline
+9e88ba9c47d0 & 10 Mar 2023 & Parav Pandit & {\noindent transport-mmio: Split MMIO transport to its own file\vspace{\baselineskip}
+
+
+Place MMIO transport specification in its own file to better maintain it.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/157}
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Virtio Transport Options / Virtio Over MMIO}.
+ } \\
+\hline
+0af264f9d4ea & 10 Mar 2023 & Parav Pandit & {\noindent transport-ccw: Split Channel IO transport to its own file\vspace{\baselineskip}
+
+
+Place Channel IO transport specification in its own file to
+better maintain it.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/157}
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Virtio Transport Options / Virtio Over Channel I/O}.
+ } \\
+\hline
+deb0aa0c7faa & 10 Mar 2023 & Parav Pandit & {\noindent transport-pci: Fix spellings and white spaces\vspace{\baselineskip}
+
+
+Now that we have individual files, fix reported spelling errors.
+
+While at it, remove trailing white spaces.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/157}
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus},
+\ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / ISR status capability},
+and \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization}.
+ } \\
+\hline
+ca97719ea35e & 10 Mar 2023 & Parav Pandit & {\noindent transport-mmio: Fix spellings and white spaces\vspace{\baselineskip}
+
+
+Now that we have individual files, fix reported spelling errors.
+
+While at it, remove trailing white spaces.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/157}
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Virtio Transport Options / Virtio Over MMIO / MMIO Device Register Layout},
+and \ref{sec:Virtio Transport Options / Virtio Over MMIO / Legacy interface}.
+ } \\
+\hline
+8797f4d4e410 & 10 Mar 2023 & Parav Pandit & {\noindent transport-ccw: Fix spellings and white spaces\vspace{\baselineskip}
+
+
+Now that we have individual files, fix reported spelling errors.
+
+While at it, remove extra white spaces.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/157}
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Virtio Transport Options / Virtio over channel I/O / Basic Concepts},
+\ref{sec:Virtio Transport Options / Virtio over channel I/O / Basic Concepts/ Notifications},
+\ref{sec:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Setting Up Indicators},
+and \ref{sec:Virtio Transport Options / Virtio over channel I/O / Device Operation / Guest->Host Notification}.
+ } \\
+\hline
+d3f832b6605d & 15 Mar 2023 & Parav Pandit & {\noindent virtio-net: Describe dev cfg fields read only\vspace{\baselineskip}
+
+
+Device configuration fields are read only. Avoid duplicating this
+description for multiple fields.
+
+Instead describe it one time and do it in the driver requirements
+section.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/161}
+
+Reviewed-by: David Edmondson <david.edmondson@oracle.com>
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Device Types / Network Device / Device configuration layout}.
+ } \\
+\hline
+115ceb97f813 & 15 Mar 2023 & Parav Pandit & {\noindent virtio-net: Define cfg fields before description\vspace{\baselineskip}
+
+
+Currently some fields of the virtio_net_config structure are defined
+before introducing the structure and some are defined after.
+Better to define the configuration layout first followed by
+description of all the fields.
+
+Device configuration fields are described in the section. Change wording
+from 'listed' to 'described' as suggested in patch [1].
+
+[1] \url{https://lists.oasis-open.org/archives/virtio-dev/202302/msg00004.html}
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/161}
+
+Reviewed-by: David Edmondson <david.edmondson@oracle.com>
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Device Types / Network Device / Device configuration layout}.
+ } \\
+\hline
+2d1d8dfa3474 & 15 Mar 2023 & Parav Pandit & {\noindent virtio-net: Fix virtqueues spelling error\vspace{\baselineskip}
+
+
+Correct spelling from virtqueus to virtqueues.
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+
+[CH: pushed as editorial update]
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue}.
+ } \\
+\hline
+2d5495083c12 & 15 Mar 2023 & Parav Pandit & {\noindent transport-pci: Remove duplicate word structure\vspace{\baselineskip}
+
+
+Remove duplicate word structure.
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+
+Reviewed-by: Halil Pasic <pasic@linux.ibm.com>
+
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+
+[CH: pushed as editorial update]
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Legacy Interfaces: A Note on PCI Device Layout}.
+ } \\
+\hline
+b0414098602f & 15 Mar 2023 & Parav Pandit & {\noindent virtio-blk: Define dev cfg layout before its fields\vspace{\baselineskip}
+
+
+Define device configuration layout structure before describing its
+individual fields.
+
+This is an editorial change.
+
+Suggested-by: Cornelia Huck <cohuck@redhat.com>
 
 Reviewed-by: Max Gurtovoy <mgurtovoy@nvidia.com>
 
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+
+See \ref{sec:Device Types / Network Device / Device configuration layout}.
+ } \\
+\hline
+380ed02bdb88 & 04 Apr 2023 & Parav Pandit & {\noindent transport-pci: Remove empty line at end of file\vspace{\baselineskip}
+
+
+Remove empty line at end of file.
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+Reviewed-by: David Edmondson <david.edmondson@oracle.com>
+
+See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus}.
+ } \\
+\hline
+1ed0754c6134 & 11 Apr 2023 & Heng Qi & {\noindent virtio-net: support the virtqueue coalescing moderation\vspace{\baselineskip}
+
+
+Currently, coalescing parameters are grouped for all transmit and receive
+virtqueues. This patch supports setting or getting the parameters for a
+specified virtqueue, and a typical application of this function is netdim[1].
+
+When the traffic between virtqueues is unbalanced, for example, one virtqueue
+is busy and another virtqueue is idle, then it will be very useful to
+control coalescing parameters at the virtqueue granularity.
+
+[1] \url{https://docs.kernel.org/networking/net_dim.html}
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/166}
+
+Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
+
+Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+
+Reviewed-by: Parav Pandit <parav@nvidia.com>
+
 Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Device Types / Network Device / Feature bits},
+\ref{sec:Device Types / Network Device / Feature bits / Feature bit requirements},
+and \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}.
+ } \\
+\hline
+362ebd007271 & 11 Apr 2023 & Alvaro Karsz & {\noindent virtio-net: define the VIRTIO_NET_F_CTRL_RX_EXTRA feature bit\vspace{\baselineskip}
+
+
+The VIRTIO_NET_F_CTRL_RX_EXTRA feature bit is mentioned in the spec
+since version 1.0, but it's not properly defined.
+
+This patch defines the feature bit and defines the dependency on VIRTIO_NET_F_CTRL_VQ.
+
+Since this dependency is missing in previous versions, we add it now as
+a "SHOULD".
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/162}
+
+Reviewed-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Alvaro Karsz <alvaro.karsz@solid-run.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Device Types / Network Device / Feature bits},
+and \ref{sec:Device Types / Network Device / Device configuration layout}.
+ } \\
+\hline
+d3b2a19bc369 & 21 Apr 2023 & Parav Pandit & {\noindent device-types/multiple: replace queues with enqueues\vspace{\baselineskip}
+
+
+Queue is a verb and noun both. Replacing it with enqueue avoids
+ambiguity around plural queues noun vs verb; similar to virtio fs device
+description.
+
+\vspace{\baselineskip}
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+[CH: pushed as editorial update]
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Device Types / Block Device / Device Operation},
+\ref{sec:Device Types / GPIO Device / requestq Operation / Message Flow},
+\ref{sec:Device Types / GPIO Device / eventq Operation},
+\ref{sec:Device Types / I2C Adapter Device / Device Operation: Request Queue},
+\ref{sec:Device Types / SCSI Host Device / Device Operation / Device Operation: Request Queues},
+and \ref{sec:Device Types / Socket Device / Device Operation / Receive and Transmit}.
+ } \\
+\hline
+aadefe688680 & 19 May 2023 & Michael S. Tsirkin & {\noindent virtio: document forward compatibility guarantees\vspace{\baselineskip}
+
+
+Feature negotiation forms the basis of forward compatibility
+guarantees of virtio but has never been properly documented.
+Do it now.
+
+\vspace{\baselineskip}
+Suggested-by: Halil Pasic <pasic@linux.ibm.com>
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+Reviewed-by: Parav Pandit <parav@nvidia.com>
+
+Reviewed-by: Zhu Lingshan <lingshan.zhu@intel.com>
 
 See \ref{sec:Basic Facilities of a Virtio Device / Feature Bits}.
  } \\
 \hline
-6708e0fc2f7d & 07 Apr 2022 & Michael S. Tsirkin & { virtio-gpio: offered -> negotiated
+f3ce853c8a91 & 19 May 2023 & Michael S. Tsirkin & {\noindent admin: introduce device group and related concepts\vspace{\baselineskip}
 
 
-virtqueues are only discovered after FEATURES_OK.
-As such it makes no sense to talk about virtqueues being affected by
-features which are offered but not negotiated, and doing so will confuse
-the reader.
+Each device group has a type. For now, define one initial group type:
 
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+SR-IOV type - PCI SR-IOV virtual functions (VFs) of a given
+PCI SR-IOV physical function (PF). This group may contain zero or more
+virtio devices according to NumVFs configured.
 
-See \ref{sec:Device Types / GPIO Device / Virtqueues}.
- } \\
-\hline
-a214ffb64f45 & 11 Apr 2022 & Cornelia Huck & { introduction: add more section labels
+Each device within a group has a unique identifier. This identifier
+is the group member identifier.
 
+Note: one can argue both ways whether the new device group handling
+functionality (this and following patches) is closer
+to a new device type or a new transport type.
 
-In order to be able to refer to changes in sections.
+However, it's expected that we will add more features in the near
+future. To facilitate this as much as possible of the text is located in
+the new admin chapter.
 
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+Effort was made to minimize transport-specific text.
 
-See \ref{sec:Structure Specifications},
-and \ref{sec:Constant Specifications}.
- } \\
-\hline
-79f705b96040 & 11 Apr 2022 & Cornelia Huck & { conformance: hook up GPU device normative statements
+There's a bit of duplication with 0x1 repeated twice and
+no special section for group type identifiers.
+It seems ok to defer adding these until we have more group
+types.
 
-
-These statements already exist, but were not linked in the conformance section.
-
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-
-See \ref{sec:Conformance / Conformance Targets}.
- } \\
-\hline
-26f15550226b & 19 Apr 2022 & Michael S. Tsirkin & { packed-ring: fix some typos
-
-
-The VIRTQ_DESC_F_INDIRECT flag is misnamed in a couple of places.
-
+\vspace{\baselineskip}
 Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
 
-See \ref{drivernormative:Basic Facilities of a Virtio Device / Packed Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}.
+See \ref{sec:Basic Facilities of a Virtio Device / Device groups}.
  } \\
 \hline
-b13f67fca90e & 20 Apr 2022 & Michael S. Tsirkin & { packed-ring.tex: link conformance statements
+2cbaaa19b15a & 19 May 2023 & Michael S. Tsirkin & {\noindent admin: introduce group administration commands\vspace{\baselineskip}
 
 
-Link conformance statements into conformance chapter.
+This introduces a general structure for group administration commands,
+used to control device groups through their owner.
+
+Following patches will introduce specific commands and an interface for
+submitting these commands to the owner.
+
+Note that the commands are focused on controlling device groups:
+this is why group related fields are in the generic part of
+the structure.
+Without this the admin vq would become a "whatever" vq which does not do
+anything specific at all, just a general transport like thing.
+I feel going this way opens the design space to the point where
+we no longer know what belongs in e.g. config space
+what in the control q and what in the admin q.
+As it is, whatever deals with groups is in the admin q; other
+things not in the admin q.
+
+There are specific exceptions such as query but that's an exception that
+proves the rule ;)
+
+\vspace{\baselineskip}
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+
+Reviewed-by: Zhu Lingshan <lingshan.zhu@intel.com>
+
+See \ref{sec:Basic Facilities of a Virtio Device / Device groups / Group administration commands},
+and \ref{sec:Normative References}.
+ } \\
+\hline
+5f1a8ac61c15 & 19 May 2023 & Michael S. Tsirkin & {\noindent admin: introduce virtio admin virtqueues\vspace{\baselineskip}
+
+
+The admin virtqueues will be the first interface used to issue admin commands.
+
+Currently the virtio specification defines control virtqueue to manipulate
+features and configuration of the device it operates on:
+virtio-net, virtio-scsi, etc all have existing control virtqueues. However,
+control virtqueue commands are device type specific, which makes it very
+difficult to extend for device agnostic commands.
+
+Keeping the device-specific virtqueue separate from the admin virtqueue
+is simpler and has fewer potential problems. I don't think creating
+common infrastructure for device-specific control virtqueues across
+device types worthwhile or within the scope of this patch series.
+
+To support this requirement in a more generic way, this patch introduces
+a new admin virtqueue interface.
+The admin virtqueue can be seen as the virtqueue analog to a transport.
+The admin queue thus does nothing device type-specific (net, scsi, etc)
+and instead focuses on transporting the admin commands.
+
+We also support more than one admin virtqueue, for QoS and
+scalability requirements.
+
+\vspace{\baselineskip}
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+
+See \ref{sec:Basic Facilities of a Virtio Device / Administration Virtqueues},
+\ref{sec:Basic Facilities of a Virtio Device / Feature Bits},
+and \ref{sec:Reserved Feature Bits}.
+ } \\
+\hline
+677aeaebf6a7 & 19 May 2023 & Michael S. Tsirkin & {\noindent pci: add admin vq registers to virtio over pci\vspace{\baselineskip}
+
+
+Add new registers to the PCI common configuration structure.
+
+These registers will be used for querying the indices of the admin
+virtqueues of the owner device. To configure, reset or enable the admin
+virtqueues, the driver should follow existing queue configuration/setup
+sequence.
 
 Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+Reviewed-by: Parav Pandit <parav@nvidia.com>
 
-See \ref{sec:Conformance / Conformance Targets}.
+Reviewed-by: Zhu Lingshan <lingshan.zhu@intel.com>
+
+See \ref{sec:Reserved Feature Bits},
+and \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common configuration structure layout}.
  } \\
 \hline
-3a7f07897958 & 20 Apr 2022 & Michael S. Tsirkin & { content.tex: drop space after \textbackslash field
+a9a59f70be46 & 19 May 2023 & Michael S. Tsirkin & {\noindent mmio: document ADMIN_VQ as reserved\vspace{\baselineskip}
 
 
-Always use \textbackslash field\{foo\} not \textbackslash field \{foo\}, the latter confuses
-latexdiff.
+Adding relevant registers needs more work and it's not
+clear what the use-case will be as currently only
+the PCI transport is supported. But let's keep the
+door open on this.
+We already say it's reserved in a central place, but it
+does not hurt to remind implementers to mask it.
+
+\vspace{\baselineskip}
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+Reviewed-by: Parav Pandit <parav@nvidia.com>
+
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+
+See \ref{sec:Virtio Transport Options / Virtio Over MMIO / Features reserved for future use}.
+ } \\
+\hline
+325046c1460e & 19 May 2023 & Michael S. Tsirkin & {\noindent ccw: document ADMIN_VQ as reserved\vspace{\baselineskip}
+
+
+Adding relevant registers needs more work and it's not
+clear what the use-case will be as currently only
+the PCI transport is supported. But let's keep the
+door open on this.
+We already say it's reserved in a central place, but it
+does not hurt to remind implementers to mask it.
+
+Note: there are more features to add to this list.
+Will be done later with a patch on top.
+
+\vspace{\baselineskip}
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+
+Reviewed-by: Parav Pandit <parav@nvidia.com>
+
+Reviewed-by: Zhu Lingshan <lingshan.zhu@intel.com>
+
+See \ref{sec:Virtio Transport Options / Virtio over channel I/O / Features reserved for future use}.
+ } \\
+\hline
+3dc7196cba2d & 19 May 2023 & Michael S. Tsirkin & {\noindent admin: command list discovery\vspace{\baselineskip}
+
+
+Add commands to find out which commands does each group support,
+as well as enable their use by driver.
+This will be especially useful once we have multiple group types.
+
+An alternative is per-type VQs. This is possible but will
+require more per-transport work. Discovery through the vq
+helps keep things contained.
+
+e.g. lack of support for some command can switch to a legacy mode
+
+note that commands are expected to be avolved by adding new
+fields to command specific data at the tail, so
+we generally do not need feature bits for compatibility.
+
+\vspace{\baselineskip}
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+
+Reviewed-by: Zhu Lingshan <lingshan.zhu@intel.com>
+
+See \ref{sec:Basic Facilities of a Virtio Device / Device groups / Group administration commands}.
+ } \\
+\hline
+bf1d6b0d24ae & 19 May 2023 & Michael S. Tsirkin & {\noindent admin: conformance clauses\vspace{\baselineskip}
+
+
+Add conformance clauses for admin commands and admin virtqueues.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/171}
 
 Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 
-Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
 
-See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / Virtio Structure PCI Capabilities}.
+See \ref{sec:Basic Facilities of a Virtio Device / Device groups / Group administration commands},
+\ref{sec:Basic Facilities of a Virtio Device / Administration Virtqueues},
+and \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common configuration structure layout}.
  } \\
 \hline
-c5fd7eda1203 & 29 Apr 2022 & Parav Pandit & { virtio: Improve queue_reset polarity to match to default reset state
-    
-    Currently when driver initiates a queue reset, device is expected
-    to communicate reset status to the driver by changing the value of the
-    queue_reset register twice. First to return value other than 1 when
-    reset is ongoing, later to return 1 when queue reset is completed.
-    
-    However initially during the device reset time the queue reset value
-    is zero. queue_reset changes the value of the register to a different
-    value on reset completion. Yet another time queue_reset value is
-    expected to change when queue_select is reprogrammed.
-    
-    Instead, it is better and efficient to maintain the same VQ state
-    on the device when queue reset is completed.
-    
-    new proposed flow:
+b04be31f0bf0 & 19 May 2023 & Michael S. Tsirkin & {\noindent ccw: document more reserved features\vspace{\baselineskip}
 
-    q_enable, q_reset
 
-    A) 0, 0 -> default, device init time
+vq reset and shared memory are unsupported, too.
 
-    B) 1, 0 -> driver has enabled vq
+\vspace{\baselineskip}
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 
-    C) 1, 1 -> driver started q reset
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/160}
 
-    D) 1, 1 -> q_reset stays 1 until device is busy resetting vq
-    (device communicates that its working on resetting VQ,
-	consistent with \#C)
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
 
-    E) 0, 0 -> q_reset by device is completed, q got disabled
-    (consistent with device init time \#A)
-    
-    Hence, this patch proposes a simple change to have reset register
-    polarity to be same as that of initial reset value.
-    
-    Fixes: https://github.com/oasis-tcs/virtio-spec/issues/139
+Reviewed-by: Zhu Lingshan <lingshan.zhu@intel.com>
 
-    Fixes: 12998e738621 ("virtio: pci support virtqueue reset")
+See \ref{sec:Virtio Transport Options / Virtio over channel I/O / Features reserved for future use}.
+ } \\
+\hline
+619f60ae4ccf & 19 May 2023 & Parav Pandit & {\noindent admin: Fix reference and table formation\vspace{\baselineskip}
 
-    Fixes: a4ce81a83780 ("virtio: mmio support virtqueue reset")
 
-    Fixes: 3b5378d70a42 ("virtio: introduce virtqueue reset as basic facility")
+This patch brings three fixes.
 
-    Reviewed-by: Jason Wang <jasowang@redhat.com>
+\begin{enumerate}
 
-    Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+\item Opcode table has 3 columns, only two were enumerated. Due to this
+pdf generation script stops. Fix it and also have resizeable description
+column as it needs wrap.
 
-    Signed-off-by: Parav Pandit <parav@nvidia.com>
+\item Status description column content needs to wrap. Without it pdf
+   does not read good. Fix it by having resizeable description column.
 
-    Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+\item Fix the broken link to the Device groups.
 
-See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common configuration structure layout}
+\end{enumerate}
+
+\vspace{\baselineskip}
+Fixes: 2cbaaa1 ("admin: introduce group administration commands")
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Basic Facilities of a Virtio Device / Device groups / Group administration commands}.
+ } \\
+\hline
+c1cd68b97611 & 19 May 2023 & Parav Pandit & {\noindent transport-pci: Improve config msix vector description\vspace{\baselineskip}
+
+
+config_msix_vector is the register that holds the MSI-X vector number
+for receiving configuration change related interrupts.
+
+It is not "for MSI-X".
+
+Hence, replace the confusing text with appropriate one.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/169}
+
+Reviewed-by: Max Gurtovoy <mgurtovoy@nvidia.com>
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common configuration structure layout}.
+ } \\
+\hline
+0f433d62e81d & 19 May 2023 & Parav Pandit & {\noindent transport-pci: Improve queue msix vector register desc\vspace{\baselineskip}
+
+
+queue_msix_vector register is for receiving virtqueue notification
+interrupts from the device for the virtqueue.
+
+"for MSI-X" is confusing term.
+
+Also it is the register that driver "writes" to, similar to
+many other registers such as queue_desc, queue_driver etc.
+
+Hence, replace the verb from use to write.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/169}
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Reviewed-by: Max Gurtovoy <mgurtovoy@nvidia.com>
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common configuration structure layout}.
+ } \\
+\hline
+b0fbccd4062f & 19 May 2023 & Parav Pandit & {\noindent content: Add vq index text\vspace{\baselineskip}
+
+
+Introduce vq index and its range so that subsequent patches can refer
+to it.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/163}
+
+Reviewed-by: David Edmondson <david.edmondson@oracle.com>
+
+Reviewed-by: Halil Pasic <pasic@linux.ibm.com>
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues}.
+ } \\
+\hline
+362f1cac2516 & 19 May 2023 & Parav Pandit & {\noindent content.tex Replace virtqueue number with index\vspace{\baselineskip}
+
+
+Replace virtqueue number with index to align to rest of the
+specification.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/163}
+
+Reviewed-by: David Edmondson <david.edmondson@oracle.com>
+
+Reviewed-by: Halil Pasic <pasic@linux.ibm.com>
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+See \ref{sec:Basic Facilities of a Virtio Device / Driver notifications}.
+ } \\
+\hline
+cc4a5604b259 & 19 May 2023 & Parav Pandit & {\noindent content: Rename confusing queue_notify_data and vqn names\vspace{\baselineskip}
+
+
+Currently queue_notify_data register indicates the device
+internal queue notification content. This register is
+meaningful only when feature bit VIRTIO_F_NOTIF_CONFIG_DATA is
+negotiated.
+
+However, above register name often get confusing association with
+very similar feature bit VIRTIO_F_NOTIFICATION_DATA.
+
+When VIRTIO_F_NOTIFICATION_DATA feature bit is negotiated,
+notification really involves sending additional queue progress
+related information (not queue identifier or index).
+
+Hence
+
+\begin{enumerate}
+
+\item  to avoid any misunderstanding and association of
+queue_notify_data with similar name VIRTIO_F_NOTIFICATION_DATA,
+
 and
-\ref{sec:Virtio Transport Options / Virtio Over MMIO / MMIO Device Register Layout}.
+
+\item to reflect that queue_notify_data is the actual device
+internal virtqueue identifier/index/data/cookie,
+
+\end{enumerate}
+
+\begin{enumerate}[label=\alph*.]
+
+\item rename queue_notify_data to queue_notif_config_data.
+
+\item rename ambiguous vqn to a union of vq_index and vq_config_data
+
+\item The driver notification section assumes that queue notification contains
+vq index always. CONFIG_DATA feature bit introduction missed to
+update the driver notification section. Hence, correct it.
+
+\end{enumerate}
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/163}
+
+Acked-by: Halil Pasic <pasic@linux.ibm.com>
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+Reviewed-by: David Edmondson <david.edmondson@oracle.com>
+
+See \ref{sec:Basic Facilities of a Virtio Device / Driver notifications},
+\ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common configuration structure layout},
+and \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Available Buffer Notifications}.
+} \\
+\hline
+fbb119dad56d & 19 May 2023 & Parav Pandit & {\noindent transport-pci: Avoid first vq index reference\vspace{\baselineskip}
+
+
+Drop reference to first virtqueue as it is already
+covered now by the generic section in first patch.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/163}
+
+Reviewed-by: David Edmondson <david.edmondson@oracle.com>
+
+Acked-by: Halil Pasic <pasic@linux.ibm.com>
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization}.
+ } \\
+\hline
+a7a21e451987 & 19 May 2023 & Parav Pandit & {\noindent transport-mmio: Rename QueueNum register\vspace{\baselineskip}
+
+
+These are further named differently between pci and mmio transport.
+PCI transport indicates queue size as queue_size.
+
+To bring consistency between pci and mmio transport,
+rename the QueueNumMax and QueueNum
+registers to QueueSizeMax and QueueSize respectively.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/163}
+
+Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+
+Reviewed-by: Halil Pasic <pasic@linux.ibm.com>
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+See \ref{sec:Virtio Transport Options / Virtio Over MMIO / MMIO Device Register Layout},
+and \ref{sec:Virtio Transport Options / Virtio Over MMIO / Legacy interface}.
+ } \\
+\hline
+9ddc59553984 & 19 May 2023 & Parav Pandit & {\noindent transport-mmio: Avoid referring to zero based index\vspace{\baselineskip}
+
+
+VQ range is already described in the first patch in basic virtqueue
+section. Hence remove the duplicate reference to it.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/163}
+
+Reviewed-by: David Edmondson <david.edmondson@oracle.com>
+
+Acked-by: Halil Pasic <pasic@linux.ibm.com>
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+See \ref{sec:Virtio Transport Options / Virtio Over MMIO / MMIO Device Register Layout},
+and \ref{sec:Virtio Transport Options / Virtio Over MMIO / Legacy interface}.
+ } \\
+\hline
+e7a764f66598 & 19 May 2023 & Parav Pandit & {\noindent transport-ccw: Rename queue depth/size to other transports\vspace{\baselineskip}
+
+
+max_num field reflects the maximum queue size/depth. Hence align name of
+this field with similar field in PCI and MMIO transport to
+max_queue_size.
+Similarly rename 'num' to 'size'.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/163}
+
+Reviewed-by: Halil Pasic <pasic@linux.ibm.com>
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+See \ref{sec:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Configuring a Virtqueue}.
+ } \\
+\hline
+c3092410ac51 & 19 May 2023 & Parav Pandit & {\noindent transport-ccw: Refer to the vq by its index\vspace{\baselineskip}
+
+
+Currently specification uses virtqueue index and
+number interchangeably to refer to the virtqueue.
+
+Instead refer to it by its index.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/163}
+
+Reviewed-by: Halil Pasic <pasic@linux.ibm.com>
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+See \ref{sec:Virtio Transport Options / Virtio over channel I/O / Device Operation / Guest->Host Notification}.
+ } \\
+\hline
+d6f310dbb3bf & 19 May 2023 & Parav Pandit & {\noindent virtio-net: Avoid duplicate receive queue example\vspace{\baselineskip}
+
+
+Receive queue number/index example is duplicate which is already defined
+in the Setting RSS parameters section.
+
+Hence, avoid such duplicate example and prepare it for the subsequent
+patch to describe using receive queue handle.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/163}
+
+Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+See \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue}.
+ } \\
+\hline
+da0e16928d0b & 19 May 2023 & Parav Pandit & {\noindent virtio-net: Describe RSS using rss rq id\vspace{\baselineskip}
+
+
+The content of the indirection table and unclassified_queue were
+originally described based on mathematical operations. In order to
+make it easier to understand and to avoid intermixing the array
+index with the vq index, introduce a structure
+rss_rq_id (RSS receive queue
+ID) and use it to describe the unclassified_queue and
+indirection_table fields.
+
+As part of it, have the example that uses non-zero virtqueue
+index which helps to have better mapping between receiveX
+object with virtqueue index and the actual value in the
+indirection table.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/163}
+
+Reviewed-by: David Edmondson <david.edmondson@oracle.com>
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+See \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue}.
+ } \\
+\hline
+f9ff777fba59 & 19 May 2023 & Parav Pandit & {\noindent virtio-net: Update vqn to vq_index for cvq cmds\vspace{\baselineskip}
+
+
+Replace field name vqn to vq_index for recent virtqueue level commands.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/163}
+
+Reviewed-by: David Edmondson <david.edmondson@oracle.com>
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+See \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue}.
+ } \\
+\hline
+74460ef69d5f & 19 May 2023 & Parav Pandit & {\noindent transport-mmio: Replace virtual queue with virtqueue\vspace{\baselineskip}
+
+
+Basic facilities define the virtqueue construct for device <-> driver
+communication.
+
+PCI transport and individual devices description also refers to it as
+virtqueue.
+
+MMIO refers to it as 'virtual queue'.
+
+Align MMIO transport description to call such object a virtqueue.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/168}
+
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+See \ref{sec:Virtio Transport Options / Virtio Over MMIO / MMIO Device Register Layout},
+\ref{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Virtqueue Configuration},
+and \ref{sec:Virtio Transport Options / Virtio Over MMIO / Legacy interface}.
+ } \\
+\hline
+6724756eaf0a & 07 Jul 2023 & Parav Pandit & {\noindent admin: Split opcode table rows with a line\vspace{\baselineskip}
+
+
+Currently all opcode appears to be in a single row.
+Separate them with a line similar to other tables.
+
+\vspace{\baselineskip}
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+
+[CH: pushed as editorial update]
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Basic Facilities of a Virtio Device / Device groups / Group administration commands}.
+ } \\
+\hline
+1518c9ce2cde & 07 Jul 2023 & Parav Pandit & {\noindent admin: Fix section numbering\vspace{\baselineskip}
+
+
+Requirements are put one additional level down. Fix it.
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+
+[CH: pushed as editorial update]
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Basic Facilities of a Virtio Device / Device groups / Group administration commands}.
+ } \\
+\hline
+9c3ba1ec6acb & 14 Jul 2023 & Heng Qi & {\noindent virtio-net: support inner header hash\vspace{\baselineskip}
+
+\begin{enumerate}
+
+\item Currently, a received encapsulated packet has an outer and an inner header, but
+the virtio device is unable to calculate the hash for the inner header. The same
+flow can traverse through different tunnels, resulting in the encapsulated
+packets being spread across multiple receive queues (refer to the figure below).
+However, in certain scenarios, we may need to direct these encapsulated packets of
+the same flow to a single receive queue. This facilitates the processing
+of the flow by the same CPU to improve performance (warm caches, less locking, etc.).
+
+\begin{lstlisting}
+               client1                    client2
+                  |        +-------+         |
+                  +------->|tunnels|<--------+
+                           +-------+
+                              |  |
+                              v  v
+                      +-----------------+
+                      | monitoring host |
+                      +-----------------+
+\end{lstlisting}
+
+To achieve this, the device can calculate a symmetric hash based on the inner headers
+of the same flow.
+
+\item  For legacy systems, they may lack entropy fields which modern protocols have in
+the outer header, resulting in multiple flows with the same outer header but
+different inner headers being directed to the same receive queue. This results in
+poor receive performance.
+
+To address this limitation, inner header hash can be used to enable the device to advertise
+the capability to calculate the hash for the inner packet, regaining better receive performance.
+
+\end{enumerate}
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/173}
+
+Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
+
+Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+
+Reviewed-by: Parav Pandit <parav@nvidia.com>
+
+[CH: added missing lstlisting and hyperref escapes, fixed references]
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Device Types / Network Device / Feature bits},
+\ref{sec:Device Types / Network Device / Feature bits / Feature bit requirements},
+\ref{sec:Device Types / Network Device / Device configuration layout},
+\ref{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets},
+\ref{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Inner Header Hash},
+\ref{sec:Conformance / Device Conformance / Network Device Conformance},
+\ref{sec:Conformance / Driver Conformance / Network Driver Conformance},
+and \ref{sec:Normative References}.
+ } \\
+\hline
+73c2fd96af96 & 17 Jul 2023 & Haixu Cui & {\noindent virtio-spi: define the DEVICE ID for virtio SPI master\vspace{\baselineskip}
+
+
+Define the DEVICE ID of virtio SPI master device as 45.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/174}
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Device Types}.
+ } \\
+\hline
+03c2d32e5093 & 21 Jul 2023 & Parav Pandit & {\noindent admin: Add group member legacy register access commands\vspace{\baselineskip}
+
+
+Introduce group member legacy common configuration and legacy device
+configuration access read/write commands.
+
+Group member legacy registers access commands enable group owner driver
+software to access legacy registers on behalf of the guest virtual
+machine.
+
+\vspace{\baselineskip}
+Usecase:
+
+========
+
+\begin{enumerate}
+
+\item A hypervisor/system needs to provide transitional
+   virtio devices to the guest VM at scale of thousands,
+   typically, one to eight devices per VM.
+
+\item A hypervisor/system needs to provide such devices using a
+   vendor agnostic driver in the hypervisor system.
+
+\item A hypervisor system prefers to have single stack regardless of
+   virtio device type (net/blk) and be future compatible with a
+   single vfio stack using SR-IOV or other scalable device
+   virtualization technology to map PCI devices to the guest VM.
+   (as transitional or otherwise)
+
+\end{enumerate}
+
+\vspace{\baselineskip}
+Motivation/Background:
+
+=====================
+
+The existing virtio transitional PCI device is missing support for
+PCI SR-IOV based devices. Currently it does not work beyond
+PCI PF, or as software emulated device in reality. Currently it
+has below cited system level limitations:
+
+[a] PCIe spec citation:
+VFs do not support I/O Space and thus VF BARs shall not indicate I/O Space.
+
+[b] cpu arch citiation:
+Intel 64 and IA-32 Architectures Software Developer’s Manual:
+The processor’s I/O address space is separate and distinct from
+the physical-memory address space. The I/O address space consists
+of 64K individually addressable 8-bit I/O ports, numbered 0 through FFFFH.
+
+[c] PCIe spec citation:
+If a bridge implements an I/O address range,...I/O address range will be
+aligned to a 4 KB boundary.
+
+\vspace{\baselineskip}
+Overview:
+
+=========
+
+Above usecase requirements is solved by PCI PF group owner accessing
+its group member PCI VFs legacy registers using the administration
+commands of the group owner PCI PF.
+
+Two types of administration commands are added which read/write PCI VF
+registers.
+
+Software usage example:
+
+=======================
+\vspace{\baselineskip}
+
+1. One way to use and map to the guest VM is by using vfio driver
+framework in Linux kernel.
+
+...
+}\\
+\hline
+ & & & {\noindent
+...
+
+\begin{lstlisting}
+
+                +----------------------+
+                |pci_dev_id = 0x100X   |
++---------------|pci_rev_id = 0x0      |-----+
+|vfio device    |BAR0 = I/O region     |     |
+|               |Other attributes      |     |
+|               +----------------------+     |
+|                                            |
++   +--------------+     +-----------------+ |
+|   |I/O BAR to AQ |     | Other vfio      | |
+|   |rd/wr mapper\& |     | functionalities | |
+|   | forwarder    |     |                 | |
+|   +--------------+     +-----------------+ |
+|                                            |
++------+-------------------------+-----------+
+       |                         |
+   Config region                 |
+     access                Driver notifications
+       |                         |
+  +----+------------+       +----+------------+
+  | +-----+         |       | PCI VF device A |
+  | | AQ  |-------------+---->+-------------+ |
+  | +-----+         |   |   | | legacy regs | |
+  | PCI PF device   |   |   | +-------------+ |
+  +-----------------+   |   +-----------------+
+                        |
+                        |   +----+------------+
+                        |   | PCI VF device N |
+                        +---->+-------------+ |
+                            | | legacy regs | |
+                            | +-------------+ |
+                            +-----------------+
+\end{lstlisting}
+
+2. Continue to use the virtio pci driver to bind to the
+   listed device id and use it as in the host.
+
+3. Use it in a light weight hypervisor to run bare-metal OS.
+
+\vspace{\baselineskip}
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/167}
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+
+See \ref{sec:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface},
+\ref{sec:Basic Facilities of a Virtio Device / Device groups / Group administration commands},
+and \ref{sec:Conformance / Conformance Targets}.
  } \\
 \hline
