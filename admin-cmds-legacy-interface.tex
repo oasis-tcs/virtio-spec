@@ -30,7 +30,7 @@ Bus / PCI Device Layout / Legacy Interfaces: A Note on PCI Device Layout} except
 that little-endian format is assumed unconditionally.
 
 \paragraph{VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE}
-\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface / VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE}
+\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface / VIRTIO-ADMIN-CMD-LEGACY-COMMON-CFG-WRITE}
 
 This command has the same effect as writing into the virtio common configuration
 structure through the legacy interface. The \field{command_specific_data} is in
@@ -60,7 +60,7 @@ configuration structure, excluding the device-specific configuration.
 This command has no command specific result.
 
 \paragraph{VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ}
-\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface / VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ}
+\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface / VIRTIO-ADMIN-CMD-LEGACY-COMMON-CFG-READ}
 
 This command has the same effect as reading from the virtio common configuration
 structure through the legacy interface. The \field{command_specific_data} is in
@@ -96,7 +96,7 @@ returned by the device. The length of the data read is simply the length of
 \field{data}.
 
 \paragraph{VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE}
-\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface / VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE}
+\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface / VIRTIO-ADMIN-CMD-LEGACY-DEV-CFG-WRITE}
 
 This command has the same effect as writing into the virtio device-specific
 configuration through the legacy interface. The \field{command_specific_data} is in
@@ -126,7 +126,7 @@ configuration.
 This command has no command specific result.
 
 \paragraph{VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ}
-\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface / VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ}
+\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface / VIRTIO-ADMIN-CMD-LEGACY-DEV-CFG-READ}
 
 This command has the same effect as reading from the virtio device-specific
 configuration through the legacy interface. The \field{command_specific_data} is in
@@ -163,7 +163,7 @@ returned by the device.
 The length of the data read is simply the length of \field{data}.
 
 \paragraph{VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO}
-\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface / VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO}
+\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface / VIRTIO-ADMIN-CMD-LEGACY-NOTIFY-INFO}
 
 The driver of the owner device can send a driver notification to the member
 device operated using the legacy interface by executing

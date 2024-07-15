@@ -69,7 +69,7 @@ Following generic resource objects are defined which are described separately.
 \hline
 Resource object type & Name & Description \\
 \hline \hline
-0x000 & VIRTIO_RESOURCE_OBJ_DEV_PARTS & Device parts object, see \ref{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts / VIRTIO_RESOURCE_OBJ_DEV_PARTS} \\
+0x000 & VIRTIO_RESOURCE_OBJ_DEV_PARTS & Device parts object, see \ref{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts / VIRTIO-RESOURCE-OBJ-DEV-PARTS} \\
 \hline
 0x001-0x1ff & - & Generic resource object range reserved \\
 \hline
@@ -109,7 +109,7 @@ struct virtio_admin_cmd_resource_obj_cmd_hdr {
 \field{id} uniquely identifies the resource object of a specified \field{type}.
 
 \paragraph{VIRTIO_ADMIN_CMD_RESOURCE_OBJ_CREATE}
-\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device resource objects / VIRTIO_ADMIN_CMD_RESOURCE_OBJ_CREATE}
+\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device resource objects / VIRTIO-ADMIN-CMD-RESOURCE-OBJ-CREATE}
 
 This command creates the specified resource object of \field{type} identified by the
 resource id \field{id}. The valid range of \field{id} is defined by the
@@ -142,7 +142,7 @@ device and the device can immediately begin using it.
 This command has no command specific result.
 
 \paragraph{VIRTIO_ADMIN_CMD_RESOURCE_OBJ_MODIFY}
-\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device resource objects / VIRTIO_ADMIN_CMD_RESOURCE_OBJ_MODIFY}
+\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device resource objects / VIRTIO-ADMIN-CMD-RESOURCE-OBJ-MODIFY}
 
 This command modifies the attributes of an existing device resource object.
 For the command VIRTIO_ADMIN_CMD_RESOURCE_OBJ_MODIFY, \field{opcode} is set to 0xb.
@@ -167,7 +167,7 @@ When the command completes successfully, attributes of the resource object is
 set to the values supplied in \field{resource_obj_specific_data}.
 
 \paragraph{VIRTIO_ADMIN_CMD_RESOURCE_OBJ_QUERY}
-\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device resource objects / VIRTIO_ADMIN_CMD_RESOURCE_OBJ_QUERY}
+\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device resource objects / VIRTIO-ADMIN-CMD-RESOURCE-OBJ-QUERY}
 
 This command queries attributes of the existing resource object.
 For the command VIRTIO_ADMIN_CMD_RESOURCE_OBJ_QUERY, \field{opcode} is set to 0xc.
@@ -198,7 +198,7 @@ When the command completes successfully, the attributes of the specified
 resource object are are set in \field{resource_obj_specific_data}.
 
 \paragraph{VIRTIO_ADMIN_CMD_RESOURCE_OBJ_DESTROY}
-\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device resource objects / VIRTIO_ADMIN_CMD_RESOURCE_OBJ_DESTROY}
+\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device resource objects / VIRTIO-ADMIN-CMD-RESOURCE-OBJ-DESTROY}
 
 This command destroys the previously created device resource object.
 For the command VIRTIO_ADMIN_CMD_RESOURCE_OBJ_DESTROY, \field{opcode} is set to 0xd.

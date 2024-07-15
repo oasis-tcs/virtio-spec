@@ -409,11 +409,11 @@ The network device has the following capabilities.
 \hline
 Identifier & Name & Description \\
 \hline \hline
-0x0800 & \hyperref[par:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO_NET_FF_RESOURCE_CAP]{VIRTIO_NET_FF_RESOURCE_CAP} & Flow filter resource capability \\
+0x0800 & \hyperref[par:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO-NET-FF-RESOURCE-CAP]{VIRTIO_NET_FF_RESOURCE_CAP} & Flow filter resource capability \\
 \hline
-0x0801 & \hyperref[par:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO_NET_FF_SELECTOR_CAP]{VIRTIO_NET_FF_SELECTOR_CAP} & Flow filter classifier capability \\
+0x0801 & \hyperref[par:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO-NET-FF-SELECTOR-CAP]{VIRTIO_NET_FF_SELECTOR_CAP} & Flow filter classifier capability \\
 \hline
-0x0802 & \hyperref[par:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO_NET_FF_ACTION_CAP]{VIRTIO_NET_FF_ACTION_CAP} & Flow filter action capability \\
+0x0802 & \hyperref[par:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO-NET-FF-ACTION-CAP]{VIRTIO_NET_FF_ACTION_CAP} & Flow filter action capability \\
 \hline
 \end{tabularx}
 
@@ -425,11 +425,11 @@ The network device has the following resource objects.
 \hline
 type & Name & Description \\
 \hline \hline
-0x0200 & \hyperref[par:Device Types / Network Device / Device Operation / Flow filter / Resource objects / VIRTIO_NET_RESOURCE_OBJ_FF_GROUP]{VIRTIO_NET_RESOURCE_OBJ_FF_GROUP} & Flow filter group resource object \\
+0x0200 & \hyperref[par:Device Types / Network Device / Device Operation / Flow filter / Resource objects / VIRTIO-NET-RESOURCE-OBJ-FF-GROUP]{VIRTIO_NET_RESOURCE_OBJ_FF_GROUP} & Flow filter group resource object \\
 \hline
-0x0201 & \hyperref[par:Device Types / Network Device / Device Operation / Flow filter / Resource objects / VIRTIO_NET_RESOURCE_OBJ_FF_CLASSIFIER]{VIRTIO_NET_RESOURCE_OBJ_FF_CLASSIFIER} & Flow filter mask object \\
+0x0201 & \hyperref[par:Device Types / Network Device / Device Operation / Flow filter / Resource objects / VIRTIO-NET-RESOURCE-OBJ-FF-CLASSIFIER]{VIRTIO_NET_RESOURCE_OBJ_FF_CLASSIFIER} & Flow filter mask object \\
 \hline
-0x0202 & \hyperref[par:Device Types / Network Device / Device Operation / Flow filter / Resource objects / VIRTIO_NET_RESOURCE_OBJ_FF_RULE]{VIRTIO_NET_RESOURCE_OBJ_FF_RULE} & Flow filter rule object \\
+0x0202 & \hyperref[par:Device Types / Network Device / Device Operation / Flow filter / Resource objects / VIRTIO-NET-RESOURCE-OBJ-FF-RULE]{VIRTIO_NET_RESOURCE_OBJ_FF_RULE} & Flow filter rule object \\
 \hline
 \end{tabularx}
 
@@ -2475,12 +2475,12 @@ matches the packet and an action is taken. If all the rules within a group
 are ignored, the group with the next highest priority is selected, and so on.
 
 The device and the driver indicates flow filter resource limits using the capability
-\ref{par:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO_NET_FF_RESOURCE_CAP} specifying the limits on the number of flow filter rule,
-group and classifier resource objects. The capability \ref{par:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO_NET_FF_SELECTOR_CAP} specifies which selectors the device supports.
+\ref{par:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO-NET-FF-RESOURCE-CAP} specifying the limits on the number of flow filter rule,
+group and classifier resource objects. The capability \ref{par:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO-NET-FF-SELECTOR-CAP} specifies which selectors the device supports.
 The driver indicates the selectors it is using by setting the flow
 filter selector capability, prior to adding any resource objects.
 
-The capability \ref{par:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO_NET_FF_ACTION_CAP} specifies which actions the device supports.
+The capability \ref{par:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO-NET-FF-ACTION-CAP} specifies which actions the device supports.
 
 The driver controls the flow filter rule, classifier and group resource objects using
 administration commands described in
@@ -2523,7 +2523,7 @@ Some incoming packet processing examples:
 \label{par:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities}
 
 \subparagraph{VIRTIO_NET_FF_RESOURCE_CAP}
-\label{par:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO_NET_FF_RESOURCE_CAP}
+\label{par:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO-NET-FF-RESOURCE-CAP}
 
 The capability VIRTIO_NET_FF_RESOURCE_CAP indicates the flow filter resource limits.
 \field{cap_specific_data} is in the format
@@ -2554,13 +2554,13 @@ flow filter rule.
 that a classifier can have.
 
 \subparagraph{VIRTIO_NET_FF_SELECTOR_CAP}
-\label{par:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO_NET_FF_SELECTOR_CAP}
+\label{par:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO-NET-FF-SELECTOR-CAP}
 
 The capability VIRTIO_NET_FF_SELECTOR_CAP lists the supported selectors and the
 supported packet header fields for each selector.
 \field{cap_specific_data} is in the format \field{struct virtio_net_ff_cap_mask_data}.
 
-\begin{lstlisting}[label={lst:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO_NET_FF_SELECTOR_CAP / virtio_net_ff_selector}]
+\begin{lstlisting}[label={lst:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO-NET-FF-SELECTOR-CAP / virtio-net-ff-selector}]
 struct virtio_net_ff_selector {
         u8 type;
         u8 flags;
@@ -2582,11 +2582,11 @@ struct virtio_net_ff_cap_mask_data {
 \field{count} indicates number of valid entries in the \field{selectors} array.
 \field{selectors[]} is an array of supported selectors. Within each array entry:
 \field{type} specifies the type of the packet header, as defined in table
-\ref{table:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO_NET_FF_SELECTOR_CAP / flow filter selector types}. \field{mask} specifies which fields of the
+\ref{table:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO-NET-FF-SELECTOR-CAP / flow filter selector types}. \field{mask} specifies which fields of the
 packet header can be matched in a flow filter rule.
 
 Each \field{type} is also listed in table
-\ref{table:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO_NET_FF_SELECTOR_CAP / flow filter selector types}. \field{mask} is a byte array
+\ref{table:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO-NET-FF-SELECTOR-CAP / flow filter selector types}. \field{mask} is a byte array
 in network byte order. For example, when \field{type} is VIRTIO_NET_FF_MASK_TYPE_IPV6,
 the \field{mask} is in the format \hyperref[intro:IPv6-Header-Format]{IPv6 Header Format}.
 
@@ -2607,7 +2607,7 @@ The entries in the array \field{selectors} are ordered by
 
 \begin{table}[H]
 \caption{Flow filter selector types}
-\label{table:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO_NET_FF_SELECTOR_CAP / flow filter selector types}
+\label{table:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO-NET-FF-SELECTOR-CAP / flow filter selector types}
 \begin{tabularx}{\textwidth}{ |l|X|X| }
 \hline
 Type & Name & Description \\
@@ -2653,7 +2653,7 @@ are treated as individual fields for matching; that is, matching individual
 \field{Control bits} does not depend on the partial mask support.
 
 \subparagraph{VIRTIO_NET_FF_ACTION_CAP}
-\label{par:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO_NET_FF_ACTION_CAP}
+\label{par:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO-NET-FF-ACTION-CAP}
 
 The capability VIRTIO_NET_FF_ACTION_CAP lists the supported actions in a rule.
 \field{cap_specific_data} is in the format \field{struct virtio_net_ff_cap_actions}.
@@ -2673,7 +2673,7 @@ following values:
 
 \begin{table}[H]
 \caption{Flow filter rule actions}
-\label{table:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO_NET_FF_ACTION_CAP / flow filter rule actions}
+\label{table:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO-NET-FF-ACTION-CAP / flow filter rule actions}
 \begin{tabularx}{\textwidth}{ |l|X|X| }
 \hline
 Action & Name & Description \\
@@ -2692,7 +2692,7 @@ Action & Name & Description \\
 \paragraph{Resource objects}
 \label{par:Device Types / Network Device / Device Operation / Flow filter / Resource objects}
 
-\subparagraph{VIRTIO_NET_RESOURCE_OBJ_FF_GROUP}\label{par:Device Types / Network Device / Device Operation / Flow filter / Resource objects / VIRTIO_NET_RESOURCE_OBJ_FF_GROUP}
+\subparagraph{VIRTIO_NET_RESOURCE_OBJ_FF_GROUP}\label{par:Device Types / Network Device / Device Operation / Flow filter / Resource objects / VIRTIO-NET-RESOURCE-OBJ-FF-GROUP}
 
 A flow filter group contains between 0 and \field{rules_limit} rules, as specified by the
 capability VIRTIO_NET_FF_RESOURCE_CAP. For the flow filter group object both
@@ -2711,7 +2711,7 @@ distinct priority. For each incoming packet, the device tries to apply rules
 from groups from higher \field{group_priority} value to lower, until either a
 rule matches the packet or all groups have been tried.
 
-\subparagraph{VIRTIO_NET_RESOURCE_OBJ_FF_CLASSIFIER}\label{par:Device Types / Network Device / Device Operation / Flow filter / Resource objects / VIRTIO_NET_RESOURCE_OBJ_FF_CLASSIFIER}
+\subparagraph{VIRTIO_NET_RESOURCE_OBJ_FF_CLASSIFIER}\label{par:Device Types / Network Device / Device Operation / Flow filter / Resource objects / VIRTIO-NET-RESOURCE-OBJ-FF-CLASSIFIER}
 
 A classifier is used to match a flow filter key against a packet. The
 classifier defines the desired packet fields to match, and is represented by
@@ -2732,7 +2732,7 @@ struct virtio_net_resource_obj_ff_classifier {
 A classifier is an array of \field{selectors}. The number of selectors in the
 array is indicated by \field{count}. The selector has a type that specifies
 the header fields to be matched against, and a mask.
-See \ref{lst:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO_NET_FF_SELECTOR_CAP / virtio_net_ff_selector}
+See \ref{lst:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO-NET-FF-SELECTOR-CAP / virtio-net-ff-selector}
 for details about selectors.
 
 The first selector is always VIRTIO_NET_FF_MASK_TYPE_ETH. When there are multiple
@@ -2765,7 +2765,7 @@ mask object can specify a mask which has fewer bits set than the packet header
 field size. For example, a partial mask for the Ethernet header source mac
 address can be of 1-bit for multicast detection instead of 48-bits.
 
-\subparagraph{VIRTIO_NET_RESOURCE_OBJ_FF_RULE}\label{par:Device Types / Network Device / Device Operation / Flow filter / Resource objects / VIRTIO_NET_RESOURCE_OBJ_FF_RULE}
+\subparagraph{VIRTIO_NET_RESOURCE_OBJ_FF_RULE}\label{par:Device Types / Network Device / Device Operation / Flow filter / Resource objects / VIRTIO-NET-RESOURCE-OBJ-FF-RULE}
 
 Each flow filter rule resource object comprises a key, a priority, and an action.
 For the flow filter rule object,
@@ -2837,7 +2837,7 @@ respectively.
 
 \field{action} is the action to take when a packet matches the
 \field{key} using the \field{classifier_id}. Supported actions are described in
-\ref{table:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO_NET_FF_ACTION_CAP / flow filter rule actions}.
+\ref{table:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO-NET-FF-ACTION-CAP / flow filter rule actions}.
 
 \field{vq_index} specifies a receive virtqueue. When the \field{action} is set
 to VIRTIO_NET_FF_ACTION_DIRECT_RX_VQ, and the packet matches the \field{key},

@@ -37,7 +37,7 @@ notifications to the device, potentially updating some device parts,
 the device itself will not initiate any transport requests.
 
 \paragraph{VIRTIO_DEV_PARTS_CAP}
-\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts / VIRTIO_DEV_PARTS_CAP}
+\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts / VIRTIO-DEV-PARTS-CAP}
 
 The capability VIRTIO_DEV_PARTS_CAP indicates the device parts resource objects limit.
 \field{cap_specific_data} is in the format \field{struct virtio_dev_parts_cap}.
@@ -54,13 +54,13 @@ resource objects for retrieving the device parts.
 \field{set_parts_resource_objects_limit} indicates the supported device parts
 resource objects for restoring the device parts.
 
-\paragraph{VIRTIO_RESOURCE_OBJ_DEV_PARTS}\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts / VIRTIO_RESOURCE_OBJ_DEV_PARTS}
+\paragraph{VIRTIO_RESOURCE_OBJ_DEV_PARTS}\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts / VIRTIO-RESOURCE-OBJ-DEV-PARTS}
 
 A device parts resource object is used to either get or set the device parts.
 Before performing any get or set operation for the device parts, the driver
 creates the device parts resource object
 VIRTIO_RESOURCE_OBJ_DEV_PARTS using the administration command
-\nameref{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device resource objects / VIRTIO_ADMIN_CMD_RESOURCE_OBJ_CREATE}.
+\nameref{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device resource objects / VIRTIO-ADMIN-CMD-RESOURCE-OBJ-CREATE}.
 The driver indicates the intended purpose (get or set) at the time of creating the
 device parts resource object.
 For the device parts resource object, both \field{resource_obj_specific_data} and
@@ -96,7 +96,7 @@ These commands are currently only defined for the SR-IOV group type:
 \end{enumerate}
 
 \subparagraph{VIRTIO_ADMIN_CMD_DEV_PARTS_METADATA_GET}
-\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts / Device parts handling commands / VIRTIO_ADMIN_CMD_DEV_PARTS_METADATA_GET}
+\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts / Device parts handling commands / VIRTIO-ADMIN-CMD-DEV-PARTS-METADATA-GET}
 
 This command obtains the metadata of the device parts. This metadata includes
 the maximum size of the device parts, the count of device parts, and a list of
@@ -166,7 +166,7 @@ when the size of \field{command_specific_result} is not sufficient enough
 for the response.
 
 \subparagraph{VIRTIO_ADMIN_CMD_DEV_PARTS_GET}
-\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts /  Device parts handling commands / VIRTIO_ADMIN_CMD_DEV_PARTS_GET}
+\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts /  Device parts handling commands / VIRTIO-ADMIN-CMD-DEV-PARTS-GET}
 
 This command captures the device parts. For the command
 VIRTIO_ADMIN_CMD_DEV_PARTS_GET, \field{opcode} is set to 0xf.
@@ -210,7 +210,7 @@ either the selected device parts or all the device parts.
 If the requested device part does not exist, the device skips the device part
 without any error.
 
-\subparagraph{VIRTIO_ADMIN_CMD_DEV_PARTS_SET}\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts / Device parts handling commands / VIRTIO_ADMIN_CMD_DEV_PARTS_SET}
+\subparagraph{VIRTIO_ADMIN_CMD_DEV_PARTS_SET}\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts / Device parts handling commands / VIRTIO-ADMIN-CMD-DEV-PARTS-SET}
 
 This command sets one or multiple device parts. For the command
 VIRTIO_ADMIN_CMD_DEV_PARTS_SET, \field{opcode} is set to 0x10.
@@ -242,7 +242,7 @@ using the VIRTIO_ADMIN_CMD_DEV_MODE_SET command.
 When the command fails with a status other than VIRTIO_ADMIN_STATUS_OK, the
 device does not have any side effects.
 
-\subparagraph{VIRTIO_ADMIN_CMD_DEV_MODE_SET}\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts / Device parts handling commands / VIRTIO_ADMIN_CMD_DEV_MODE_SET}
+\subparagraph{VIRTIO_ADMIN_CMD_DEV_MODE_SET}\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts / Device parts handling commands / VIRTIO-ADMIN-CMD-DEV-MODE-SET}
 
 This command either stops the device from initiating any transport requests or
 resumes the device operation. For the command VIRTIO_ADMIN_CMD_DEV_MODE_SET,

@@ -60,7 +60,7 @@ Common capabilities are listed:
 \hline
 Id & Name & Description  \\
 \hline \hline
-0x0000 & \hyperref[par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts / VIRTIO_DEV_PARTS_CAP]{VIRTIO_DEV_PARTS_CAP} & Device parts capability \\
+0x0000 & \hyperref[par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts / VIRTIO-DEV-PARTS-CAP]{VIRTIO_DEV_PARTS_CAP} & Device parts capability \\
 \hline
 0x0001-0x07ff & - & Generic capability for all device types \\
 \hline
@@ -79,7 +79,7 @@ type.
 \item VIRTIO_ADMIN_CMD_DRIVER_CAP_SET
 \end{enumerate}
 
-\paragraph{VIRTIO_ADMIN_CMD_CAP_ID_LIST_QUERY}\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device and driver capabilities / VIRTIO_ADMIN_CMD_CAP_ID_LIST_QUERY}
+\paragraph{VIRTIO_ADMIN_CMD_CAP_ID_LIST_QUERY}\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device and driver capabilities / VIRTIO-ADMIN-CMD-CAP-ID-LIST-QUERY}
 
 This command queries the bitmap of capability ids
 listed in \ref{table:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device and driver capabilities / capability ids}.
@@ -119,7 +119,7 @@ with round up and \field{max_cap_id} is the largest available capability id.
 The array is also allowed to be larger and to additionally include an arbitrary
 number of all-zero entries.
 
-\paragraph{VIRTIO_ADMIN_CMD_DEVICE_CAP_GET}\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device and driver capabilities / VIRTIO_ADMIN_CMD_DEVICE_CAP_GET}
+\paragraph{VIRTIO_ADMIN_CMD_DEVICE_CAP_GET}\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device and driver capabilities / VIRTIO-ADMIN-CMD-DEVICE-CAP-GET}
 
 This command gets the device capability for the specified capability
 id \field{id}.
@@ -151,7 +151,7 @@ is in the format \field{struct virtio_admin_cmd_cap_get_result} responded
 by the device. Each capability uses different capability specific
 \field{cap_specific_data} and is described separately.
 
-\paragraph{VIRTIO_ADMIN_CMD_DRIVER_CAP_SET}\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device and driver capabilities / VIRTIO_ADMIN_CMD_DRIVER_CAP_SET}
+\paragraph{VIRTIO_ADMIN_CMD_DRIVER_CAP_SET}\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device and driver capabilities / VIRTIO-ADMIN-CMD-DRIVER-CAP-SET}
 
 This command sets the driver capability, indicating to the device which capability
 the driver uses. The driver can set a resource object limit capability that is smaller

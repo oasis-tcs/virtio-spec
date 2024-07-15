@@ -89,7 +89,7 @@ to a detected bus off condition.
 
 The driver MUST populate the \field{Rxq} with empty device-writeable
 buffers of at least the size of struct virtio_can_rx, see section
-\ref{struct virtio_can_rx}.
+\ref{struct virtio-can-rx}.
 
 \subsection{Device Operation}\label{sec:Device Types / CAN Device / Device Operation}
 
@@ -152,7 +152,7 @@ Control queue messages are processed in order.
 The driver transmits messages by placing outgoing CAN messages in the
 \field{Txq} virtqueue.
 
-\label{struct virtio_can_tx_out}
+\label{struct virtio-can-tx-out}
 \begin{lstlisting}
 struct virtio_can_tx_out {
 #define VIRTIO_CAN_TX 0x0001
@@ -207,7 +207,7 @@ being scheduled for transmission.
 Messages can be received by providing empty incoming buffers to the
 virtqueue \field{Rxq}.
 
-\label{struct virtio_can_rx}
+\label{struct virtio-can-rx}
 \begin{lstlisting}
 struct virtio_can_rx {
 #define VIRTIO_CAN_RX 0x0101
@@ -229,8 +229,8 @@ negotiated the maximal possible \field{sdu} length is 8.
 The actual length of the \field{sdu} is determined by the \field{length}.
 
 The type of a CAN message identifier is determined by \field{flags} in
-the same way as for transmitted CAN messages, see section \ref{struct
-virtio_can_tx_out}. The 3 most significant bits of \field{can_id} do not
+the same way as for transmitted CAN messages, see section
+\ref{struct virtio-can-tx-out}. The 3 most significant bits of \field{can_id} do not
 bear the information about the type of the CAN message identifier and
 are 0. The flag bits are exactly the same as for the \field{flags} of
 struct virtio_can_tx_out.
