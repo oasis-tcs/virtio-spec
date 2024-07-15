@@ -22,6 +22,7 @@ while read -r rev; do
 done << 'EOF'
 editorial: allow for longer device id table: makediff 1.3
 admin: Prepare table for multipage listing
+admin: switch to tabularx
 EOF
 
 #mv specvars.tex specvars-orig.tex
