@@ -131,7 +131,7 @@ struct virtio_admin_cmd_dev_parts_metadata_result {
                         le32 count;
                         le32 reserved;
                 } hdr_list_count;
-                {
+                struct {
                         le32 count;
                         le32 reserved;
                         struct virtio_dev_part_hdr hdrs[];
