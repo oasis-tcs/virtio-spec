@@ -424,11 +424,11 @@ struct virtio_crypto_op_ctrl_req {
 
 \field{header} is a general header (see above).
 
-\field{op_flf} is the opcode (in \field{header}) specific fixed-length paramenters.
+\field{op_flf} is the opcode (in \field{header}) specific fixed-length parameters.
 
 \field{flf_len} depends on the VIRTIO_CRYPTO_F_REVISION_1 feature bit (see below).
 
-\field{op_vlf} is the opcode (in \field{header}) specific variable-length paramenters.
+\field{op_vlf} is the opcode (in \field{header}) specific variable-length parameters.
 
 \field{vlf_len} is the size of the specific structure used.
 \begin{note}
@@ -509,7 +509,7 @@ struct virtio_crypto_destroy_session_input {
 \subparagraph{Session operation: HASH session}\label{sec:Device Types / Crypto Device / Device
 Operation / Control Virtqueue / Session operation / Session operation: HASH session}
 
-The fixed-length paramenters of HASH session requests is as follows:
+The fixed-length parameters of HASH session requests is as follows:
 
 \begin{lstlisting}
 struct virtio_crypto_hash_create_session_flf {
@@ -1386,7 +1386,7 @@ with or be one of the following structures:
 \end{itemize*}
 
 The length of \field{op_type_flf} is fixed to 40 bytes, the data of unused
-part (if has) will be ingored.
+part (if has) will be ignored.
 
 \field{op_type_vlf} is the \field{op_type} specific parameters, it MUST starts
 with or be one of the following structures:
@@ -1536,7 +1536,7 @@ with or be one of the following structures:
 \end{itemize*}
 
 The length of \field{op_type_flf} is fixed to 72 bytes, the data of unused
-part (if has) will be ingored.
+part (if has) will be ignored.
 
 \field{op_type_vlf} is the \field{op_type} specific parameters, it MUST starts
 with or be one of the following structures:
