@@ -152,10 +152,10 @@ When \field{type} is set to VIRTIO_ADMIN_CMD_DEV_PARTS_METADATA_TYPE_COUNT, the
 device responds with \field{hdr_list_count.count}. The
 \field{hdr_list_count.count} indicates an count of
 \field{struct virtio_dev_part_hdr} metadata entries that the device can
-provide when the \field{type} is set to VIRTIO_ADMIN_CMD_DEV_PARTS_METADATA_TYPE_HDR
+provide when the \field{type} is set to VIRTIO_ADMIN_CMD_DEV_PARTS_METADATA_TYPE_LIST
 in a subsequent VIRTIO_ADMIN_CMD_DEV_PARTS_METADATA_GET command.
 
-When \field{type} is set to VIRTIO_ADMIN_CMD_DEV_PARTS_METADATA_TYPE_HDR,
+When \field{type} is set to VIRTIO_ADMIN_CMD_DEV_PARTS_METADATA_TYPE_LIST,
 the device responds with \field{hdr_list}. \field{hdr_list}
 indicates the device parts metadata.
 
