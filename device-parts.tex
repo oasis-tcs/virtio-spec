@@ -21,6 +21,7 @@ struct virtio_dev_part_hdr {
                         le16 index;
                         u8 reserved[6];
                 } vq_index;
+                u8 device_type_raw[8];
         } selector;
         le32 length;
 };
@@ -76,6 +77,10 @@ otherwise it is reserved and set to 0.
 \field{selector.vq_index.index} is the index of the virtqueue. It is valid
 only when the \field{part_type} is VIRTIO_DEV_PART_VQ_CFG or
 VIRTIO_DEV_PART_VQ_NOTIFY_CFG.
+
+\field{selector.device_type_raw} is applicable only when the \field{part_type}
+corresponds to a device-specific range. The format of
+\field{selector.device_type_raw} is device type specific.
 
 \subsection{Common device parts}\label{sec:Basic Facilities of a Virtio Device / Device parts / Common device parts}
 
