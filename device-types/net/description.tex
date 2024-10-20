@@ -433,6 +433,96 @@ type & Name & Description \\
 \hline
 \end{tabularx}
 
+\subsection{Device parts}\label{sec:Device Types / Network Device / Device parts}
+
+Network device parts represent the configuration done by the driver using control
+virtqueue commands. Network device part is in the format of
+\field{struct virtio_dev_part}.
+
+\begin{tabularx}{\textwidth}{ |l||l|X| }
+\hline
+Type & Name & Description \\
+\hline \hline
+0x200 & VIRTIO_NET_DEV_PART_CVQ_CFG_PART & Represents device configuration done through a control virtqueue command, see \ref{sec:Device Types / Network Device / Device parts / VIRTIO-NET-DEV-PART-CVQ-CFG-PART} \\
+\hline
+0x201 - 0x5FF & - & reserved for future \\
+\hline
+\hline
+\end{tabularx}
+
+\subsubsection{VIRTIO_NET_DEV_PART_CVQ_CFG_PART}\label{sec:Device Types / Network Device / Device parts / VIRTIO-NET-DEV-PART-CVQ-CFG-PART}
+
+For VIRTIO_NET_DEV_PART_CVQ_CFG_PART, \field{part_type} is set to 0x200. The
+VIRTIO_NET_DEV_PART_CVQ_CFG_PART part indicates configuration performed by the
+driver using a control virtqueue command.
+
+\begin{lstlisting}
+struct virtio_net_dev_part_cvq_selector {
+        u8 class;
+        u8 command;
+        u8 reserved[6];
+};
+\end{lstlisting}
+
+There is one device part of type VIRTIO_NET_DEV_PART_CVQ_CFG_PART for each
+individual configuration. Each part is identified by a unique selector value.
+The selector, \field{device_type_raw}, is in the format
+\field{struct virtio_net_dev_part_cvq_selector}.
+
+The selector consists of two fields: \field{class} and \field{command}. These
+fields correspond to the \field{class} and \field{command} defined in
+\field{struct virtio_net_ctrl}, as described in the relevant sections of
+\ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue}.
+
+The value corresponding to each part’s selector follows the same format as the
+respective \field{command-specific-data} described in the relevant sections of
+\ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue}.
+
+For example, when the \field{class} is VIRTIO_NET_CTRL_MAC, the \field{command}
+can be either VIRTIO_NET_CTRL_MAC_TABLE_SET or VIRTIO_NET_CTRL_MAC_ADDR_SET;
+when \field{command} is set to VIRTIO_NET_CTRL_MAC_TABLE_SET, \field{value}
+is in the format of \field{struct virtio_net_ctrl_mac}.
+
+Supported selectors are listed in the table:
+
+\begin{tabularx}{\textwidth}{ |l|X| }
+\hline
+Class selector & Command selector \\
+\hline \hline
+VIRTIO_NET_CTRL_RX & VIRTIO_NET_CTRL_RX_PROMISC \\
+\hline
+VIRTIO_NET_CTRL_RX & VIRTIO_NET_CTRL_RX_ALLMULTI \\
+\hline
+VIRTIO_NET_CTRL_RX & VIRTIO_NET_CTRL_RX_ALLUNI \\
+\hline
+VIRTIO_NET_CTRL_RX & VIRTIO_NET_CTRL_RX_NOMULTI \\
+\hline
+VIRTIO_NET_CTRL_RX & VIRTIO_NET_CTRL_RX_NOUNI \\
+\hline
+VIRTIO_NET_CTRL_RX & VIRTIO_NET_CTRL_RX_NOBCAST \\
+\hline
+VIRTIO_NET_CTRL_MAC & VIRTIO_NET_CTRL_MAC_TABLE_SET \\
+\hline
+VIRTIO_NET_CTRL_MAC & VIRTIO_NET_CTRL_MAC_ADDR_SET \\
+\hline
+VIRTIO_NET_CTRL_VLAN & VIRTIO_NET_CTRL_VLAN_ADD \\
+\hline
+VIRTIO_NET_CTRL_ANNOUNCE & VIRTIO_NET_CTRL_ANNOUNCE_ACK \\
+\hline
+VIRTIO_NET_CTRL_MQ & VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET \\
+\hline
+VIRTIO_NET_CTRL_MQ & VIRTIO_NET_CTRL_MQ_RSS_CONFIG \\
+\hline
+VIRTIO_NET_CTRL_MQ & VIRTIO_NET_CTRL_MQ_HASH_CONFIG \\
+\hline
+\hline
+\end{tabularx}
+
+For command selector VIRTIO_NET_CTRL_VLAN_ADD, device part consists of a whole
+VLAN table.
+
+\field{reserved} is reserved and set to zero.
+
 \subsection{Device Operation}\label{sec:Device Types / Network Device / Device Operation}
 
 Packets are transmitted by placing them in the
