@@ -128,7 +128,7 @@ work. This is like a GART in a real GPU.
 \item Allocate a framebuffer from guest ram, and attach it as backing
   storage to the resource just created, using
   VIRTIO_GPU_CMD_RESOURCE_ATTACH_BACKING.  Scatter lists are
-  supported, so the framebuffer doesn't need to be contignous in guest
+  supported, so the framebuffer doesn't need to be contiguous in guest
   physical memory.
 \item Use VIRTIO_GPU_CMD_SET_SCANOUT to link the framebuffer to
   a display scanout.
