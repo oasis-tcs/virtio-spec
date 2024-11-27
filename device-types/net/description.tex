@@ -88,6 +88,12 @@ negotiated.
 \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
     channel.
 
+\item[VIRTIO_NET_F_GUEST_UDP_TUNNEL_GSO (46)] Driver can receive GSO packets
+  carried by a UDP tunnel.
+
+\item[VIRTIO_NET_F_HOST_UDP_TUNNEL_GSO (48)] Device can receive GSO packets
+  carried by a UDP tunnel.
+
 \item[VIRTIO_NET_F_DEVICE_STATS(50)] Device can provide device-level statistics
     to the driver through the control virtqueue.
 
@@ -138,12 +144,16 @@ Some networking feature bits require other networking feature bits
 \item[VIRTIO_NET_F_GUEST_UFO] Requires VIRTIO_NET_F_GUEST_CSUM.
 \item[VIRTIO_NET_F_GUEST_USO4] Requires VIRTIO_NET_F_GUEST_CSUM.
 \item[VIRTIO_NET_F_GUEST_USO6] Requires VIRTIO_NET_F_GUEST_CSUM.
+\item[VIRTIO_NET_F_GUEST_UDP_TUNNEL_GSO] Requires VIRTIO_NET_F_GUEST_TSO4, VIRTIO_NET_F_GUEST_TSO6,
+   VIRTIO_NET_F_GUEST_USO4 and VIRTIO_NET_F_GUEST_USO6.
 
 \item[VIRTIO_NET_F_HOST_TSO4] Requires VIRTIO_NET_F_CSUM.
 \item[VIRTIO_NET_F_HOST_TSO6] Requires VIRTIO_NET_F_CSUM.
 \item[VIRTIO_NET_F_HOST_ECN] Requires VIRTIO_NET_F_HOST_TSO4 or VIRTIO_NET_F_HOST_TSO6.
 \item[VIRTIO_NET_F_HOST_UFO] Requires VIRTIO_NET_F_CSUM.
 \item[VIRTIO_NET_F_HOST_USO] Requires VIRTIO_NET_F_CSUM.
+\item[VIRTIO_NET_F_HOST_UDP_TUNNEL_GSO] Requires VIRTIO_NET_F_HOST_TSO4, VIRTIO_NET_F_HOST_TSO6
+   and VIRTIO_NET_F_HOST_USO.
 
 \item[VIRTIO_NET_F_CTRL_RX] Requires VIRTIO_NET_F_CTRL_VQ.
 \item[VIRTIO_NET_F_CTRL_VLAN] Requires VIRTIO_NET_F_CTRL_VQ.
@@ -381,6 +391,17 @@ A driver would perform a typical initialization routine like so:
   TCP), VIRTIO_NET_F_HOST_TSO6 (IPv6 TCP), VIRTIO_NET_F_HOST_UFO
   (UDP fragmentation) and VIRTIO_NET_F_HOST_USO (UDP segmentation) features.
 
+\item If the VIRTIO_NET_F_HOST_TSO6, VIRTIO_NET_F_HOST_TSO4 and VIRTIO_NET_F_HOST_USO
+  segmentation features are negotiated, a driver can
+  use TCP segmentation or UDP segmentation on top of UDP encapsulation
+  offload, when the outer header does not require checksumming - e.g.
+  the outer UDP checksum is zero - by negotiating the
+  VIRTIO_NET_F_HOST_UDP_TUNNEL_GSO feature.
+  GSO over UDP tunnels packets carry two sets of headers: the outer ones
+  and the inner ones. The outer transport protocol is UDP, the inner
+  could be either TCP or UDP. Only a single level of encapsulation
+  offload is supported.
+
 \item The converse features are also available: a driver can save
   the virtual device some work by negotiating these features.\note{For example, a network packet transported between two guests on
 the same system might not need checksumming at all, nor segmentation,
@@ -388,8 +409,9 @@ if both guests are amenable.}
    The VIRTIO_NET_F_GUEST_CSUM feature indicates that partially
   checksummed packets can be received, and if it can do that then
   the VIRTIO_NET_F_GUEST_TSO4, VIRTIO_NET_F_GUEST_TSO6,
-  VIRTIO_NET_F_GUEST_UFO, VIRTIO_NET_F_GUEST_ECN, VIRTIO_NET_F_GUEST_USO4
-  and VIRTIO_NET_F_GUEST_USO6 are the input equivalents of the features described above.
+  VIRTIO_NET_F_GUEST_UFO, VIRTIO_NET_F_GUEST_ECN, VIRTIO_NET_F_GUEST_USO4,
+  VIRTIO_NET_F_GUEST_USO6 and VIRTIO_NET_F_GUEST_UDP_TUNNEL_GSO
+  are the input equivalents of the features described above.
   See \ref{sec:Device Types / Network Device / Device Operation /
 Setting Up Receive Buffers}~\nameref{sec:Device Types / Network
 Device / Device Operation / Setting Up Receive Buffers} and
@@ -541,6 +563,8 @@ struct virtio_net_hdr {
 #define VIRTIO_NET_HDR_GSO_UDP         3
 #define VIRTIO_NET_HDR_GSO_TCPV6       4
 #define VIRTIO_NET_HDR_GSO_UDP_L4      5
+#define VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV4 0x20
+#define VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV6 0x40
 #define VIRTIO_NET_HDR_GSO_ECN      0x80
         u8 gso_type;
         le16 hdr_len;
@@ -551,6 +575,8 @@ struct virtio_net_hdr {
         le32 hash_value;        (Only if VIRTIO_NET_F_HASH_REPORT negotiated)
         le16 hash_report;       (Only if VIRTIO_NET_F_HASH_REPORT negotiated)
         le16 padding_reserved;  (Only if VIRTIO_NET_F_HASH_REPORT negotiated)
+        le16 outer_th_offset    (Only if VIRTIO_NET_F_HOST_UDP_TUNNEL_GSO or VIRTIO_NET_F_GUEST_UDP_TUNNEL_GSO negotiated)
+        le16 inner_nh_offset;   (Only if VIRTIO_NET_F_HOST_UDP_TUNNEL_GSO or VIRTIO_NET_F_GUEST_UDP_TUNNEL_GSO negotiated)
 };
 \end{lstlisting}
 
@@ -608,6 +634,10 @@ It will have a 14 byte ethernet header and 20 byte IP header
 followed by the TCP header (with the TCP checksum field 16 bytes
 into that header). \field{csum_start} will be 14+20 = 34 (the TCP
 checksum includes the header), and \field{csum_offset} will be 16.
+If the given packet has the VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV4 bit or the
+VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV6 bit set,
+the above checksum fields refer to the inner header checksum, see
+the example below.
 \end{note}
 
 \item If the driver negotiated
@@ -624,6 +654,9 @@ checksum includes the header), and \field{csum_offset} will be 16.
     \field{hdr_len} indicates the header length that needs to be replicated
     for each packet. It's the number of bytes from the beginning of the packet
     to the beginning of the transport payload.
+    If the \field{gso_type} has the VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV4 bit or
+    VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV6 bit set, \field{hdr_len} accounts for
+    all the headers up to and including the inner transport.
     Otherwise, if the VIRTIO_NET_F_GUEST_HDRLEN feature has not been negotiated,
     \field{hdr_len} is a hint to the device as to how much of the header
     needs to be kept to copy into each packet, usually set to the
@@ -643,6 +676,39 @@ as a guarantee of the transport header size.
     indicates that the TCP packet has the ECN bit set\footnote{This case is not handled by some older hardware, so is called out
 specifically in the protocol.}.
    \end{itemize}
+
+\item If the driver negotiated the VIRTIO_NET_F_HOST_UDP_TUNNEL_GSO feature and the
+  \field{gso_type} has the VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV4 bit or
+  VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV6 bit set, the GSO protocol is encapsulated
+  in a UDP tunnel.
+  The outer UDP header must not require checksum validation, i.e. the outer UDP
+  checksum must be a positive zero (0x0) as defined in UDP RFC 768.
+  The other tunnel-related fields indicate how to replicate the packet
+  headers to cut it into smaller packets:
+
+  \begin{itemize}
+  \item \field{outer_th_offset} field indicates the outer transport header within
+      the packet. This field differs from \field{csum_start} as the latter
+      points to the inner transport header within the packet.
+
+  \item \field{inner_nh_offset} field indicates the inner network header within
+      the packet.
+  \end{itemize}
+
+\begin{note}
+For example, consider a partially checksummed TCP (IPv4) packet carried over a
+Geneve UDP tunnel (again IPv4) with no tunnel options. The
+only relevant variable related to the tunnel type is the tunnel header length.
+The packet will have a 14 byte outer ethernet header, 20 byte outer IP header
+followed by the 8 byte UDP header (with a 0 checksum value), 8 byte Geneve header,
+14 byte inner ethernet header, 20 byte inner IP header
+and the TCP header (with the TCP checksum field 16 bytes
+into that header). \field{csum_start} will be 14+20+8+8+14+20 = 84 (the TCP
+checksum includes the header), \field{csum_offset} will be 16.
+\field{inner_nh_offset} will be 14+20+8+8+14 = 62, \field{outer_th_offset} will be
+14+20+8 = 42 and \field{gso_type} will be
+VIRTIO_NET_HDR_GSO_TCPV4 | VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV4 = 0x21
+\end{note}
 
 \item \field{num_buffers} is set to zero.  This field is unused on transmitted packets.
 
@@ -688,6 +754,29 @@ VIRTIO_NET_F_HOST_ECN feature is negotiated, in which case the
 driver MUST set the VIRTIO_NET_HDR_GSO_ECN bit in
 \field{gso_type}.
 
+If VIRTIO_NET_F_HOST_UDP_TUNNEL_GSO is negotiated, the driver MAY set
+VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV4 bit or the VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV6 bit
+in \field{gso_type} according to the inner network header protocol type
+to request GSO packets over UDPv4 or UDPv6 tunnel segmentation,
+otherwise the driver MUST NOT set either the
+VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV4 bit or the VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV6 bit
+in \field{gso_type}.
+
+When requesting GSO segmentation over UDP tunnel, the driver MUST SET the
+VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV4 bit if the inner network header is IPv4, i.e. the
+packet is a TCPv4 GSO one, otherwise, if the inner network header is IPv6, the driver
+MUST SET the VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV6 bit.
+
+The driver MUST NOT send to the device GSO packets over UDP tunnel
+requiring segmentation and outer UDP checksum offload.
+
+The driver MUST NOT set the VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV4 bit or the
+VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV6 bit together with VIRTIO_NET_HDR_GSO_UDP, as the
+latter is deprecated in favor of UDP_L4 and no new feature will support it.
+
+The driver MUST NOT set the VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV4 bit and the
+VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV6 bit together.
+
 If the VIRTIO_NET_F_CSUM feature has been negotiated, the
 driver MAY set the VIRTIO_NET_HDR_F_NEEDS_CSUM bit in
 \field{flags}, if so:
@@ -696,7 +785,9 @@ driver MAY set the VIRTIO_NET_HDR_F_NEEDS_CSUM bit in
 	offset \field{csum_offset} from \field{csum_start} as well as all
 	preceding offsets;
 \begin{note}
-If \field{gso_type} differs from VIRTIO_NET_HDR_GSO_NONE, \field{csum_offset}
+If \field{gso_type} differs from VIRTIO_NET_HDR_GSO_NONE and the
+VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV4 bit or the VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV6
+bit are not set in \field{gso_type}, \field{csum_offset}
 points to the only transport header present in the packet, and there are no
 additional preceding checksums validated by VIRTIO_NET_HDR_F_NEEDS_CSUM.
 \end{note}
@@ -725,7 +816,10 @@ been negotiated:
 \item If the VIRTIO_NET_F_GUEST_HDRLEN feature has been negotiated,
 	and \field{gso_type} differs from VIRTIO_NET_HDR_GSO_NONE,
 	the driver MUST set \field{hdr_len} to a value equal to the length
-	of the headers, including the transport header.
+	of the headers, including the transport header. If \field{gso_type}
+	has the VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV4 bit or the
+	VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV6 bit set, \field{hdr_len} includes
+	the inner transport header.
 
 \item If the VIRTIO_NET_F_GUEST_HDRLEN feature has not been negotiated,
 	or \field{gso_type} is VIRTIO_NET_HDR_GSO_NONE,
@@ -734,11 +828,47 @@ been negotiated:
 	header.
 \end{itemize}
 
+If the VIRTIO_NET_F_HOST_UDP_TUNNEL_GSO option has been negotiated, the
+driver MAY set the VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV4 bit or the
+VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV6 bit in \field{gso_type}, if so:
+\begin{itemize}
+\item the driver MUST set \field{outer_th_offset} to the outer UDP header
+  offset and \field{inner_nh_offset} to the inner network header offset.
+  The \field{csum_start} and \field{csum_offset} fields point respectively
+  to the inner transport header and inner transport checksum field.
+\end{itemize}
+
+If the VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV4 bit or the
+VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV6 bit in \field{gso_type} are set, the
+outer UDP header MUST NOT require checksum validation. That is, the
+outer UDP checksum value MUST be 0 or the validated complete checksum
+for such header.
+
+\begin{note}
+The valid complete checksum of the outer UDP header of individual segments
+can be computed by the driver prior to segmentation only if the GSO packet
+size is a multiple of \field{gso_size}, because then all segments
+have the same size and thus all data included in the outer UDP
+checksum is the same for every segment. These pre-computed segment
+length and checksum fields are different from those of the GSO
+packet.
+In this scenario the outer UDP header of the GSO packet must carry the
+segmented UDP packet length.
+\end{note}
+
+If the VIRTIO_NET_F_HOST_UDP_TUNNEL_GSO option has not
+been negotiated, the driver MUST NOT set either the VIRTIO_NET_HDR_F_GSO_UDP_TUNNEL_IPV4
+bit or the VIRTIO_NET_HDR_F_GSO_UDP_TUNNEL_IPV6 in \field{gso_type}.
+
 The driver SHOULD accept the VIRTIO_NET_F_GUEST_HDRLEN feature if it has
 been offered, and if it's able to provide the exact header length.
 
 The driver MUST NOT set the VIRTIO_NET_HDR_F_DATA_VALID and
 VIRTIO_NET_HDR_F_RSC_INFO bits in \field{flags}.
+
+The driver MUST NOT set the VIRTIO_NET_HDR_F_DATA_VALID bit in \field{flags}
+together with the VIRTIO_NET_HDR_F_GSO_UDP_TUNNEL_IPV4 bit or the
+VIRTIO_NET_HDR_F_GSO_UDP_TUNNEL_IPV6 bit in \field{gso_type}.
 
 \devicenormative{\paragraph}{Packet Transmission}{Device Types / Network Device / Device Operation / Packet Transmission}
 The device MUST ignore \field{flag} bits that it does not recognize.
@@ -768,6 +898,25 @@ been negotiated:
 	This is due to various bugs in implementations.
 	\end{note}
 \end{itemize}
+
+If both the VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV4 bit and
+the VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV6 bit in in \field{gso_type} are set,
+the device MUST NOT accept the packet.
+
+If the VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV4 bit and the VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV6
+bit in \field{gso_type} are not set, the device MUST NOT use the
+\field{outer_th_offset} and \field{inner_nh_offset}.
+
+If either the VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV4 bit or
+the VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV6 bit in \field{gso_type} are set, and any of
+the following is true:
+\begin{itemize}
+\item the VIRTIO_NET_HDR_F_NEEDS_CSUM is not set in \field{flags}
+\item the VIRTIO_NET_HDR_F_DATA_VALID is set in \field{flags}
+\item the \field{gso_type} excluding the VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV4
+bit and the VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV6 bit is VIRTIO_NET_HDR_GSO_NONE
+\end{itemize}
+the device MUST NOT accept the packet.
 
 If VIRTIO_NET_HDR_F_NEEDS_CSUM is not set, the device MUST NOT
 rely on the packet checksum being correct.
@@ -875,8 +1024,8 @@ Processing incoming packets involves:
   has been validated.
 \end{enumerate}
 
-Additionally, VIRTIO_NET_F_GUEST_CSUM, TSO4, TSO6, UDP and ECN
-features enable receive checksum, large receive offload and ECN
+Additionally, VIRTIO_NET_F_GUEST_CSUM, TSO4, TSO6, UDP, UDP_TUNNEL
+and ECN features enable receive checksum, large receive offload and ECN
 support which are the input equivalents of the transmit checksum,
 transmit segmentation offloading and ECN features, as described
 in \ref{sec:Device Types / Network Device / Device Operation /
@@ -901,9 +1050,24 @@ Packet Transmission}:
   then \field{csum_start} and \field{csum_offset} indicate how to calculate it
   (see Packet Transmission point 1).
 \begin{note}
-If \field{gso_type} differs from VIRTIO_NET_HDR_GSO_NONE, \field{csum_offset}
+If \field{gso_type} differs from VIRTIO_NET_HDR_GSO_NONE and the
+VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV4 bit or the VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV6
+bit are not set, \field{csum_offset}
 points to the only transport header present in the packet, and there are no
 additional preceding checksums validated by VIRTIO_NET_HDR_F_NEEDS_CSUM.
+\end{note}
+\item If the VIRTIO_NET_F_GUEST_UDP_TUNNEL_GSO option was negotiated and
+  \field{gso_type} is not VIRTIO_NET_HDR_GSO_NONE, the
+  VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV4 bit or the VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV6
+  bit MAY be set. In such case the \field{outer_th_offset} and
+  \field{inner_nh_offset} fields indicate the corresponding
+  headers information.
+\begin{note}
+If the VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV4 bit or VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV6
+bit are set in \field{gso_type}, the \field{csum_start} field refers to
+the inner transport header offset (see Packet Transmission point 1)
+and only the inner transport header checksum has been validated by
+VIRTIO_NET_HDR_F_NEEDS_CSUM.
 \end{note}
 \end{enumerate}
 
@@ -948,6 +1112,10 @@ If VIRTIO_NET_F_GUEST_TSO6 is not negotiated, the device MUST NOT set
 If none of VIRTIO_NET_F_GUEST_USO4 or VIRTIO_NET_F_GUEST_USO6 have been negotiated,
 the device MUST NOT set \field{gso_type} to VIRTIO_NET_HDR_GSO_UDP_L4.
 
+If VIRTIO_NET_F_GUEST_UDP_TUNNEL_GSO is not negotiated, the device MUST NOT set
+either the VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV4 bit or the
+VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV6 bit in \field{gso_type}.
+
 The device SHOULD NOT send to the driver TCP packets requiring segmentation offload
 which have the Explicit Congestion Notification bit set, unless the
 VIRTIO_NET_F_GUEST_ECN feature is negotiated, in which case the
@@ -971,6 +1139,18 @@ device MAY set the VIRTIO_NET_HDR_F_NEEDS_CSUM bit in
 	fully checksummed packet;
 \end{enumerate}
 
+The device MUST NOT send to the driver GSO packets encapsulated in UDP
+tunnel and requiring segmentation offload, unless the
+VIRTIO_NET_F_GUEST_UDP_TUNNEL_GSO is negotiated, in which case the device MUST set
+the VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV4 bit or the VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV6
+bit in \field{gso_type} according to the inner network header protocol type,
+MUST set the \field{outer_th_offset} and \field{inner_nh_offset} fields
+to the corresponding header information, and the outer UDP header MUST NOT
+require checksum offload.
+
+The device MUST NOT send the driver GSO packets encapsulated in UDP
+tunnel and requiring segmentation and outer checksum offload.
+
 If none of the VIRTIO_NET_F_GUEST_TSO4, TSO6, UFO, USO4 or USO6 options have
 been negotiated, the device MUST set \field{gso_type} to
 VIRTIO_NET_HDR_GSO_NONE.
@@ -989,13 +1169,20 @@ not set VIRTIO_NET_HDR_F_RSC_INFO bit in \field{flags}.
 If one of the VIRTIO_NET_F_GUEST_TSO4, TSO6, UFO, USO4 or USO6 options have
 been negotiated, the device SHOULD set \field{hdr_len} to a value
 not less than the length of the headers, including the transport
-header.
+header. If \field{gso_type} has the VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV4 bit
+or the VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV6 bit set, the referenced transport
+header is the inner one.
 
 If the VIRTIO_NET_F_GUEST_CSUM feature has been negotiated, the
 device MAY set the VIRTIO_NET_HDR_F_DATA_VALID bit in
 \field{flags}, if so, the device MUST validate the packet
 checksum. One level of checksum is validated: in case of multiple
 encapsulated protocols the outermost one.
+
+If either the VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV4 bit or the
+VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV6 bit in \field{gso_type} are set,
+the device MUST NOT set the VIRTIO_NET_HDR_F_DATA_VALID bit in
+\field{flags}.
 
 \drivernormative{\paragraph}{Processing of Incoming
 Packets}{Device Types / Network Device / Device Operation /
@@ -1018,6 +1205,25 @@ This is due to various bugs in implementations.
 If neither VIRTIO_NET_HDR_F_NEEDS_CSUM nor
 VIRTIO_NET_HDR_F_DATA_VALID is set, the driver MUST NOT
 rely on the packet checksum being correct.
+
+If both the VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV4 bit and
+the VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV6 bit in in \field{gso_type} are set,
+the driver MUST NOT accept the packet.
+
+If the VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV4 bit or the VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV6
+bit in \field{gso_type} are not set, the driver MUST NOT use the
+\field{outer_th_offset} and \field{inner_nh_offset}.
+
+If either the VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV4 bit or
+the VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV6 bit in \field{gso_type} are set, and any of
+the following is true:
+\begin{itemize}
+\item the VIRTIO_NET_HDR_F_NEEDS_CSUM bit is not set in \field{flags}
+\item the VIRTIO_NET_HDR_F_DATA_VALID bit is set in \field{flags}
+\item the \field{gso_type} excluding the VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV4
+bit and the VIRTIO_NET_HDR_GSO_UDP_TUNNEL_IPV6 bit is VIRTIO_NET_HDR_GSO_NONE
+\end{itemize}
+the driver MUST NOT accept the packet.
 
 \paragraph{Hash calculation for incoming packets}
 \label{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash calculation for incoming packets}
@@ -1862,6 +2068,7 @@ le64 offloads;
 #define VIRTIO_NET_F_GUEST_TSO6       8
 #define VIRTIO_NET_F_GUEST_ECN        9
 #define VIRTIO_NET_F_GUEST_UFO        10
+#define VIRTIO_NET_F_GUEST_UDP_TUNNEL_GSO  46
 #define VIRTIO_NET_F_GUEST_USO4       54
 #define VIRTIO_NET_F_GUEST_USO6       55
 
