@@ -1020,10 +1020,10 @@ will be 65589 bytes long (14 bytes of Ethernet header, plus 40 bytes of
 the IPv6 header, plus 65535 bytes of maximum IPv6 payload including any
 extension header), otherwise 1514 bytes.
 When VIRTIO_NET_F_HASH_REPORT is not negotiated, the required receive buffer
-size is either 65601 or 1526 bytes accounting for 20 bytes of
+size is either 65601 or 1526 bytes accounting for 12 bytes of
 \field{struct virtio_net_hdr} followed by receive packet.
 When VIRTIO_NET_F_HASH_REPORT is negotiated, the required receive buffer
-size is either 65609 or 1534 bytes accounting for 12 bytes of
+size is either 65609 or 1534 bytes accounting for 20 bytes of
 \field{struct virtio_net_hdr} followed by receive packet.
 
 \drivernormative{\paragraph}{Setting Up Receive Buffers}{Device Types / Network Device / Device Operation / Setting Up Receive Buffers}
