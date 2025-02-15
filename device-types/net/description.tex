@@ -2957,7 +2957,7 @@ The capability VIRTIO_NET_FF_RESOURCE_CAP indicates the flow filter resource lim
 \begin{lstlisting}
 struct virtio_net_ff_cap_data {
         le32 groups_limit;
-        le32 selectors_limit;
+        le32 classifiers_limit;
         le32 rules_limit;
         le32 rules_per_group_limit;
         u8 last_rule_priority;
@@ -2965,8 +2965,8 @@ struct virtio_net_ff_cap_data {
 };
 \end{lstlisting}
 
-\field{groups_limit}, and \field{selectors_limit} represent the maximum
-number of flow filter groups and selectors, respectively, that the driver can create.
+\field{groups_limit}, and \field{classifiers_limit} represent the maximum
+number of flow filter groups and classifiers, respectively, that the driver can create.
  \field{rules_limit} is the maximum number of
 flow fiilter rules that the driver can create across all the groups.
 \field{rules_per_group_limit} is the maximum number of flow filter rules that the driver
@@ -3310,7 +3310,7 @@ The device SHOULD set \field{status} to VIRTIO_ADMIN_STATUS_ENOSPC for the
 command VIRTIO_ADMIN_CMD_RESOURCE_OBJ_CREATE when the resource \field{type} is
 VIRTIO_NET_RESOURCE_OBJ_FF_CLASSIFIER, if the number of flow filter selector
 objects in the device exceeds the configured driver capability
-\field{selectors_limit}.
+\field{classifiers_limit}.
 
 The device SHOULD set \field{status} to VIRTIO_ADMIN_STATUS_EBUSY for the
 command VIRTIO_ADMIN_CMD_RESOURCE_OBJ_DESTROY for a flow filter group when
