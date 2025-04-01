@@ -166,7 +166,7 @@ configure things:
 
 \devicenormative{\subsubsection}{Device Operation: Command lifecycle and fencing}{Device Types / GPU Device / Device Operation / Device Operation: Command lifecycle and fencing}
 
-The device MAY process controlq commands asyncronously and return them
+The device MAY process controlq commands asynchronously and return them
 to the driver before the processing is complete.  If the driver needs
 to know when the processing is finished it can set the
 VIRTIO_GPU_FLAG_FENCE flag in the request.  The device MUST finish the
@@ -345,7 +345,7 @@ displays are arranged (i.e. which is -- for example -- the left
 display).
 
 The \field{enabled} field is set when the user enabled the display.
-It is roughly the same as the connected state of a phyiscal display
+It is roughly the same as the connected state of a physical display
 connector.
 
 \item[VIRTIO_GPU_CMD_GET_EDID] Retrieve the EDID data for a given
