@@ -567,6 +567,11 @@ driver MAY set the VIRTIO_NET_HDR_F_NEEDS_CSUM bit in
 \item the driver MUST validate the packet checksum at
 	offset \field{csum_offset} from \field{csum_start} as well as all
 	preceding offsets;
+\begin{note}
+If \field{gso_type} differs from VIRTIO_NET_HDR_GSO_NONE, \field{csum_offset}
+points to the only transport header present in the packet, and there are no
+additional preceding checksums validated by VIRTIO_NET_HDR_F_NEEDS_CSUM.
+\end{note}
 \item the driver MUST set the packet checksum stored in the
 	buffer to the TCP/UDP pseudo header;
 \item the driver MUST set \field{csum_start} and
@@ -767,7 +772,11 @@ Packet Transmission}:
   if bit VIRTIO_NET_HDR_F_RSC_INFO is not set in \field{flags},
   then \field{csum_start} and \field{csum_offset} indicate how to calculate it
   (see Packet Transmission point 1).
-
+\begin{note}
+If \field{gso_type} differs from VIRTIO_NET_HDR_GSO_NONE, \field{csum_offset}
+points to the only transport header present in the packet, and there are no
+additional preceding checksums validated by VIRTIO_NET_HDR_F_NEEDS_CSUM.
+\end{note}
 \end{enumerate}
 
 If applicable, the device calculates per-packet hash for incoming packets as
