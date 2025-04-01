@@ -136,6 +136,10 @@ negotiated.
 
 \item[VIRTIO_NET_F_HOST_UDP_TUNNEL_GSO_CSUM (68)] Device handles packets
   carried by a UDP tunnel with partial csum for the outer header.
+
+\item[VIRTIO_NET_F_OUT_NET_HEADER(69)] Driver can provide the start of
+ \field{outer_nh_offset} value. Device gains advantage by not reading packet
+  to calculate outer network header offset.
 \end{description}
 
 \subsubsection{Feature bit requirements}\label{sec:Device Types / Network Device / Feature bits / Feature bit requirements}
@@ -599,6 +603,8 @@ struct virtio_net_hdr {
         le16 padding_reserved;  (Only if VIRTIO_NET_F_HASH_REPORT negotiated)
         le16 outer_th_offset    (Only if VIRTIO_NET_F_HOST_UDP_TUNNEL_GSO or VIRTIO_NET_F_GUEST_UDP_TUNNEL_GSO negotiated)
         le16 inner_nh_offset;   (Only if VIRTIO_NET_F_HOST_UDP_TUNNEL_GSO or VIRTIO_NET_F_GUEST_UDP_TUNNEL_GSO negotiated)
+        le16 outer_nh_offset;   /* Only if VIRTIO_NET_F_OUT_NET_HEADER negotiated */
+        u8 padding_reserved_2[6]; /* Only if VIRTIO_NET_F_OUT_NET_HEADER negotiated */
 };
 \end{lstlisting}
 
@@ -632,6 +638,11 @@ the different features the driver negotiated.
 \begin{enumerate}
 \item The driver can send a completely checksummed packet.  In this case,
   \field{flags} will be zero, and \field{gso_type} will be VIRTIO_NET_HDR_GSO_NONE.
+
+\item When VIRTIO_NET_F_OUT_NET_HEADER is negotiated, the driver MAY optionally provide
+   the \field{outer_nh_offset} value. A nonzero value of \field{outer_nh_offset} indicates
+   a valid outer network header with in the packet, and specifies the offset in bytes from
+   the beginning of the packet. Otherwise \field{outer_nh_offset} MUST not be used.
 
 \item If the driver negotiated VIRTIO_NET_F_CSUM, it can skip
   checksumming the packet:
@@ -766,6 +777,11 @@ The driver MUST set \field{num_buffers} to zero.
 If VIRTIO_NET_F_CSUM is not negotiated, the driver MUST set
 \field{flags} to zero and SHOULD supply a fully checksummed
 packet to the device.
+
+If the VIRTIO_NET_F_OUT_NET_HEADER feature has been negotiated,
+the driver MAY set \field{outer_nh_offset} to nonzero value to indicate
+the start of the outer network header offset, if the packet contains a
+valid network header. Otherwise, \field{outer_nh_offset} is not used.
 
 If VIRTIO_NET_F_HOST_TSO4 is negotiated, the driver MAY set
 \field{gso_type} to VIRTIO_NET_HDR_GSO_TCPV4 to request TCPv4
@@ -948,6 +964,11 @@ The device MUST ignore \field{flag} bits that it does not recognize.
 If VIRTIO_NET_HDR_F_NEEDS_CSUM bit in \field{flags} is not set, the
 device MUST NOT use the \field{csum_start} and \field{csum_offset}.
 
+If the VIRTIO_NET_F_OUT_NET_HEADER feature has been negotiated,
+and \field{outer_nh_offset} is nonzero, the device MAY use \field{outer_nh_offset}
+as the outer network header offset. Otherwise, device MUST NOT use
+the \field{outer_nh_offset}.
+
 If one of the VIRTIO_NET_F_HOST_TSO4, TSO6, USO or UFO options have
 been negotiated:
 \begin{itemize}
@@ -1049,7 +1070,9 @@ Obviously each buffer can be split across multiple descriptor elements.
 \end{note}
 
 When calculating the size of \field{struct virtio_net_hdr}, the driver
-MUST consider all the fields inclusive up to \field{padding_reserved},
+MUST consider all the fields inclusive up to \field{padding_reserved_2},
+i.e. 32 bytes if VIRTIO_NET_F_OUT_NET_HEADER is negotiated or up to \field{inner_nh_offset}
+i.e. 24 bytes if VIRTIO_NET_F_HOST_UDP_TUNNEL_GSO is negotiated or up to \field{padding_reserved}
 i.e. 20 bytes if VIRTIO_NET_F_HASH_REPORT is negotiated, and 12 bytes if not.
 
 If VIRTIO_NET_F_MQ is negotiated, each of receiveq1\ldots receiveqN
@@ -1102,6 +1125,9 @@ Processing incoming packets involves:
   both the outer UDP checksum and the inner transport checksum
   have been validated, otherwise only one level of checksums (the outer one
   in case of tunnels) has been validated.
+\item If the VIRTIO_NET_F_OUT_NET_HEADER has been negotiated, and if the packet
+  contains a valid network header, \field{outer_nh_offset} MAY be set to nonzero
+  value to indicate the outer network header offset in packet.
 \end{enumerate}
 
 Additionally, VIRTIO_NET_F_GUEST_CSUM, TSO4, TSO6, UDP, UDP_TUNNEL
@@ -1215,6 +1241,11 @@ VIRTIO_NET_F_GUEST_ECN feature is negotiated, in which case the
 device MUST set the VIRTIO_NET_HDR_GSO_ECN bit in
 \field{gso_type}.
 
+If VIRTIO_NET_F_OUT_NET_HEADER has been negotiated, the device MAY
+set the \field{outer_nh_offset} to nonzero value to indicate outer network header offset,
+if packet contains a valid network header. Otherwise, the device MUST not
+use \field{outer_nh_offset}.
+
 If the VIRTIO_NET_F_GUEST_CSUM feature has been negotiated, the
 device MAY set the VIRTIO_NET_HDR_F_NEEDS_CSUM bit in
 \field{flags}, if so:
@@ -1301,6 +1332,10 @@ Packets}{Device Types / Network Device / Device Operation /
 Processing of Incoming Packets}
 
 The driver MUST ignore \field{flag} bits that it does not recognize.
+
+If VIRTIO_NET_F_OUT_NET_HEADER has been negotiated, and if \field{outer_nh_offset}
+is nonzero, the driver MAY use \field{outer_nh_offset} as outer network header
+offset. Otherwise, the driver MUST not use the \field{outer_nh_offset}.
 
 If VIRTIO_NET_HDR_F_NEEDS_CSUM bit in \field{flags} is not set or
 if VIRTIO_NET_HDR_F_RSC_INFO bit \field{flags} is set, the
