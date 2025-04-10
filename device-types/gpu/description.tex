@@ -37,6 +37,8 @@ control queue.
   resources is supported.
 \item[VIRTIO_GPU_F_CONTEXT_INIT (4)] multiple context types and
   synchronization timelines supported.  Requires VIRTIO_GPU_F_VIRGL.
+\item[VIRTIO_GPU_F_BLOB_ALIGNMENT (5)] configuration field
+  \field{blob_alignment} is valid. Requires VIRTIO_GPU_F_RESOURCE_BLOB.
 \end{description}
 
 \subsection{Device configuration layout}\label{sec:Device Types / GPU Device / Device configuration layout}
@@ -52,6 +54,7 @@ struct virtio_gpu_config {
         le32 events_clear;
         le32 num_scanouts;
         le32 num_capsets;
+        le32 blob_alignment;
 };
 \end{lstlisting}
 
@@ -67,6 +70,9 @@ struct virtio_gpu_config {
   supported by the device.  Minimum value is 1, maximum value is 16.
 \item[\field{num_capsets}] specifies the maximum number of capability
   sets supported by the device.  The minimum value is zero.
+\item[\field{blob_alignment}] specifies the minimal alignment, in bytes,
+  required by the device for resource blobs.  The value is a power of
+  two.  Minimum value is 1, maximum value is 4294967296.
 \end{description}
 
 \subsubsection{Events}
@@ -672,6 +678,9 @@ and VIRTIO_GPU_CMD_TRANSFER_FROM_HOST_3D may be used to update the
 resource. There is no restriction on the image/buffer view the driver
 has on the blob resource.
 
+If VIRTIO_GPU_F_BLOB_ALIGNMENT has been negotiated, \field{size} is aligned
+to \field{blob_alignment} as defined in the device configuration.
+
 \item[VIRTIO_GPU_CMD_SET_SCANOUT_BLOB] sets scanout parameters for a
    blob resource. Request data is
   \field{struct virtio_gpu_set_scanout_blob}. Response type is
@@ -699,6 +708,14 @@ format MUST be one of \field{enum virtio_gpu_formats}.  The format MAY be
 compressed with header and data planes.
 
 \end{description}
+
+\drivernormative{\paragraph}{Device Operation: controlq}{Device Types / GPU Device / Device Operation / Device Operation: controlq}
+
+\begin{itemize}
+\item If VIRTIO_GPU_F_BLOB_ALIGNMENT has been negotiated, in
+VIRTIO_GPU_CMD_RESOURCE_CREATE_BLOB requests \field{size} MUST be aligned
+to \field{blob_alignment} as defined in the device configuration.
+\end{itemize}
 
 \subsubsection{Device Operation: controlq (3d)}\label{sec:Device Types / GPU Device / Device Operation / Device Operation: controlq (3d)}
 
@@ -776,6 +793,9 @@ struct virtio_gpu_resp_map_info {
 };
 \end{lstlisting}
 
+If VIRTIO_GPU_F_BLOB_ALIGNMENT has been negotiated, \field{offset} is
+aligned to \field{blob_alignment} as defined in the device configuration.
+
 \item[VIRTIO_GPU_CMD_RESOURCE_UNMAP_BLOB] unmaps a
   host-only blob resource from the host visible memory region. Request data
   is \field{struct virtio_gpu_resource_unmap_blob}.  Response type is
@@ -792,6 +812,14 @@ struct virtio_gpu_resource_unmap_blob {
 \end{lstlisting}
 
 \end{description}
+
+\drivernormative{\paragraph}{Device Operation: controlq (3d)}{Device Types / GPU Device / Device Operation / Device Operation: controlq (3d)}
+
+\begin{itemize}
+\item If VIRTIO_GPU_F_BLOB_ALIGNMENT has been negotiated, in
+VIRTIO_GPU_CMD_RESOURCE_MAP_BLOB requests \field{offset} MUST be aligned to
+\field{blob_alignment} as defined in the device configuration.
+\end{itemize}
 
 \subsubsection{Device Operation: cursorq}\label{sec:Device Types / GPU Device / Device Operation / Device Operation: cursorq}
 
