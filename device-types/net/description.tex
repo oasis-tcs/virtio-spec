@@ -3599,7 +3599,7 @@ See \hyperref[par:Device Types / Crypto Device / Device Operation / IPsec Servic
 
 See \hyperref[par:Device Types / Crypto Device / Device Operation / IPsec Service Operation / Resource objects / VIRTIO-CRYPTO-RESOURCE-OBJ-IPSEC-INBOUND-SA]{VIRTIO_NET_RESOURCE_OBJ_IPSEC_INB_SA}.
 
-\devicenormative{\paragraph}{IPsec Operation}{Device Types / Net Device / Device Operation / IPsec Operation}
+\devicenormative{\paragraph}{IPsec Operation}{Device Types / Network Device / Device Operation / IPsec Operation}
 
 When the device supports IPsec operations,
 \begin{itemize}
@@ -3656,7 +3656,7 @@ commands if the resource object with the same \field{spi} already exists.
 
 On device reset, the device MUST destroy all the resource objects which have been created.
 
-\drivernormative{\paragraph}{IPsec Operation}{Device Types / Net Device / Device Operation / IPsec Operation}
+\drivernormative{\paragraph}{IPsec Operation}{Device Types / Network Device / Device Operation / IPsec Operation}
 
 The driver MUST query the capabilities using VIRTIO_ADMIN_CMD_CAP_ID_LIST_QUERY
 to discover the capability types the device offers.
