@@ -32,6 +32,11 @@ negotiated.
 VIRTIO_RTC_F_ALARM determines whether the device supports setting an
 alarm for some of the clocks.
 
+\devicenormative{\subsubsection}{Feature bits}{Device Types / RTC Device / Feature bits}
+
+The device SHOULD offer VIRTIO_RTC_F_ALARM if the device can support
+setting an alarm for any of its clocks.
+
 \subsection{Device configuration layout}\label{sec:Device Types / RTC Device / Device configuration layout}
 
 None currently defined.
@@ -727,6 +732,11 @@ For VIRTIO_RTC_REQ_READ_CROSS and for any clock type listed in this
 specification, the device MUST use the nanosecond as unit for the
 \field{clock_reading} field.
 
+If the device sent an alarm notification for clock C with alarm time A,
+the device MUST, for all read requests of C which the driver marks as
+available after the notification, return a \field{clock_reading} which
+does not precede A (except if C stepped backwards to before A).
+
 \subsubsection{Alarm Operation}\label{sec:Device Types / RTC Device / Device Operation / Alarm Operation}
 
 Through the optional alarm feature, the driver can set an alarm time. On
@@ -833,6 +843,79 @@ which supports alarm:
 To prevent the above issues, the driver also marks buffers in the alarmq
 as available only after completing the above steps for all clocks.
 
+\devicenormative{\paragraph}{Alarm Operation}{Device Types / RTC Device / Device Operation / Alarm Operation}
+
+The device MAY retain both alarm time and alarm enabled status of a
+clock across a device reset.
+
+If the device did not retain alarm time and alarm enabled status of a
+clock across a device reset, the device MUST initialize alarm time to 0.
+
+If the device did not retain alarm time and alarm enabled status of a
+clock across a device reset, the device MUST disable the alarm.
+
+If VIRTIO_RTC_F_ALARM has been negotiated, the device MUST support the
+alarm messages, VIRTIO_RTC_REQ_READ_ALARM, VIRTIO_RTC_REQ_SET_ALARM,
+VIRTIO_RTC_REQ_SET_ALARM_ENABLED, and VIRTIO_RTC_NOTIF_ALARM, for one or
+more clocks.
+
+If VIRTIO_RTC_F_ALARM has not been negotiated, the device MUST NOT
+support the alarm messages.
+
+The device MUST set the VIRTIO_RTC_FLAG_ALARM_CAP flag in \field{struct
+virtio_rtc_resp_clock_cap.flags} if the respective clock supports alarm
+messages, and clear the flag otherwise.
+
+The device MUST consider it an alarm expiration event when the
+associated clock progresses (also: steps) from a time prior to the alarm
+time to the alarm time, or to a time after the alarm time, while the
+alarm is enabled.
+
+The device MUST consider it an alarm expiration event when the
+driver sets an alarm time which the associated clock has already reached
+or passed, while also setting the alarm to enabled.
+
+The device MUST consider it an alarm expiration event when the driver
+sets the alarm to enabled, if the clock has already reached or passed
+the alarm time.
+
+If the device retained alarm time and alarm enabled status of a clock
+across a device reset, and the clock has already reached or passed the
+alarm time, the device MUST consider this device reset an alarm
+expiration event, if the alarm is enabled.
+
+If an alarm expiration event E happens, the device MUST start serving
+the alarm expiration event E.
+
+If the device is currently serving an alarm expiration event E, the
+device MUST use a single VIRTIO_RTC_NOTIF_ALARM notification for E, as
+soon as an alarmq buffer is available for this purpose.
+
+While the device is serving an alarm expiration event, the device MAY
+execute implementation-specific alarm actions.
+
+The device MAY ignore the device status when executing
+implementation-specific alarm actions.
+
+The device MAY ignore whether VIRTIO_RTC_F_ALARM has been negotiated
+when executing implementation-specific alarm actions.
+
+If the driver successfully disables an alarm for clock C with request
+VIRTIO_RTC_REQ_SET_ALARM or VIRTIO_RTC_REQ_SET_ALARM_ENABLED, the device
+MUST stop serving any previous alarm expiration event for C before the
+device uses the response buffer.
+
+If the driver successfully requests VIRTIO_RTC_REQ_SET_ALARM, or
+VIRTIO_RTC_REQ_SET_ALARM_ENABLED, for clock C, keeping the alarm
+enabled, the device MAY stop serving any previous alarm expiration event
+for C.
+
+After a clock C stepped to a time previous to C's alarm time, the device
+MAY stop serving any previous alarm expiration event for C.
+
+If an alarm expiration event happens for clock C, the device MAY stop
+serving any previous alarm expiration event for C.
+
 \paragraph{Alarm Control Requests}
 
 If VIRTIO_RTC_F_ALARM has been negotiated,
@@ -927,6 +1010,59 @@ When processing this request, the device retains the alarm time.
 
 \end{description}
 
+\drivernormative{\subparagraph}{Alarm Control Requests}{Device Types / RTC Device / Device Operation / Alarm Operation / Alarm Control Requests}
+
+For VIRTIO_RTC_REQ_SET_ALARM and for any clock type listed in this
+specification, the driver MUST use the nanosecond as unit for the
+\field{alarm_time} field.
+
+\devicenormative{\subparagraph}{Alarm Control Requests}{Device Types / RTC Device / Device Operation / Alarm Operation / Alarm Control Requests}
+
+If VIRTIO_RTC_F_ALARM has not been negotiated, the device MUST set
+status VIRTIO_RTC_S_ENODEV for VIRTIO_RTC_REQ_READ_ALARM,
+VIRTIO_RTC_REQ_SET_ALARM, and VIRTIO_RTC_REQ_SET_ALARM_ENABLED.
+
+If the clock does not support alarm messages, the device MUST set status
+VIRTIO_RTC_S_ENODEV for VIRTIO_RTC_REQ_READ_ALARM,
+VIRTIO_RTC_REQ_SET_ALARM, and VIRTIO_RTC_REQ_SET_ALARM_ENABLED.
+
+For VIRTIO_RTC_REQ_READ_ALARM, the device MUST set the
+\field{alarm_time} field to the alarm time.
+
+For VIRTIO_RTC_REQ_READ_ALARM, the device MUST set the
+VIRTIO_RTC_FLAG_ALARM_ENABLED flag in the \field{flags} field if the
+alarm is enabled, and clear the flag otherwise.
+
+For VIRTIO_RTC_REQ_READ_ALARM and for any clock type listed in this
+specification, the device MUST use the nanosecond as unit for the
+\field{alarm_time} field.
+
+For VIRTIO_RTC_REQ_SET_ALARM, the device MUST accept any
+\field{alarm_time} value.
+
+If the device sets status VIRTIO_RTC_S_OK for VIRTIO_RTC_REQ_SET_ALARM,
+the device MUST set the alarm time to the time represented by the
+\field{alarm_time} field.
+
+If the device sets status VIRTIO_RTC_S_OK for VIRTIO_RTC_REQ_SET_ALARM,
+the device MUST enable the alarm if VIRTIO_RTC_FLAG_ALARM_ENABLED is set
+in the \field{flags} field.
+
+If the device sets status VIRTIO_RTC_S_OK for VIRTIO_RTC_REQ_SET_ALARM,
+the device MUST disable the alarm if VIRTIO_RTC_FLAG_ALARM_ENABLED is
+cleared in the \field{flags} field.
+
+If the device sets status VIRTIO_RTC_S_OK for
+VIRTIO_RTC_REQ_SET_ALARM_ENABLED, the device MUST enable the alarm if
+VIRTIO_RTC_FLAG_ALARM_ENABLED is set in the \field{flags} field.
+
+If the device sets status VIRTIO_RTC_S_OK for
+VIRTIO_RTC_REQ_SET_ALARM_ENABLED, the device MUST disable the alarm if
+VIRTIO_RTC_FLAG_ALARM_ENABLED is cleared in the \field{flags} field.
+
+If the device sets status VIRTIO_RTC_S_OK for
+VIRTIO_RTC_REQ_SET_ALARM_ENABLED, the device MUST retain the alarm time.
+
 \paragraph{Alarm Notifications}
 
 If the alarmq is present, the driver should make buffers available in
@@ -962,3 +1098,20 @@ struct virtio_rtc_notif_alarm {
 
 \field{clock_id} identifies the expired alarm through its associated
 clock.
+
+\drivernormative{\subparagraph}{Alarm Notifications}{Device Types / RTC Device / Device Operation / Alarm Operation / Alarm Notifications}
+
+If VIRTIO_RTC_F_ALARM has been negotiated, the driver SHOULD populate
+the alarmq with buffers.
+
+The driver MUST allocate enough space for any alarmq notification in the
+device-writable part of an alarmq buffer.
+
+If the driver receives a VIRTIO_RTC_NOTIF_ALARM notification, the driver
+SHOULD read the associated clock instead of assuming that the alarm time
+which the driver set last has been reached.
+
+\devicenormative{\subparagraph}{Alarm Notifications}{Device Types / RTC Device / Device Operation / Alarm Operation / Alarm Notifications}
+
+The device MUST NOT use a VIRTIO_RTC_NOTIF_ALARM notification for a
+clock which does not support alarm messages.
