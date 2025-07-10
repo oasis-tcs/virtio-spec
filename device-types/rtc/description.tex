@@ -99,6 +99,110 @@ either (similar to negotiated features). Clock identifiers are
 zero-based, dense indices. In request structures, all fields named
 \field{clock_id} contain clock identifiers.
 
+\drivernormative{\subsubsection}{Device Operation}{Device Types / RTC Device / Device Operation}
+
+The driver MUST interpret response fields other than the \field{struct
+virtio_rtc_resp_head} field \field{status} only when \field{status} is
+VIRTIO_RTC_S_OK.
+
+The driver MUST set \emph{reserved} fields in a device-readable buffer
+to zero.
+
+The driver MUST NOT set bits in \emph{flags} fields in a device-readable
+buffer which are not allowed according to the negotiated features.
+
+The driver MUST NOT interpret \emph{reserved} fields in a
+device-writable buffer.
+
+The driver MUST only interpret these bits in \emph{flags} fields in a
+device-writable buffer which are allowed according to the negotiated
+features.
+
+The driver MUST allocate enough space for the response in a
+device-writable requestq buffer.
+
+\devicenormative{\subsubsection}{Device Operation}{Device Types / RTC Device / Device Operation}
+
+For \field{struct virtio_rtc_resp_head}, the device MUST set the
+\field{status} field to VIRTIO_RTC_S_OK if the device successfully
+executed the request.
+
+For \field{struct virtio_rtc_resp_head}, the device MUST set the
+\field{status} field to a status other than VIRTIO_RTC_S_OK if the
+device did not successfully execute the request.
+
+For \field{struct virtio_rtc_resp_head}, the device MUST set the
+\field{status} field to VIRTIO_RTC_S_EOPNOTSUPP if the device could not
+execute the specific request due to an implementation limitation.
+
+For \field{struct virtio_rtc_resp_head}, the device MUST set the
+\field{status} field to VIRTIO_RTC_S_EOPNOTSUPP for a request with a
+value of the \field{msg_type} field which is not described in this
+specification.
+
+For \field{struct virtio_rtc_resp_head}, the device MUST set the
+\field{status} field to VIRTIO_RTC_S_EOPNOTSUPP for a request with a
+value of the \field{hw_counter} field which is neither described in this
+specification nor otherwise known to the implementation.
+
+For \field{struct virtio_rtc_resp_head}, the device MUST set the
+\field{status} field to VIRTIO_RTC_S_ENODEV if the \field{clock_id}
+field value supplied with the request does not identify a clock.
+
+For \field{struct virtio_rtc_resp_head}, the device MUST set the
+\field{status} field to VIRTIO_RTC_S_EINVAL if the request values are
+inconsistent with the specification and if the inconsistence is not
+described by the requirements which stipulate status
+VIRTIO_RTC_S_EOPNOTSUPP or VIRTIO_RTC_S_ENODEV.
+
+For \field{struct virtio_rtc_resp_head}, the device MUST set the
+\field{status} field to VIRTIO_RTC_S_EINVAL if the request specified in
+the request header through the \field{msg_type} field does not fit into
+the device read-only buffer.
+
+For \field{struct virtio_rtc_resp_head}, the device MUST set the
+\field{status} field to VIRTIO_RTC_S_EINVAL if the response specified in
+the request header through the \field{msg_type} field does not fit into
+the device write-only buffer, unless the \field{status} field does not
+fit into the device write-only buffer.
+
+For \field{struct virtio_rtc_resp_head}, the device MUST NOT set the
+\field{status} field if the \field{status} field does not fit into the
+device write-only buffer.
+
+For \field{struct virtio_rtc_resp_head}, the device MUST set the
+\field{status} field to VIRTIO_RTC_S_EIO if none of the previous
+requirements in this document stipulated another \field{status}.
+
+If the device read-only buffer is bigger than the size of the request
+specified in the request header, the device MUST ignore the additional
+space.
+
+If the device write-only buffer is bigger than the size of the response
+corresponding to the request header, the device MUST ignore the
+additional space.
+
+The device MUST set \emph{reserved} fields in a device-writable buffer
+to zero.
+
+The device MUST NOT set bits in \emph{flags} fields in a device-writable
+buffer which are not allowed according to the negotiated features.
+
+During any period where the device remains live (keeps the DRIVER_OK
+\field{device status} bit set), the device MUST emit the same response
+for all repetitions of any specific request of type VIRTIO_RTC_REQ_CFG,
+VIRTIO_RTC_REQ_CLOCK_CAP, or VIRTIO_RTC_REQ_CROSS_CAP.
+
+Whenever the device has a specific set of negotiated features, the
+device SHOULD emit the same response for all repetitions of any specific
+request of type VIRTIO_RTC_REQ_CFG, VIRTIO_RTC_REQ_CLOCK_CAP, or
+VIRTIO_RTC_REQ_CROSS_CAP, irrespective of any intermediate device
+resets.\footnote{Failure to do so would interfere with resuming from
+suspend and error recovery.}
+
+The device MUST use non-negative integers, which are smaller than the
+number of clocks, as clock identifiers.
+
 \subsubsection{Common Definitions}\label{sec:Device Types / RTC Device / Device Operation / Common Definitions}
 
 This section makes common definitions.
@@ -320,6 +424,102 @@ counter, and clears the flag otherwise.
 
 \end{description}
 
+\drivernormative{\paragraph}{Control Requests}{Device Types / RTC Device / Device Operation / Control Requests}
+
+For VIRTIO_RTC_REQ_CROSS_CAP, the driver MUST set \field{hw_counter} to
+one of the hardware counter identifiers defined in this specification,
+or to a value between 0xF0 and 0xFE.
+
+\devicenormative{\paragraph}{Control Requests}{Device Types / RTC Device / Device Operation / Control Requests}
+
+For any clock of type VIRTIO_RTC_CLOCK_UTC, the device MUST use the UTC
+time standard (Coordinated Universal Time).
+
+For any clock of type VIRTIO_RTC_CLOCK_UTC_SMEARED or
+VIRTIO_RTC_CLOCK_UTC_MAYBE_SMEARED, the device MUST use the UTC time
+standard, insofar as the following requirements do not say otherwise.
+
+For any UTC-like clock, the device MUST use the time epoch of January 1,
+1970, 00:00 UTC.
+
+For any UTC-like clock, the device MUST count seconds since the epoch
+according to \hyperref[intro:EPOCH]{EPOCH}.
+
+For any clock of type VIRTIO_RTC_CLOCK_UTC, the device MUST apply a
+positive leap second according to the UTC time standard by
+instantaneously stepping the clock backwards by 1 s at the start of the
+leap second.
+
+For any clock of type VIRTIO_RTC_CLOCK_UTC, the device MUST apply a
+negative leap second according to the UTC time standard by
+instantaneously stepping the clock forward by 1 s at the start of the
+leap second.
+
+For any leap smearing clock, the device MUST NOT step the clock due to a
+leap second.
+
+For any leap smearing clock, on a positive leap second, the device MUST
+slow down the clock during part of the day containing the leap second
+and/or part of the day after the leap second.
+
+For any leap smearing clock, on a negative leap second, the device MUST
+speed up the clock during part of the day containing the leap second
+and/or part of the day after the leap second.
+
+For any clock with smearing variant VIRTIO_RTC_SMEAR_NOON_LINEAR, on a
+leap second, the device MUST change the frequency of the clock exactly
+from noon prior to the leap second until noon after the leap second.
+
+For any clock with smearing variant VIRTIO_RTC_SMEAR_NOON_LINEAR, while
+changing the frequency of the clock due to a positive leap second, the
+device MUST decrease the frequency of the clock by $1/86400$.
+
+For any clock with smearing variant VIRTIO_RTC_SMEAR_NOON_LINEAR, while
+changing the frequency of the clock due to a negative leap second, the
+device MUST increase the frequency of the clock by $1/86400$.
+
+For any clock with smearing variant VIRTIO_RTC_SMEAR_UTC_SLS, on a leap
+second, the device MUST change the frequency of the clock exactly during
+the last 1000 seconds of the day with the leap second.
+
+For any clock with smearing variant VIRTIO_RTC_SMEAR_UTC_SLS, while
+changing the frequency of the clock due to a positive leap second, the
+device MUST decrease the frequency of the clock by 0.1\%.
+
+For any clock with smearing variant VIRTIO_RTC_SMEAR_UTC_SLS, while
+changing the frequency of the clock due to a negative leap second, the
+device MUST increase the frequency of the clock by 0.1\%.
+
+For any clock of type VIRTIO_RTC_CLOCK_UTC_MAYBE_SMEARED, the device MAY
+deviate from the UTC standard with respect to leap second introduction.
+
+For any clock of type VIRTIO_RTC_CLOCK_TAI, the device MUST use the TAI
+time standard (International Atomic Time).
+
+For any clock of type VIRTIO_RTC_CLOCK_TAI, the device MUST use the time
+epoch of January 1, 1970, 00:00 TAI.
+
+For any clock of type VIRTIO_RTC_CLOCK_MONOTONIC, the device MUST use SI
+seconds subdivisions.
+
+For any clock of type VIRTIO_RTC_CLOCK_MONOTONIC, the device MUST use an
+epoch at a time instant before or during device reset.
+
+For VIRTIO_RTC_REQ_CLOCK_CAP, and clock types other than
+VIRTIO_RTC_CLOCK_UTC_SMEARED, the device MUST set the
+\field{leap_second_smearing} field to VIRTIO_RTC_SMEAR_UNSPECIFIED.
+
+For VIRTIO_RTC_REQ_CLOCK_CAP, and clock type
+VIRTIO_RTC_CLOCK_UTC_SMEARED, the device MUST set the
+\field{leap_second_smearing} field to VIRTIO_RTC_SMEAR_UNSPECIFIED,
+VIRTIO_RTC_SMEAR_NOON_LINEAR, VIRTIO_RTC_SMEAR_UTC_SLS, or to a value
+greater than or equal to 0xF0.
+
+The device SHOULD set the VIRTIO_RTC_FLAG_CROSS_CAP flag in the
+VIRTIO_RTC_REQ_CROSS_CAP response if and only if the device would set
+status VIRTIO_RTC_S_OK for a VIRTIO_RTC_REQ_READ_CROSS response with the
+same \field{hw_counter} and \field{clock_id} request values.
+
 \subsubsection{Read Requests}\label{sec:Device Types / RTC Device / Device Operation / Read Requests}
 
 Through \emph{read requests}, the driver requests clock readings from
@@ -436,3 +636,72 @@ The hardware counter identifiers are defined in
 \ref{sec:Device Types / RTC Device / Device Operation / Common Definitions / Hardware Counters}.
 
 \end{description}
+
+\drivernormative{\paragraph}{Read Requests}{Device Types / RTC Device / Device Operation / Read Requests}
+
+For VIRTIO_RTC_REQ_READ_CROSS, the driver MUST set \field{hw_counter} to
+one of the hardware counter identifiers defined in this specification,
+or to a value between 0xF0 and 0xFE.
+
+\devicenormative{\paragraph}{Read Requests}{Device Types / RTC Device / Device Operation / Read Requests}
+
+After DRIVER_OK has been set, the device SHOULD continuously support
+reading of all clocks.
+
+For any two read requests to the same clock, the device MUST either
+obtain the \field{clock_reading} response value for the request which
+the driver makes available first before obtaining the
+\field{clock_reading} response value for the other request, or the
+device MUST return the same \field{clock_reading} values.
+
+For any clock C, the device MUST mark all read requests reading C as
+used in the total order in which the driver marked these requests as
+available.
+
+For any clock C of type VIRTIO_RTC_CLOCK_MONOTONIC and read requests
+\emph{A} and \emph{B} which read C, \emph{A} being the request which the
+driver marks as available before \emph{B}, the device MUST set the
+\field{clock_reading} response value for request \emph{B} to a value
+greater than or equal to the \field{clock_reading} response value for
+request \emph{A}.
+
+For every clock, the device MUST support VIRTIO_RTC_REQ_READ.
+
+For VIRTIO_RTC_REQ_READ and for any clock type listed in this
+specification, the device MUST use the nanosecond as unit for the
+\field{clock_reading} field.
+
+For read requests, the device MUST obtain the \field{clock_reading}
+response value after the driver made the read request available.
+
+For VIRTIO_RTC_REQ_READ_CROSS, the device MUST set
+\field{counter_cycles} to a value which approximates the value which the
+driver would have read from the hardware counter identified by
+\field{hw_counter} at the time instant when the device read the
+\field{clock_reading} value.
+
+For VIRTIO_RTC_REQ_READ_CROSS, the device SHOULD assume that the driver
+reads the hardware counter identified by \field{hw_counter} through the
+CPU which the driver enumerates as the first.
+
+For VIRTIO_RTC_REQ_READ_CROSS, the device MUST set \field{status} to a
+value other than VIRTIO_RTC_S_OK if the device cannot determine the
+approximate value which the driver would have read from the hardware
+counter identified by \field{hw_counter} at the time instant when the
+device read the \field{clock_reading} value.
+
+If two VIRTIO_RTC_REQ_READ_CROSS requests read the same clock and the
+same hardware counter, and one request is made available before the
+other, the device MUST either
+
+\begin{itemize}
+\item set the later request's \field{counter_cycles} response to a value
+that the hardware counter shows after the earlier request's
+\field{counter_cycles} response, or
+
+\item set the same \field{counter_cycles} value in both responses.
+\end{itemize}
+
+For VIRTIO_RTC_REQ_READ_CROSS and for any clock type listed in this
+specification, the device MUST use the nanosecond as unit for the
+\field{clock_reading} field.
