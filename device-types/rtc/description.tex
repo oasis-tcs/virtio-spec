@@ -1,0 +1,438 @@
+\section{RTC Device}\label{sec:Device Types / RTC Device}
+
+The RTC (Real Time Clock) device provides information about current
+time. The device can provide different clocks, e.g.\ for the UTC or TAI
+time standards, or for physical time elapsed since some past epoch. The
+driver reads the clocks with simple or more accurate methods.
+
+\subsection{Device ID}\label{sec:Device Types / RTC Device / Device ID}
+
+17
+
+\subsection{Virtqueues}\label{sec:Device Types / RTC Device / Virtqueues}
+
+\begin{description}
+\item[0] requestq
+\end{description}
+
+The driver enqueues requests to the requestq.
+
+\subsection{Feature bits}\label{sec:Device Types / RTC Device / Feature bits}
+
+None currently defined.
+
+\subsection{Device configuration layout}\label{sec:Device Types / RTC Device / Device configuration layout}
+
+None currently defined.
+
+\subsection{Device Initialization}\label{sec:Device Types / RTC Device / Device Initialization}
+
+The device determines the set of clocks. The device provides zero or
+more clocks.
+
+\subsection{Device Operation}\label{sec:Device Types / RTC Device / Device Operation}
+
+The driver makes a request available in the requestq. The device fills
+in the response and uses the buffer. The requestq uses common request
+and response headers.
+
+\begin{lstlisting}
+/* common request header */
+struct virtio_rtc_req_head {
+        le16 msg_type;
+        u8 reserved[6];
+};
+
+/* common response header */
+struct virtio_rtc_resp_head {
+        u8 status;
+        u8 reserved[7];
+};
+\end{lstlisting}
+
+The \field{msg_type} field identifies the message type.
+
+The \field{status} field indicates whether the device successfully
+executed the request. The device sets the \field{status} field to one of
+the following values:
+
+\begin{lstlisting}
+#define VIRTIO_RTC_S_OK         0
+#define VIRTIO_RTC_S_EOPNOTSUPP 2
+#define VIRTIO_RTC_S_ENODEV     3
+#define VIRTIO_RTC_S_EINVAL     4
+#define VIRTIO_RTC_S_EIO        5
+\end{lstlisting}
+
+VIRTIO_RTC_S_OK indicates that the device successfully executed the
+request. If a driver only makes requests according to the device
+capabilities detected by the driver, an error-free device will always
+set status VIRTIO_RTC_S_OK.
+
+If \field{status} is not VIRTIO_RTC_S_OK, the value of other response
+fields is undefined.
+
+VIRTIO_RTC_S_EOPNOTSUPP indicates that the device could not execute the
+specific request due to an implementation limitation. The device also
+returns status VIRTIO_RTC_S_EOPNOTSUPP for requests with unknown values
+in the \field{msg_type} or \field{hw_counter} fields.
+
+VIRTIO_RTC_S_ENODEV indicates that the \field{clock_id} field value
+supplied with the request does not identify a clock.
+
+VIRTIO_RTC_S_EINVAL indicates one or more of the following conditions:
+
+\begin{itemize}
+\item The driver request values are not allowed by the specification.
+\item The device read-only buffer is too small to fit the request.
+\item The device write-only buffer is too small to fit the response.
+\end{itemize}
+
+VIRTIO_RTC_S_EIO indicates that the device did not execute the request
+due to an error which was not caused by invalid input from the driver.
+
+All \field{reserved} fields are written as zero.
+
+The set of clocks does not change after feature negotiation completion,
+until device reset. The set of clocks should not change on device reset
+either (similar to negotiated features). Clock identifiers are
+zero-based, dense indices. In request structures, all fields named
+\field{clock_id} contain clock identifiers.
+
+\subsubsection{Common Definitions}\label{sec:Device Types / RTC Device / Device Operation / Common Definitions}
+
+This section makes common definitions.
+
+\paragraph{Clock Types}\label{sec:Device Types / RTC Device / Device Operation / Common Definitions / Clock Types}
+
+The following clock types are defined:
+
+\begin{lstlisting}
+#define VIRTIO_RTC_CLOCK_UTC                    0
+#define VIRTIO_RTC_CLOCK_TAI                    1
+#define VIRTIO_RTC_CLOCK_MONOTONIC              2
+#define VIRTIO_RTC_CLOCK_UTC_SMEARED            3
+#define VIRTIO_RTC_CLOCK_UTC_MAYBE_SMEARED      4
+\end{lstlisting}
+
+\begin{description}
+
+\item[VIRTIO_RTC_CLOCK_UTC] uses the UTC (Coordinated Universal Time)
+        time standard. This clock uses the time epoch of January 1,
+        1970, 00:00 UTC. This is the same epoch as \emph{Unix time}. The
+        clock's seconds since the epoch are related to UTC time as
+        defined by \hyperref[intro:EPOCH]{EPOCH}.
+
+        This clock observes positive and negative leap seconds as
+        announced by standard bodies. At the start of leap seconds, the
+        clock steps accordingly.
+
+\item[VIRTIO_RTC_CLOCK_TAI] uses the TAI (International Atomic Time)
+        time standard. This clock uses the time epoch of January 1,
+        1970, 00:00 TAI.
+
+\item[VIRTIO_RTC_CLOCK_MONOTONIC] uses monotonic physical time (SI
+        seconds subdivisions) since some unspecified epoch. The epoch is
+        before or during device reset.
+
+\item[VIRTIO_RTC_CLOCK_UTC_SMEARED] deviates from the UTC standard by
+        smearing time in the vicinity of a leap second. This avoids
+        clock steps due to UTC leap seconds. Otherwise, this clock is
+        similar to VIRTIO_RTC_CLOCK_UTC.
+
+\item[VIRTIO_RTC_CLOCK_UTC_MAYBE_SMEARED] This clock either
+
+\begin{itemize}
+\item deviates from the UTC standard by smearing time in the vicinity of
+        a leap second (similar to VIRTIO_RTC_CLOCK_UTC_SMEARED), or
+
+\item steps at the start of leap seconds like VIRTIO_RTC_CLOCK_UTC.
+\end{itemize}
+
+A clock of type VIRTIO_RTC_CLOCK_UTC_MAYBE_SMEARED can change this
+behavior for every leap second.
+
+\end{description}
+
+In the following, \emph{UTC-like clock} designates any clock of type
+VIRTIO_RTC_CLOCK_UTC, VIRTIO_RTC_CLOCK_UTC_SMEARED, or
+VIRTIO_RTC_CLOCK_UTC_MAYBE_SMEARED.
+
+Additional clock types may be standardized in the future.
+Implementation-specific definitions of clock types are not recommended
+and are reserved for experimental implementations.
+Implementation-specific definitions use ids between 0xF0 and 0xFF.
+
+\paragraph{Smearing Variants}\label{sec:Device Types / RTC Device / Device Operation / Common Definitions / Smearing Variants}
+
+Leap second \emph{smearing variants} describe the deviation from the UTC
+standard in the vicinity of a leap second. The following smearing
+variants are currently defined:
+
+\begin{lstlisting}
+#define VIRTIO_RTC_SMEAR_UNSPECIFIED    0
+#define VIRTIO_RTC_SMEAR_NOON_LINEAR    1
+#define VIRTIO_RTC_SMEAR_UTC_SLS        2
+\end{lstlisting}
+
+\begin{description}
+
+        \item[VIRTIO_RTC_SMEAR_UNSPECIFIED] means that it is unspecified
+                how time is smeared in the vicinity of leap seconds.
+
+        \item[VIRTIO_RTC_SMEAR_NOON_LINEAR] specifies a linear smear
+                from noon prior to the leap second until noon after the
+                leap second.
+
+        \item[VIRTIO_RTC_SMEAR_UTC_SLS] specifies a linear smear as per
+                the \hyperref[intro:UTC-SLS]{UTC-SLS} proposal.
+
+\end{description}
+
+Clocks of type VIRTIO_RTC_CLOCK_UTC_SMEARED always behave according to a
+smearing variant. The smearing variant does not change over the clock's
+lifetime.
+
+For clocks of type VIRTIO_RTC_CLOCK_UTC_MAYBE_SMEARED, it is unspecified
+whether leap seconds are smeared, and how leap seconds are smeared.
+
+Additional smearing variants may be standardized in the future.
+Implementation-specific definitions of smearing variants are not
+recommended and are reserved for experimental implementations.
+Implementation-specific definitions use ids greater than or equal to
+0xF0.
+
+In the following, \emph{leap smearing clock} designates any of the
+following clocks:
+
+\begin{itemize}
+
+\item any clock of type VIRTIO_RTC_CLOCK_UTC_SMEARED
+
+\item any clock of type VIRTIO_RTC_CLOCK_UTC_MAYBE_SMEARED at any time
+        when the clock is smearing a leap second.
+
+\end{itemize}
+
+\paragraph{Hardware Counters}\label{sec:Device Types / RTC Device / Device Operation / Common Definitions / Hardware Counters}
+
+The following hardware counter identifiers are specified:
+
+\begin{lstlisting}
+/* Arm Generic Timer Counter-timer Virtual Count Register (CNTVCT_EL0) */
+#define VIRTIO_RTC_COUNTER_ARM_VCT      0
+/* x86 Time-Stamp Counter */
+#define VIRTIO_RTC_COUNTER_X86_TSC      1
+/* Invalid */
+#define VIRTIO_RTC_COUNTER_INVALID   0xFF
+\end{lstlisting}
+
+Additional hardware counter identifiers may be standardized in the
+future. Implementation-specific hardware counter identifiers are not
+recommended and are reserved for experimental implementations.
+Implementation-specific hardware counter identifiers have values between
+0xF0 and 0xFE.
+
+\subsubsection{Control Requests}\label{sec:Device Types / RTC Device / Device Operation / Control Requests}
+
+Through \emph{control requests}, the driver requests information about
+the device capabilities. The driver enqueues control requests in the
+requestq.
+
+\begin{description}
+
+\item[VIRTIO_RTC_REQ_CFG] discovers the number of clocks.
+
+\begin{lstlisting}
+#define VIRTIO_RTC_REQ_CFG 0x1000 /* message type */
+
+struct virtio_rtc_req_cfg {
+        struct virtio_rtc_req_head head;
+        /* no request params */
+};
+
+struct virtio_rtc_resp_cfg {
+        struct virtio_rtc_resp_head head;
+        le16 num_clocks;
+        u8 reserved[6];
+};
+\end{lstlisting}
+
+The \field{num_clocks} field contains the number of clocks. A device
+provides zero or more clocks. Valid clock ids are those smaller than
+\field{num_clocks}.
+
+\item[VIRTIO_RTC_REQ_CLOCK_CAP] discovers the capabilities of the clock
+identified by the \field{clock_id} field.
+
+\begin{lstlisting}
+#define VIRTIO_RTC_REQ_CLOCK_CAP 0x1001 /* message type */
+
+struct virtio_rtc_req_clock_cap {
+        struct virtio_rtc_req_head head;
+        le16 clock_id;
+        u8 reserved[6];
+};
+
+struct virtio_rtc_resp_clock_cap {
+        struct virtio_rtc_resp_head head;
+        u8 type;
+        u8 leap_second_smearing;
+        u8 reserved[6];
+};
+\end{lstlisting}
+
+The \field{type} field identifies the clock type. A device provides
+zero or more clocks for a clock type.
+
+Clocks of type VIRTIO_RTC_CLOCK_UTC_SMEARED indicate the \emph{smearing
+variant} through the \field{leap_second_smearing} field. All other
+clocks set \field{leap_second_smearing} to VIRTIO_RTC_SMEAR_UNSPECIFIED.
+
+\item[VIRTIO_RTC_REQ_CROSS_CAP] discovers whether the device supports
+cross-timestamping for a particular pair of clock and hardware counter.
+
+\begin{lstlisting}
+#define VIRTIO_RTC_REQ_CROSS_CAP 0x1002 /* message type */
+
+struct virtio_rtc_req_cross_cap {
+        struct virtio_rtc_req_head head;
+        le16 clock_id;
+        u8 hw_counter;
+        u8 reserved[5];
+};
+
+
+struct virtio_rtc_resp_cross_cap {
+        struct virtio_rtc_resp_head head;
+#define VIRTIO_RTC_FLAG_CROSS_CAP       (1 << 0)
+        u8 flags;
+        u8 reserved[7];
+};
+\end{lstlisting}
+
+The \field{clock_id} field identifies the clock, and the
+\field{hw_counter} field identifies the hardware counter, for which
+cross-timestamp support is probed. The device sets the
+VIRTIO_RTC_FLAG_CROSS_CAP flag in the \field{flags} field if the clock
+supports cross-timestamping for the particular clock and hardware
+counter, and clears the flag otherwise.
+
+\end{description}
+
+\subsubsection{Read Requests}\label{sec:Device Types / RTC Device / Device Operation / Read Requests}
+
+Through \emph{read requests}, the driver requests clock readings from
+the device. The driver enqueues read requests in the requestq. The
+device obtains device-side clock readings and forwards these clock
+readings to the driver. The driver may enhance and interpret the clock
+readings through methods which are beyond the scope of this
+specification.
+
+Once DRIVER_OK has been set, the device should support reading every
+clock, even when a clock may yet have to be aligned to reference time
+sources.
+
+In general,
+
+\begin{itemize}
+\item clocks may jump backwards or forward, and
+\item the clock frequency may change. Clocks may be \emph{slewed},
+        i.e.\ clocks may run at a frequency other than their current
+        best frequency estimate.
+\end{itemize}
+
+As long as a clock does not jump backwards, the driver clock readings
+through read request responses increase monotonically:
+
+\begin{itemize}
+\item As long as a clock does not jump backwards in-between device-side
+        clock readings, the driver-side readings for that clock increase
+        monotonically as well, in the order in which the driver
+        marks read requests as available.
+
+\item The device marks buffers with read requests for the same clock as
+        used in the order in which the buffers are available.
+\end{itemize}
+
+For a clock of type VIRTIO_RTC_CLOCK_MONOTONIC, the device always
+returns monotonically increasing clock readings through read request
+responses.
+
+The unit of all \field{clock_reading} fields is 1
+nanosecond.\footnote{For time epochs in year 1970 or later, this means
+that time until at least year 2553 can be represented in the \field{le64
+clock_reading} fields.}
+
+\begin{description}
+
+\item[VIRTIO_RTC_REQ_READ] reads the clock identified by the
+\field{clock_id} field. The device supports this request for every
+clock.
+
+\begin{lstlisting}
+#define VIRTIO_RTC_REQ_READ 0x0001 /* message type */
+
+struct virtio_rtc_req_read {
+        struct virtio_rtc_req_head head;
+        le16 clock_id;
+        u8 reserved[6];
+};
+
+struct virtio_rtc_resp_read {
+        struct virtio_rtc_resp_head head;
+        le64 clock_reading;
+};
+\end{lstlisting}
+
+\field{clock_reading} is a device-side clock reading obtained after the
+buffer was marked as available.
+
+\item[VIRTIO_RTC_REQ_READ_CROSS] returns a cross-timestamp for the clock
+identified by the \field{clock_id} field.\footnote{Cross-timestamping
+is similar to the ptp_kvm mechanism in the Linux kernel.} This request
+may yield better performance than using VIRTIO_RTC_REQ_READ.
+
+The driver can determine whether the device supports
+VIRTIO_RTC_REQ_READ_CROSS for a specific clock and \field{hw_counter}
+through VIRTIO_RTC_REQ_CROSS_CAP.
+
+\begin{lstlisting}
+#define VIRTIO_RTC_REQ_READ_CROSS 0x0002 /* message type */
+
+struct virtio_rtc_req_read_cross {
+        struct virtio_rtc_req_head head;
+        le16 clock_id;
+        u8 hw_counter;
+        u8 reserved[5];
+};
+
+struct virtio_rtc_resp_read_cross {
+        struct virtio_rtc_resp_head head;
+        le64 clock_reading;
+        le64 counter_cycles;
+};
+\end{lstlisting}
+
+The \field{hw_counter} field specifies the hardware counter for which
+the driver requests a cross-timestamp.
+
+Cross-timestamping returns a \field{clock_reading}, and an associated
+hardware counter value, \field{counter_cycles}. The
+\field{counter_cycles} field is the approximate or precise value which
+the driver would have read at the \field{clock_reading} time instant
+from the hardware counter identified by \field{hw_counter}.
+
+To determine the \field{counter_cycles} value, the device converts the
+hardware counter value the device has read, accounting for any
+differences in counter offsets or counter multipliers between device and
+driver at the time of the reading.
+
+In case hardware counter reads differ among CPUs used by the driver, the
+device should assume that the driver reads the hardware counter from the
+CPU which the driver enumerates as the first.
+
+The hardware counter identifiers are defined in
+\ref{sec:Device Types / RTC Device / Device Operation / Common Definitions / Hardware Counters}.
+
+\end{description}
