@@ -1,0 +1,249 @@
+\section{CAN Device}\label{sec:Device Types / CAN Device}
+
+virtio-can is a virtio based CAN (Controller Area Network) controller.
+It is used to give a virtual machine access to a CAN bus. The CAN bus
+might either be a physical CAN bus or a virtual CAN bus between virtual
+machines or a combination of both.
+
+\subsection{Device ID}\label{sec:Device Types / CAN Device / Device ID}
+
+36
+
+\subsection{Virtqueues}\label{sec:Device Types / CAN Device / Virtqueues}
+
+\begin{description}
+\item[0] Txq
+\item[1] Rxq
+\item[2] Controlq
+\end{description}
+
+The \field{Txq} is used to send CAN packets to the CAN bus.
+
+The \field{Rxq} is used to receive CAN packets from the CAN bus.
+
+The \field{Controlq} is used to control the state of the CAN controller.
+
+\subsection{Feature bits}{Device Types / CAN Device / Feature bits}
+
+Actual CAN controllers support Extended CAN IDs with 29 bits (CAN~2.0B)
+as well as Standard CAN IDs with 11 bits (CAN~2.0A). The support of
+CAN~2.0B Extended CAN IDs is considered as mandatory for this
+specification.
+
+\begin{description}
+
+\item[VIRTIO_CAN_F_CAN_CLASSIC (0)]
+
+The device supports classic CAN frames with a maximum payload size of 8
+bytes.
+
+\item[VIRTIO_CAN_F_CAN_FD (1)]
+
+The device supports CAN FD frames with a maximum payload size of 64
+bytes.
+
+\item[VIRTIO_CAN_F_RTR_FRAMES (2)]
+
+The device supports RTR (remote transmission request) frames. RTR frames
+are only supported with classic CAN.
+
+\item[VIRTIO_CAN_F_LATE_TX_ACK (3)]
+
+The virtio CAN device marks transmission requests from the \field{Txq}
+as used after the CAN message has been transmitted on the CAN bus. If
+this feature bit has not been negotiated, the device is allowed to mark
+transmission requests already as used when the CAN message has been
+scheduled for transmission but might not yet have been transmitted on
+the CAN bus.
+
+\end{description}
+
+\subsubsection{Feature bit requirements}\label{sec:Device Types / CAN Device / Feature bits / Feature bit requirements}
+
+Some CAN feature bits require other CAN feature bits:
+\begin{description}
+\item[VIRTIO_CAN_F_RTR_FRAMES] Requires VIRTIO_CAN_F_CAN_CLASSIC.
+\end{description}
+
+It is required that at least one of VIRTIO_CAN_F_CAN_CLASSIC and
+VIRTIO_CAN_F_CAN_FD is negotiated.
+
+\subsection{Device configuration layout}\label{sec:Device Types / CAN Device / Device configuration layout} 
+
+Device configuration fields are listed below, they are read-only for a
+driver. The \field{status} always exists. A single read-only bit (for
+the driver) is currently defined for \field{status}:
+
+\begin{lstlisting}
+struct virtio_can_config {
+#define VIRTIO_CAN_S_CTRL_BUSOFF (1 << 0)
+        le16 status;
+};
+\end{lstlisting}
+
+The bit VIRTIO_CAN_S_CTRL_BUSOFF in \field{status} is used to indicate
+the unsolicited CAN controller state change from started to stopped due
+to a detected bus off condition.
+
+\drivernormative{\subsubsection}{Device Initialization}{Device Types / CAN Device / Device Operation / Initialization}
+
+The driver MUST populate the \field{Rxq} with empty device-writeable
+buffers of at least the size of struct virtio_can_rx, see section
+\ref{struct virtio-can-rx}.
+
+\subsection{Device Operation}\label{sec:Device Types / CAN Device / Device Operation}
+
+A device operation has an outcome which is described by one of the
+following values:
+
+\begin{lstlisting}
+#define VIRTIO_CAN_RESULT_OK     0
+#define VIRTIO_CAN_RESULT_NOT_OK 1
+\end{lstlisting}
+
+Other values are to be treated like VIRTIO_CAN_RESULT_NOT_OK.
+
+\subsubsection{Controller Mode}\label{sec:Device Types / CAN Device / Device Operation / Controller Mode}
+
+The general format of a request in the \field{Controlq} is
+
+\begin{lstlisting}
+struct virtio_can_control_out {
+#define VIRTIO_CAN_SET_CTRL_MODE_START  0x0201
+#define VIRTIO_CAN_SET_CTRL_MODE_STOP   0x0202
+        le16 msg_type; 
+};
+\end{lstlisting}
+
+To participate in bus communication the CAN controller is started by
+sending a VIRTIO_CAN_SET_CTRL_MODE_START control message, to stop
+participating in bus communication it is stopped by sending a
+VIRTIO_CAN_SET_CTRL_MODE_STOP control message. Both requests are
+confirmed by the result of the operation.
+
+\begin{lstlisting}
+struct virtio_can_control_in {
+        u8 result;
+};
+\end{lstlisting}
+
+If the transition succeeded the \field{result} is VIRTIO_CAN_RESULT_OK
+otherwise it is VIRTIO_CAN_RESULT_NOT_OK. If a status update is
+necessary, the device updates the configuration \field{status} before
+marking the request used. As the configuration \field{status} change is
+caused by a request from the driver the device is allowed to omit the
+configuration change notification here. The device marks the request
+used when the CAN controller has finalized the transition to the
+requested controller mode.
+
+On transition to the STOPPED state the device cancels all CAN messages
+already pending for transmission and marks them as used with
+\field{result} VIRTIO_CAN_RESULT_NOT_OK. In the STOPPED state the
+device marks messages received from the
+\field{Txq} as used with \field{result} VIRTIO_CAN_RESULT_NOT_OK without
+transmitting them to the CAN bus.
+
+Initially the CAN controller is in the STOPPED state.
+
+Control queue messages are processed in order.
+
+\devicenormative{\subsubsection}{CAN Message Transmission}{Device Types / CAN Device / Device Operation / CAN Message Transmission}
+
+The driver transmits messages by placing outgoing CAN messages in the
+\field{Txq} virtqueue.
+
+\label{struct virtio-can-tx-out}
+\begin{lstlisting}
+struct virtio_can_tx_out {
+#define VIRTIO_CAN_TX 0x0001
+        le16 msg_type;
+        le16 length; /* 0..8 CC, 0..64 CAN-FD, 0..2048 CAN-XL, 12 bits */
+        u8 reserved_classic_dlc; /* If CAN classic length = 8 then DLC can be 8..15 */
+        u8 padding;
+        le16 reserved_xl_priority; /* May be needed for CAN XL priority */
+#define VIRTIO_CAN_FLAGS_FD            0x4000
+#define VIRTIO_CAN_FLAGS_EXTENDED      0x8000
+#define VIRTIO_CAN_FLAGS_RTR           0x2000
+        le32 flags;
+        le32 can_id;
+        u8 sdu[];
+};
+
+struct virtio_can_tx_in {
+        u8 result;
+};
+\end{lstlisting}
+
+The length of the \field{sdu} is determined by the \field{length}.
+
+The type of a CAN message identifier is determined by \field{flags}. The
+3 most significant bits of \field{can_id} do not bear the information
+about the type of the CAN message identifier and are 0.
+
+The device MUST reject any CAN frame type for which support has not been
+negotiated with VIRTIO_CAN_RESULT_NOT_OK in \field{result} and MUST NOT
+schedule the message for transmission. A CAN frame with an undefined bit
+set in \field{flags} is treated like a CAN frame for which support has
+not been negotiated.
+
+The device MUST reject any CAN frame for which \field{can_id} or
+\field{sdu} length are out of range or the CAN controller is in an
+invalid state with VIRTIO_CAN_RESULT_NOT_OK in \field{result} and MUST
+NOT schedule the message for transmission.
+
+If the parameters are valid the message is scheduled for transmission.
+
+If feature VIRTIO_CAN_F_CAN_LATE_TX_ACK has been negotiated the
+transmission request MUST be marked as used with \field{result} set to
+VIRTIO_CAN_OK after the CAN controller acknowledged the successful
+transmission on the CAN bus. If this feature bit has not been negotiated
+the transmission request MAY already be marked as used with
+\field{result} set to VIRTIO_CAN_OK when the transmission request has
+been processed by the virtio CAN device and send down the protocol stack
+being scheduled for transmission.
+
+\subsubsection{CAN Message Reception}\label{sec:Device Types / CAN Device / Device Operation / CAN Message Reception}
+
+Messages can be received by providing empty incoming buffers to the
+virtqueue \field{Rxq}.
+
+\label{struct virtio-can-rx}
+\begin{lstlisting}
+struct virtio_can_rx {
+#define VIRTIO_CAN_RX 0x0101
+        le16 msg_type;
+        le16 length; /* 0..8 CC, 0..64 CAN-FD, 0..2048 CAN-XL, 12 bits */
+        u8 reserved_classic_dlc; /* If CAN classic length = 8 then DLC can be 8..15 */
+        u8 padding;
+        le16 reserved_xl_priority; /* May be needed for CAN XL priority */
+        le32 flags;
+        le32 can_id;
+        u8 sdu[];
+};
+\end{lstlisting}
+
+If the feature VIRTIO_CAN_F_CAN_FD has been negotiated the maximal
+possible \field{sdu} length is 64, if the feature has not been
+negotiated the maximal possible \field{sdu} length is 8.
+
+The actual length of the \field{sdu} is determined by the \field{length}.
+
+The type of a CAN message identifier is determined by \field{flags} in
+the same way as for transmitted CAN messages, see section
+\ref{struct virtio-can-tx-out}. The 3 most significant bits of \field{can_id} do not
+bear the information about the type of the CAN message identifier and
+are 0. The flag bits are exactly the same as for the \field{flags} of
+struct virtio_can_tx_out.
+
+\subsubsection{BusOff Indication}\label{sec:Device Types / CAN Device / Device Operation / BusOff Indication}
+
+There are certain error conditions so that the physical CAN controller
+has to stop participating in CAN communication on the bus. If such an
+error condition occurs the device informs the driver about the
+unsolicited CAN controller state change by setting the
+VIRTIO_CAN_S_CTRL_BUSOFF bit in the configuration \field{status} field.
+
+After bus-off detection the CAN controller is in STOPPED state. The CAN
+controller does not participate in bus communication any more so all CAN
+messages pending for transmission are put into the used queue with
+\field{result} VIRTIO_CAN_RESULT_NOT_OK.

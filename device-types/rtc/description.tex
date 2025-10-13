@@ -1,0 +1,1117 @@
+\section{RTC Device}\label{sec:Device Types / RTC Device}
+
+The RTC (Real Time Clock) device provides information about current
+time. The device can provide different clocks, e.g.\ for the UTC or TAI
+time standards, or for physical time elapsed since some past epoch. The
+driver reads the clocks with simple or more accurate methods.
+Optionally, the driver can set an alarm.
+
+\subsection{Device ID}\label{sec:Device Types / RTC Device / Device ID}
+
+17
+
+\subsection{Virtqueues}\label{sec:Device Types / RTC Device / Virtqueues}
+
+\begin{description}
+\item[0] requestq
+\item[1] alarmq
+\end{description}
+
+The driver enqueues requests to the requestq.
+
+Through the alarmq, the device notifies the driver about alarm
+expirations. The alarmq exists only if VIRTIO_RTC_F_ALARM has been
+negotiated.
+
+\subsection{Feature bits}\label{sec:Device Types / RTC Device / Feature bits}
+
+\begin{description}
+\item[VIRTIO_RTC_F_ALARM (0)] Device supports alarm.
+\end{description}
+
+VIRTIO_RTC_F_ALARM determines whether the device supports setting an
+alarm for some of the clocks.
+
+\devicenormative{\subsubsection}{Feature bits}{Device Types / RTC Device / Feature bits}
+
+The device SHOULD offer VIRTIO_RTC_F_ALARM if the device can support
+setting an alarm for any of its clocks.
+
+\subsection{Device configuration layout}\label{sec:Device Types / RTC Device / Device configuration layout}
+
+None currently defined.
+
+\subsection{Device Initialization}\label{sec:Device Types / RTC Device / Device Initialization}
+
+The device determines the set of clocks. The device provides zero or
+more clocks.
+
+\subsection{Device Operation}\label{sec:Device Types / RTC Device / Device Operation}
+
+The driver makes a request available in the requestq. The device fills
+in the response and uses the buffer. The requestq uses common request
+and response headers.
+
+\begin{lstlisting}
+/* common request header */
+struct virtio_rtc_req_head {
+        le16 msg_type;
+        u8 reserved[6];
+};
+
+/* common response header */
+struct virtio_rtc_resp_head {
+        u8 status;
+        u8 reserved[7];
+};
+\end{lstlisting}
+
+The \field{msg_type} field identifies the message type.
+
+The \field{status} field indicates whether the device successfully
+executed the request. The device sets the \field{status} field to one of
+the following values:
+
+\begin{lstlisting}
+#define VIRTIO_RTC_S_OK         0
+#define VIRTIO_RTC_S_EOPNOTSUPP 2
+#define VIRTIO_RTC_S_ENODEV     3
+#define VIRTIO_RTC_S_EINVAL     4
+#define VIRTIO_RTC_S_EIO        5
+\end{lstlisting}
+
+VIRTIO_RTC_S_OK indicates that the device successfully executed the
+request. If a driver only makes requests according to the device
+capabilities detected by the driver, an error-free device will always
+set status VIRTIO_RTC_S_OK.
+
+If \field{status} is not VIRTIO_RTC_S_OK, the value of other response
+fields is undefined.
+
+VIRTIO_RTC_S_EOPNOTSUPP indicates that the device could not execute the
+specific request due to an implementation limitation. The device also
+returns status VIRTIO_RTC_S_EOPNOTSUPP for requests with unknown values
+in the \field{msg_type} or \field{hw_counter} fields.
+
+VIRTIO_RTC_S_ENODEV indicates that the \field{clock_id} field value
+supplied with the request does not identify a clock.
+
+VIRTIO_RTC_S_EINVAL indicates one or more of the following conditions:
+
+\begin{itemize}
+\item The driver request values are not allowed by the specification.
+\item The device read-only buffer is too small to fit the request.
+\item The device write-only buffer is too small to fit the response.
+\end{itemize}
+
+VIRTIO_RTC_S_EIO indicates that the device did not execute the request
+due to an error which was not caused by invalid input from the driver.
+
+All \field{reserved} fields are written as zero.
+
+The set of clocks does not change after feature negotiation completion,
+until device reset. The set of clocks should not change on device reset
+either (similar to negotiated features). Clock identifiers are
+zero-based, dense indices. In request structures and notification
+structures, all fields named \field{clock_id} contain clock identifiers.
+
+\drivernormative{\subsubsection}{Device Operation}{Device Types / RTC Device / Device Operation}
+
+The driver MUST interpret response fields other than the \field{struct
+virtio_rtc_resp_head} field \field{status} only when \field{status} is
+VIRTIO_RTC_S_OK.
+
+The driver MUST set \emph{reserved} fields in a device-readable buffer
+to zero.
+
+The driver MUST NOT set bits in \emph{flags} fields in a device-readable
+buffer which are not allowed according to the negotiated features.
+
+The driver MUST NOT interpret \emph{reserved} fields in a
+device-writable buffer.
+
+The driver MUST only interpret these bits in \emph{flags} fields in a
+device-writable buffer which are allowed according to the negotiated
+features.
+
+The driver MUST allocate enough space for the response in a
+device-writable requestq buffer.
+
+\devicenormative{\subsubsection}{Device Operation}{Device Types / RTC Device / Device Operation}
+
+For \field{struct virtio_rtc_resp_head}, the device MUST set the
+\field{status} field to VIRTIO_RTC_S_OK if the device successfully
+executed the request.
+
+For \field{struct virtio_rtc_resp_head}, the device MUST set the
+\field{status} field to a status other than VIRTIO_RTC_S_OK if the
+device did not successfully execute the request.
+
+For \field{struct virtio_rtc_resp_head}, the device MUST set the
+\field{status} field to VIRTIO_RTC_S_EOPNOTSUPP if the device could not
+execute the specific request due to an implementation limitation.
+
+For \field{struct virtio_rtc_resp_head}, the device MUST set the
+\field{status} field to VIRTIO_RTC_S_EOPNOTSUPP for a request with a
+value of the \field{msg_type} field which is not described in this
+specification.
+
+For \field{struct virtio_rtc_resp_head}, the device MUST set the
+\field{status} field to VIRTIO_RTC_S_EOPNOTSUPP for a request with a
+value of the \field{hw_counter} field which is neither described in this
+specification nor otherwise known to the implementation.
+
+For \field{struct virtio_rtc_resp_head}, the device MUST set the
+\field{status} field to VIRTIO_RTC_S_ENODEV if the \field{clock_id}
+field value supplied with the request does not identify a clock.
+
+For \field{struct virtio_rtc_resp_head}, the device MUST set the
+\field{status} field to VIRTIO_RTC_S_EINVAL if the request values are
+inconsistent with the specification and if the inconsistence is not
+described by the requirements which stipulate status
+VIRTIO_RTC_S_EOPNOTSUPP or VIRTIO_RTC_S_ENODEV.
+
+For \field{struct virtio_rtc_resp_head}, the device MUST set the
+\field{status} field to VIRTIO_RTC_S_EINVAL if the request specified in
+the request header through the \field{msg_type} field does not fit into
+the device read-only buffer.
+
+For \field{struct virtio_rtc_resp_head}, the device MUST set the
+\field{status} field to VIRTIO_RTC_S_EINVAL if the response specified in
+the request header through the \field{msg_type} field does not fit into
+the device write-only buffer, unless the \field{status} field does not
+fit into the device write-only buffer.
+
+For \field{struct virtio_rtc_resp_head}, the device MUST NOT set the
+\field{status} field if the \field{status} field does not fit into the
+device write-only buffer.
+
+For \field{struct virtio_rtc_resp_head}, the device MUST set the
+\field{status} field to VIRTIO_RTC_S_EIO if none of the previous
+requirements in this document stipulated another \field{status}.
+
+If the device read-only buffer is bigger than the size of the request
+specified in the request header, the device MUST ignore the additional
+space.
+
+If the device write-only buffer is bigger than the size of the response
+corresponding to the request header, the device MUST ignore the
+additional space.
+
+The device MUST set \emph{reserved} fields in a device-writable buffer
+to zero.
+
+The device MUST NOT set bits in \emph{flags} fields in a device-writable
+buffer which are not allowed according to the negotiated features.
+
+During any period where the device remains live (keeps the DRIVER_OK
+\field{device status} bit set), the device MUST emit the same response
+for all repetitions of any specific request of type VIRTIO_RTC_REQ_CFG,
+VIRTIO_RTC_REQ_CLOCK_CAP, or VIRTIO_RTC_REQ_CROSS_CAP.
+
+Whenever the device has a specific set of negotiated features, the
+device SHOULD emit the same response for all repetitions of any specific
+request of type VIRTIO_RTC_REQ_CFG, VIRTIO_RTC_REQ_CLOCK_CAP, or
+VIRTIO_RTC_REQ_CROSS_CAP, irrespective of any intermediate device
+resets.\footnote{Failure to do so would interfere with resuming from
+suspend and error recovery.}
+
+The device MUST use non-negative integers, which are smaller than the
+number of clocks, as clock identifiers.
+
+\subsubsection{Common Definitions}\label{sec:Device Types / RTC Device / Device Operation / Common Definitions}
+
+This section makes common definitions.
+
+\paragraph{Clock Types}\label{sec:Device Types / RTC Device / Device Operation / Common Definitions / Clock Types}
+
+The following clock types are defined:
+
+\begin{lstlisting}
+#define VIRTIO_RTC_CLOCK_UTC                    0
+#define VIRTIO_RTC_CLOCK_TAI                    1
+#define VIRTIO_RTC_CLOCK_MONOTONIC              2
+#define VIRTIO_RTC_CLOCK_UTC_SMEARED            3
+#define VIRTIO_RTC_CLOCK_UTC_MAYBE_SMEARED      4
+\end{lstlisting}
+
+\begin{description}
+
+\item[VIRTIO_RTC_CLOCK_UTC] uses the UTC (Coordinated Universal Time)
+        time standard. This clock uses the time epoch of January 1,
+        1970, 00:00 UTC. This is the same epoch as \emph{Unix time}. The
+        clock's seconds since the epoch are related to UTC time as
+        defined by \hyperref[intro:EPOCH]{EPOCH}.
+
+        This clock observes positive and negative leap seconds as
+        announced by standard bodies. At the start of leap seconds, the
+        clock steps accordingly.
+
+\item[VIRTIO_RTC_CLOCK_TAI] uses the TAI (International Atomic Time)
+        time standard. This clock uses the time epoch of January 1,
+        1970, 00:00 TAI.
+
+\item[VIRTIO_RTC_CLOCK_MONOTONIC] uses monotonic physical time (SI
+        seconds subdivisions) since some unspecified epoch. The epoch is
+        before or during device reset.
+
+\item[VIRTIO_RTC_CLOCK_UTC_SMEARED] deviates from the UTC standard by
+        smearing time in the vicinity of a leap second. This avoids
+        clock steps due to UTC leap seconds. Otherwise, this clock is
+        similar to VIRTIO_RTC_CLOCK_UTC.
+
+\item[VIRTIO_RTC_CLOCK_UTC_MAYBE_SMEARED] This clock either
+
+\begin{itemize}
+\item deviates from the UTC standard by smearing time in the vicinity of
+        a leap second (similar to VIRTIO_RTC_CLOCK_UTC_SMEARED), or
+
+\item steps at the start of leap seconds like VIRTIO_RTC_CLOCK_UTC.
+\end{itemize}
+
+A clock of type VIRTIO_RTC_CLOCK_UTC_MAYBE_SMEARED can change this
+behavior for every leap second.
+
+\end{description}
+
+In the following, \emph{UTC-like clock} designates any clock of type
+VIRTIO_RTC_CLOCK_UTC, VIRTIO_RTC_CLOCK_UTC_SMEARED, or
+VIRTIO_RTC_CLOCK_UTC_MAYBE_SMEARED.
+
+Additional clock types may be standardized in the future.
+Implementation-specific definitions of clock types are not recommended
+and are reserved for experimental implementations.
+Implementation-specific definitions use ids between 0xF0 and 0xFF.
+
+\paragraph{Smearing Variants}\label{sec:Device Types / RTC Device / Device Operation / Common Definitions / Smearing Variants}
+
+Leap second \emph{smearing variants} describe the deviation from the UTC
+standard in the vicinity of a leap second. The following smearing
+variants are currently defined:
+
+\begin{lstlisting}
+#define VIRTIO_RTC_SMEAR_UNSPECIFIED    0
+#define VIRTIO_RTC_SMEAR_NOON_LINEAR    1
+#define VIRTIO_RTC_SMEAR_UTC_SLS        2
+\end{lstlisting}
+
+\begin{description}
+
+        \item[VIRTIO_RTC_SMEAR_UNSPECIFIED] means that it is unspecified
+                how time is smeared in the vicinity of leap seconds.
+
+        \item[VIRTIO_RTC_SMEAR_NOON_LINEAR] specifies a linear smear
+                from noon prior to the leap second until noon after the
+                leap second.
+
+        \item[VIRTIO_RTC_SMEAR_UTC_SLS] specifies a linear smear as per
+                the \hyperref[intro:UTC-SLS]{UTC-SLS} proposal.
+
+\end{description}
+
+Clocks of type VIRTIO_RTC_CLOCK_UTC_SMEARED always behave according to a
+smearing variant. The smearing variant does not change over the clock's
+lifetime.
+
+For clocks of type VIRTIO_RTC_CLOCK_UTC_MAYBE_SMEARED, it is unspecified
+whether leap seconds are smeared, and how leap seconds are smeared.
+
+Additional smearing variants may be standardized in the future.
+Implementation-specific definitions of smearing variants are not
+recommended and are reserved for experimental implementations.
+Implementation-specific definitions use ids greater than or equal to
+0xF0.
+
+In the following, \emph{leap smearing clock} designates any of the
+following clocks:
+
+\begin{itemize}
+
+\item any clock of type VIRTIO_RTC_CLOCK_UTC_SMEARED
+
+\item any clock of type VIRTIO_RTC_CLOCK_UTC_MAYBE_SMEARED at any time
+        when the clock is smearing a leap second.
+
+\end{itemize}
+
+\paragraph{Hardware Counters}\label{sec:Device Types / RTC Device / Device Operation / Common Definitions / Hardware Counters}
+
+The following hardware counter identifiers are specified:
+
+\begin{lstlisting}
+/* Arm Generic Timer Counter-timer Virtual Count Register (CNTVCT_EL0) */
+#define VIRTIO_RTC_COUNTER_ARM_VCT      0
+/* x86 Time-Stamp Counter */
+#define VIRTIO_RTC_COUNTER_X86_TSC      1
+/* Invalid */
+#define VIRTIO_RTC_COUNTER_INVALID   0xFF
+\end{lstlisting}
+
+Additional hardware counter identifiers may be standardized in the
+future. Implementation-specific hardware counter identifiers are not
+recommended and are reserved for experimental implementations.
+Implementation-specific hardware counter identifiers have values between
+0xF0 and 0xFE.
+
+\subsubsection{Control Requests}\label{sec:Device Types / RTC Device / Device Operation / Control Requests}
+
+Through \emph{control requests}, the driver requests information about
+the device capabilities. The driver enqueues control requests in the
+requestq.
+
+\begin{description}
+
+\item[VIRTIO_RTC_REQ_CFG] discovers the number of clocks.
+
+\begin{lstlisting}
+#define VIRTIO_RTC_REQ_CFG 0x1000 /* message type */
+
+struct virtio_rtc_req_cfg {
+        struct virtio_rtc_req_head head;
+        /* no request params */
+};
+
+struct virtio_rtc_resp_cfg {
+        struct virtio_rtc_resp_head head;
+        le16 num_clocks;
+        u8 reserved[6];
+};
+\end{lstlisting}
+
+The \field{num_clocks} field contains the number of clocks. A device
+provides zero or more clocks. Valid clock ids are those smaller than
+\field{num_clocks}.
+
+\item[VIRTIO_RTC_REQ_CLOCK_CAP] discovers the capabilities of the clock
+identified by the \field{clock_id} field.
+
+\begin{lstlisting}
+#define VIRTIO_RTC_REQ_CLOCK_CAP 0x1001 /* message type */
+
+struct virtio_rtc_req_clock_cap {
+        struct virtio_rtc_req_head head;
+        le16 clock_id;
+        u8 reserved[6];
+};
+
+struct virtio_rtc_resp_clock_cap {
+        struct virtio_rtc_resp_head head;
+        u8 type;
+        u8 leap_second_smearing;
+        u8 flags;
+        u8 reserved[5];
+};
+\end{lstlisting}
+
+The \field{type} field identifies the clock type. A device provides
+zero or more clocks for a clock type.
+
+Clocks of type VIRTIO_RTC_CLOCK_UTC_SMEARED indicate the \emph{smearing
+variant} through the \field{leap_second_smearing} field. All other
+clocks set \field{leap_second_smearing} to VIRTIO_RTC_SMEAR_UNSPECIFIED.
+
+The \field{flags} field provides the following information:
+
+\begin{lstlisting}
+#define VIRTIO_RTC_FLAG_ALARM_CAP               (1 << 0)
+\end{lstlisting}
+
+If VIRTIO_RTC_F_ALARM has been negotiated, the VIRTIO_RTC_FLAG_ALARM_CAP
+flag indicates that the clock supports an alarm.
+
+\item[VIRTIO_RTC_REQ_CROSS_CAP] discovers whether the device supports
+cross-timestamping for a particular pair of clock and hardware counter.
+
+\begin{lstlisting}
+#define VIRTIO_RTC_REQ_CROSS_CAP 0x1002 /* message type */
+
+struct virtio_rtc_req_cross_cap {
+        struct virtio_rtc_req_head head;
+        le16 clock_id;
+        u8 hw_counter;
+        u8 reserved[5];
+};
+
+
+struct virtio_rtc_resp_cross_cap {
+        struct virtio_rtc_resp_head head;
+#define VIRTIO_RTC_FLAG_CROSS_CAP       (1 << 0)
+        u8 flags;
+        u8 reserved[7];
+};
+\end{lstlisting}
+
+The \field{clock_id} field identifies the clock, and the
+\field{hw_counter} field identifies the hardware counter, for which
+cross-timestamp support is probed. The device sets the
+VIRTIO_RTC_FLAG_CROSS_CAP flag in the \field{flags} field if the clock
+supports cross-timestamping for the particular clock and hardware
+counter, and clears the flag otherwise.
+
+\end{description}
+
+\drivernormative{\paragraph}{Control Requests}{Device Types / RTC Device / Device Operation / Control Requests}
+
+For VIRTIO_RTC_REQ_CROSS_CAP, the driver MUST set \field{hw_counter} to
+one of the hardware counter identifiers defined in this specification,
+or to a value between 0xF0 and 0xFE.
+
+\devicenormative{\paragraph}{Control Requests}{Device Types / RTC Device / Device Operation / Control Requests}
+
+For any clock of type VIRTIO_RTC_CLOCK_UTC, the device MUST use the UTC
+time standard (Coordinated Universal Time).
+
+For any clock of type VIRTIO_RTC_CLOCK_UTC_SMEARED or
+VIRTIO_RTC_CLOCK_UTC_MAYBE_SMEARED, the device MUST use the UTC time
+standard, insofar as the following requirements do not say otherwise.
+
+For any UTC-like clock, the device MUST use the time epoch of January 1,
+1970, 00:00 UTC.
+
+For any UTC-like clock, the device MUST count seconds since the epoch
+according to \hyperref[intro:EPOCH]{EPOCH}.
+
+For any clock of type VIRTIO_RTC_CLOCK_UTC, the device MUST apply a
+positive leap second according to the UTC time standard by
+instantaneously stepping the clock backwards by 1 s at the start of the
+leap second.
+
+For any clock of type VIRTIO_RTC_CLOCK_UTC, the device MUST apply a
+negative leap second according to the UTC time standard by
+instantaneously stepping the clock forward by 1 s at the start of the
+leap second.
+
+For any leap smearing clock, the device MUST NOT step the clock due to a
+leap second.
+
+For any leap smearing clock, on a positive leap second, the device MUST
+slow down the clock during part of the day containing the leap second
+and/or part of the day after the leap second.
+
+For any leap smearing clock, on a negative leap second, the device MUST
+speed up the clock during part of the day containing the leap second
+and/or part of the day after the leap second.
+
+For any clock with smearing variant VIRTIO_RTC_SMEAR_NOON_LINEAR, on a
+leap second, the device MUST change the frequency of the clock exactly
+from noon prior to the leap second until noon after the leap second.
+
+For any clock with smearing variant VIRTIO_RTC_SMEAR_NOON_LINEAR, while
+changing the frequency of the clock due to a positive leap second, the
+device MUST decrease the frequency of the clock by $1/86400$.
+
+For any clock with smearing variant VIRTIO_RTC_SMEAR_NOON_LINEAR, while
+changing the frequency of the clock due to a negative leap second, the
+device MUST increase the frequency of the clock by $1/86400$.
+
+For any clock with smearing variant VIRTIO_RTC_SMEAR_UTC_SLS, on a leap
+second, the device MUST change the frequency of the clock exactly during
+the last 1000 seconds of the day with the leap second.
+
+For any clock with smearing variant VIRTIO_RTC_SMEAR_UTC_SLS, while
+changing the frequency of the clock due to a positive leap second, the
+device MUST decrease the frequency of the clock by 0.1\%.
+
+For any clock with smearing variant VIRTIO_RTC_SMEAR_UTC_SLS, while
+changing the frequency of the clock due to a negative leap second, the
+device MUST increase the frequency of the clock by 0.1\%.
+
+For any clock of type VIRTIO_RTC_CLOCK_UTC_MAYBE_SMEARED, the device MAY
+deviate from the UTC standard with respect to leap second introduction.
+
+For any clock of type VIRTIO_RTC_CLOCK_TAI, the device MUST use the TAI
+time standard (International Atomic Time).
+
+For any clock of type VIRTIO_RTC_CLOCK_TAI, the device MUST use the time
+epoch of January 1, 1970, 00:00 TAI.
+
+For any clock of type VIRTIO_RTC_CLOCK_MONOTONIC, the device MUST use SI
+seconds subdivisions.
+
+For any clock of type VIRTIO_RTC_CLOCK_MONOTONIC, the device MUST use an
+epoch at a time instant before or during device reset.
+
+For VIRTIO_RTC_REQ_CLOCK_CAP, and clock types other than
+VIRTIO_RTC_CLOCK_UTC_SMEARED, the device MUST set the
+\field{leap_second_smearing} field to VIRTIO_RTC_SMEAR_UNSPECIFIED.
+
+For VIRTIO_RTC_REQ_CLOCK_CAP, and clock type
+VIRTIO_RTC_CLOCK_UTC_SMEARED, the device MUST set the
+\field{leap_second_smearing} field to VIRTIO_RTC_SMEAR_UNSPECIFIED,
+VIRTIO_RTC_SMEAR_NOON_LINEAR, VIRTIO_RTC_SMEAR_UTC_SLS, or to a value
+greater than or equal to 0xF0.
+
+The device SHOULD set the VIRTIO_RTC_FLAG_CROSS_CAP flag in the
+VIRTIO_RTC_REQ_CROSS_CAP response if and only if the device would set
+status VIRTIO_RTC_S_OK for a VIRTIO_RTC_REQ_READ_CROSS response with the
+same \field{hw_counter} and \field{clock_id} request values.
+
+\subsubsection{Read Requests}\label{sec:Device Types / RTC Device / Device Operation / Read Requests}
+
+Through \emph{read requests}, the driver requests clock readings from
+the device. The driver enqueues read requests in the requestq. The
+device obtains device-side clock readings and forwards these clock
+readings to the driver. The driver may enhance and interpret the clock
+readings through methods which are beyond the scope of this
+specification.
+
+Once DRIVER_OK has been set, the device should support reading every
+clock, even when a clock may yet have to be aligned to reference time
+sources.
+
+In general,
+
+\begin{itemize}
+\item clocks may jump backwards or forward, and
+\item the clock frequency may change. Clocks may be \emph{slewed},
+        i.e.\ clocks may run at a frequency other than their current
+        best frequency estimate.
+\end{itemize}
+
+As long as a clock does not jump backwards, the driver clock readings
+through read request responses increase monotonically:
+
+\begin{itemize}
+\item As long as a clock does not jump backwards in-between device-side
+        clock readings, the driver-side readings for that clock increase
+        monotonically as well, in the order in which the driver
+        marks read requests as available.
+
+\item The device marks buffers with read requests for the same clock as
+        used in the order in which the buffers are available.
+\end{itemize}
+
+For a clock of type VIRTIO_RTC_CLOCK_MONOTONIC, the device always
+returns monotonically increasing clock readings through read request
+responses.
+
+The unit of all \field{clock_reading} fields is 1
+nanosecond.\footnote{For time epochs in year 1970 or later, this means
+that time until at least year 2553 can be represented in the \field{le64
+clock_reading} fields.}
+
+\begin{description}
+
+\item[VIRTIO_RTC_REQ_READ] reads the clock identified by the
+\field{clock_id} field. The device supports this request for every
+clock.
+
+\begin{lstlisting}
+#define VIRTIO_RTC_REQ_READ 0x0001 /* message type */
+
+struct virtio_rtc_req_read {
+        struct virtio_rtc_req_head head;
+        le16 clock_id;
+        u8 reserved[6];
+};
+
+struct virtio_rtc_resp_read {
+        struct virtio_rtc_resp_head head;
+        le64 clock_reading;
+};
+\end{lstlisting}
+
+\field{clock_reading} is a device-side clock reading obtained after the
+buffer was marked as available.
+
+\item[VIRTIO_RTC_REQ_READ_CROSS] returns a cross-timestamp for the clock
+identified by the \field{clock_id} field.\footnote{Cross-timestamping
+is similar to the ptp_kvm mechanism in the Linux kernel.} This request
+may yield better performance than using VIRTIO_RTC_REQ_READ.
+
+The driver can determine whether the device supports
+VIRTIO_RTC_REQ_READ_CROSS for a specific clock and \field{hw_counter}
+through VIRTIO_RTC_REQ_CROSS_CAP.
+
+\begin{lstlisting}
+#define VIRTIO_RTC_REQ_READ_CROSS 0x0002 /* message type */
+
+struct virtio_rtc_req_read_cross {
+        struct virtio_rtc_req_head head;
+        le16 clock_id;
+        u8 hw_counter;
+        u8 reserved[5];
+};
+
+struct virtio_rtc_resp_read_cross {
+        struct virtio_rtc_resp_head head;
+        le64 clock_reading;
+        le64 counter_cycles;
+};
+\end{lstlisting}
+
+The \field{hw_counter} field specifies the hardware counter for which
+the driver requests a cross-timestamp.
+
+Cross-timestamping returns a \field{clock_reading}, and an associated
+hardware counter value, \field{counter_cycles}. The
+\field{counter_cycles} field is the approximate or precise value which
+the driver would have read at the \field{clock_reading} time instant
+from the hardware counter identified by \field{hw_counter}.
+
+To determine the \field{counter_cycles} value, the device converts the
+hardware counter value the device has read, accounting for any
+differences in counter offsets or counter multipliers between device and
+driver at the time of the reading.
+
+In case hardware counter reads differ among CPUs used by the driver, the
+device should assume that the driver reads the hardware counter from the
+CPU which the driver enumerates as the first.
+
+The hardware counter identifiers are defined in
+\ref{sec:Device Types / RTC Device / Device Operation / Common Definitions / Hardware Counters}.
+
+\end{description}
+
+\drivernormative{\paragraph}{Read Requests}{Device Types / RTC Device / Device Operation / Read Requests}
+
+For VIRTIO_RTC_REQ_READ_CROSS, the driver MUST set \field{hw_counter} to
+one of the hardware counter identifiers defined in this specification,
+or to a value between 0xF0 and 0xFE.
+
+\devicenormative{\paragraph}{Read Requests}{Device Types / RTC Device / Device Operation / Read Requests}
+
+After DRIVER_OK has been set, the device SHOULD continuously support
+reading of all clocks.
+
+For any two read requests to the same clock, the device MUST either
+obtain the \field{clock_reading} response value for the request which
+the driver makes available first before obtaining the
+\field{clock_reading} response value for the other request, or the
+device MUST return the same \field{clock_reading} values.
+
+For any clock C, the device MUST mark all read requests reading C as
+used in the total order in which the driver marked these requests as
+available.
+
+For any clock C of type VIRTIO_RTC_CLOCK_MONOTONIC and read requests
+\emph{A} and \emph{B} which read C, \emph{A} being the request which the
+driver marks as available before \emph{B}, the device MUST set the
+\field{clock_reading} response value for request \emph{B} to a value
+greater than or equal to the \field{clock_reading} response value for
+request \emph{A}.
+
+For every clock, the device MUST support VIRTIO_RTC_REQ_READ.
+
+For VIRTIO_RTC_REQ_READ and for any clock type listed in this
+specification, the device MUST use the nanosecond as unit for the
+\field{clock_reading} field.
+
+For read requests, the device MUST obtain the \field{clock_reading}
+response value after the driver made the read request available.
+
+For VIRTIO_RTC_REQ_READ_CROSS, the device MUST set
+\field{counter_cycles} to a value which approximates the value which the
+driver would have read from the hardware counter identified by
+\field{hw_counter} at the time instant when the device read the
+\field{clock_reading} value.
+
+For VIRTIO_RTC_REQ_READ_CROSS, the device SHOULD assume that the driver
+reads the hardware counter identified by \field{hw_counter} through the
+CPU which the driver enumerates as the first.
+
+For VIRTIO_RTC_REQ_READ_CROSS, the device MUST set \field{status} to a
+value other than VIRTIO_RTC_S_OK if the device cannot determine the
+approximate value which the driver would have read from the hardware
+counter identified by \field{hw_counter} at the time instant when the
+device read the \field{clock_reading} value.
+
+If two VIRTIO_RTC_REQ_READ_CROSS requests read the same clock and the
+same hardware counter, and one request is made available before the
+other, the device MUST either
+
+\begin{itemize}
+\item set the later request's \field{counter_cycles} response to a value
+that the hardware counter shows after the earlier request's
+\field{counter_cycles} response, or
+
+\item set the same \field{counter_cycles} value in both responses.
+\end{itemize}
+
+For VIRTIO_RTC_REQ_READ_CROSS and for any clock type listed in this
+specification, the device MUST use the nanosecond as unit for the
+\field{clock_reading} field.
+
+If the device sent an alarm notification for clock C with alarm time A,
+the device MUST, for all read requests of C which the driver marks as
+available after the notification, return a \field{clock_reading} which
+does not precede A (except if C stepped backwards to before A).
+
+\subsubsection{Alarm Operation}\label{sec:Device Types / RTC Device / Device Operation / Alarm Operation}
+
+Through the optional alarm feature, the driver can set an alarm time. On
+alarm expiration, the device notifies the driver. On alarm expiration,
+the device may also wake up the driver, while the driver is in a sleep
+state, or while the driver is powered off. How this is done is beyond
+the scope of the specification. The driver can set one alarm time per
+clock, if the clock supports this.
+
+The device may retain alarm times across device resets.\footnote{Drivers
+        may reset the device on boot or on resume from sleep state. It
+        can make sense for the device to retain the alarm time then,
+        similar to other alarm clocks.}
+
+If VIRTIO_RTC_F_ALARM has been negotiated, the device supports the alarm
+feature and the associated alarmq for notifications from the device. In
+addition, if the driver previously set an alarm time, even if the device
+
+\begin{itemize}
+\item no longer is live and/or
+\item no longer has negotiated VIRTIO_RTC_F_ALARM,
+\end{itemize}
+
+the device may still execute implementation-specific actions on alarm
+expiration.
+
+An alarm expires in any of the following cases:
+
+\begin{itemize}
+\item When the associated clock progresses (also: steps) from a time
+        prior to the alarm time to the alarm time, or to a time after
+        the alarm time, while the alarm is enabled,
+
+\item when the driver sets an alarm time which is not in the future,
+        while also setting the alarm to enabled,
+
+\item when the driver sets the alarm to enabled, and the alarm time is
+        not in the future,
+
+\item when the device is reset, if the alarm time is retained and not in
+        the future, and if the alarm is enabled.\footnote{The device is
+                always responsible for detecting alarm expiration
+                events. This avoids that the driver needs to reason
+                about when it shall poll for alarm expiration.}
+\end{itemize}
+
+When an alarm expires, the driver can disable it. Otherwise, the alarm
+expires each time when one of the above expiration events occurs, even
+if it occurred before.\footnote{This avoids that the driver may
+        miss an alarm when the clock steps backwards after alarm
+        expiration, but before the driver has resumed operation. This
+        also facilitates distinct drivers using the same device,
+        e.g.\ a driver in the bootloader, and a driver in the OS.}
+
+On alarm expiration, the device executes the alarm actions. The alarm
+actions are:
+
+\begin{itemize}
+\item The device notifies the driver through the alarmq. If the device
+        is not live, or no buffers are available in the alarmq, the
+        device will notify once the device is live and buffers are
+        available.
+
+\item Optionally, the device executes other, implementation-specific,
+        actions. The device may execute those immediately, regardless of
+        the device state.
+\end{itemize}
+
+An alarm \emph{expiration} becomes obsolete on any of the following
+events:
+
+\begin{itemize}
+\item The driver disables the alarm.
+
+\item The driver sets an alarm time.
+
+\item The clock jumps backwards, before the alarm time.
+
+\item Another alarm expiration event happens.
+\end{itemize}
+
+If an alarm expiration becomes obsolete, it is unspecified which alarm
+actions the device executes for this alarm expiration. When the driver
+disables an alarm, the device stops any alarm action for this alarm
+before using the buffer.
+
+The device supports all alarm time values which the driver can request
+through alarm control requests. Initially, the alarm time is 0, and the
+alarm is disabled.
+
+Alarms set prior to reset may cause unwanted alarm expiration
+notifications, and information leakage, after the reset. To prevent both
+issues, the driver can do the following after the reset, for each clock
+which supports alarm:
+
+\begin{enumerate}
+\item Make a VIRTIO_RTC_REQ_SET_ALARM request available, with
+        \field{alarm_time} set to 0, and \field{flags} set to 0.
+
+\item Wait until the device uses the buffer, with status
+        VIRTIO_RTC_S_OK.
+\end{enumerate}
+
+To prevent the above issues, the driver also marks buffers in the alarmq
+as available only after completing the above steps for all clocks.
+
+\devicenormative{\paragraph}{Alarm Operation}{Device Types / RTC Device / Device Operation / Alarm Operation}
+
+The device MAY retain both alarm time and alarm enabled status of a
+clock across a device reset.
+
+If the device did not retain alarm time and alarm enabled status of a
+clock across a device reset, the device MUST initialize alarm time to 0.
+
+If the device did not retain alarm time and alarm enabled status of a
+clock across a device reset, the device MUST disable the alarm.
+
+If VIRTIO_RTC_F_ALARM has been negotiated, the device MUST support the
+alarm messages, VIRTIO_RTC_REQ_READ_ALARM, VIRTIO_RTC_REQ_SET_ALARM,
+VIRTIO_RTC_REQ_SET_ALARM_ENABLED, and VIRTIO_RTC_NOTIF_ALARM, for one or
+more clocks.
+
+If VIRTIO_RTC_F_ALARM has not been negotiated, the device MUST NOT
+support the alarm messages.
+
+The device MUST set the VIRTIO_RTC_FLAG_ALARM_CAP flag in \field{struct
+virtio_rtc_resp_clock_cap.flags} if the respective clock supports alarm
+messages, and clear the flag otherwise.
+
+The device MUST consider it an alarm expiration event when the
+associated clock progresses (also: steps) from a time prior to the alarm
+time to the alarm time, or to a time after the alarm time, while the
+alarm is enabled.
+
+The device MUST consider it an alarm expiration event when the
+driver sets an alarm time which the associated clock has already reached
+or passed, while also setting the alarm to enabled.
+
+The device MUST consider it an alarm expiration event when the driver
+sets the alarm to enabled, if the clock has already reached or passed
+the alarm time.
+
+If the device retained alarm time and alarm enabled status of a clock
+across a device reset, and the clock has already reached or passed the
+alarm time, the device MUST consider this device reset an alarm
+expiration event, if the alarm is enabled.
+
+If an alarm expiration event E happens, the device MUST start serving
+the alarm expiration event E.
+
+If the device is currently serving an alarm expiration event E, the
+device MUST use a single VIRTIO_RTC_NOTIF_ALARM notification for E, as
+soon as an alarmq buffer is available for this purpose.
+
+While the device is serving an alarm expiration event, the device MAY
+execute implementation-specific alarm actions.
+
+The device MAY ignore the device status when executing
+implementation-specific alarm actions.
+
+The device MAY ignore whether VIRTIO_RTC_F_ALARM has been negotiated
+when executing implementation-specific alarm actions.
+
+If the driver successfully disables an alarm for clock C with request
+VIRTIO_RTC_REQ_SET_ALARM or VIRTIO_RTC_REQ_SET_ALARM_ENABLED, the device
+MUST stop serving any previous alarm expiration event for C before the
+device uses the response buffer.
+
+If the driver successfully requests VIRTIO_RTC_REQ_SET_ALARM, or
+VIRTIO_RTC_REQ_SET_ALARM_ENABLED, for clock C, keeping the alarm
+enabled, the device MAY stop serving any previous alarm expiration event
+for C.
+
+After a clock C stepped to a time previous to C's alarm time, the device
+MAY stop serving any previous alarm expiration event for C.
+
+If an alarm expiration event happens for clock C, the device MAY stop
+serving any previous alarm expiration event for C.
+
+\paragraph{Alarm Control Requests}
+
+If VIRTIO_RTC_F_ALARM has been negotiated,
+
+\begin{itemize}
+\item the driver can determine if a clock supports an alarm through the
+        VIRTIO_RTC_FLAG_ALARM_CAP flag in the VIRTIO_RTC_REQ_CLOCK_CAP
+        response,
+
+\item the driver can enqueue the alarm control requests into the
+        requestq: VIRTIO_RTC_REQ_READ_ALARM, VIRTIO_RTC_REQ_SET_ALARM,
+        and VIRTIO_RTC_REQ_SET_ALARM_ENABLED.
+\end{itemize}
+
+The unit of all \field{alarm_time} fields is 1 nanosecond.
+
+\begin{description}
+\item[VIRTIO_RTC_REQ_READ_ALARM] reads the current alarm.
+
+\begin{lstlisting}
+#define VIRTIO_RTC_REQ_READ_ALARM 0x1003 /* message type */
+
+struct virtio_rtc_req_read_alarm {
+        struct virtio_rtc_req_head head;
+        le16 clock_id;
+        u8 reserved[6];
+};
+
+struct virtio_rtc_resp_read_alarm {
+        struct virtio_rtc_resp_head head;
+        le64 alarm_time;
+#define VIRTIO_RTC_FLAG_ALARM_ENABLED   (1 << 0)
+        u8 flags;
+        u8 reserved[7];
+};
+\end{lstlisting}
+
+\field{clock_id} identifies the alarm through its associated clock. The
+\field{alarm_time} field returns the alarm time. In the \field{flags}
+field, VIRTIO_RTC_FLAG_ALARM_ENABLED indicates whether the alarm is
+enabled.
+
+\item[VIRTIO_RTC_REQ_SET_ALARM] sets the alarm.
+
+\begin{lstlisting}
+#define VIRTIO_RTC_REQ_SET_ALARM 0x1004 /* message type */
+
+struct virtio_rtc_req_set_alarm {
+        struct virtio_rtc_req_head head;
+        le64 alarm_time;
+        le16 clock_id;
+        /* flag: VIRTIO_RTC_FLAG_ALARM_ENABLED */
+        u8 flags;
+        u8 reserved[5];
+};
+
+struct virtio_rtc_resp_set_alarm {
+        struct virtio_rtc_resp_head head;
+        /* no response params */
+};
+\end{lstlisting}
+
+\field{clock_id} identifies the alarm through its associated clock. The
+\field{alarm_time} field sets the alarm time. If
+VIRTIO_RTC_FLAG_ALARM_ENABLED is set in the \field{flags} field, the
+device enables the alarm; otherwise, the device disables the alarm.
+
+\item[VIRTIO_RTC_REQ_SET_ALARM_ENABLED] enables or disables the alarm.
+
+\begin{lstlisting}
+#define VIRTIO_RTC_REQ_SET_ALARM_ENABLED 0x1005 /* message type */
+
+struct virtio_rtc_req_set_alarm_enabled {
+        struct virtio_rtc_req_head head;
+        le16 clock_id;
+        /* flag: VIRTIO_RTC_FLAG_ALARM_ENABLED */
+        u8 flags;
+        u8 reserved[5];
+};
+
+struct virtio_rtc_resp_set_alarm_enabled {
+        struct virtio_rtc_resp_head head;
+        /* no response params */
+};
+\end{lstlisting}
+
+\field{clock_id} identifies the alarm through its associated clock. If
+VIRTIO_RTC_FLAG_ALARM_ENABLED is set in the \field{flags} field, the
+device enables the alarm; otherwise, the device disables the alarm.
+
+When processing this request, the device retains the alarm time.
+
+\end{description}
+
+\drivernormative{\subparagraph}{Alarm Control Requests}{Device Types / RTC Device / Device Operation / Alarm Operation / Alarm Control Requests}
+
+For VIRTIO_RTC_REQ_SET_ALARM and for any clock type listed in this
+specification, the driver MUST use the nanosecond as unit for the
+\field{alarm_time} field.
+
+\devicenormative{\subparagraph}{Alarm Control Requests}{Device Types / RTC Device / Device Operation / Alarm Operation / Alarm Control Requests}
+
+If VIRTIO_RTC_F_ALARM has not been negotiated, the device MUST set
+status VIRTIO_RTC_S_ENODEV for VIRTIO_RTC_REQ_READ_ALARM,
+VIRTIO_RTC_REQ_SET_ALARM, and VIRTIO_RTC_REQ_SET_ALARM_ENABLED.
+
+If the clock does not support alarm messages, the device MUST set status
+VIRTIO_RTC_S_ENODEV for VIRTIO_RTC_REQ_READ_ALARM,
+VIRTIO_RTC_REQ_SET_ALARM, and VIRTIO_RTC_REQ_SET_ALARM_ENABLED.
+
+For VIRTIO_RTC_REQ_READ_ALARM, the device MUST set the
+\field{alarm_time} field to the alarm time.
+
+For VIRTIO_RTC_REQ_READ_ALARM, the device MUST set the
+VIRTIO_RTC_FLAG_ALARM_ENABLED flag in the \field{flags} field if the
+alarm is enabled, and clear the flag otherwise.
+
+For VIRTIO_RTC_REQ_READ_ALARM and for any clock type listed in this
+specification, the device MUST use the nanosecond as unit for the
+\field{alarm_time} field.
+
+For VIRTIO_RTC_REQ_SET_ALARM, the device MUST accept any
+\field{alarm_time} value.
+
+If the device sets status VIRTIO_RTC_S_OK for VIRTIO_RTC_REQ_SET_ALARM,
+the device MUST set the alarm time to the time represented by the
+\field{alarm_time} field.
+
+If the device sets status VIRTIO_RTC_S_OK for VIRTIO_RTC_REQ_SET_ALARM,
+the device MUST enable the alarm if VIRTIO_RTC_FLAG_ALARM_ENABLED is set
+in the \field{flags} field.
+
+If the device sets status VIRTIO_RTC_S_OK for VIRTIO_RTC_REQ_SET_ALARM,
+the device MUST disable the alarm if VIRTIO_RTC_FLAG_ALARM_ENABLED is
+cleared in the \field{flags} field.
+
+If the device sets status VIRTIO_RTC_S_OK for
+VIRTIO_RTC_REQ_SET_ALARM_ENABLED, the device MUST enable the alarm if
+VIRTIO_RTC_FLAG_ALARM_ENABLED is set in the \field{flags} field.
+
+If the device sets status VIRTIO_RTC_S_OK for
+VIRTIO_RTC_REQ_SET_ALARM_ENABLED, the device MUST disable the alarm if
+VIRTIO_RTC_FLAG_ALARM_ENABLED is cleared in the \field{flags} field.
+
+If the device sets status VIRTIO_RTC_S_OK for
+VIRTIO_RTC_REQ_SET_ALARM_ENABLED, the device MUST retain the alarm time.
+
+\paragraph{Alarm Notifications}
+
+If the alarmq is present, the driver should make buffers available in
+the alarmq, which the device uses for alarm notifications. All alarmq
+fields are device-writable. The alarmq uses a common notification
+header.
+
+\begin{lstlisting}
+/* common notification header */
+struct virtio_rtc_notif_head {
+        le16 msg_type;
+        u8 reserved[6];
+};
+\end{lstlisting}
+
+The \field{msg_type} field identifies the message type.
+
+\begin{description}
+\item[VIRTIO_RTC_NOTIF_ALARM] notifies the driver about an alarm
+        expiration.
+
+\begin{lstlisting}
+#define VIRTIO_RTC_NOTIF_ALARM 0x2000 /* message type */
+
+struct virtio_rtc_notif_alarm {
+        struct virtio_rtc_notif_head head;
+        le16 clock_id;
+        u8 reserved[6];
+};
+\end{lstlisting}
+
+\end{description}
+
+\field{clock_id} identifies the expired alarm through its associated
+clock.
+
+\drivernormative{\subparagraph}{Alarm Notifications}{Device Types / RTC Device / Device Operation / Alarm Operation / Alarm Notifications}
+
+If VIRTIO_RTC_F_ALARM has been negotiated, the driver SHOULD populate
+the alarmq with buffers.
+
+The driver MUST allocate enough space for any alarmq notification in the
+device-writable part of an alarmq buffer.
+
+If the driver receives a VIRTIO_RTC_NOTIF_ALARM notification, the driver
+SHOULD read the associated clock instead of assuming that the alarm time
+which the driver set last has been reached.
+
+\devicenormative{\subparagraph}{Alarm Notifications}{Device Types / RTC Device / Device Operation / Alarm Operation / Alarm Notifications}
+
+The device MUST NOT use a VIRTIO_RTC_NOTIF_ALARM notification for a
+clock which does not support alarm messages.

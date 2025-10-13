@@ -1,0 +1,963 @@
+\babel@toc {english}{}\relax 
+\virtioheaderfooter 
+\contentsline {chapter}{\numberline {1}Introduction}{19}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Normative References}{19}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Non-Normative References}{22}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Terminology}{22}{section.1.3}%
+\contentsline {subsection}{\numberline {1.3.1}Legacy Interface: Terminology}{22}{subsection.1.3.1}%
+\contentsline {subsection}{\numberline {1.3.2}Transition from earlier specification drafts}{22}{subsection.1.3.2}%
+\contentsline {section}{\numberline {1.4}Structure Specifications}{23}{section.1.4}%
+\contentsline {section}{\numberline {1.5}Constant Specifications}{23}{section.1.5}%
+\contentsline {chapter}{\numberline {2}Basic Facilities of a Virtio Device}{24}{chapter.2}%
+\contentsline {section}{\numberline {2.1}\emph {Device Status} Field}{24}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}Driver Requirements: Device Status Field}{24}{subsection.2.1.1}%
+\contentsline {subsection}{\numberline {2.1.2}Device Requirements: Device Status Field}{25}{subsection.2.1.2}%
+\contentsline {section}{\numberline {2.2}Feature Bits}{25}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}Driver Requirements: Feature Bits}{25}{subsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}Device Requirements: Feature Bits}{26}{subsection.2.2.2}%
+\contentsline {subsection}{\numberline {2.2.3}Legacy Interface: A Note on Feature Bits}{26}{subsection.2.2.3}%
+\contentsline {section}{\numberline {2.3}Notifications}{26}{section.2.3}%
+\contentsline {section}{\numberline {2.4}Device Reset}{27}{section.2.4}%
+\contentsline {subsection}{\numberline {2.4.1}Device Requirements: Device Reset}{27}{subsection.2.4.1}%
+\contentsline {subsection}{\numberline {2.4.2}Driver Requirements: Device Reset}{27}{subsection.2.4.2}%
+\contentsline {section}{\numberline {2.5}Device Configuration Space}{27}{section.2.5}%
+\contentsline {subsection}{\numberline {2.5.1}Driver Requirements: Device Configuration Space}{27}{subsection.2.5.1}%
+\contentsline {subsection}{\numberline {2.5.2}Device Requirements: Device Configuration Space}{28}{subsection.2.5.2}%
+\contentsline {subsection}{\numberline {2.5.3}Legacy Interface: A Note on Device Configuration Space endian-ness}{28}{subsection.2.5.3}%
+\contentsline {subsection}{\numberline {2.5.4}Legacy Interface: Device Configuration Space}{28}{subsection.2.5.4}%
+\contentsline {section}{\numberline {2.6}Virtqueues}{28}{section.2.6}%
+\contentsline {subsection}{\numberline {2.6.1}Virtqueue Reset}{29}{subsection.2.6.1}%
+\contentsline {subsubsection}{\numberline {2.6.1.1}Virtqueue Reset}{29}{subsubsection.2.6.1.1}%
+\contentsline {paragraph}{\numberline {2.6.1.1.1}Device Requirements: Virtqueue Reset}{29}{paragraph.2.6.1.1.1}%
+\contentsline {paragraph}{\numberline {2.6.1.1.2}Driver Requirements: Virtqueue Reset}{29}{paragraph.2.6.1.1.2}%
+\contentsline {subsubsection}{\numberline {2.6.1.2}Virtqueue Re-enable}{29}{subsubsection.2.6.1.2}%
+\contentsline {paragraph}{\numberline {2.6.1.2.1}Device Requirements: Virtqueue Re-enable}{29}{paragraph.2.6.1.2.1}%
+\contentsline {paragraph}{\numberline {2.6.1.2.2}Driver Requirements: Virtqueue Re-enable}{29}{paragraph.2.6.1.2.2}%
+\contentsline {section}{\numberline {2.7}Split Virtqueues}{29}{section.2.7}%
+\contentsline {subsection}{\numberline {2.7.1}Driver Requirements: Virtqueues}{30}{subsection.2.7.1}%
+\contentsline {subsection}{\numberline {2.7.2}Legacy Interfaces: A Note on Virtqueue Layout}{30}{subsection.2.7.2}%
+\contentsline {subsection}{\numberline {2.7.3}Legacy Interfaces: A Note on Virtqueue Endianness}{31}{subsection.2.7.3}%
+\contentsline {subsection}{\numberline {2.7.4}Message Framing}{31}{subsection.2.7.4}%
+\contentsline {subsubsection}{\numberline {2.7.4.1}Device Requirements: Message Framing}{31}{subsubsection.2.7.4.1}%
+\contentsline {subsubsection}{\numberline {2.7.4.2}Driver Requirements: Message Framing}{31}{subsubsection.2.7.4.2}%
+\contentsline {subsubsection}{\numberline {2.7.4.3}Legacy Interface: Message Framing}{31}{subsubsection.2.7.4.3}%
+\contentsline {subsection}{\numberline {2.7.5}The Virtqueue Descriptor Table}{31}{subsection.2.7.5}%
+\contentsline {subsubsection}{\numberline {2.7.5.1}Device Requirements: The Virtqueue Descriptor Table}{32}{subsubsection.2.7.5.1}%
+\contentsline {subsubsection}{\numberline {2.7.5.2}Driver Requirements: The Virtqueue Descriptor Table}{32}{subsubsection.2.7.5.2}%
+\contentsline {subsubsection}{\numberline {2.7.5.3}Indirect Descriptors}{32}{subsubsection.2.7.5.3}%
+\contentsline {paragraph}{\numberline {2.7.5.3.1}Driver Requirements: Indirect Descriptors}{32}{paragraph.2.7.5.3.1}%
+\contentsline {paragraph}{\numberline {2.7.5.3.2}Device Requirements: Indirect Descriptors}{33}{paragraph.2.7.5.3.2}%
+\contentsline {subsection}{\numberline {2.7.6}The Virtqueue Available Ring}{33}{subsection.2.7.6}%
+\contentsline {subsubsection}{\numberline {2.7.6.1}Driver Requirements: The Virtqueue Available Ring}{33}{subsubsection.2.7.6.1}%
+\contentsline {subsection}{\numberline {2.7.7}Used Buffer Notification Suppression}{33}{subsection.2.7.7}%
+\contentsline {subsubsection}{\numberline {2.7.7.1}Driver Requirements: Used Buffer Notification Suppression}{33}{subsubsection.2.7.7.1}%
+\contentsline {subsubsection}{\numberline {2.7.7.2}Device Requirements: Used Buffer Notification Suppression}{34}{subsubsection.2.7.7.2}%
+\contentsline {subsection}{\numberline {2.7.8}The Virtqueue Used Ring}{34}{subsection.2.7.8}%
+\contentsline {subsubsection}{\numberline {2.7.8.1}Legacy Interface: The Virtqueue Used Ring}{35}{subsubsection.2.7.8.1}%
+\contentsline {subsubsection}{\numberline {2.7.8.2}Device Requirements: The Virtqueue Used Ring}{35}{subsubsection.2.7.8.2}%
+\contentsline {subsubsection}{\numberline {2.7.8.3}Driver Requirements: The Virtqueue Used Ring}{35}{subsubsection.2.7.8.3}%
+\contentsline {subsection}{\numberline {2.7.9}In-order use of descriptors}{35}{subsection.2.7.9}%
+\contentsline {subsection}{\numberline {2.7.10}Available Buffer Notification Suppression}{35}{subsection.2.7.10}%
+\contentsline {subsubsection}{\numberline {2.7.10.1}Driver Requirements: Available Buffer Notification Suppression}{35}{subsubsection.2.7.10.1}%
+\contentsline {subsubsection}{\numberline {2.7.10.2}Device Requirements: Available Buffer Notification Suppression}{36}{subsubsection.2.7.10.2}%
+\contentsline {subsection}{\numberline {2.7.11}Helpers for Operating Virtqueues}{36}{subsection.2.7.11}%
+\contentsline {subsection}{\numberline {2.7.12}Virtqueue Operation}{36}{subsection.2.7.12}%
+\contentsline {subsection}{\numberline {2.7.13}Supplying Buffers to The Device}{36}{subsection.2.7.13}%
+\contentsline {subsubsection}{\numberline {2.7.13.1}Placing Buffers Into The Descriptor Table}{37}{subsubsection.2.7.13.1}%
+\contentsline {subsubsection}{\numberline {2.7.13.2}Updating The Available Ring}{37}{subsubsection.2.7.13.2}%
+\contentsline {subsubsection}{\numberline {2.7.13.3}Updating \emph {idx}}{37}{subsubsection.2.7.13.3}%
+\contentsline {paragraph}{\numberline {2.7.13.3.1}Driver Requirements: Updating idx}{37}{paragraph.2.7.13.3.1}%
+\contentsline {subsubsection}{\numberline {2.7.13.4}Notifying The Device}{38}{subsubsection.2.7.13.4}%
+\contentsline {paragraph}{\numberline {2.7.13.4.1}Driver Requirements: Notifying The Device}{38}{paragraph.2.7.13.4.1}%
+\contentsline {subsection}{\numberline {2.7.14}Receiving Used Buffers From The Device}{38}{subsection.2.7.14}%
+\contentsline {section}{\numberline {2.8}Packed Virtqueues}{38}{section.2.8}%
+\contentsline {subsection}{\numberline {2.8.1}Driver and Device Ring Wrap Counters}{39}{subsection.2.8.1}%
+\contentsline {subsection}{\numberline {2.8.2}Polling of available and used descriptors}{40}{subsection.2.8.2}%
+\contentsline {subsection}{\numberline {2.8.3}Write Flag}{40}{subsection.2.8.3}%
+\contentsline {subsection}{\numberline {2.8.4}Element Address and Length}{40}{subsection.2.8.4}%
+\contentsline {subsection}{\numberline {2.8.5}Scatter-Gather Support}{40}{subsection.2.8.5}%
+\contentsline {subsection}{\numberline {2.8.6}Next Flag: Descriptor Chaining}{40}{subsection.2.8.6}%
+\contentsline {subsection}{\numberline {2.8.7}Indirect Flag: Scatter-Gather Support}{41}{subsection.2.8.7}%
+\contentsline {subsection}{\numberline {2.8.8}In-order use of descriptors}{41}{subsection.2.8.8}%
+\contentsline {subsection}{\numberline {2.8.9}Multi-buffer requests}{42}{subsection.2.8.9}%
+\contentsline {subsection}{\numberline {2.8.10}Driver and Device Event Suppression}{42}{subsection.2.8.10}%
+\contentsline {subsubsection}{\numberline {2.8.10.1}Structure Size and Alignment}{42}{subsubsection.2.8.10.1}%
+\contentsline {subsection}{\numberline {2.8.11}Driver Requirements: Virtqueues}{43}{subsection.2.8.11}%
+\contentsline {subsection}{\numberline {2.8.12}Device Requirements: Virtqueues}{43}{subsection.2.8.12}%
+\contentsline {subsection}{\numberline {2.8.13}The Virtqueue Descriptor Format}{43}{subsection.2.8.13}%
+\contentsline {subsection}{\numberline {2.8.14}Event Suppression Structure Format}{43}{subsection.2.8.14}%
+\contentsline {subsection}{\numberline {2.8.15}Device Requirements: The Virtqueue Descriptor Table}{43}{subsection.2.8.15}%
+\contentsline {subsection}{\numberline {2.8.16}Driver Requirements: The Virtqueue Descriptor Table}{43}{subsection.2.8.16}%
+\contentsline {subsection}{\numberline {2.8.17}Driver Requirements: Scatter-Gather Support}{44}{subsection.2.8.17}%
+\contentsline {subsection}{\numberline {2.8.18}Device Requirements: Scatter-Gather Support}{44}{subsection.2.8.18}%
+\contentsline {subsection}{\numberline {2.8.19}Driver Requirements: Indirect Descriptors}{44}{subsection.2.8.19}%
+\contentsline {subsection}{\numberline {2.8.20}Virtqueue Operation}{44}{subsection.2.8.20}%
+\contentsline {subsection}{\numberline {2.8.21}Supplying Buffers to The Device}{44}{subsection.2.8.21}%
+\contentsline {subsubsection}{\numberline {2.8.21.1}Placing Available Buffers Into The Descriptor Ring}{44}{subsubsection.2.8.21.1}%
+\contentsline {paragraph}{\numberline {2.8.21.1.1}Driver Requirements: Updating flags}{45}{paragraph.2.8.21.1.1}%
+\contentsline {subsubsection}{\numberline {2.8.21.2}Sending Available Buffer Notifications}{45}{subsubsection.2.8.21.2}%
+\contentsline {subsubsection}{\numberline {2.8.21.3}Implementation Example}{45}{subsubsection.2.8.21.3}%
+\contentsline {paragraph}{\numberline {2.8.21.3.1}Driver Requirements: Sending Available Buffer Notifications}{46}{paragraph.2.8.21.3.1}%
+\contentsline {subsection}{\numberline {2.8.22}Receiving Used Buffers From The Device}{46}{subsection.2.8.22}%
+\contentsline {section}{\numberline {2.9}Driver Notifications}{47}{section.2.9}%
+\contentsline {section}{\numberline {2.10}Shared Memory Regions}{48}{section.2.10}%
+\contentsline {subsection}{\numberline {2.10.1}Addressing within regions}{48}{subsection.2.10.1}%
+\contentsline {subsection}{\numberline {2.10.2}Device Requirements: Shared Memory Regions}{48}{subsection.2.10.2}%
+\contentsline {section}{\numberline {2.11}Exporting Objects}{48}{section.2.11}%
+\contentsline {section}{\numberline {2.12}Device groups}{48}{section.2.12}%
+\contentsline {subsection}{\numberline {2.12.1}Group administration commands}{49}{subsection.2.12.1}%
+\contentsline {subsubsection}{\numberline {2.12.1.1}Legacy Interfaces}{53}{subsubsection.2.12.1.1}%
+\contentsline {paragraph}{\numberline {2.12.1.1.1}VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE}{53}{paragraph.2.12.1.1.1}%
+\contentsline {paragraph}{\numberline {2.12.1.1.2}VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ}{53}{paragraph.2.12.1.1.2}%
+\contentsline {paragraph}{\numberline {2.12.1.1.3}VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE}{54}{paragraph.2.12.1.1.3}%
+\contentsline {paragraph}{\numberline {2.12.1.1.4}VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ}{54}{paragraph.2.12.1.1.4}%
+\contentsline {paragraph}{\numberline {2.12.1.1.5}VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO}{55}{paragraph.2.12.1.1.5}%
+\contentsline {paragraph}{\numberline {2.12.1.1.6}Device Requirements: Legacy Interface}{55}{paragraph.2.12.1.1.6}%
+\contentsline {paragraph}{\numberline {2.12.1.1.7}Driver Requirements: Legacy Interface}{57}{paragraph.2.12.1.1.7}%
+\contentsline {subsubsection}{\numberline {2.12.1.2}Device and driver capabilities}{57}{subsubsection.2.12.1.2}%
+\contentsline {paragraph}{\numberline {2.12.1.2.1}VIRTIO_ADMIN_CMD_CAP_ID_LIST_QUERY}{58}{paragraph.2.12.1.2.1}%
+\contentsline {paragraph}{\numberline {2.12.1.2.2}VIRTIO_ADMIN_CMD_DEVICE_CAP_GET}{59}{paragraph.2.12.1.2.2}%
+\contentsline {paragraph}{\numberline {2.12.1.2.3}VIRTIO_ADMIN_CMD_DRIVER_CAP_SET}{59}{paragraph.2.12.1.2.3}%
+\contentsline {paragraph}{\numberline {2.12.1.2.4}Device Requirements: Device and driver capabilities}{59}{paragraph.2.12.1.2.4}%
+\contentsline {paragraph}{\numberline {2.12.1.2.5}Driver Requirements: Device and driver capabilities}{60}{paragraph.2.12.1.2.5}%
+\contentsline {subsubsection}{\numberline {2.12.1.3}Device resource objects}{60}{subsubsection.2.12.1.3}%
+\contentsline {paragraph}{\numberline {2.12.1.3.1}VIRTIO_ADMIN_CMD_RESOURCE_OBJ_CREATE}{61}{paragraph.2.12.1.3.1}%
+\contentsline {paragraph}{\numberline {2.12.1.3.2}VIRTIO_ADMIN_CMD_RESOURCE_OBJ_MODIFY}{62}{paragraph.2.12.1.3.2}%
+\contentsline {paragraph}{\numberline {2.12.1.3.3}VIRTIO_ADMIN_CMD_RESOURCE_OBJ_QUERY}{62}{paragraph.2.12.1.3.3}%
+\contentsline {paragraph}{\numberline {2.12.1.3.4}VIRTIO_ADMIN_CMD_RESOURCE_OBJ_DESTROY}{62}{paragraph.2.12.1.3.4}%
+\contentsline {paragraph}{\numberline {2.12.1.3.5}Device Requirements: Device resource objects}{63}{paragraph.2.12.1.3.5}%
+\contentsline {paragraph}{\numberline {2.12.1.3.6}Driver Requirements: Device resource objects}{63}{paragraph.2.12.1.3.6}%
+\contentsline {subsubsection}{\numberline {2.12.1.4}Device parts}{64}{subsubsection.2.12.1.4}%
+\contentsline {paragraph}{\numberline {2.12.1.4.1}VIRTIO_DEV_PARTS_CAP}{64}{paragraph.2.12.1.4.1}%
+\contentsline {paragraph}{\numberline {2.12.1.4.2}VIRTIO_RESOURCE_OBJ_DEV_PARTS}{64}{paragraph.2.12.1.4.2}%
+\contentsline {paragraph}{\numberline {2.12.1.4.3}Device parts handling commands}{65}{paragraph.2.12.1.4.3}%
+\contentsline {subparagraph}{\numberline {2.12.1.4.3.1}VIRTIO_ADMIN_CMD_DEV_PARTS_METADATA_GET}{65}{subparagraph.2.12.1.4.3.1}%
+\contentsline {subparagraph}{\numberline {2.12.1.4.3.2}VIRTIO_ADMIN_CMD_DEV_PARTS_GET}{66}{subparagraph.2.12.1.4.3.2}%
+\contentsline {subparagraph}{\numberline {2.12.1.4.3.3}VIRTIO_ADMIN_CMD_DEV_PARTS_SET}{66}{subparagraph.2.12.1.4.3.3}%
+\contentsline {subparagraph}{\numberline {2.12.1.4.3.4}VIRTIO_ADMIN_CMD_DEV_MODE_SET}{67}{subparagraph.2.12.1.4.3.4}%
+\contentsline {paragraph}{\numberline {2.12.1.4.4}Device parts order}{67}{paragraph.2.12.1.4.4}%
+\contentsline {subparagraph}{\numberline {2.12.1.4.4.1}Device Requirements: Device parts}{68}{subparagraph.2.12.1.4.4.1}%
+\contentsline {subparagraph}{\numberline {2.12.1.4.4.2}Driver Requirements: Device parts}{70}{subparagraph.2.12.1.4.4.2}%
+\contentsline {subsubsection}{\numberline {2.12.1.5}Device Requirements: Group administration commands}{70}{subsubsection.2.12.1.5}%
+\contentsline {subsubsection}{\numberline {2.12.1.6}Driver Requirements: Group administration commands}{71}{subsubsection.2.12.1.6}%
+\contentsline {section}{\numberline {2.13}Administration Virtqueues}{72}{section.2.13}%
+\contentsline {subsection}{\numberline {2.13.1}Device Requirements: Group administration commands}{72}{subsection.2.13.1}%
+\contentsline {subsection}{\numberline {2.13.2}Driver Requirements: Group administration commands}{73}{subsection.2.13.2}%
+\contentsline {section}{\numberline {2.14}Device parts}{73}{section.2.14}%
+\contentsline {subsection}{\numberline {2.14.1}Common device parts}{74}{subsection.2.14.1}%
+\contentsline {subsubsection}{\numberline {2.14.1.1}VIRTIO_DEV_PART_DEV_FEATURES}{74}{subsubsection.2.14.1.1}%
+\contentsline {subsubsection}{\numberline {2.14.1.2}VIRTIO_DEV_PART_DRV_FEATURES}{75}{subsubsection.2.14.1.2}%
+\contentsline {subsubsection}{\numberline {2.14.1.3}VIRTIO_DEV_PART_PCI_COMMON_CFG}{75}{subsubsection.2.14.1.3}%
+\contentsline {subsubsection}{\numberline {2.14.1.4}VIRTIO_DEV_PART_DEVICE_STATUS}{75}{subsubsection.2.14.1.4}%
+\contentsline {subsubsection}{\numberline {2.14.1.5}VIRTIO_DEV_PART_VQ_CFG}{75}{subsubsection.2.14.1.5}%
+\contentsline {subsubsection}{\numberline {2.14.1.6}VIRTIO_DEV_PART_VQ_NOTIFY_CFG}{76}{subsubsection.2.14.1.6}%
+\contentsline {subsection}{\numberline {2.14.2}Assumptions}{76}{subsection.2.14.2}%
+\contentsline {chapter}{\numberline {3}General Initialization And Device Operation}{77}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Device Initialization}{77}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}Driver Requirements: Device Initialization}{77}{subsection.3.1.1}%
+\contentsline {subsection}{\numberline {3.1.2}Legacy Interface: Device Initialization}{77}{subsection.3.1.2}%
+\contentsline {section}{\numberline {3.2}Device Operation}{78}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}Notification of Device Configuration Changes}{78}{subsection.3.2.1}%
+\contentsline {section}{\numberline {3.3}Device Cleanup}{78}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Driver Requirements: Device Cleanup}{78}{subsection.3.3.1}%
+\contentsline {section}{\numberline {3.4}Device Suspend}{78}{section.3.4}%
+\contentsline {subsection}{\numberline {3.4.1}Driver Requirements: Device Suspend}{78}{subsection.3.4.1}%
+\contentsline {subsection}{\numberline {3.4.2}Device Requirements: Device Suspend}{78}{subsection.3.4.2}%
+\contentsline {chapter}{\numberline {4}Virtio Transport Options}{80}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Virtio Over PCI Bus}{80}{section.4.1}%
+\contentsline {subsection}{\numberline {4.1.1}Device Requirements: Virtio Over PCI Bus}{80}{subsection.4.1.1}%
+\contentsline {subsection}{\numberline {4.1.2}PCI Device Discovery}{80}{subsection.4.1.2}%
+\contentsline {subsubsection}{\numberline {4.1.2.1}Device Requirements: PCI Device Discovery}{80}{subsubsection.4.1.2.1}%
+\contentsline {subsubsection}{\numberline {4.1.2.2}Driver Requirements: PCI Device Discovery}{81}{subsubsection.4.1.2.2}%
+\contentsline {subsubsection}{\numberline {4.1.2.3}Legacy Interfaces: A Note on PCI Device Discovery}{81}{subsubsection.4.1.2.3}%
+\contentsline {subsection}{\numberline {4.1.3}PCI Device Layout}{81}{subsection.4.1.3}%
+\contentsline {subsubsection}{\numberline {4.1.3.1}Driver Requirements: PCI Device Layout}{81}{subsubsection.4.1.3.1}%
+\contentsline {subsubsection}{\numberline {4.1.3.2}Device Requirements: PCI Device Layout}{81}{subsubsection.4.1.3.2}%
+\contentsline {subsection}{\numberline {4.1.4}Virtio Structure PCI Capabilities}{81}{subsection.4.1.4}%
+\contentsline {subsubsection}{\numberline {4.1.4.1}Driver Requirements: Virtio Structure PCI Capabilities}{83}{subsubsection.4.1.4.1}%
+\contentsline {subsubsection}{\numberline {4.1.4.2}Device Requirements: Virtio Structure PCI Capabilities}{83}{subsubsection.4.1.4.2}%
+\contentsline {subsubsection}{\numberline {4.1.4.3}Common configuration structure layout}{83}{subsubsection.4.1.4.3}%
+\contentsline {paragraph}{\numberline {4.1.4.3.1}Device Requirements: Common configuration structure layout}{85}{paragraph.4.1.4.3.1}%
+\contentsline {paragraph}{\numberline {4.1.4.3.2}Driver Requirements: Common configuration structure layout}{85}{paragraph.4.1.4.3.2}%
+\contentsline {subsubsection}{\numberline {4.1.4.4}Notification structure layout}{86}{subsubsection.4.1.4.4}%
+\contentsline {paragraph}{\numberline {4.1.4.4.1}Device Requirements: Notification capability}{86}{paragraph.4.1.4.4.1}%
+\contentsline {subsubsection}{\numberline {4.1.4.5}ISR status capability}{87}{subsubsection.4.1.4.5}%
+\contentsline {paragraph}{\numberline {4.1.4.5.1}Device Requirements: ISR status capability}{87}{paragraph.4.1.4.5.1}%
+\contentsline {paragraph}{\numberline {4.1.4.5.2}Driver Requirements: ISR status capability}{87}{paragraph.4.1.4.5.2}%
+\contentsline {subsubsection}{\numberline {4.1.4.6}Device-specific configuration}{87}{subsubsection.4.1.4.6}%
+\contentsline {paragraph}{\numberline {4.1.4.6.1}Device Requirements: Device-specific configuration}{87}{paragraph.4.1.4.6.1}%
+\contentsline {subsubsection}{\numberline {4.1.4.7}Shared memory capability}{87}{subsubsection.4.1.4.7}%
+\contentsline {paragraph}{\numberline {4.1.4.7.1}Device Requirements: Shared memory capability}{87}{paragraph.4.1.4.7.1}%
+\contentsline {subsubsection}{\numberline {4.1.4.8}Vendor data capability}{88}{subsubsection.4.1.4.8}%
+\contentsline {paragraph}{\numberline {4.1.4.8.1}Device Requirements: Vendor data capability}{88}{paragraph.4.1.4.8.1}%
+\contentsline {paragraph}{\numberline {4.1.4.8.2}Driver Requirements: Vendor data capability}{88}{paragraph.4.1.4.8.2}%
+\contentsline {subsubsection}{\numberline {4.1.4.9}PCI configuration access capability}{88}{subsubsection.4.1.4.9}%
+\contentsline {paragraph}{\numberline {4.1.4.9.1}Device Requirements: PCI configuration access capability}{89}{paragraph.4.1.4.9.1}%
+\contentsline {paragraph}{\numberline {4.1.4.9.2}Driver Requirements: PCI configuration access capability}{89}{paragraph.4.1.4.9.2}%
+\contentsline {subsubsection}{\numberline {4.1.4.10}Legacy Interfaces: A Note on PCI Device Layout}{89}{subsubsection.4.1.4.10}%
+\contentsline {subsubsection}{\numberline {4.1.4.11}Non-transitional Device With Legacy Driver: A Note on PCI Device Layout}{90}{subsubsection.4.1.4.11}%
+\contentsline {subparagraph}{\numberline {4.1.4.11.0.1}Device Requirements: Non-transitional Device With Legacy Driver}{90}{subparagraph.4.1.4.11.0.1}%
+\contentsline {subsection}{\numberline {4.1.5}PCI-specific Initialization And Device Operation}{90}{subsection.4.1.5}%
+\contentsline {subsubsection}{\numberline {4.1.5.1}Device Initialization}{90}{subsubsection.4.1.5.1}%
+\contentsline {paragraph}{\numberline {4.1.5.1.1}Virtio Device Configuration Layout Detection}{90}{paragraph.4.1.5.1.1}%
+\contentsline {subparagraph}{\numberline {4.1.5.1.1.1}Legacy Interface: A Note on Device Layout Detection}{90}{subparagraph.4.1.5.1.1.1}%
+\contentsline {paragraph}{\numberline {4.1.5.1.2}MSI-X Vector Configuration}{91}{paragraph.4.1.5.1.2}%
+\contentsline {subparagraph}{\numberline {4.1.5.1.2.1}Device Requirements: MSI-X Vector Configuration}{91}{subparagraph.4.1.5.1.2.1}%
+\contentsline {subparagraph}{\numberline {4.1.5.1.2.2}Driver Requirements: MSI-X Vector Configuration}{91}{subparagraph.4.1.5.1.2.2}%
+\contentsline {paragraph}{\numberline {4.1.5.1.3}Virtqueue Configuration}{92}{paragraph.4.1.5.1.3}%
+\contentsline {subparagraph}{\numberline {4.1.5.1.3.1}Legacy Interface: A Note on Virtqueue Configuration}{92}{subparagraph.4.1.5.1.3.1}%
+\contentsline {subsubsection}{\numberline {4.1.5.2}Available Buffer Notifications}{92}{subsubsection.4.1.5.2}%
+\contentsline {paragraph}{\numberline {4.1.5.2.1}Driver Requirements: Available Buffer Notifications}{92}{paragraph.4.1.5.2.1}%
+\contentsline {subsubsection}{\numberline {4.1.5.3}Used Buffer Notifications}{93}{subsubsection.4.1.5.3}%
+\contentsline {paragraph}{\numberline {4.1.5.3.1}Device Requirements: Used Buffer Notifications}{93}{paragraph.4.1.5.3.1}%
+\contentsline {subsubsection}{\numberline {4.1.5.4}Notification of Device Configuration Changes}{93}{subsubsection.4.1.5.4}%
+\contentsline {paragraph}{\numberline {4.1.5.4.1}Device Requirements: Notification of Device Configuration Changes}{93}{paragraph.4.1.5.4.1}%
+\contentsline {paragraph}{\numberline {4.1.5.4.2}Driver Requirements: Notification of Device Configuration Changes}{93}{paragraph.4.1.5.4.2}%
+\contentsline {subsubsection}{\numberline {4.1.5.5}Driver Handling Interrupts}{94}{subsubsection.4.1.5.5}%
+\contentsline {section}{\numberline {4.2}Virtio Over MMIO}{94}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}MMIO Device Discovery}{94}{subsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.2.2}MMIO Device Register Layout}{94}{subsection.4.2.2}%
+\contentsline {subsubsection}{\numberline {4.2.2.1}Device Requirements: MMIO Device Register Layout}{97}{subsubsection.4.2.2.1}%
+\contentsline {subsubsection}{\numberline {4.2.2.2}Driver Requirements: MMIO Device Register Layout}{98}{subsubsection.4.2.2.2}%
+\contentsline {subsection}{\numberline {4.2.3}MMIO-specific Initialization And Device Operation}{98}{subsection.4.2.3}%
+\contentsline {subsubsection}{\numberline {4.2.3.1}Device Initialization}{98}{subsubsection.4.2.3.1}%
+\contentsline {paragraph}{\numberline {4.2.3.1.1}Driver Requirements: Device Initialization}{98}{paragraph.4.2.3.1.1}%
+\contentsline {subsubsection}{\numberline {4.2.3.2}Virtqueue Configuration}{98}{subsubsection.4.2.3.2}%
+\contentsline {subsubsection}{\numberline {4.2.3.3}Available Buffer Notifications}{99}{subsubsection.4.2.3.3}%
+\contentsline {subsubsection}{\numberline {4.2.3.4}Notifications From The Device}{99}{subsubsection.4.2.3.4}%
+\contentsline {paragraph}{\numberline {4.2.3.4.1}Driver Requirements: Notifications From The Device}{99}{paragraph.4.2.3.4.1}%
+\contentsline {subsection}{\numberline {4.2.4}Legacy interface}{99}{subsection.4.2.4}%
+\contentsline {subsection}{\numberline {4.2.5}Features reserved for future use}{102}{subsection.4.2.5}%
+\contentsline {section}{\numberline {4.3}Virtio Over Channel I/O}{102}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}Basic Concepts}{102}{subsection.4.3.1}%
+\contentsline {subsubsection}{\numberline {4.3.1.1}Channel Commands for Virtio}{103}{subsubsection.4.3.1.1}%
+\contentsline {subsubsection}{\numberline {4.3.1.2}Notifications}{103}{subsubsection.4.3.1.2}%
+\contentsline {subsubsection}{\numberline {4.3.1.3}Device Requirements: Basic Concepts}{103}{subsubsection.4.3.1.3}%
+\contentsline {subsubsection}{\numberline {4.3.1.4}Driver Requirements: Basic Concepts}{103}{subsubsection.4.3.1.4}%
+\contentsline {subsection}{\numberline {4.3.2}Device Initialization}{103}{subsection.4.3.2}%
+\contentsline {subsubsection}{\numberline {4.3.2.1}Setting the Virtio Revision}{103}{subsubsection.4.3.2.1}%
+\contentsline {paragraph}{\numberline {4.3.2.1.1}Device Requirements: Setting the Virtio Revision}{104}{paragraph.4.3.2.1.1}%
+\contentsline {paragraph}{\numberline {4.3.2.1.2}Driver Requirements: Setting the Virtio Revision}{104}{paragraph.4.3.2.1.2}%
+\contentsline {paragraph}{\numberline {4.3.2.1.3}Legacy Interfaces: A Note on Setting the Virtio Revision}{104}{paragraph.4.3.2.1.3}%
+\contentsline {subsubsection}{\numberline {4.3.2.2}Configuring a Virtqueue}{104}{subsubsection.4.3.2.2}%
+\contentsline {paragraph}{\numberline {4.3.2.2.1}Device Requirements: Configuring a Virtqueue}{105}{paragraph.4.3.2.2.1}%
+\contentsline {paragraph}{\numberline {4.3.2.2.2}Legacy Interface: A Note on Configuring a Virtqueue}{105}{paragraph.4.3.2.2.2}%
+\contentsline {subsubsection}{\numberline {4.3.2.3}Communicating Status Information}{105}{subsubsection.4.3.2.3}%
+\contentsline {paragraph}{\numberline {4.3.2.3.1}Driver Requirements: Communicating Status Information}{105}{paragraph.4.3.2.3.1}%
+\contentsline {paragraph}{\numberline {4.3.2.3.2}Device Requirements: Communicating Status Information}{106}{paragraph.4.3.2.3.2}%
+\contentsline {subsubsection}{\numberline {4.3.2.4}Handling Device Features}{106}{subsubsection.4.3.2.4}%
+\contentsline {subsubsection}{\numberline {4.3.2.5}Device Configuration}{106}{subsubsection.4.3.2.5}%
+\contentsline {subsubsection}{\numberline {4.3.2.6}Setting Up Indicators}{106}{subsubsection.4.3.2.6}%
+\contentsline {paragraph}{\numberline {4.3.2.6.1}Setting Up Classic Queue Indicators}{106}{paragraph.4.3.2.6.1}%
+\contentsline {paragraph}{\numberline {4.3.2.6.2}Setting Up Configuration Change Indicators}{107}{paragraph.4.3.2.6.2}%
+\contentsline {paragraph}{\numberline {4.3.2.6.3}Setting Up Two-Stage Queue Indicators}{107}{paragraph.4.3.2.6.3}%
+\contentsline {subparagraph}{\numberline {4.3.2.6.3.1}Device Requirements: Setting Up Two-Stage Queue Indicators}{107}{subparagraph.4.3.2.6.3.1}%
+\contentsline {paragraph}{\numberline {4.3.2.6.4}Legacy Interfaces: A Note on Setting Up Indicators}{107}{paragraph.4.3.2.6.4}%
+\contentsline {subsection}{\numberline {4.3.3}Device Operation}{107}{subsection.4.3.3}%
+\contentsline {subsubsection}{\numberline {4.3.3.1}Host->Guest Notification}{107}{subsubsection.4.3.3.1}%
+\contentsline {paragraph}{\numberline {4.3.3.1.1}Notification via Classic I/O Interrupts}{107}{paragraph.4.3.3.1.1}%
+\contentsline {paragraph}{\numberline {4.3.3.1.2}Notification via Adapter I/O Interrupts}{108}{paragraph.4.3.3.1.2}%
+\contentsline {subparagraph}{\numberline {4.3.3.1.2.1}Device Requirements: Notification via Adapter I/O Interrupts}{108}{subparagraph.4.3.3.1.2.1}%
+\contentsline {subparagraph}{\numberline {4.3.3.1.2.2}Driver Requirements: Notification via Adapter I/O Interrupts}{108}{subparagraph.4.3.3.1.2.2}%
+\contentsline {paragraph}{\numberline {4.3.3.1.3}Legacy Interfaces: A Note on Host->Guest Notification}{108}{paragraph.4.3.3.1.3}%
+\contentsline {subsubsection}{\numberline {4.3.3.2}Guest->Host Notification}{108}{subsubsection.4.3.3.2}%
+\contentsline {paragraph}{\numberline {4.3.3.2.1}Device Requirements: Guest->Host Notification}{109}{paragraph.4.3.3.2.1}%
+\contentsline {paragraph}{\numberline {4.3.3.2.2}Driver Requirements: Guest->Host Notification}{109}{paragraph.4.3.3.2.2}%
+\contentsline {subsubsection}{\numberline {4.3.3.3}Resetting Devices}{109}{subsubsection.4.3.3.3}%
+\contentsline {paragraph}{\numberline {4.3.3.3.1}Device Requirements: Resetting Devices}{109}{paragraph.4.3.3.3.1}%
+\contentsline {paragraph}{\numberline {4.3.3.3.2}Driver Requirements: Resetting Devices}{109}{paragraph.4.3.3.3.2}%
+\contentsline {subsection}{\numberline {4.3.4}Features reserved for future use}{109}{subsection.4.3.4}%
+\contentsline {chapter}{\numberline {5}Device Types}{110}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Network Device}{111}{section.5.1}%
+\contentsline {subsection}{\numberline {5.1.1}Device ID}{111}{subsection.5.1.1}%
+\contentsline {subsection}{\numberline {5.1.2}Virtqueues}{111}{subsection.5.1.2}%
+\contentsline {subsection}{\numberline {5.1.3}Feature bits}{112}{subsection.5.1.3}%
+\contentsline {subsubsection}{\numberline {5.1.3.1}Feature bit requirements}{113}{subsubsection.5.1.3.1}%
+\contentsline {subsubsection}{\numberline {5.1.3.2}Legacy Interface: Feature bits}{114}{subsubsection.5.1.3.2}%
+\contentsline {subsection}{\numberline {5.1.4}Device configuration layout}{114}{subsection.5.1.4}%
+\contentsline {subsubsection}{\numberline {5.1.4.1}Device Requirements: Device configuration layout}{115}{subsubsection.5.1.4.1}%
+\contentsline {subsubsection}{\numberline {5.1.4.2}Driver Requirements: Device configuration layout}{116}{subsubsection.5.1.4.2}%
+\contentsline {subsubsection}{\numberline {5.1.4.3}Legacy Interface: Device configuration layout}{116}{subsubsection.5.1.4.3}%
+\contentsline {subsection}{\numberline {5.1.5}Device Initialization}{116}{subsection.5.1.5}%
+\contentsline {subsection}{\numberline {5.1.6}Device and driver capabilities}{117}{subsection.5.1.6}%
+\contentsline {subsection}{\numberline {5.1.7}Device resource objects}{117}{subsection.5.1.7}%
+\contentsline {subsection}{\numberline {5.1.8}Device parts}{118}{subsection.5.1.8}%
+\contentsline {subsubsection}{\numberline {5.1.8.1}VIRTIO_NET_DEV_PART_CVQ_CFG_PART}{118}{subsubsection.5.1.8.1}%
+\contentsline {subsection}{\numberline {5.1.9}Device Operation}{119}{subsection.5.1.9}%
+\contentsline {subsubsection}{\numberline {5.1.9.1}Legacy Interface: Device Operation}{119}{subsubsection.5.1.9.1}%
+\contentsline {subsubsection}{\numberline {5.1.9.2}Packet Transmission}{120}{subsubsection.5.1.9.2}%
+\contentsline {paragraph}{\numberline {5.1.9.2.1}Driver Requirements: Packet Transmission}{121}{paragraph.5.1.9.2.1}%
+\contentsline {paragraph}{\numberline {5.1.9.2.2}Device Requirements: Packet Transmission}{124}{paragraph.5.1.9.2.2}%
+\contentsline {paragraph}{\numberline {5.1.9.2.3}Packet Transmission Interrupt}{124}{paragraph.5.1.9.2.3}%
+\contentsline {subsubsection}{\numberline {5.1.9.3}Setting Up Receive Buffers}{124}{subsubsection.5.1.9.3}%
+\contentsline {paragraph}{\numberline {5.1.9.3.1}Driver Requirements: Setting Up Receive Buffers}{125}{paragraph.5.1.9.3.1}%
+\contentsline {paragraph}{\numberline {5.1.9.3.2}Device Requirements: Setting Up Receive Buffers}{125}{paragraph.5.1.9.3.2}%
+\contentsline {subsubsection}{\numberline {5.1.9.4}Processing of Incoming Packets}{125}{subsubsection.5.1.9.4}%
+\contentsline {paragraph}{\numberline {5.1.9.4.1}Device Requirements: Processing of Incoming Packets}{126}{paragraph.5.1.9.4.1}%
+\contentsline {paragraph}{\numberline {5.1.9.4.2}Driver Requirements: Processing of Incoming Packets}{128}{paragraph.5.1.9.4.2}%
+\contentsline {paragraph}{\numberline {5.1.9.4.3}Hash calculation for incoming packets}{129}{paragraph.5.1.9.4.3}%
+\contentsline {subparagraph}{\numberline {5.1.9.4.3.1}Supported/enabled hash types}{130}{subparagraph.5.1.9.4.3.1}%
+\contentsline {subparagraph}{\numberline {5.1.9.4.3.2}IPv4 packets}{130}{subparagraph.5.1.9.4.3.2}%
+\contentsline {subparagraph}{\numberline {5.1.9.4.3.3}IPv6 packets without extension header}{130}{subparagraph.5.1.9.4.3.3}%
+\contentsline {subparagraph}{\numberline {5.1.9.4.3.4}IPv6 packets with extension header}{131}{subparagraph.5.1.9.4.3.4}%
+\contentsline {paragraph}{\numberline {5.1.9.4.4}Inner Header Hash}{132}{paragraph.5.1.9.4.4}%
+\contentsline {subparagraph}{\numberline {5.1.9.4.4.1}Encapsulated packet}{132}{subparagraph.5.1.9.4.4.1}%
+\contentsline {subparagraph}{\numberline {5.1.9.4.4.2}Encapsulation types supported/enabled for inner header hash}{132}{subparagraph.5.1.9.4.4.2}%
+\contentsline {subparagraph}{\numberline {5.1.9.4.4.3}Advice}{132}{subparagraph.5.1.9.4.4.3}%
+\contentsline {subparagraph}{\numberline {5.1.9.4.4.4}Device Requirements: Inner Header Hash}{133}{subparagraph.5.1.9.4.4.4}%
+\contentsline {subparagraph}{\numberline {5.1.9.4.4.5}Driver Requirements: Inner Header Hash}{133}{subparagraph.5.1.9.4.4.5}%
+\contentsline {paragraph}{\numberline {5.1.9.4.5}Hash reporting for incoming packets}{133}{paragraph.5.1.9.4.5}%
+\contentsline {subsubsection}{\numberline {5.1.9.5}Control Virtqueue}{133}{subsubsection.5.1.9.5}%
+\contentsline {paragraph}{\numberline {5.1.9.5.1}Packet Receive Filtering}{134}{paragraph.5.1.9.5.1}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.1.1}Device Requirements: Packet Receive Filtering}{134}{subparagraph.5.1.9.5.1.1}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.1.2}Driver Requirements: Packet Receive Filtering}{135}{subparagraph.5.1.9.5.1.2}%
+\contentsline {paragraph}{\numberline {5.1.9.5.2}Setting MAC Address Filtering}{135}{paragraph.5.1.9.5.2}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.2.1}Device Requirements: Setting MAC Address Filtering}{135}{subparagraph.5.1.9.5.2.1}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.2.2}Driver Requirements: Setting MAC Address Filtering}{135}{subparagraph.5.1.9.5.2.2}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.2.3}Legacy Interface: Setting MAC Address Filtering}{136}{subparagraph.5.1.9.5.2.3}%
+\contentsline {paragraph}{\numberline {5.1.9.5.3}VLAN Filtering}{136}{paragraph.5.1.9.5.3}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.3.1}Device Requirements: VLAN Filtering}{136}{subparagraph.5.1.9.5.3.1}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.3.2}Legacy Interface: VLAN Filtering}{136}{subparagraph.5.1.9.5.3.2}%
+\contentsline {paragraph}{\numberline {5.1.9.5.4}Gratuitous Packet Sending}{136}{paragraph.5.1.9.5.4}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.4.1}Driver Requirements: Gratuitous Packet Sending}{137}{subparagraph.5.1.9.5.4.1}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.4.2}Device Requirements: Gratuitous Packet Sending}{137}{subparagraph.5.1.9.5.4.2}%
+\contentsline {paragraph}{\numberline {5.1.9.5.5}Device operation in multiqueue mode}{137}{paragraph.5.1.9.5.5}%
+\contentsline {paragraph}{\numberline {5.1.9.5.6}Automatic receive steering in multiqueue mode}{137}{paragraph.5.1.9.5.6}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.6.1}Driver Requirements: Automatic receive steering in multiqueue mode}{138}{subparagraph.5.1.9.5.6.1}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.6.2}Device Requirements: Automatic receive steering in multiqueue mode}{138}{subparagraph.5.1.9.5.6.2}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.6.3}Legacy Interface: Automatic receive steering in multiqueue mode}{138}{subparagraph.5.1.9.5.6.3}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.6.4}Hash calculation}{138}{subparagraph.5.1.9.5.6.4}%
+\contentsline {paragraph}{\numberline {5.1.9.5.7}Receive-side scaling (RSS)}{139}{paragraph.5.1.9.5.7}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.7.1}Setting RSS parameters}{139}{subparagraph.5.1.9.5.7.1}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.7.2}Driver Requirements: Setting RSS parameters}{139}{subparagraph.5.1.9.5.7.2}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.7.3}Device Requirements: RSS processing}{139}{subparagraph.5.1.9.5.7.3}%
+\contentsline {paragraph}{\numberline {5.1.9.5.8}RSS Context}{140}{paragraph.5.1.9.5.8}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.8.1}Querying RSS Context Capability}{140}{subparagraph.5.1.9.5.8.1}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.8.2}Setting RSS Context Parameters}{140}{subparagraph.5.1.9.5.8.2}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.8.3}Device Requirements: RSS Context}{141}{subparagraph.5.1.9.5.8.3}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.8.4}Driver Requirements: RSS Context}{141}{subparagraph.5.1.9.5.8.4}%
+\contentsline {paragraph}{\numberline {5.1.9.5.9}Offloads State Configuration}{141}{paragraph.5.1.9.5.9}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.9.1}Setting Offloads State}{141}{subparagraph.5.1.9.5.9.1}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.9.2}Driver Requirements: Setting Offloads State}{141}{subparagraph.5.1.9.5.9.2}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.9.3}Legacy Interface: Setting Offloads State}{141}{subparagraph.5.1.9.5.9.3}%
+\contentsline {paragraph}{\numberline {5.1.9.5.10}Notifications Coalescing}{142}{paragraph.5.1.9.5.10}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.10.1}Operation}{143}{subparagraph.5.1.9.5.10.1}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.10.2}RX Example}{143}{subparagraph.5.1.9.5.10.2}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.10.3}TX Example}{143}{subparagraph.5.1.9.5.10.3}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.10.4}Notifications When Coalescing Parameters Change}{144}{subparagraph.5.1.9.5.10.4}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.10.5}Driver Requirements: Notifications Coalescing}{144}{subparagraph.5.1.9.5.10.5}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.10.6}Device Requirements: Notifications Coalescing}{144}{subparagraph.5.1.9.5.10.6}%
+\contentsline {paragraph}{\numberline {5.1.9.5.11}Device Statistics}{144}{paragraph.5.1.9.5.11}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.11.1}Query Statistic Capabilities}{145}{subparagraph.5.1.9.5.11.1}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.11.2}Get Statistics}{145}{subparagraph.5.1.9.5.11.2}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.11.3}Controlq Statistics}{146}{subparagraph.5.1.9.5.11.3}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.11.4}Receiveq Basic Statistics}{146}{subparagraph.5.1.9.5.11.4}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.11.5}Transmitq Basic Statistics}{147}{subparagraph.5.1.9.5.11.5}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.11.6}Receiveq CSUM Statistics}{147}{subparagraph.5.1.9.5.11.6}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.11.7}Transmitq CSUM Statistics}{148}{subparagraph.5.1.9.5.11.7}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.11.8}Receiveq GSO Statistics}{148}{subparagraph.5.1.9.5.11.8}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.11.9}Transmitq GSO Statistics}{148}{subparagraph.5.1.9.5.11.9}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.11.10}Receiveq Speed Statistics}{149}{subparagraph.5.1.9.5.11.10}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.11.11}Transmitq Speed Statistics}{149}{subparagraph.5.1.9.5.11.11}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.11.12}Device Requirements: Device Statistics}{150}{subparagraph.5.1.9.5.11.12}%
+\contentsline {subparagraph}{\numberline {5.1.9.5.11.13}Driver Requirements: Device Statistics}{150}{subparagraph.5.1.9.5.11.13}%
+\contentsline {subsubsection}{\numberline {5.1.9.6}Flow filter}{150}{subsubsection.5.1.9.6}%
+\contentsline {paragraph}{\numberline {5.1.9.6.1}Packet processing order}{151}{paragraph.5.1.9.6.1}%
+\contentsline {paragraph}{\numberline {5.1.9.6.2}Device and driver capabilities}{151}{paragraph.5.1.9.6.2}%
+\contentsline {subparagraph}{\numberline {5.1.9.6.2.1}VIRTIO_NET_FF_RESOURCE_CAP}{151}{subparagraph.5.1.9.6.2.1}%
+\contentsline {subparagraph}{\numberline {5.1.9.6.2.2}VIRTIO_NET_FF_SELECTOR_CAP}{152}{subparagraph.5.1.9.6.2.2}%
+\contentsline {subparagraph}{\numberline {5.1.9.6.2.3}VIRTIO_NET_FF_ACTION_CAP}{153}{subparagraph.5.1.9.6.2.3}%
+\contentsline {paragraph}{\numberline {5.1.9.6.3}Resource objects}{154}{paragraph.5.1.9.6.3}%
+\contentsline {subparagraph}{\numberline {5.1.9.6.3.1}VIRTIO_NET_RESOURCE_OBJ_FF_GROUP}{154}{subparagraph.5.1.9.6.3.1}%
+\contentsline {subparagraph}{\numberline {5.1.9.6.3.2}VIRTIO_NET_RESOURCE_OBJ_FF_CLASSIFIER}{154}{subparagraph.5.1.9.6.3.2}%
+\contentsline {subparagraph}{\numberline {5.1.9.6.3.3}VIRTIO_NET_RESOURCE_OBJ_FF_RULE}{155}{subparagraph.5.1.9.6.3.3}%
+\contentsline {paragraph}{\numberline {5.1.9.6.4}Device Requirements: Flow filter}{156}{paragraph.5.1.9.6.4}%
+\contentsline {paragraph}{\numberline {5.1.9.6.5}Driver Requirements: Flow filter}{157}{paragraph.5.1.9.6.5}%
+\contentsline {subsubsection}{\numberline {5.1.9.7}IPsec Operation}{158}{subsubsection.5.1.9.7}%
+\contentsline {paragraph}{\numberline {5.1.9.7.1}Packet processing order}{158}{paragraph.5.1.9.7.1}%
+\contentsline {paragraph}{\numberline {5.1.9.7.2}Device and driver capabilities}{159}{paragraph.5.1.9.7.2}%
+\contentsline {paragraph}{\numberline {5.1.9.7.3}Resource objects}{159}{paragraph.5.1.9.7.3}%
+\contentsline {paragraph}{\numberline {5.1.9.7.4}Device Requirements: IPsec Operation}{159}{paragraph.5.1.9.7.4}%
+\contentsline {paragraph}{\numberline {5.1.9.7.5}Driver Requirements: IPsec Operation}{160}{paragraph.5.1.9.7.5}%
+\contentsline {subsubsection}{\numberline {5.1.9.8}Legacy Interface: Framing Requirements}{160}{subsubsection.5.1.9.8}%
+\contentsline {section}{\numberline {5.2}Block Device}{160}{section.5.2}%
+\contentsline {subsection}{\numberline {5.2.1}Device ID}{160}{subsection.5.2.1}%
+\contentsline {subsection}{\numberline {5.2.2}Virtqueues}{161}{subsection.5.2.2}%
+\contentsline {subsection}{\numberline {5.2.3}Feature bits}{161}{subsection.5.2.3}%
+\contentsline {subsubsection}{\numberline {5.2.3.1}Legacy Interface: Feature bits}{161}{subsubsection.5.2.3.1}%
+\contentsline {subsection}{\numberline {5.2.4}Device configuration layout}{161}{subsection.5.2.4}%
+\contentsline {subsubsection}{\numberline {5.2.4.1}Legacy Interface: Device configuration layout}{163}{subsubsection.5.2.4.1}%
+\contentsline {subsection}{\numberline {5.2.5}Device Initialization}{163}{subsection.5.2.5}%
+\contentsline {subsubsection}{\numberline {5.2.5.1}Driver Requirements: Device Initialization}{164}{subsubsection.5.2.5.1}%
+\contentsline {subsubsection}{\numberline {5.2.5.2}Device Requirements: Device Initialization}{164}{subsubsection.5.2.5.2}%
+\contentsline {subsubsection}{\numberline {5.2.5.3}Legacy Interface: Device Initialization}{165}{subsubsection.5.2.5.3}%
+\contentsline {subsection}{\numberline {5.2.6}Device Operation}{166}{subsection.5.2.6}%
+\contentsline {subsubsection}{\numberline {5.2.6.1}Driver Requirements: Device Operation}{171}{subsubsection.5.2.6.1}%
+\contentsline {subsubsection}{\numberline {5.2.6.2}Device Requirements: Device Operation}{172}{subsubsection.5.2.6.2}%
+\contentsline {subsubsection}{\numberline {5.2.6.3}Legacy Interface: Device Operation}{175}{subsubsection.5.2.6.3}%
+\contentsline {subsubsection}{\numberline {5.2.6.4}Legacy Interface: Framing Requirements}{176}{subsubsection.5.2.6.4}%
+\contentsline {section}{\numberline {5.3}Console Device}{176}{section.5.3}%
+\contentsline {subsection}{\numberline {5.3.1}Device ID}{176}{subsection.5.3.1}%
+\contentsline {subsection}{\numberline {5.3.2}Virtqueues}{176}{subsection.5.3.2}%
+\contentsline {subsection}{\numberline {5.3.3}Feature bits}{177}{subsection.5.3.3}%
+\contentsline {subsection}{\numberline {5.3.4}Device configuration layout}{177}{subsection.5.3.4}%
+\contentsline {subsubsection}{\numberline {5.3.4.1}Legacy Interface: Device configuration layout}{177}{subsubsection.5.3.4.1}%
+\contentsline {subsection}{\numberline {5.3.5}Device Initialization}{177}{subsection.5.3.5}%
+\contentsline {subsubsection}{\numberline {5.3.5.1}Device Requirements: Device Initialization}{177}{subsubsection.5.3.5.1}%
+\contentsline {subsection}{\numberline {5.3.6}Device Operation}{177}{subsection.5.3.6}%
+\contentsline {subsubsection}{\numberline {5.3.6.1}Driver Requirements: Device Operation}{178}{subsubsection.5.3.6.1}%
+\contentsline {subsubsection}{\numberline {5.3.6.2}Multiport Device Operation}{178}{subsubsection.5.3.6.2}%
+\contentsline {paragraph}{\numberline {5.3.6.2.1}Device Requirements: Multiport Device Operation}{179}{paragraph.5.3.6.2.1}%
+\contentsline {paragraph}{\numberline {5.3.6.2.2}Driver Requirements: Multiport Device Operation}{179}{paragraph.5.3.6.2.2}%
+\contentsline {subsubsection}{\numberline {5.3.6.3}Legacy Interface: Device Operation}{179}{subsubsection.5.3.6.3}%
+\contentsline {subsubsection}{\numberline {5.3.6.4}Legacy Interface: Framing Requirements}{179}{subsubsection.5.3.6.4}%
+\contentsline {section}{\numberline {5.4}Entropy Device}{179}{section.5.4}%
+\contentsline {subsection}{\numberline {5.4.1}Device ID}{179}{subsection.5.4.1}%
+\contentsline {subsection}{\numberline {5.4.2}Virtqueues}{179}{subsection.5.4.2}%
+\contentsline {subsection}{\numberline {5.4.3}Feature bits}{179}{subsection.5.4.3}%
+\contentsline {subsection}{\numberline {5.4.4}Device configuration layout}{179}{subsection.5.4.4}%
+\contentsline {subsection}{\numberline {5.4.5}Device Initialization}{179}{subsection.5.4.5}%
+\contentsline {subsection}{\numberline {5.4.6}Device Operation}{180}{subsection.5.4.6}%
+\contentsline {subsubsection}{\numberline {5.4.6.1}Driver Requirements: Device Operation}{180}{subsubsection.5.4.6.1}%
+\contentsline {subsubsection}{\numberline {5.4.6.2}Device Requirements: Device Operation}{180}{subsubsection.5.4.6.2}%
+\contentsline {section}{\numberline {5.5}Traditional Memory Balloon Device}{180}{section.5.5}%
+\contentsline {subsection}{\numberline {5.5.1}Device ID}{180}{subsection.5.5.1}%
+\contentsline {subsection}{\numberline {5.5.2}Virtqueues}{180}{subsection.5.5.2}%
+\contentsline {subsection}{\numberline {5.5.3}Feature bits}{180}{subsection.5.5.3}%
+\contentsline {subsubsection}{\numberline {5.5.3.1}Driver Requirements: Feature bits}{181}{subsubsection.5.5.3.1}%
+\contentsline {subsubsection}{\numberline {5.5.3.2}Device Requirements: Feature bits}{181}{subsubsection.5.5.3.2}%
+\contentsline {subparagraph}{\numberline {5.5.3.2.0.1}Legacy Interface: Feature bits}{181}{subparagraph.5.5.3.2.0.1}%
+\contentsline {subsection}{\numberline {5.5.4}Device configuration layout}{181}{subsection.5.5.4}%
+\contentsline {subparagraph}{\numberline {5.5.4.0.0.1}Legacy Interface: Device configuration layout}{181}{subparagraph.5.5.4.0.0.1}%
+\contentsline {subsection}{\numberline {5.5.5}Device Initialization}{181}{subsection.5.5.5}%
+\contentsline {subsection}{\numberline {5.5.6}Device Operation}{182}{subsection.5.5.6}%
+\contentsline {subsubsection}{\numberline {5.5.6.1}Driver Requirements: Device Operation}{182}{subsubsection.5.5.6.1}%
+\contentsline {subsubsection}{\numberline {5.5.6.2}Device Requirements: Device Operation}{183}{subsubsection.5.5.6.2}%
+\contentsline {paragraph}{\numberline {5.5.6.2.1}Legacy Interface: Device Operation}{183}{paragraph.5.5.6.2.1}%
+\contentsline {subsubsection}{\numberline {5.5.6.3}Memory Statistics}{183}{subsubsection.5.5.6.3}%
+\contentsline {paragraph}{\numberline {5.5.6.3.1}Driver Requirements: Memory Statistics}{184}{paragraph.5.5.6.3.1}%
+\contentsline {paragraph}{\numberline {5.5.6.3.2}Device Requirements: Memory Statistics}{184}{paragraph.5.5.6.3.2}%
+\contentsline {paragraph}{\numberline {5.5.6.3.3}Legacy Interface: Memory Statistics}{184}{paragraph.5.5.6.3.3}%
+\contentsline {subsubsection}{\numberline {5.5.6.4}Memory Statistics Tags}{184}{subsubsection.5.5.6.4}%
+\contentsline {subsubsection}{\numberline {5.5.6.5}Free Page Hinting}{185}{subsubsection.5.5.6.5}%
+\contentsline {paragraph}{\numberline {5.5.6.5.1}Driver Requirements: Free Page Hinting}{185}{paragraph.5.5.6.5.1}%
+\contentsline {paragraph}{\numberline {5.5.6.5.2}Device Requirements: Free Page Hinting}{186}{paragraph.5.5.6.5.2}%
+\contentsline {paragraph}{\numberline {5.5.6.5.3}Legacy Interface: Free Page Hinting}{186}{paragraph.5.5.6.5.3}%
+\contentsline {subsubsection}{\numberline {5.5.6.6}Page Poison}{186}{subsubsection.5.5.6.6}%
+\contentsline {paragraph}{\numberline {5.5.6.6.1}Driver Requirements: Page Poison}{187}{paragraph.5.5.6.6.1}%
+\contentsline {paragraph}{\numberline {5.5.6.6.2}Device Requirements: Page Poison}{187}{paragraph.5.5.6.6.2}%
+\contentsline {subsubsection}{\numberline {5.5.6.7}Free Page Reporting}{187}{subsubsection.5.5.6.7}%
+\contentsline {paragraph}{\numberline {5.5.6.7.1}Driver Requirements: Free Page Reporting}{187}{paragraph.5.5.6.7.1}%
+\contentsline {paragraph}{\numberline {5.5.6.7.2}Device Requirements: Free Page Reporting}{187}{paragraph.5.5.6.7.2}%
+\contentsline {section}{\numberline {5.6}SCSI Host Device}{188}{section.5.6}%
+\contentsline {subsection}{\numberline {5.6.1}Device ID}{188}{subsection.5.6.1}%
+\contentsline {subsection}{\numberline {5.6.2}Virtqueues}{188}{subsection.5.6.2}%
+\contentsline {subsection}{\numberline {5.6.3}Feature bits}{188}{subsection.5.6.3}%
+\contentsline {subsection}{\numberline {5.6.4}Device configuration layout}{188}{subsection.5.6.4}%
+\contentsline {subsubsection}{\numberline {5.6.4.1}Driver Requirements: Device configuration layout}{189}{subsubsection.5.6.4.1}%
+\contentsline {subsubsection}{\numberline {5.6.4.2}Device Requirements: Device configuration layout}{189}{subsubsection.5.6.4.2}%
+\contentsline {subsubsection}{\numberline {5.6.4.3}Legacy Interface: Device configuration layout}{189}{subsubsection.5.6.4.3}%
+\contentsline {subsection}{\numberline {5.6.5}Device Requirements: Device Initialization}{189}{subsection.5.6.5}%
+\contentsline {subsection}{\numberline {5.6.6}Device Operation}{189}{subsection.5.6.6}%
+\contentsline {paragraph}{\numberline {5.6.6.0.1}Legacy Interface: Device Operation}{189}{paragraph.5.6.6.0.1}%
+\contentsline {subsubsection}{\numberline {5.6.6.1}Device Operation: Request Queues}{190}{subsubsection.5.6.6.1}%
+\contentsline {paragraph}{\numberline {5.6.6.1.1}Device Requirements: Device Operation: Request Queues}{191}{paragraph.5.6.6.1.1}%
+\contentsline {paragraph}{\numberline {5.6.6.1.2}Driver Requirements: Device Operation: Request Queues}{192}{paragraph.5.6.6.1.2}%
+\contentsline {paragraph}{\numberline {5.6.6.1.3}Legacy Interface: Device Operation: Request Queues}{192}{paragraph.5.6.6.1.3}%
+\contentsline {subsubsection}{\numberline {5.6.6.2}Device Operation: controlq}{192}{subsubsection.5.6.6.2}%
+\contentsline {paragraph}{\numberline {5.6.6.2.1}Legacy Interface: Device Operation: controlq}{194}{paragraph.5.6.6.2.1}%
+\contentsline {subsubsection}{\numberline {5.6.6.3}Device Operation: eventq}{194}{subsubsection.5.6.6.3}%
+\contentsline {paragraph}{\numberline {5.6.6.3.1}Driver Requirements: Device Operation: eventq}{195}{paragraph.5.6.6.3.1}%
+\contentsline {paragraph}{\numberline {5.6.6.3.2}Device Requirements: Device Operation: eventq}{196}{paragraph.5.6.6.3.2}%
+\contentsline {paragraph}{\numberline {5.6.6.3.3}Legacy Interface: Device Operation: eventq}{196}{paragraph.5.6.6.3.3}%
+\contentsline {subsubsection}{\numberline {5.6.6.4}Legacy Interface: Framing Requirements}{196}{subsubsection.5.6.6.4}%
+\contentsline {section}{\numberline {5.7}GPU Device}{196}{section.5.7}%
+\contentsline {subsection}{\numberline {5.7.1}Device ID}{196}{subsection.5.7.1}%
+\contentsline {subsection}{\numberline {5.7.2}Virtqueues}{196}{subsection.5.7.2}%
+\contentsline {subsection}{\numberline {5.7.3}Feature bits}{196}{subsection.5.7.3}%
+\contentsline {subsection}{\numberline {5.7.4}Device configuration layout}{197}{subsection.5.7.4}%
+\contentsline {subsubsection}{\numberline {5.7.4.1}Device configuration fields}{197}{subsubsection.5.7.4.1}%
+\contentsline {subsubsection}{\numberline {5.7.4.2}Events}{197}{subsubsection.5.7.4.2}%
+\contentsline {subsection}{\numberline {5.7.5}Device Requirements: Device Initialization}{197}{subsection.5.7.5}%
+\contentsline {subsection}{\numberline {5.7.6}Device Operation}{198}{subsection.5.7.6}%
+\contentsline {subsubsection}{\numberline {5.7.6.1}Device Operation: Create a framebuffer and configure scanout}{198}{subsubsection.5.7.6.1}%
+\contentsline {subsubsection}{\numberline {5.7.6.2}Device Operation: Update a framebuffer and scanout}{198}{subsubsection.5.7.6.2}%
+\contentsline {subsubsection}{\numberline {5.7.6.3}Device Operation: Using pageflip}{198}{subsubsection.5.7.6.3}%
+\contentsline {subsubsection}{\numberline {5.7.6.4}Device Operation: Multihead setup}{198}{subsubsection.5.7.6.4}%
+\contentsline {subsubsection}{\numberline {5.7.6.5}Device Requirements: Device Operation: Command lifecycle and fencing}{198}{subsubsection.5.7.6.5}%
+\contentsline {subsubsection}{\numberline {5.7.6.6}Device Operation: Configure mouse cursor}{198}{subsubsection.5.7.6.6}%
+\contentsline {subsubsection}{\numberline {5.7.6.7}Device Operation: Request header}{199}{subsubsection.5.7.6.7}%
+\contentsline {subsubsection}{\numberline {5.7.6.8}Device Operation: controlq}{200}{subsubsection.5.7.6.8}%
+\contentsline {subsubsection}{\numberline {5.7.6.9}Device Operation: controlq (3d)}{205}{subsubsection.5.7.6.9}%
+\contentsline {subsubsection}{\numberline {5.7.6.10}Device Operation: cursorq}{206}{subsubsection.5.7.6.10}%
+\contentsline {subsection}{\numberline {5.7.7}VGA Compatibility}{206}{subsection.5.7.7}%
+\contentsline {section}{\numberline {5.8}Input Device}{206}{section.5.8}%
+\contentsline {subsection}{\numberline {5.8.1}Device ID}{207}{subsection.5.8.1}%
+\contentsline {subsection}{\numberline {5.8.2}Virtqueues}{207}{subsection.5.8.2}%
+\contentsline {subsection}{\numberline {5.8.3}Feature bits}{207}{subsection.5.8.3}%
+\contentsline {subsection}{\numberline {5.8.4}Device configuration layout}{207}{subsection.5.8.4}%
+\contentsline {subsection}{\numberline {5.8.5}Device Initialization}{208}{subsection.5.8.5}%
+\contentsline {subsubsection}{\numberline {5.8.5.1}Driver Requirements: Device Initialization}{208}{subsubsection.5.8.5.1}%
+\contentsline {subsubsection}{\numberline {5.8.5.2}Device Requirements: Device Initialization}{208}{subsubsection.5.8.5.2}%
+\contentsline {subsection}{\numberline {5.8.6}Device Operation}{208}{subsection.5.8.6}%
+\contentsline {subsubsection}{\numberline {5.8.6.1}Driver Requirements: Device Operation}{209}{subsubsection.5.8.6.1}%
+\contentsline {subsubsection}{\numberline {5.8.6.2}Device Requirements: Device Operation}{209}{subsubsection.5.8.6.2}%
+\contentsline {section}{\numberline {5.9}Crypto Device}{209}{section.5.9}%
+\contentsline {subsection}{\numberline {5.9.1}Device ID}{209}{subsection.5.9.1}%
+\contentsline {subsection}{\numberline {5.9.2}Virtqueues}{209}{subsection.5.9.2}%
+\contentsline {subsection}{\numberline {5.9.3}Feature bits}{209}{subsection.5.9.3}%
+\contentsline {subsubsection}{\numberline {5.9.3.1}Feature bit requirements}{210}{subsubsection.5.9.3.1}%
+\contentsline {subsection}{\numberline {5.9.4}Supported crypto services}{210}{subsection.5.9.4}%
+\contentsline {subsubsection}{\numberline {5.9.4.1}CIPHER services}{210}{subsubsection.5.9.4.1}%
+\contentsline {subsubsection}{\numberline {5.9.4.2}HASH services}{210}{subsubsection.5.9.4.2}%
+\contentsline {subsubsection}{\numberline {5.9.4.3}MAC services}{211}{subsubsection.5.9.4.3}%
+\contentsline {subsubsection}{\numberline {5.9.4.4}AEAD services}{211}{subsubsection.5.9.4.4}%
+\contentsline {subsubsection}{\numberline {5.9.4.5}AKCIPHER services}{211}{subsubsection.5.9.4.5}%
+\contentsline {subsection}{\numberline {5.9.5}Device configuration layout}{212}{subsection.5.9.5}%
+\contentsline {subsubsection}{\numberline {5.9.5.1}Device Requirements: Device configuration layout}{212}{subsubsection.5.9.5.1}%
+\contentsline {subsubsection}{\numberline {5.9.5.2}Driver Requirements: Device configuration layout}{213}{subsubsection.5.9.5.2}%
+\contentsline {subsection}{\numberline {5.9.6}Device Initialization}{213}{subsection.5.9.6}%
+\contentsline {subsubsection}{\numberline {5.9.6.1}Driver Requirements: Device Initialization}{213}{subsubsection.5.9.6.1}%
+\contentsline {subsection}{\numberline {5.9.7}Device and driver capabilities}{213}{subsection.5.9.7}%
+\contentsline {subsection}{\numberline {5.9.8}Device resource objects}{213}{subsection.5.9.8}%
+\contentsline {subsection}{\numberline {5.9.9}Device Operation}{214}{subsection.5.9.9}%
+\contentsline {subsubsection}{\numberline {5.9.9.1}Operation Status}{214}{subsubsection.5.9.9.1}%
+\contentsline {subsubsection}{\numberline {5.9.9.2}Control Virtqueue}{214}{subsubsection.5.9.9.2}%
+\contentsline {paragraph}{\numberline {5.9.9.2.1}Session operation}{216}{paragraph.5.9.9.2.1}%
+\contentsline {subparagraph}{\numberline {5.9.9.2.1.1}Session operation: HASH session}{216}{subparagraph.5.9.9.2.1.1}%
+\contentsline {subparagraph}{\numberline {5.9.9.2.1.2}Session operation: MAC session}{216}{subparagraph.5.9.9.2.1.2}%
+\contentsline {subparagraph}{\numberline {5.9.9.2.1.3}Session operation: Symmetric algorithms session}{217}{subparagraph.5.9.9.2.1.3}%
+\contentsline {subparagraph}{\numberline {5.9.9.2.1.4}Session operation: AEAD session}{218}{subparagraph.5.9.9.2.1.4}%
+\contentsline {subparagraph}{\numberline {5.9.9.2.1.5}Session operation: AKCIPHER session}{219}{subparagraph.5.9.9.2.1.5}%
+\contentsline {subparagraph}{\numberline {5.9.9.2.1.6}Driver Requirements: Session operation: create session}{221}{subparagraph.5.9.9.2.1.6}%
+\contentsline {subparagraph}{\numberline {5.9.9.2.1.7}Device Requirements: Session operation: create session}{221}{subparagraph.5.9.9.2.1.7}%
+\contentsline {subparagraph}{\numberline {5.9.9.2.1.8}Driver Requirements: Session operation: destroy session}{221}{subparagraph.5.9.9.2.1.8}%
+\contentsline {subparagraph}{\numberline {5.9.9.2.1.9}Device Requirements: Session operation: destroy session}{221}{subparagraph.5.9.9.2.1.9}%
+\contentsline {subsubsection}{\numberline {5.9.9.3}Data Virtqueue}{221}{subsubsection.5.9.9.3}%
+\contentsline {subsubsection}{\numberline {5.9.9.4}HASH Service Operation}{223}{subsubsection.5.9.9.4}%
+\contentsline {paragraph}{\numberline {5.9.9.4.1}Driver Requirements: HASH Service Operation}{224}{paragraph.5.9.9.4.1}%
+\contentsline {paragraph}{\numberline {5.9.9.4.2}Device Requirements: HASH Service Operation}{224}{paragraph.5.9.9.4.2}%
+\contentsline {subsubsection}{\numberline {5.9.9.5}MAC Service Operation}{225}{subsubsection.5.9.9.5}%
+\contentsline {paragraph}{\numberline {5.9.9.5.1}Driver Requirements: MAC Service Operation}{225}{paragraph.5.9.9.5.1}%
+\contentsline {paragraph}{\numberline {5.9.9.5.2}Device Requirements: MAC Service Operation}{226}{paragraph.5.9.9.5.2}%
+\contentsline {subsubsection}{\numberline {5.9.9.6}Symmetric algorithms Operation}{226}{subsubsection.5.9.9.6}%
+\contentsline {paragraph}{\numberline {5.9.9.6.1}Driver Requirements: Symmetric algorithms Operation}{229}{paragraph.5.9.9.6.1}%
+\contentsline {paragraph}{\numberline {5.9.9.6.2}Device Requirements: Symmetric algorithms Operation}{230}{paragraph.5.9.9.6.2}%
+\contentsline {subsubsection}{\numberline {5.9.9.7}AEAD Service Operation}{230}{subsubsection.5.9.9.7}%
+\contentsline {paragraph}{\numberline {5.9.9.7.1}Driver Requirements: AEAD Service Operation}{232}{paragraph.5.9.9.7.1}%
+\contentsline {paragraph}{\numberline {5.9.9.7.2}Device Requirements: AEAD Service Operation}{232}{paragraph.5.9.9.7.2}%
+\contentsline {subsubsection}{\numberline {5.9.9.8}AKCIPHER Service Operation}{232}{subsubsection.5.9.9.8}%
+\contentsline {paragraph}{\numberline {5.9.9.8.1}Driver Requirements: AKCIPHER Service Operation}{233}{paragraph.5.9.9.8.1}%
+\contentsline {paragraph}{\numberline {5.9.9.8.2}Device Requirements: AKCIPHER Service Operation}{233}{paragraph.5.9.9.8.2}%
+\contentsline {subsubsection}{\numberline {5.9.9.9}IPSEC Service Operation}{234}{subsubsection.5.9.9.9}%
+\contentsline {paragraph}{\numberline {5.9.9.9.1}Device and driver capabilities}{234}{paragraph.5.9.9.9.1}%
+\contentsline {subparagraph}{\numberline {5.9.9.9.1.1}VIRTIO_CRYPTO_IPSEC_RESOURCE_CAP}{234}{subparagraph.5.9.9.9.1.1}%
+\contentsline {subparagraph}{\numberline {5.9.9.9.1.2}VIRTIO_CRYPTO_IPSEC_SA_CAP}{235}{subparagraph.5.9.9.9.1.2}%
+\contentsline {paragraph}{\numberline {5.9.9.9.2}Resource objects}{236}{paragraph.5.9.9.9.2}%
+\contentsline {subparagraph}{\numberline {5.9.9.9.2.1}VIRTIO_CRYPTO_RESOURCE_OBJ_IPSEC_OUTBOUND_SA}{236}{subparagraph.5.9.9.9.2.1}%
+\contentsline {subparagraph}{\numberline {5.9.9.9.2.2}VIRTIO_CRYPTO_RESOURCE_OBJ_IPSEC_INBOUND_SA}{238}{subparagraph.5.9.9.9.2.2}%
+\contentsline {paragraph}{\numberline {5.9.9.9.3}Data processing}{238}{paragraph.5.9.9.9.3}%
+\contentsline {paragraph}{\numberline {5.9.9.9.4}Device Requirements: IPsec Service Operation}{238}{paragraph.5.9.9.9.4}%
+\contentsline {paragraph}{\numberline {5.9.9.9.5}Driver Requirements: IPsec Service Operation}{239}{paragraph.5.9.9.9.5}%
+\contentsline {section}{\numberline {5.10}Socket Device}{240}{section.5.10}%
+\contentsline {subsection}{\numberline {5.10.1}Device ID}{240}{subsection.5.10.1}%
+\contentsline {subsection}{\numberline {5.10.2}Virtqueues}{240}{subsection.5.10.2}%
+\contentsline {subsection}{\numberline {5.10.3}Feature bits}{240}{subsection.5.10.3}%
+\contentsline {subsubsection}{\numberline {5.10.3.1}Driver Requirements: Feature bits}{240}{subsubsection.5.10.3.1}%
+\contentsline {subsubsection}{\numberline {5.10.3.2}Device Requirements: Feature bits}{240}{subsubsection.5.10.3.2}%
+\contentsline {subsection}{\numberline {5.10.4}Device configuration layout}{240}{subsection.5.10.4}%
+\contentsline {subsection}{\numberline {5.10.5}Device Initialization}{241}{subsection.5.10.5}%
+\contentsline {subsection}{\numberline {5.10.6}Device Operation}{241}{subsection.5.10.6}%
+\contentsline {subsubsection}{\numberline {5.10.6.1}Virtqueue Flow Control}{241}{subsubsection.5.10.6.1}%
+\contentsline {paragraph}{\numberline {5.10.6.1.1}Driver Requirements: Device Operation: Virtqueue Flow Control}{242}{paragraph.5.10.6.1.1}%
+\contentsline {paragraph}{\numberline {5.10.6.1.2}Device Requirements: Device Operation: Virtqueue Flow Control}{242}{paragraph.5.10.6.1.2}%
+\contentsline {subsubsection}{\numberline {5.10.6.2}Addressing}{242}{subsubsection.5.10.6.2}%
+\contentsline {subsubsection}{\numberline {5.10.6.3}Buffer Space Management}{242}{subsubsection.5.10.6.3}%
+\contentsline {paragraph}{\numberline {5.10.6.3.1}Driver Requirements: Device Operation: Buffer Space Management}{242}{paragraph.5.10.6.3.1}%
+\contentsline {paragraph}{\numberline {5.10.6.3.2}Device Requirements: Device Operation: Buffer Space Management}{243}{paragraph.5.10.6.3.2}%
+\contentsline {subsubsection}{\numberline {5.10.6.4}Receive and Transmit}{243}{subsubsection.5.10.6.4}%
+\contentsline {paragraph}{\numberline {5.10.6.4.1}Driver Requirements: Device Operation: Receive and Transmit}{243}{paragraph.5.10.6.4.1}%
+\contentsline {paragraph}{\numberline {5.10.6.4.2}Device Requirements: Device Operation: Receive and Transmit}{243}{paragraph.5.10.6.4.2}%
+\contentsline {subsubsection}{\numberline {5.10.6.5}Stream Sockets}{243}{subsubsection.5.10.6.5}%
+\contentsline {subsubsection}{\numberline {5.10.6.6}Seqpacket Sockets}{244}{subsubsection.5.10.6.6}%
+\contentsline {paragraph}{\numberline {5.10.6.6.1}Message and record boundaries}{244}{paragraph.5.10.6.6.1}%
+\contentsline {subsubsection}{\numberline {5.10.6.7}Device Events}{244}{subsubsection.5.10.6.7}%
+\contentsline {paragraph}{\numberline {5.10.6.7.1}Driver Requirements: Device Operation: Device Events}{244}{paragraph.5.10.6.7.1}%
+\contentsline {section}{\numberline {5.11}File System Device}{244}{section.5.11}%
+\contentsline {subsection}{\numberline {5.11.1}Device ID}{245}{subsection.5.11.1}%
+\contentsline {subsection}{\numberline {5.11.2}Virtqueues}{245}{subsection.5.11.2}%
+\contentsline {subsection}{\numberline {5.11.3}Feature bits}{245}{subsection.5.11.3}%
+\contentsline {subsection}{\numberline {5.11.4}Device configuration layout}{245}{subsection.5.11.4}%
+\contentsline {subsubsection}{\numberline {5.11.4.1}Driver Requirements: Device configuration layout}{245}{subsubsection.5.11.4.1}%
+\contentsline {subsubsection}{\numberline {5.11.4.2}Device Requirements: Device configuration layout}{245}{subsubsection.5.11.4.2}%
+\contentsline {subsection}{\numberline {5.11.5}Device Initialization}{245}{subsection.5.11.5}%
+\contentsline {subsection}{\numberline {5.11.6}Device Operation}{246}{subsection.5.11.6}%
+\contentsline {subsubsection}{\numberline {5.11.6.1}Device Operation: Request Queues}{246}{subsubsection.5.11.6.1}%
+\contentsline {subsubsection}{\numberline {5.11.6.2}Device Operation: High Priority Queue}{247}{subsubsection.5.11.6.2}%
+\contentsline {paragraph}{\numberline {5.11.6.2.1}Device Requirements: Device Operation: High Priority Queue}{247}{paragraph.5.11.6.2.1}%
+\contentsline {paragraph}{\numberline {5.11.6.2.2}Driver Requirements: Device Operation: High Priority Queue}{247}{paragraph.5.11.6.2.2}%
+\contentsline {subsubsection}{\numberline {5.11.6.3}Device Operation: Notification Queue}{247}{subsubsection.5.11.6.3}%
+\contentsline {paragraph}{\numberline {5.11.6.3.1}Driver Requirements: Device Operation: Notification Queue}{247}{paragraph.5.11.6.3.1}%
+\contentsline {subsubsection}{\numberline {5.11.6.4}Device Operation: DAX Window}{247}{subsubsection.5.11.6.4}%
+\contentsline {paragraph}{\numberline {5.11.6.4.1}Device Requirements: Device Operation: DAX Window}{248}{paragraph.5.11.6.4.1}%
+\contentsline {paragraph}{\numberline {5.11.6.4.2}Driver Requirements: Device Operation: DAX Window}{248}{paragraph.5.11.6.4.2}%
+\contentsline {subsubsection}{\numberline {5.11.6.5}Security Considerations}{248}{subsubsection.5.11.6.5}%
+\contentsline {subsubsection}{\numberline {5.11.6.6}Live migration considerations}{249}{subsubsection.5.11.6.6}%
+\contentsline {section}{\numberline {5.12}RPMB Device}{249}{section.5.12}%
+\contentsline {subsection}{\numberline {5.12.1}Device ID}{249}{subsection.5.12.1}%
+\contentsline {subsection}{\numberline {5.12.2}Virtqueues}{249}{subsection.5.12.2}%
+\contentsline {subsection}{\numberline {5.12.3}Feature bits}{249}{subsection.5.12.3}%
+\contentsline {subsection}{\numberline {5.12.4}Device configuration layout}{249}{subsection.5.12.4}%
+\contentsline {subsection}{\numberline {5.12.5}Device Requirements: Device Initialization}{250}{subsection.5.12.5}%
+\contentsline {subsection}{\numberline {5.12.6}Device Operation}{250}{subsection.5.12.6}%
+\contentsline {subsubsection}{\numberline {5.12.6.1}Device Operation: Request Queue}{250}{subsubsection.5.12.6.1}%
+\contentsline {paragraph}{\numberline {5.12.6.1.1}Device Requirements: Device Operation: Program Key}{251}{paragraph.5.12.6.1.1}%
+\contentsline {paragraph}{\numberline {5.12.6.1.2}Device Requirements: Device Operation: Get Write Counter}{251}{paragraph.5.12.6.1.2}%
+\contentsline {paragraph}{\numberline {5.12.6.1.3}Device Requirements: Device Operation: Data Write}{252}{paragraph.5.12.6.1.3}%
+\contentsline {paragraph}{\numberline {5.12.6.1.4}Device Requirements: Device Operation: Data Read}{252}{paragraph.5.12.6.1.4}%
+\contentsline {paragraph}{\numberline {5.12.6.1.5}Device Requirements: Device Operation: Result Read}{252}{paragraph.5.12.6.1.5}%
+\contentsline {subsubsection}{\numberline {5.12.6.2}Driver Requirements: Device Operation}{253}{subsubsection.5.12.6.2}%
+\contentsline {subsubsection}{\numberline {5.12.6.3}Device Requirements: Device Operation}{253}{subsubsection.5.12.6.3}%
+\contentsline {section}{\numberline {5.13}IOMMU device}{253}{section.5.13}%
+\contentsline {subsection}{\numberline {5.13.1}Device ID}{253}{subsection.5.13.1}%
+\contentsline {subsection}{\numberline {5.13.2}Virtqueues}{253}{subsection.5.13.2}%
+\contentsline {subsection}{\numberline {5.13.3}Feature bits}{253}{subsection.5.13.3}%
+\contentsline {subsubsection}{\numberline {5.13.3.1}Driver Requirements: Feature bits}{254}{subsubsection.5.13.3.1}%
+\contentsline {subsubsection}{\numberline {5.13.3.2}Device Requirements: Feature bits}{254}{subsubsection.5.13.3.2}%
+\contentsline {subsection}{\numberline {5.13.4}Device configuration layout}{254}{subsection.5.13.4}%
+\contentsline {subsubsection}{\numberline {5.13.4.1}Driver Requirements: Device configuration layout}{254}{subsubsection.5.13.4.1}%
+\contentsline {subsubsection}{\numberline {5.13.4.2}Device Requirements: Device configuration layout}{254}{subsubsection.5.13.4.2}%
+\contentsline {subsection}{\numberline {5.13.5}Device initialization}{255}{subsection.5.13.5}%
+\contentsline {subsubsection}{\numberline {5.13.5.1}Driver Requirements: Device Initialization}{255}{subsubsection.5.13.5.1}%
+\contentsline {subsection}{\numberline {5.13.6}Device operations}{255}{subsection.5.13.6}%
+\contentsline {subsubsection}{\numberline {5.13.6.1}Driver Requirements: Device operations}{256}{subsubsection.5.13.6.1}%
+\contentsline {subsubsection}{\numberline {5.13.6.2}Device Requirements: Device operations}{256}{subsubsection.5.13.6.2}%
+\contentsline {subsubsection}{\numberline {5.13.6.3}ATTACH request}{257}{subsubsection.5.13.6.3}%
+\contentsline {paragraph}{\numberline {5.13.6.3.1}Driver Requirements: ATTACH request}{257}{paragraph.5.13.6.3.1}%
+\contentsline {paragraph}{\numberline {5.13.6.3.2}Device Requirements: ATTACH request}{257}{paragraph.5.13.6.3.2}%
+\contentsline {subsubsection}{\numberline {5.13.6.4}DETACH request}{258}{subsubsection.5.13.6.4}%
+\contentsline {paragraph}{\numberline {5.13.6.4.1}Driver Requirements: DETACH request}{258}{paragraph.5.13.6.4.1}%
+\contentsline {paragraph}{\numberline {5.13.6.4.2}Device Requirements: DETACH request}{258}{paragraph.5.13.6.4.2}%
+\contentsline {subsubsection}{\numberline {5.13.6.5}MAP request}{258}{subsubsection.5.13.6.5}%
+\contentsline {paragraph}{\numberline {5.13.6.5.1}Driver Requirements: MAP request}{259}{paragraph.5.13.6.5.1}%
+\contentsline {paragraph}{\numberline {5.13.6.5.2}Device Requirements: MAP request}{259}{paragraph.5.13.6.5.2}%
+\contentsline {subsubsection}{\numberline {5.13.6.6}UNMAP request}{260}{subsubsection.5.13.6.6}%
+\contentsline {paragraph}{\numberline {5.13.6.6.1}Driver Requirements: UNMAP request}{260}{paragraph.5.13.6.6.1}%
+\contentsline {paragraph}{\numberline {5.13.6.6.2}Device Requirements: UNMAP request}{260}{paragraph.5.13.6.6.2}%
+\contentsline {subsubsection}{\numberline {5.13.6.7}PROBE request}{261}{subsubsection.5.13.6.7}%
+\contentsline {paragraph}{\numberline {5.13.6.7.1}Driver Requirements: PROBE request}{261}{paragraph.5.13.6.7.1}%
+\contentsline {paragraph}{\numberline {5.13.6.7.2}Device Requirements: PROBE request}{262}{paragraph.5.13.6.7.2}%
+\contentsline {subsubsection}{\numberline {5.13.6.8}PROBE properties}{262}{subsubsection.5.13.6.8}%
+\contentsline {paragraph}{\numberline {5.13.6.8.1}Property RESV_MEM}{262}{paragraph.5.13.6.8.1}%
+\contentsline {subparagraph}{\numberline {5.13.6.8.1.1}Driver Requirements: Property RESV_MEM}{262}{subparagraph.5.13.6.8.1.1}%
+\contentsline {subparagraph}{\numberline {5.13.6.8.1.2}Device Requirements: Property RESV_MEM}{263}{subparagraph.5.13.6.8.1.2}%
+\contentsline {subsubsection}{\numberline {5.13.6.9}Fault reporting}{263}{subsubsection.5.13.6.9}%
+\contentsline {paragraph}{\numberline {5.13.6.9.1}Driver Requirements: Fault reporting}{263}{paragraph.5.13.6.9.1}%
+\contentsline {paragraph}{\numberline {5.13.6.9.2}Device Requirements: Fault reporting}{264}{paragraph.5.13.6.9.2}%
+\contentsline {section}{\numberline {5.14}Sound Device}{264}{section.5.14}%
+\contentsline {subsection}{\numberline {5.14.1}Device ID}{264}{subsection.5.14.1}%
+\contentsline {subsection}{\numberline {5.14.2}Virtqueues}{264}{subsection.5.14.2}%
+\contentsline {subsection}{\numberline {5.14.3}Feature Bits}{264}{subsection.5.14.3}%
+\contentsline {subsection}{\numberline {5.14.4}Device Configuration Layout}{265}{subsection.5.14.4}%
+\contentsline {subsection}{\numberline {5.14.5}Device Initialization}{265}{subsection.5.14.5}%
+\contentsline {subsubsection}{\numberline {5.14.5.1}Driver Requirements: Device Initialization}{265}{subsubsection.5.14.5.1}%
+\contentsline {subsection}{\numberline {5.14.6}Device Operation}{265}{subsection.5.14.6}%
+\contentsline {subsubsection}{\numberline {5.14.6.1}Item Information Request}{267}{subsubsection.5.14.6.1}%
+\contentsline {subsubsection}{\numberline {5.14.6.2}Driver Requirements: Item Information Request}{267}{subsubsection.5.14.6.2}%
+\contentsline {subsubsection}{\numberline {5.14.6.3}Relationships with the High Definition Audio Specification}{267}{subsubsection.5.14.6.3}%
+\contentsline {subsubsection}{\numberline {5.14.6.4}Jack Control Messages}{267}{subsubsection.5.14.6.4}%
+\contentsline {paragraph}{\numberline {5.14.6.4.1}VIRTIO_SND_R_JACK_INFO}{268}{paragraph.5.14.6.4.1}%
+\contentsline {subparagraph}{\numberline {5.14.6.4.1.1}Device Requirements: Jack Information}{268}{subparagraph.5.14.6.4.1.1}%
+\contentsline {paragraph}{\numberline {5.14.6.4.2}VIRTIO_SND_R_JACK_REMAP}{268}{paragraph.5.14.6.4.2}%
+\contentsline {subsubsection}{\numberline {5.14.6.5}Jack Notifications}{268}{subsubsection.5.14.6.5}%
+\contentsline {subsubsection}{\numberline {5.14.6.6}PCM Control Messages}{269}{subsubsection.5.14.6.6}%
+\contentsline {paragraph}{\numberline {5.14.6.6.1}PCM Command Lifecycle}{269}{paragraph.5.14.6.6.1}%
+\contentsline {paragraph}{\numberline {5.14.6.6.2}VIRTIO_SND_R_PCM_INFO}{269}{paragraph.5.14.6.6.2}%
+\contentsline {subparagraph}{\numberline {5.14.6.6.2.1}Device Requirements: Stream Information}{271}{subparagraph.5.14.6.6.2.1}%
+\contentsline {paragraph}{\numberline {5.14.6.6.3}VIRTIO_SND_R_PCM_SET_PARAMS}{271}{paragraph.5.14.6.6.3}%
+\contentsline {subparagraph}{\numberline {5.14.6.6.3.1}Device Requirements: Stream Parameters}{272}{subparagraph.5.14.6.6.3.1}%
+\contentsline {subparagraph}{\numberline {5.14.6.6.3.2}Driver Requirements: Stream Parameters}{272}{subparagraph.5.14.6.6.3.2}%
+\contentsline {paragraph}{\numberline {5.14.6.6.4}VIRTIO_SND_R_PCM_PREPARE}{272}{paragraph.5.14.6.6.4}%
+\contentsline {paragraph}{\numberline {5.14.6.6.5}VIRTIO_SND_R_PCM_RELEASE}{272}{paragraph.5.14.6.6.5}%
+\contentsline {subparagraph}{\numberline {5.14.6.6.5.1}Device Requirements: Stream Release}{272}{subparagraph.5.14.6.6.5.1}%
+\contentsline {paragraph}{\numberline {5.14.6.6.6}VIRTIO_SND_R_PCM_START}{272}{paragraph.5.14.6.6.6}%
+\contentsline {paragraph}{\numberline {5.14.6.6.7}VIRTIO_SND_R_PCM_STOP}{272}{paragraph.5.14.6.6.7}%
+\contentsline {subsubsection}{\numberline {5.14.6.7}PCM Notifications}{272}{subsubsection.5.14.6.7}%
+\contentsline {subsubsection}{\numberline {5.14.6.8}PCM I/O Messages}{273}{subsubsection.5.14.6.8}%
+\contentsline {paragraph}{\numberline {5.14.6.8.1}Output Stream}{273}{paragraph.5.14.6.8.1}%
+\contentsline {subparagraph}{\numberline {5.14.6.8.1.1}Device Requirements: Output Stream}{273}{subparagraph.5.14.6.8.1.1}%
+\contentsline {subparagraph}{\numberline {5.14.6.8.1.2}Driver Requirements: Output Stream}{273}{subparagraph.5.14.6.8.1.2}%
+\contentsline {paragraph}{\numberline {5.14.6.8.2}Input Stream}{273}{paragraph.5.14.6.8.2}%
+\contentsline {subparagraph}{\numberline {5.14.6.8.2.1}Device Requirements: Input Stream}{273}{subparagraph.5.14.6.8.2.1}%
+\contentsline {subparagraph}{\numberline {5.14.6.8.2.2}Driver Requirements: Input Stream}{274}{subparagraph.5.14.6.8.2.2}%
+\contentsline {subsubsection}{\numberline {5.14.6.9}Channel Map Control Messages}{274}{subsubsection.5.14.6.9}%
+\contentsline {paragraph}{\numberline {5.14.6.9.1}VIRTIO_SND_R_CHMAP_INFO}{274}{paragraph.5.14.6.9.1}%
+\contentsline {subparagraph}{\numberline {5.14.6.9.1.1}Device Requirements: Channel Map Information}{275}{subparagraph.5.14.6.9.1.1}%
+\contentsline {subsubsection}{\numberline {5.14.6.10}Control Elements}{275}{subsubsection.5.14.6.10}%
+\contentsline {paragraph}{\numberline {5.14.6.10.1}Query information}{275}{paragraph.5.14.6.10.1}%
+\contentsline {subparagraph}{\numberline {5.14.6.10.1.1}Device Requirements: Control Element Information}{277}{subparagraph.5.14.6.10.1.1}%
+\contentsline {paragraph}{\numberline {5.14.6.10.2}Value}{277}{paragraph.5.14.6.10.2}%
+\contentsline {subparagraph}{\numberline {5.14.6.10.2.1}Driver Requirements: Control Element Value}{278}{subparagraph.5.14.6.10.2.1}%
+\contentsline {paragraph}{\numberline {5.14.6.10.3}Metadata}{278}{paragraph.5.14.6.10.3}%
+\contentsline {subparagraph}{\numberline {5.14.6.10.3.1}Device Requirements: Control Element Metadata}{279}{subparagraph.5.14.6.10.3.1}%
+\contentsline {subparagraph}{\numberline {5.14.6.10.3.2}Driver Requirements: Control Element Metadata}{279}{subparagraph.5.14.6.10.3.2}%
+\contentsline {paragraph}{\numberline {5.14.6.10.4}Notifications}{279}{paragraph.5.14.6.10.4}%
+\contentsline {subparagraph}{\numberline {5.14.6.10.4.1}Device Requirements: Control Element Notifications}{279}{subparagraph.5.14.6.10.4.1}%
+\contentsline {section}{\numberline {5.15}Memory Device}{280}{section.5.15}%
+\contentsline {subsection}{\numberline {5.15.1}Device ID}{280}{subsection.5.15.1}%
+\contentsline {subsection}{\numberline {5.15.2}Virtqueues}{280}{subsection.5.15.2}%
+\contentsline {subsection}{\numberline {5.15.3}Feature bits}{280}{subsection.5.15.3}%
+\contentsline {subsection}{\numberline {5.15.4}Device configuration layout}{280}{subsection.5.15.4}%
+\contentsline {subsubsection}{\numberline {5.15.4.1}Driver Requirements: Device configuration layout}{281}{subsubsection.5.15.4.1}%
+\contentsline {subsubsection}{\numberline {5.15.4.2}Device Requirements: Device configuration layout}{281}{subsubsection.5.15.4.2}%
+\contentsline {subsection}{\numberline {5.15.5}Device Initialization}{282}{subsection.5.15.5}%
+\contentsline {subsubsection}{\numberline {5.15.5.1}Driver Requirements: Device Initialization}{282}{subsubsection.5.15.5.1}%
+\contentsline {subsubsection}{\numberline {5.15.5.2}Device Requirements: Device Initialization}{282}{subsubsection.5.15.5.2}%
+\contentsline {subsection}{\numberline {5.15.6}Device Operation}{282}{subsection.5.15.6}%
+\contentsline {subsubsection}{\numberline {5.15.6.1}Driver Requirements: Device Operation}{283}{subsubsection.5.15.6.1}%
+\contentsline {subsubsection}{\numberline {5.15.6.2}Device Requirements: Device Operation}{283}{subsubsection.5.15.6.2}%
+\contentsline {subsubsection}{\numberline {5.15.6.3}PLUG request}{284}{subsubsection.5.15.6.3}%
+\contentsline {paragraph}{\numberline {5.15.6.3.1}Driver Requirements: PLUG request}{284}{paragraph.5.15.6.3.1}%
+\contentsline {paragraph}{\numberline {5.15.6.3.2}Device Requirements: PLUG request}{284}{paragraph.5.15.6.3.2}%
+\contentsline {subsubsection}{\numberline {5.15.6.4}UNPLUG request}{284}{subsubsection.5.15.6.4}%
+\contentsline {paragraph}{\numberline {5.15.6.4.1}Driver Requirements: UNPLUG request}{284}{paragraph.5.15.6.4.1}%
+\contentsline {paragraph}{\numberline {5.15.6.4.2}Device Requirements: UNPLUG request}{285}{paragraph.5.15.6.4.2}%
+\contentsline {subsubsection}{\numberline {5.15.6.5}UNPLUG ALL request}{285}{subsubsection.5.15.6.5}%
+\contentsline {paragraph}{\numberline {5.15.6.5.1}Driver Requirements: UNPLUG request}{285}{paragraph.5.15.6.5.1}%
+\contentsline {paragraph}{\numberline {5.15.6.5.2}Device Requirements: UNPLUG request}{285}{paragraph.5.15.6.5.2}%
+\contentsline {subsubsection}{\numberline {5.15.6.6}STATE request}{285}{subsubsection.5.15.6.6}%
+\contentsline {paragraph}{\numberline {5.15.6.6.1}Driver Requirements: STATE request}{286}{paragraph.5.15.6.6.1}%
+\contentsline {paragraph}{\numberline {5.15.6.6.2}Device Requirements: STATE request}{286}{paragraph.5.15.6.6.2}%
+\contentsline {section}{\numberline {5.16}I2C Adapter Device}{286}{section.5.16}%
+\contentsline {subsection}{\numberline {5.16.1}Device ID}{286}{subsection.5.16.1}%
+\contentsline {subsection}{\numberline {5.16.2}Virtqueues}{286}{subsection.5.16.2}%
+\contentsline {subsection}{\numberline {5.16.3}Feature bits}{286}{subsection.5.16.3}%
+\contentsline {subsection}{\numberline {5.16.4}Device configuration layout}{287}{subsection.5.16.4}%
+\contentsline {subsection}{\numberline {5.16.5}Device Initialization}{287}{subsection.5.16.5}%
+\contentsline {subsection}{\numberline {5.16.6}Device Operation}{287}{subsection.5.16.6}%
+\contentsline {subsubsection}{\numberline {5.16.6.1}Device Operation: Request Queue}{287}{subsubsection.5.16.6.1}%
+\contentsline {subsubsection}{\numberline {5.16.6.2}Device Operation: Operation Status}{288}{subsubsection.5.16.6.2}%
+\contentsline {subsubsection}{\numberline {5.16.6.3}Driver Requirements: Device Operation}{288}{subsubsection.5.16.6.3}%
+\contentsline {subsubsection}{\numberline {5.16.6.4}Device Requirements: Device Operation}{288}{subsubsection.5.16.6.4}%
+\contentsline {section}{\numberline {5.17}SCMI Device}{289}{section.5.17}%
+\contentsline {subsection}{\numberline {5.17.1}Device ID}{289}{subsection.5.17.1}%
+\contentsline {subsection}{\numberline {5.17.2}Virtqueues}{289}{subsection.5.17.2}%
+\contentsline {subsection}{\numberline {5.17.3}Feature bits}{289}{subsection.5.17.3}%
+\contentsline {subsubsection}{\numberline {5.17.3.1}Device Requirements: Feature bits}{289}{subsubsection.5.17.3.1}%
+\contentsline {subsection}{\numberline {5.17.4}Device configuration layout}{289}{subsection.5.17.4}%
+\contentsline {subsection}{\numberline {5.17.5}Device Initialization}{289}{subsection.5.17.5}%
+\contentsline {subsection}{\numberline {5.17.6}Device Operation}{290}{subsection.5.17.6}%
+\contentsline {subsubsection}{\numberline {5.17.6.1}cmdq Operation}{290}{subsubsection.5.17.6.1}%
+\contentsline {paragraph}{\numberline {5.17.6.1.1}Device Requirements: cmdq Operation}{290}{paragraph.5.17.6.1.1}%
+\contentsline {paragraph}{\numberline {5.17.6.1.2}Driver Requirements: cmdq Operation}{291}{paragraph.5.17.6.1.2}%
+\contentsline {subsubsection}{\numberline {5.17.6.2}Setting Up eventq Buffers}{291}{subsubsection.5.17.6.2}%
+\contentsline {paragraph}{\numberline {5.17.6.2.1}Driver Requirements: Setting Up eventq Buffers}{291}{paragraph.5.17.6.2.1}%
+\contentsline {subsubsection}{\numberline {5.17.6.3}eventq Operation}{291}{subsubsection.5.17.6.3}%
+\contentsline {paragraph}{\numberline {5.17.6.3.1}Device Requirements: eventq Operation}{291}{paragraph.5.17.6.3.1}%
+\contentsline {subsubsection}{\numberline {5.17.6.4}Shared Memory Operation}{291}{subsubsection.5.17.6.4}%
+\contentsline {paragraph}{\numberline {5.17.6.4.1}Device Requirements: Shared Memory Operation}{292}{paragraph.5.17.6.4.1}%
+\contentsline {section}{\numberline {5.18}GPIO Device}{292}{section.5.18}%
+\contentsline {subsection}{\numberline {5.18.1}Device ID}{292}{subsection.5.18.1}%
+\contentsline {subsection}{\numberline {5.18.2}Virtqueues}{292}{subsection.5.18.2}%
+\contentsline {subsection}{\numberline {5.18.3}Feature bits}{292}{subsection.5.18.3}%
+\contentsline {subsection}{\numberline {5.18.4}Device configuration layout}{292}{subsection.5.18.4}%
+\contentsline {subsection}{\numberline {5.18.5}Device Initialization}{293}{subsection.5.18.5}%
+\contentsline {subsection}{\numberline {5.18.6}Device Operation: requestq}{293}{subsection.5.18.6}%
+\contentsline {subsubsection}{\numberline {5.18.6.1}requestq Operation: Get Line Names}{294}{subsubsection.5.18.6.1}%
+\contentsline {subsubsection}{\numberline {5.18.6.2}requestq Operation: Get Direction}{294}{subsubsection.5.18.6.2}%
+\contentsline {subsubsection}{\numberline {5.18.6.3}requestq Operation: Set Direction}{295}{subsubsection.5.18.6.3}%
+\contentsline {subsubsection}{\numberline {5.18.6.4}requestq Operation: Get Value}{295}{subsubsection.5.18.6.4}%
+\contentsline {subsubsection}{\numberline {5.18.6.5}requestq Operation: Set Value}{295}{subsubsection.5.18.6.5}%
+\contentsline {subsubsection}{\numberline {5.18.6.6}requestq Operation: Set IRQ Type}{295}{subsubsection.5.18.6.6}%
+\contentsline {subsubsection}{\numberline {5.18.6.7}requestq Operation: Message Flow}{296}{subsubsection.5.18.6.7}%
+\contentsline {subsubsection}{\numberline {5.18.6.8}Driver Requirements: requestq Operation}{296}{subsubsection.5.18.6.8}%
+\contentsline {subsubsection}{\numberline {5.18.6.9}Device Requirements: requestq Operation}{297}{subsubsection.5.18.6.9}%
+\contentsline {subsection}{\numberline {5.18.7}Device Operation: eventq}{297}{subsection.5.18.7}%
+\contentsline {subsubsection}{\numberline {5.18.7.1}eventq Operation: Message Flow}{298}{subsubsection.5.18.7.1}%
+\contentsline {subsubsection}{\numberline {5.18.7.2}Driver Requirements: eventq Operation}{298}{subsubsection.5.18.7.2}%
+\contentsline {subsubsection}{\numberline {5.18.7.3}Device Requirements: eventq Operation}{299}{subsubsection.5.18.7.3}%
+\contentsline {section}{\numberline {5.19}PMEM Device}{299}{section.5.19}%
+\contentsline {subsection}{\numberline {5.19.1}Device ID}{299}{subsection.5.19.1}%
+\contentsline {subsection}{\numberline {5.19.2}Virtqueues}{299}{subsection.5.19.2}%
+\contentsline {subsection}{\numberline {5.19.3}Feature bits}{299}{subsection.5.19.3}%
+\contentsline {subsection}{\numberline {5.19.4}Device configuration layout}{299}{subsection.5.19.4}%
+\contentsline {subsection}{\numberline {5.19.5}Device Initialization}{299}{subsection.5.19.5}%
+\contentsline {subsubsection}{\numberline {5.19.5.1}Device Requirements: Device Initialization}{300}{subsubsection.5.19.5.1}%
+\contentsline {subsubsection}{\numberline {5.19.5.2}Driver Requirements: Device Initialization}{300}{subsubsection.5.19.5.2}%
+\contentsline {subsection}{\numberline {5.19.6}Driver Operations}{300}{subsection.5.19.6}%
+\contentsline {subsection}{\numberline {5.19.7}Device Operations}{300}{subsection.5.19.7}%
+\contentsline {subsubsection}{\numberline {5.19.7.1}Device Requirements: Device Operation: Virtqueue flush}{300}{subsubsection.5.19.7.1}%
+\contentsline {subsubsection}{\numberline {5.19.7.2}Device Operations}{300}{subsubsection.5.19.7.2}%
+\contentsline {subsubsection}{\numberline {5.19.7.3}Device Requirements: Device Operation: Virtqueue return}{300}{subsubsection.5.19.7.3}%
+\contentsline {subsection}{\numberline {5.19.8}Possible security implications}{300}{subsection.5.19.8}%
+\contentsline {subsection}{\numberline {5.19.9}Countermeasures}{301}{subsection.5.19.9}%
+\contentsline {subsubsection}{\numberline {5.19.9.1}With SHARED mapping}{301}{subsubsection.5.19.9.1}%
+\contentsline {subsubsection}{\numberline {5.19.9.2}With PRIVATE mapping}{301}{subsubsection.5.19.9.2}%
+\contentsline {subsubsection}{\numberline {5.19.9.3}Workload specific mapping}{301}{subsubsection.5.19.9.3}%
+\contentsline {subsubsection}{\numberline {5.19.9.4}Prevent cache eviction}{301}{subsubsection.5.19.9.4}%
+\contentsline {section}{\numberline {5.20}CAN Device}{301}{section.5.20}%
+\contentsline {subsection}{\numberline {5.20.1}Device ID}{301}{subsection.5.20.1}%
+\contentsline {subsection}{\numberline {5.20.2}Virtqueues}{301}{subsection.5.20.2}%
+\contentsline {subsection}{\numberline {5.20.3}Feature bits}{301}{subsection.5.20.3}%
+\contentsline {subsubsection}{\numberline {5.20.3.1}Feature bit requirements}{302}{subsubsection.5.20.3.1}%
+\contentsline {subsection}{\numberline {5.20.4}Device configuration layout}{302}{subsection.5.20.4}%
+\contentsline {subsubsection}{\numberline {5.20.4.1}Driver Requirements: Device Initialization}{302}{subsubsection.5.20.4.1}%
+\contentsline {subsection}{\numberline {5.20.5}Device Operation}{302}{subsection.5.20.5}%
+\contentsline {subsubsection}{\numberline {5.20.5.1}Controller Mode}{302}{subsubsection.5.20.5.1}%
+\contentsline {subsubsection}{\numberline {5.20.5.2}Device Requirements: CAN Message Transmission}{303}{subsubsection.5.20.5.2}%
+\contentsline {subsubsection}{\numberline {5.20.5.3}CAN Message Reception}{304}{subsubsection.5.20.5.3}%
+\contentsline {subsubsection}{\numberline {5.20.5.4}BusOff Indication}{304}{subsubsection.5.20.5.4}%
+\contentsline {section}{\numberline {5.21}SPI Controller Device}{304}{section.5.21}%
+\contentsline {subsection}{\numberline {5.21.1}Device ID}{304}{subsection.5.21.1}%
+\contentsline {subsection}{\numberline {5.21.2}Virtqueues}{304}{subsection.5.21.2}%
+\contentsline {subsection}{\numberline {5.21.3}Feature bits}{304}{subsection.5.21.3}%
+\contentsline {subsection}{\numberline {5.21.4}Device configuration layout}{305}{subsection.5.21.4}%
+\contentsline {subsection}{\numberline {5.21.5}Device Initialization}{306}{subsection.5.21.5}%
+\contentsline {subsection}{\numberline {5.21.6}Device Operation}{306}{subsection.5.21.6}%
+\contentsline {subsubsection}{\numberline {5.21.6.1}Device Operation: Request Queue}{306}{subsubsection.5.21.6.1}%
+\contentsline {subsubsection}{\numberline {5.21.6.2}Device Operation: Operation Status}{307}{subsubsection.5.21.6.2}%
+\contentsline {subsubsection}{\numberline {5.21.6.3}Driver Requirements: Device Operation}{307}{subsubsection.5.21.6.3}%
+\contentsline {subsubsection}{\numberline {5.21.6.4}Device Requirements: Device Operation}{308}{subsubsection.5.21.6.4}%
+\contentsline {section}{\numberline {5.22}Media Device}{308}{section.5.22}%
+\contentsline {subsection}{\numberline {5.22.1}Device ID}{308}{subsection.5.22.1}%
+\contentsline {subsection}{\numberline {5.22.2}Virtqueues}{308}{subsection.5.22.2}%
+\contentsline {subsection}{\numberline {5.22.3}Feature Bits}{308}{subsection.5.22.3}%
+\contentsline {subsection}{\numberline {5.22.4}Device Configuration Layout}{308}{subsection.5.22.4}%
+\contentsline {subsection}{\numberline {5.22.5}Device Initialization}{309}{subsection.5.22.5}%
+\contentsline {subsection}{\numberline {5.22.6}Device Operation}{309}{subsection.5.22.6}%
+\contentsline {subsubsection}{\numberline {5.22.6.1}Command Virtqueue}{309}{subsubsection.5.22.6.1}%
+\contentsline {paragraph}{\numberline {5.22.6.1.1}Device Operation: Command headers}{309}{paragraph.5.22.6.1.1}%
+\contentsline {paragraph}{\numberline {5.22.6.1.2}Driver Requirements: Device Operation: Command Virtqueue: Sessions}{310}{paragraph.5.22.6.1.2}%
+\contentsline {paragraph}{\numberline {5.22.6.1.3}Device Operation: Open device}{310}{paragraph.5.22.6.1.3}%
+\contentsline {subparagraph}{\numberline {5.22.6.1.3.1}Device Requirements: Device Operation: Open device}{310}{subparagraph.5.22.6.1.3.1}%
+\contentsline {paragraph}{\numberline {5.22.6.1.4}Device Operation: Close device}{310}{paragraph.5.22.6.1.4}%
+\contentsline {subparagraph}{\numberline {5.22.6.1.4.1}Driver Requirements: Device Operation: Close device}{310}{subparagraph.5.22.6.1.4.1}%
+\contentsline {paragraph}{\numberline {5.22.6.1.5}Device Operation: V4L2 ioctls}{310}{paragraph.5.22.6.1.5}%
+\contentsline {subparagraph}{\numberline {5.22.6.1.5.1}Ioctls payload}{311}{subparagraph.5.22.6.1.5.1}%
+\contentsline {subparagraph}{\numberline {5.22.6.1.5.2}Device Requirements: Device Operation: V4L2 ioctls}{311}{subparagraph.5.22.6.1.5.2}%
+\contentsline {subparagraph}{\numberline {5.22.6.1.5.3}Driver Requirements: Device Operation: V4L2 ioctls}{312}{subparagraph.5.22.6.1.5.3}%
+\contentsline {subparagraph}{\numberline {5.22.6.1.5.4}Handling of pointers to data in ioctl payload}{312}{subparagraph.5.22.6.1.5.4}%
+\contentsline {subparagraph}{\numberline {5.22.6.1.5.5}Device Requirements: Handling of pointers to data in ioctl payload}{312}{subparagraph.5.22.6.1.5.5}%
+\contentsline {subparagraph}{\numberline {5.22.6.1.5.6}Handling of pointers to userspace memory in ioctl payload}{312}{subparagraph.5.22.6.1.5.6}%
+\contentsline {subparagraph}{\numberline {5.22.6.1.5.7}Unsupported ioctls}{312}{subparagraph.5.22.6.1.5.7}%
+\contentsline {subparagraph}{\numberline {5.22.6.1.5.8}Device Requirements: Device Operation: Unsupported ioctls}{313}{subparagraph.5.22.6.1.5.8}%
+\contentsline {paragraph}{\numberline {5.22.6.1.6}Device Operation: Mapping a MMAP buffer}{313}{paragraph.5.22.6.1.6}%
+\contentsline {subparagraph}{\numberline {5.22.6.1.6.1}Device Requirements: Device Operation: Mapping a MMAP buffer}{313}{subparagraph.5.22.6.1.6.1}%
+\contentsline {paragraph}{\numberline {5.22.6.1.7}Device Operation: Unmapping a MMAP buffer}{313}{paragraph.5.22.6.1.7}%
+\contentsline {subparagraph}{\numberline {5.22.6.1.7.1}Device Requirements: Device Operation: Unmapping a MMAP buffer}{314}{subparagraph.5.22.6.1.7.1}%
+\contentsline {paragraph}{\numberline {5.22.6.1.8}Device Operation: Memory Types}{314}{paragraph.5.22.6.1.8}%
+\contentsline {subparagraph}{\numberline {5.22.6.1.8.1}MMAP}{314}{subparagraph.5.22.6.1.8.1}%
+\contentsline {subparagraph}{\numberline {5.22.6.1.8.2}SHARED_PAGES}{314}{subparagraph.5.22.6.1.8.2}%
+\contentsline {subparagraph}{\numberline {5.22.6.1.8.3}Device Requirements: Device Operation: Shared Pages}{314}{subparagraph.5.22.6.1.8.3}%
+\contentsline {subparagraph}{\numberline {5.22.6.1.8.4}VIRTIO_OBJECT}{314}{subparagraph.5.22.6.1.8.4}%
+\contentsline {subparagraph}{\numberline {5.22.6.1.8.5}Device Requirements: Device Operation: Virtio Object}{314}{subparagraph.5.22.6.1.8.5}%
+\contentsline {subsubsection}{\numberline {5.22.6.2}Event Virtqueue}{315}{subsubsection.5.22.6.2}%
+\contentsline {paragraph}{\numberline {5.22.6.2.1}Device Operation: Event header}{315}{paragraph.5.22.6.2.1}%
+\contentsline {paragraph}{\numberline {5.22.6.2.2}Device Operation: Device-side error}{315}{paragraph.5.22.6.2.2}%
+\contentsline {subparagraph}{\numberline {5.22.6.2.2.1}Device Requirements: Device Operation: Device-side error}{315}{subparagraph.5.22.6.2.2.1}%
+\contentsline {subparagraph}{\numberline {5.22.6.2.2.2}Driver Requirements: Device Operation: Device-side error}{315}{subparagraph.5.22.6.2.2.2}%
+\contentsline {paragraph}{\numberline {5.22.6.2.3}Device Operation: Dequeue buffer}{315}{paragraph.5.22.6.2.3}%
+\contentsline {subparagraph}{\numberline {5.22.6.2.3.1}Driver Requirements: Device Operation: Dequeue buffer}{316}{subparagraph.5.22.6.2.3.1}%
+\contentsline {paragraph}{\numberline {5.22.6.2.4}Device Operation: Emit an event}{316}{paragraph.5.22.6.2.4}%
+\contentsline {section}{\numberline {5.23}RTC Device}{316}{section.5.23}%
+\contentsline {subsection}{\numberline {5.23.1}Device ID}{316}{subsection.5.23.1}%
+\contentsline {subsection}{\numberline {5.23.2}Virtqueues}{316}{subsection.5.23.2}%
+\contentsline {subsection}{\numberline {5.23.3}Feature bits}{316}{subsection.5.23.3}%
+\contentsline {subsubsection}{\numberline {5.23.3.1}Device Requirements: Feature bits}{316}{subsubsection.5.23.3.1}%
+\contentsline {subsection}{\numberline {5.23.4}Device configuration layout}{317}{subsection.5.23.4}%
+\contentsline {subsection}{\numberline {5.23.5}Device Initialization}{317}{subsection.5.23.5}%
+\contentsline {subsection}{\numberline {5.23.6}Device Operation}{317}{subsection.5.23.6}%
+\contentsline {subsubsection}{\numberline {5.23.6.1}Driver Requirements: Device Operation}{318}{subsubsection.5.23.6.1}%
+\contentsline {subsubsection}{\numberline {5.23.6.2}Device Requirements: Device Operation}{318}{subsubsection.5.23.6.2}%
+\contentsline {subsubsection}{\numberline {5.23.6.3}Common Definitions}{319}{subsubsection.5.23.6.3}%
+\contentsline {paragraph}{\numberline {5.23.6.3.1}Clock Types}{319}{paragraph.5.23.6.3.1}%
+\contentsline {paragraph}{\numberline {5.23.6.3.2}Smearing Variants}{319}{paragraph.5.23.6.3.2}%
+\contentsline {paragraph}{\numberline {5.23.6.3.3}Hardware Counters}{320}{paragraph.5.23.6.3.3}%
+\contentsline {subsubsection}{\numberline {5.23.6.4}Control Requests}{320}{subsubsection.5.23.6.4}%
+\contentsline {paragraph}{\numberline {5.23.6.4.1}Driver Requirements: Control Requests}{321}{paragraph.5.23.6.4.1}%
+\contentsline {paragraph}{\numberline {5.23.6.4.2}Device Requirements: Control Requests}{321}{paragraph.5.23.6.4.2}%
+\contentsline {subsubsection}{\numberline {5.23.6.5}Read Requests}{323}{subsubsection.5.23.6.5}%
+\contentsline {paragraph}{\numberline {5.23.6.5.1}Driver Requirements: Read Requests}{324}{paragraph.5.23.6.5.1}%
+\contentsline {paragraph}{\numberline {5.23.6.5.2}Device Requirements: Read Requests}{324}{paragraph.5.23.6.5.2}%
+\contentsline {subsubsection}{\numberline {5.23.6.6}Alarm Operation}{325}{subsubsection.5.23.6.6}%
+\contentsline {paragraph}{\numberline {5.23.6.6.1}Device Requirements: Alarm Operation}{326}{paragraph.5.23.6.6.1}%
+\contentsline {paragraph}{\numberline {5.23.6.6.2}Alarm Control Requests}{327}{paragraph.5.23.6.6.2}%
+\contentsline {subparagraph}{\numberline {5.23.6.6.2.1}Driver Requirements: Alarm Control Requests}{328}{subparagraph.5.23.6.6.2.1}%
+\contentsline {subparagraph}{\numberline {5.23.6.6.2.2}Device Requirements: Alarm Control Requests}{328}{subparagraph.5.23.6.6.2.2}%
+\contentsline {paragraph}{\numberline {5.23.6.6.3}Alarm Notifications}{329}{paragraph.5.23.6.6.3}%
+\contentsline {subparagraph}{\numberline {5.23.6.6.3.1}Driver Requirements: Alarm Notifications}{329}{subparagraph.5.23.6.6.3.1}%
+\contentsline {subparagraph}{\numberline {5.23.6.6.3.2}Device Requirements: Alarm Notifications}{329}{subparagraph.5.23.6.6.3.2}%
+\contentsline {chapter}{\numberline {6}Reserved Feature Bits}{330}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Driver Requirements: Reserved Feature Bits}{331}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Device Requirements: Reserved Feature Bits}{331}{section.6.2}%
+\contentsline {section}{\numberline {6.3}Legacy Interface: Reserved Feature Bits}{332}{section.6.3}%
+\contentsline {chapter}{\numberline {7}Conformance}{333}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Conformance Targets}{333}{section.7.1}%
+\contentsline {section}{\numberline {7.2}Clause 1: Driver Conformance}{333}{section.7.2}%
+\contentsline {subsection}{\numberline {7.2.1}Clause 2: PCI Driver Conformance}{334}{subsection.7.2.1}%
+\contentsline {subsection}{\numberline {7.2.2}Clause 3: MMIO Driver Conformance}{334}{subsection.7.2.2}%
+\contentsline {subsection}{\numberline {7.2.3}Clause 4: Channel I/O Driver Conformance}{334}{subsection.7.2.3}%
+\contentsline {subsection}{\numberline {7.2.4}Clause 5: Network Driver Conformance}{335}{subsection.7.2.4}%
+\contentsline {subsection}{\numberline {7.2.5}Clause 6: Block Driver Conformance}{335}{subsection.7.2.5}%
+\contentsline {subsection}{\numberline {7.2.6}Clause 7: Console Driver Conformance}{335}{subsection.7.2.6}%
+\contentsline {subsection}{\numberline {7.2.7}Clause 8: Entropy Driver Conformance}{335}{subsection.7.2.7}%
+\contentsline {subsection}{\numberline {7.2.8}Clause 9: Traditional Memory Balloon Driver Conformance}{335}{subsection.7.2.8}%
+\contentsline {subsection}{\numberline {7.2.9}Clause 10: SCSI Host Driver Conformance}{336}{subsection.7.2.9}%
+\contentsline {subsection}{\numberline {7.2.10}Clause 11: Input Driver Conformance}{336}{subsection.7.2.10}%
+\contentsline {subsection}{\numberline {7.2.11}Clause 12: Crypto Driver Conformance}{336}{subsection.7.2.11}%
+\contentsline {subsection}{\numberline {7.2.12}Clause 13: Socket Driver Conformance}{336}{subsection.7.2.12}%
+\contentsline {subsection}{\numberline {7.2.13}Clause 14: File System Driver Conformance}{336}{subsection.7.2.13}%
+\contentsline {subsection}{\numberline {7.2.14}Clause 15: RPMB Driver Conformance}{337}{subsection.7.2.14}%
+\contentsline {subsection}{\numberline {7.2.15}Clause 16: IOMMU Driver Conformance}{337}{subsection.7.2.15}%
+\contentsline {subsection}{\numberline {7.2.16}Clause 17: Sound Driver Conformance}{337}{subsection.7.2.16}%
+\contentsline {subsection}{\numberline {7.2.17}Clause 18: Memory Driver Conformance}{337}{subsection.7.2.17}%
+\contentsline {subsection}{\numberline {7.2.18}Clause 19: I2C Adapter Driver Conformance}{338}{subsection.7.2.18}%
+\contentsline {subsection}{\numberline {7.2.19}Clause 20: SCMI Driver Conformance}{338}{subsection.7.2.19}%
+\contentsline {subsection}{\numberline {7.2.20}Clause 21: GPIO Driver Conformance}{338}{subsection.7.2.20}%
+\contentsline {subsection}{\numberline {7.2.21}Clause 22: PMEM Driver Conformance}{338}{subsection.7.2.21}%
+\contentsline {subsection}{\numberline {7.2.22}Clause 23: CAN Driver Conformance}{338}{subsection.7.2.22}%
+\contentsline {subsection}{\numberline {7.2.23}Clause 24: SPI Controller Driver Conformance}{338}{subsection.7.2.23}%
+\contentsline {subsection}{\numberline {7.2.24}Clause 25: Media Driver Conformance}{338}{subsection.7.2.24}%
+\contentsline {subsection}{\numberline {7.2.25}Clause 26: RTC Driver Conformance}{338}{subsection.7.2.25}%
+\contentsline {section}{\numberline {7.3}Clause 27: Device Conformance}{339}{section.7.3}%
+\contentsline {subsection}{\numberline {7.3.1}Clause 28: PCI Device Conformance}{339}{subsection.7.3.1}%
+\contentsline {subsection}{\numberline {7.3.2}Clause 29: MMIO Device Conformance}{340}{subsection.7.3.2}%
+\contentsline {subsection}{\numberline {7.3.3}Clause 30: Channel I/O Device Conformance}{340}{subsection.7.3.3}%
+\contentsline {subsection}{\numberline {7.3.4}Clause 31: Network Device Conformance}{340}{subsection.7.3.4}%
+\contentsline {subsection}{\numberline {7.3.5}Clause 32: Block Device Conformance}{340}{subsection.7.3.5}%
+\contentsline {subsection}{\numberline {7.3.6}Clause 33: Console Device Conformance}{341}{subsection.7.3.6}%
+\contentsline {subsection}{\numberline {7.3.7}Clause 34: Entropy Device Conformance}{341}{subsection.7.3.7}%
+\contentsline {subsection}{\numberline {7.3.8}Clause 35: Traditional Memory Balloon Device Conformance}{341}{subsection.7.3.8}%
+\contentsline {subsection}{\numberline {7.3.9}Clause 36: SCSI Host Device Conformance}{341}{subsection.7.3.9}%
+\contentsline {subsection}{\numberline {7.3.10}Clause 37: GPU Device Conformance}{341}{subsection.7.3.10}%
+\contentsline {subsection}{\numberline {7.3.11}Clause 38: Input Device Conformance}{341}{subsection.7.3.11}%
+\contentsline {subsection}{\numberline {7.3.12}Clause 39: Crypto Device Conformance}{341}{subsection.7.3.12}%
+\contentsline {subsection}{\numberline {7.3.13}Clause 40: Socket Device Conformance}{342}{subsection.7.3.13}%
+\contentsline {subsection}{\numberline {7.3.14}Clause 41: File System Device Conformance}{342}{subsection.7.3.14}%
+\contentsline {subsection}{\numberline {7.3.15}Clause 42: RPMB Device Conformance}{342}{subsection.7.3.15}%
+\contentsline {subsection}{\numberline {7.3.16}Clause 43: IOMMU Device Conformance}{342}{subsection.7.3.16}%
+\contentsline {subsection}{\numberline {7.3.17}Clause 44: Sound Device Conformance}{343}{subsection.7.3.17}%
+\contentsline {subsection}{\numberline {7.3.18}Clause 45: Memory Device Conformance}{343}{subsection.7.3.18}%
+\contentsline {subsection}{\numberline {7.3.19}Clause 46: I2C Adapter Device Conformance}{343}{subsection.7.3.19}%
+\contentsline {subsection}{\numberline {7.3.20}Clause 47: SCMI Device Conformance}{343}{subsection.7.3.20}%
+\contentsline {subsection}{\numberline {7.3.21}Clause 48: GPIO Device Conformance}{343}{subsection.7.3.21}%
+\contentsline {subsection}{\numberline {7.3.22}Clause 49: PMEM Device Conformance}{344}{subsection.7.3.22}%
+\contentsline {subsection}{\numberline {7.3.23}Clause 50: CAN Device Conformance}{344}{subsection.7.3.23}%
+\contentsline {subsection}{\numberline {7.3.24}Clause 51: SPI Controller Device Conformance}{344}{subsection.7.3.24}%
+\contentsline {subsection}{\numberline {7.3.25}Clause 52: Media Device Conformance}{344}{subsection.7.3.25}%
+\contentsline {subsection}{\numberline {7.3.26}Clause 53: RTC Device Conformance}{344}{subsection.7.3.26}%
+\contentsline {section}{\numberline {7.4}Clause 54: Legacy Interface: Transitional Device and Transitional Driver Conformance}{344}{section.7.4}%
+\contentsline {chapter}{\numberline {A}virtio_queue.h}{347}{appendix.A}%
+\contentsline {chapter}{\numberline {B}Creating New Device Types}{349}{appendix.B}%
+\contentsline {section}{\numberline {B.1}How Many Virtqueues?}{349}{section.B.1}%
+\contentsline {section}{\numberline {B.2}What Device Configuration Space Layout?}{349}{section.B.2}%
+\contentsline {section}{\numberline {B.3}What Device Number?}{349}{section.B.3}%
+\contentsline {section}{\numberline {B.4}How many MSI-X vectors? (for PCI)}{349}{section.B.4}%
+\contentsline {section}{\numberline {B.5}Device Improvements}{349}{section.B.5}%
+\contentsline {section}{\numberline {B.6}How to define a new device part?}{350}{section.B.6}%
+\contentsline {section}{\numberline {B.7}When to define a new device part?}{350}{section.B.7}%
+\contentsline {section}{\numberline {B.8}How to avoid device part duplication with existing structure?}{350}{section.B.8}%
+\contentsline {section}{\numberline {B.9}How to extend the existing device part definition?}{350}{section.B.9}%
+\contentsline {chapter}{\numberline {C}Creating New Transports}{351}{appendix.C}%
+\contentsline {chapter}{\numberline {D}Acknowledgements}{352}{appendix.D}%
+\contentsline {chapter}{\numberline {E}Revision History}{357}{appendix.E}%

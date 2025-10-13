@@ -1,7 +1,10 @@
 \section{Device groups}\label{sec:Basic Facilities of a Virtio Device / Device groups}
 
 It is occasionally useful to have a device control a group of
-other devices. Terminology used in such cases:
+other devices (the group may occasionally include the device
+itself) within a group. The owner device itself is not a
+member of the group (except in the special case of the self group).
+Terminology used in such cases:
 
 \begin{description}
 \item[Device group]
@@ -10,7 +13,7 @@ other devices. Terminology used in such cases:
         or owner, the device controlling the group.
 \item[Member device]
         a device within a group. The owner device itself is not
-	a member of the group.
+	a member of the group except for the \field{Self group type}.
 \item[Member identifier]
         each member has this identifier, unique within the group
 	and used to address it through the owner device.
@@ -37,6 +40,11 @@ driver" refers to the driver of a member device.
 
 The following group types, and their identifiers, are currently specified:
 \begin{description}
+\item[Self group type (0x0)]
+This device group includes the owner device itself and no other devices.
+The group type identifier for this group is 0x0.
+The member identifier for this group has a value of 0x0.
+
 \item[SR-IOV group type (0x1)]
 This device group has a PCI Single Root I/O Virtualization
 (SR-IOV) physical function (PF) device as the owner and includes
@@ -78,6 +86,7 @@ struct virtio_admin_cmd {
         /* Device-readable part */
         le16 opcode;
         /*
+         * 0       - Self
          * 1       - SR-IOV
          * 2-65535 - reserved
          */
@@ -117,17 +126,40 @@ opcode & Name & Command Description \\
 \hline
 0x0001 & VIRTIO_ADMIN_CMD_LIST_USE & Provides to device list of commands used for this group type \\
 \hline
-0x0002 & VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE & Writes into the legacy common configuration structure \\
+0x0002 & \hyperref[par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface / VIRTIO-ADMIN-CMD-LEGACY-COMMON-CFG-WRITE]{VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE} & Writes into the legacy common configuration structure \\
 \hline
-0x0003 & VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ & Reads from the legacy common configuration structure  \\
+0x0003 & \hyperref[par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface / VIRTIO-ADMIN-CMD-LEGACY-COMMON-CFG-READ]{VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ} & Reads from the legacy common configuration structure  \\
 \hline
-0x0004 & VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE & Writes into the legacy device configuration structure \\
+0x0004 & \hyperref[par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface / VIRTIO-ADMIN-CMD-LEGACY-DEV-CFG-WRITE]{VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE} & Writes into the legacy device configuration structure \\
 \hline
-0x0005 & VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ & Reads into the legacy device configuration structure \\
+0x0005 & \hyperref[par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface / VIRTIO-ADMIN-CMD-LEGACY-DEV-CFG-READ]{VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ} & Reads into the legacy device configuration structure \\
 \hline
-0x0006 & VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO & Query the notification region information \\
+0x0006 & \hyperref[par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface / VIRTIO-ADMIN-CMD-LEGACY-NOTIFY-INFO]{VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO} & Query the notification region information \\
 \hline
-0x0007 - 0x7FFF & - & Commands using \field{struct virtio_admin_cmd}    \\
+0x0007 & \hyperref[par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device and driver capabilities / VIRTIO-ADMIN-CMD-CAP-ID-LIST-QUERY]{VIRTIO_ADMIN_CMD_CAP_ID_LIST_QUERY} & Query the supported device capabilities bitmap \\
+\hline
+0x0008 & \hyperref[par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device and driver capabilities / VIRTIO-ADMIN-CMD-DEVICE-CAP-GET]{VIRTIO_ADMIN_CMD_DEVICE_CAP_GET} & Get the device capabilities \\
+\hline
+0x0009 & \hyperref[par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device and driver capabilities / VIRTIO-ADMIN-CMD-DRIVER-CAP-SET]{VIRTIO_ADMIN_CMD_DRIVER_CAP_SET} & Set the driver capabilities \\
+\hline
+0x000a & \hyperref[par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device resource objects / VIRTIO-ADMIN-CMD-RESOURCE-OBJ-CREATE]{VIRTIO_ADMIN_CMD_RESOURCE_OBJ_CREATE} & Create a device resource object \\
+\hline
+0x000c & \hyperref[par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device resource objects / VIRTIO-ADMIN-CMD-RESOURCE-OBJ-MODIFY]{VIRTIO_ADMIN_CMD_RESOURCE_OBJ_MODIFY} & Modify a device resource object \\
+\hline
+0x000b & \hyperref[par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device resource objects / VIRTIO-ADMIN-CMD-RESOURCE-OBJ-QUERY]{VIRTIO_ADMIN_CMD_RESOURCE_OBJ_QUERY} & Query a device resource object \\
+\hline
+0x000d & \hyperref[par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device resource objects / VIRTIO-ADMIN-CMD-RESOURCE-OBJ-DESTROY]{VIRTIO_ADMIN_CMD_RESOURCE_OBJ_DESTROY} & Destroy a device resource object \\
+\hline
+0x000e & \hyperref[par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts /  Device parts handling commands / VIRTIO-ADMIN-CMD-DEV-PARTS-METADATA-GET]{VIRTIO_ADMIN_CMD_DEV_PARTS_METADATA_GET} & Get the metadata of the device parts \\
+\hline
+0x000f & \hyperref[par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts / Device parts handling commands / VIRTIO-ADMIN-CMD-DEV-PARTS-GET]{VIRTIO_ADMIN_CMD_DEV_PARTS_GET} & Get the device parts \\
+\hline
+0x0010 & \hyperref[par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts / Device parts handling commands / VIRTIO-ADMIN-CMD-DEV-PARTS-SET]{VIRTIO_ADMIN_CMD_DEV_PARTS_SET} & Set the device parts \\
+\hline
+0x0011 & \hyperref[par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Device parts / Device parts handling commands / VIRTIO-ADMIN-CMD-DEV-MODE-SET]{VIRTIO_ADMIN_CMD_DEV_MODE_SET} & Stop or resume the device \\
+\hline
+\hline
+0x0013 - 0x7FFF & - & Commands using \field{struct virtio_admin_cmd}    \\
 \hline
 0x8000 - 0xFFFF & - & Reserved for future commands (possibly using a different structure)    \\
 \hline
@@ -153,11 +185,17 @@ Status (decimal) & Name & Description \\
 \hline \hline
 00   & VIRTIO_ADMIN_STATUS_OK    & successful completion  \\
 \hline
+06   & VIRTIO_ADMIN_STATUS_ENXIO & no such capability or resource\\
+\hline
 11   & VIRTIO_ADMIN_STATUS_EAGAIN    & try again \\
 \hline
 12   & VIRTIO_ADMIN_STATUS_ENOMEM    & insufficient resources \\
 \hline
+16   & VIRTIO_ADMIN_STATUS_EBUSY     & device busy \\
+\hline
 22   & VIRTIO_ADMIN_STATUS_EINVAL    & invalid command \\
+\hline
+28   & VIRTIO_ADMIN_STATUS_ENOSPC    & resources exhausted on device \\
 \hline
 other   & -    & group administration command error  \\
 \hline
@@ -297,6 +335,9 @@ supporting multiple group types, the list of supported commands
 might differ between different group types.
 
 \input{admin-cmds-legacy-interface.tex}
+\input{admin-cmds-capabilities.tex}
+\input{admin-cmds-resource-objects.tex}
+\input{admin-cmds-device-parts.tex}
 
 \devicenormative{\subsubsection}{Group administration commands}{Basic Facilities of a Virtio Device / Device groups / Group administration commands}
 
@@ -450,7 +491,7 @@ group administration commands. An owner device can have more
 than one administration virtqueue.
 
 If VIRTIO_F_ADMIN_VQ has been negotiated, an owner device exposes one
-or more adminstration virtqueues. The number and locations of the
+or more administration virtqueues. The number and locations of the
 administration virtqueues are exposed by the owner device in a transport
 specific manner.
 

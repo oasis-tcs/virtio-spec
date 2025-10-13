@@ -1,0 +1,6535 @@
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2024.9.8)  13 OCT 2025 20:19
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**virtio.tex
+(./virtio.tex
+LaTeX2e <2021-11-15> patch level 1
+L3 programming layer <2022-01-21>
+(/usr/share/texlive/texmf-dist/tex/latex/base/report.cls
+Document Class: report 2021/10/04 v1.4n Standard LaTeX document class
+(/usr/share/texlive/texmf-dist/tex/latex/base/size10.clo
+File: size10.clo 2021/10/04 v1.4n Standard LaTeX file (size option)
+)
+\c@part=\count181
+\c@chapter=\count182
+\c@section=\count183
+\c@subsection=\count184
+\c@subsubsection=\count185
+\c@paragraph=\count186
+\c@subparagraph=\count187
+\c@figure=\count188
+\c@table=\count189
+\abovecaptionskip=\skip47
+\belowcaptionskip=\skip48
+\bibindent=\dimen138
+)
+(/usr/share/texlive/texmf-dist/tex/latex/geometry/geometry.sty
+Package: geometry 2020/01/02 v5.9 Page Geometry
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/keyval.sty
+Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
+\KV@toks@=\toks16
+)
+(/usr/share/texlive/texmf-dist/tex/generic/iftex/ifvtex.sty
+Package: ifvtex 2019/10/25 v1.7 ifvtex legacy package. Use iftex instead.
+
+(/usr/share/texlive/texmf-dist/tex/generic/iftex/iftex.sty
+Package: iftex 2020/03/06 v1.0d TeX engine tests
+))
+\Gm@cnth=\count190
+\Gm@cntv=\count191
+\c@Gm@tempcnt=\count192
+\Gm@bindingoffset=\dimen139
+\Gm@wd@mp=\dimen140
+\Gm@odd@mp=\dimen141
+\Gm@even@mp=\dimen142
+\Gm@layoutwidth=\dimen143
+\Gm@layoutheight=\dimen144
+\Gm@layouthoffset=\dimen145
+\Gm@layoutvoffset=\dimen146
+\Gm@dimlist=\toks17
+)
+(/usr/share/texlive/texmf-dist/tex/latex/parskip/parskip.sty
+Package: parskip 2021-03-14 v2.0h non-zero parskip adjustments
+
+(/usr/share/texlive/texmf-dist/tex/latex/kvoptions/kvoptions.sty
+Package: kvoptions 2020-10-07 v3.14 Key value format for package options (HO)
+
+(/usr/share/texlive/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty
+Package: ltxcmds 2020-05-10 v1.25 LaTeX kernel commands for general use (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/generic/kvsetkeys/kvsetkeys.sty
+Package: kvsetkeys 2019/12/15 v1.18 Key value parser (HO)
+))
+(/usr/share/texlive/texmf-dist/tex/latex/etoolbox/etoolbox.sty
+Package: etoolbox 2020/10/05 v2.5k e-TeX tools for LaTeX (JAW)
+\etb@tempcnta=\count193
+))
+(/usr/share/texlive/texmf-dist/tex/latex/setspace/setspace.sty
+Package: setspace 2011/12/19 v6.7a set line spacing
+)
+(/usr/share/texlive/texmf-dist/tex/generic/babel/babel.sty
+Package: babel 2022/01/26 3.70 The Babel package
+\babel@savecnt=\count194
+\U@D=\dimen147
+\l@unhyphenated=\language87
+
+(/usr/share/texlive/texmf-dist/tex/generic/babel/xebabel.def
+(/usr/share/texlive/texmf-dist/tex/generic/babel/txtbabel.def))
+\bbl@readstream=\read2
+\bbl@dirlevel=\count195
+
+(/usr/share/texlive/texmf-dist/tex/generic/babel-english/english.ldf
+Language: english 2017/06/06 v3.3r English support from the babel system
+Package babel Info: Hyphen rules for 'canadian' set to \l@english
+(babel)             (\language0). Reported on input line 102.
+Package babel Info: Hyphen rules for 'australian' set to \l@ukenglish
+(babel)             (\language37). Reported on input line 105.
+Package babel Info: Hyphen rules for 'newzealand' set to \l@ukenglish
+(babel)             (\language37). Reported on input line 108.
+))
+(/usr/share/texlive/texmf-dist/tex/latex/ae/ae.sty
+Package: ae 2001/02/12 1.3 Almost European Computer Modern
+
+(/usr/share/texlive/texmf-dist/tex/latex/base/fontenc.sty
+Package: fontenc 2021/04/29 v2.0v Standard LaTeX package
+LaTeX Font Info:    Trying to load font information for T1+lmr on input line 11
+2.
+
+(/usr/share/texmf/tex/latex/lm/t1lmr.fd
+File: t1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
+)))
+(/usr/share/texlive/texmf-dist/tex/latex/ae/aecompl.sty
+Package: aecompl 1998/07/23 0.9 T1 Complements for AE fonts (D. Roegel)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/base/fontenc.sty
+Package: fontenc 2021/04/29 v2.0v Standard LaTeX package
+LaTeX Font Info:    Trying to load font information for T1+aer on input line 11
+2.
+
+(/usr/share/texlive/texmf-dist/tex/latex/ae/t1aer.fd
+File: t1aer.fd 1997/11/16 Font definitions for T1/aer.
+))
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/graphicx.sty
+Package: graphicx 2021/09/16 v1.2d Enhanced LaTeX Graphics (DPC,SPQR)
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/graphics.sty
+Package: graphics 2021/03/04 v1.4d Standard LaTeX Graphics (DPC,SPQR)
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 2021/08/11 v1.11 sin cos tan (DPC)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/graphics-cfg/graphics.cfg
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: xetex.def on input line 107.
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics-def/xetex.def
+File: xetex.def 2021/03/18 v5.0k Graphics/color driver for xetex
+))
+\Gin@req@height=\dimen148
+\Gin@req@width=\dimen149
+)
+(/usr/share/texlive/texmf-dist/tex/latex/placeins/placeins.sty
+Package: placeins 2005/04/18  v 2.2
+)
+(/usr/share/texlive/texmf-dist/tex/latex/framed/framed.sty
+Package: framed 2011/10/22 v 0.96: framed or shaded text with page breaks
+\OuterFrameSep=\skip49
+\fb@frw=\dimen150
+\fb@frh=\dimen151
+\FrameRule=\dimen152
+\FrameSep=\dimen153
+)
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/hyperref.sty
+Package: hyperref 2021-06-07 v7.00m Hypertext links for LaTeX
+
+(/usr/share/texlive/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty
+Package: pdftexcmds 2020-06-27 v0.33 Utility functions of pdfTeX for LuaTeX (HO
+)
+
+(/usr/share/texlive/texmf-dist/tex/generic/infwarerr/infwarerr.sty
+Package: infwarerr 2019/12/03 v1.5 Providing info/warning/error messages (HO)
+)
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode not found.
+)
+(/usr/share/texlive/texmf-dist/tex/generic/kvdefinekeys/kvdefinekeys.sty
+Package: kvdefinekeys 2019-12-19 v1.6 Define keys (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/generic/pdfescape/pdfescape.sty
+Package: pdfescape 2019/12/09 v1.15 Implements pdfTeX's escape features (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/hycolor/hycolor.sty
+Package: hycolor 2020-01-27 v1.10 Color options for hyperref/bookmark (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/letltxmacro/letltxmacro.sty
+Package: letltxmacro 2019/12/03 v1.6 Let assignment for LaTeX macros (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/auxhook/auxhook.sty
+Package: auxhook 2019-12-17 v1.6 Hooks for auxiliary files (HO)
+)
+\@linkdim=\dimen154
+\Hy@linkcounter=\count196
+\Hy@pagecounter=\count197
+
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/pd1enc.def
+File: pd1enc.def 2021-06-07 v7.00m Hyperref: PDFDocEncoding definition (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/hyperref-langpatches.def
+File: hyperref-langpatches.def 2021-06-07 v7.00m Hyperref: patches for babel la
+nguages
+)
+(/usr/share/texlive/texmf-dist/tex/generic/intcalc/intcalc.sty
+Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/generic/etexcmds/etexcmds.sty
+Package: etexcmds 2019/12/15 v1.7 Avoid name clashes with e-TeX commands (HO)
+)
+\Hy@SavedSpaceFactor=\count198
+
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/puenc.def
+File: puenc.def 2021-06-07 v7.00m Hyperref: PDF Unicode definition (HO)
+)
+Package hyperref Info: Hyper figures OFF on input line 4192.
+Package hyperref Info: Link nesting OFF on input line 4197.
+Package hyperref Info: Hyper index ON on input line 4200.
+Package hyperref Info: Plain pages OFF on input line 4207.
+Package hyperref Info: Backreferencing OFF on input line 4212.
+Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
+Package hyperref Info: Bookmarks ON on input line 4445.
+\c@Hy@tempcnt=\count199
+
+(/usr/share/texlive/texmf-dist/tex/latex/url/url.sty
+\Urlmuskip=\muskip16
+Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
+)
+LaTeX Info: Redefining \url on input line 4804.
+\XeTeXLinkMargin=\dimen155
+
+(/usr/share/texlive/texmf-dist/tex/generic/bitset/bitset.sty
+Package: bitset 2019/12/09 v1.3 Handle bit-vector datatype (HO)
+
+(/usr/share/texlive/texmf-dist/tex/generic/bigintcalc/bigintcalc.sty
+Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO
+)
+))
+\Fld@menulength=\count266
+\Field@Width=\dimen156
+\Fld@charsize=\dimen157
+Package hyperref Info: Hyper figures OFF on input line 6076.
+Package hyperref Info: Link nesting OFF on input line 6081.
+Package hyperref Info: Hyper index ON on input line 6084.
+Package hyperref Info: backreferencing OFF on input line 6091.
+Package hyperref Info: Link coloring OFF on input line 6096.
+Package hyperref Info: Link coloring with OCG OFF on input line 6101.
+Package hyperref Info: PDF/A mode OFF on input line 6106.
+LaTeX Info: Redefining \ref on input line 6146.
+LaTeX Info: Redefining \pageref on input line 6150.
+
+(/usr/share/texlive/texmf-dist/tex/latex/base/atbegshi-ltx.sty
+Package: atbegshi-ltx 2021/01/10 v1.0c Emulation of the original atbegshi
+package with kernel methods
+)
+\Hy@abspage=\count267
+\c@Item=\count268
+\c@Hfootnote=\count269
+)
+Package hyperref Info: Driver: hxetex.
+
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/hxetex.def
+File: hxetex.def 2021-06-07 v7.00m Hyperref driver for XeTeX
+
+(/usr/share/texlive/texmf-dist/tex/generic/stringenc/stringenc.sty
+Package: stringenc 2019/11/29 v1.12 Convert strings between diff. encodings (HO
+)
+)
+\pdfm@box=\box50
+\c@Hy@AnnotLevel=\count270
+\HyField@AnnotCount=\count271
+\Fld@listcount=\count272
+\c@bookmark@seq@number=\count273
+
+(/usr/share/texlive/texmf-dist/tex/latex/rerunfilecheck/rerunfilecheck.sty
+Package: rerunfilecheck 2019/12/05 v1.9 Rerun checks for auxiliary files (HO)
+
+(/usr/share/texlive/texmf-dist/tex/latex/base/atveryend-ltx.sty
+Package: atveryend-ltx 2020/08/19 v1.0a Emulation of the original atveryend pac
+kage
+with kernel methods
+)
+(/usr/share/texlive/texmf-dist/tex/generic/uniquecounter/uniquecounter.sty
+Package: uniquecounter 2019/12/15 v1.4 Provide unlimited unique counter (HO)
+)
+Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
+86.
+)
+\Hy@SectionHShift=\skip50
+)
+(/usr/share/texlive/texmf-dist/tex/latex/lineno/lineno.sty
+Package: lineno 2005/11/02 line numbers on paragraphs v4.41
+Invalid UTF-8 byte or sequence at line 296 replaced by U+FFFD.
+\linenopenalty=\count274
+\output=\toks18
+\linenoprevgraf=\count275
+\linenumbersep=\dimen158
+\linenumberwidth=\dimen159
+\c@linenumber=\count276
+\c@pagewiselinenumber=\count277
+\c@LN@truepage=\count278
+\c@internallinenumber=\count279
+\c@internallinenumbers=\count280
+\quotelinenumbersep=\dimen160
+\bframerule=\dimen161
+\bframesep=\dimen162
+\bframebox=\box51
+LaTeX Info: Redefining \\ on input line 3056.
+)
+(/usr/share/texlive/texmf-dist/tex/latex/listings/listings.sty
+\lst@mode=\count281
+\lst@gtempboxa=\box52
+\lst@token=\toks19
+\lst@length=\count282
+\lst@currlwidth=\dimen163
+\lst@column=\count283
+\lst@pos=\count284
+\lst@lostspace=\dimen164
+\lst@width=\dimen165
+\lst@newlines=\count285
+\lst@lineno=\count286
+\lst@maxwidth=\dimen166
+
+(/usr/share/texlive/texmf-dist/tex/latex/listings/lstmisc.sty
+File: lstmisc.sty 2020/03/24 1.8d (Carsten Heinz)
+\c@lstnumber=\count287
+\lst@skipnumbers=\count288
+\lst@framebox=\box53
+)
+(/usr/share/texlive/texmf-dist/tex/latex/listings/listings.cfg
+File: listings.cfg 2020/03/24 1.8d listings configuration
+))
+Package: listings 2020/03/24 1.8d (Carsten Heinz)
+
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/courier.sty
+Package: courier 2020/03/25 PSNFSS-v9.3 (WaS) 
+)
+(/usr/share/texlive/texmf-dist/tex/latex/fancyvrb/fancyvrb.sty
+Package: fancyvrb 2021/12/21 4.1b verbatim text (tvz,hv)
+\FV@CodeLineNo=\count289
+\FV@InFile=\read3
+\FV@TabBox=\box54
+\c@FancyVerbLine=\count290
+\FV@StepNumber=\count291
+\FV@OutFile=\write3
+)
+(/usr/share/texlive/texmf-dist/tex/latex/tools/array.sty
+Package: array 2021/10/04 v2.5f Tabular extension package (FMi)
+\col@sep=\dimen167
+\ar@mcellbox=\box55
+\extrarowheight=\dimen168
+\NC@list=\toks20
+\extratabsurround=\skip51
+\backup@length=\skip52
+\ar@cellbox=\box56
+)
+(/usr/share/texlive/texmf-dist/tex/latex/tools/longtable.sty
+Package: longtable 2021-09-01 v4.17 Multi-page Table package (DPC)
+\LTleft=\skip53
+\LTright=\skip54
+\LTpre=\skip55
+\LTpost=\skip56
+\LTchunksize=\count292
+\LTcapwidth=\dimen169
+\LT@head=\box57
+\LT@firsthead=\box58
+\LT@foot=\box59
+\LT@lastfoot=\box60
+\LT@gbox=\box61
+\LT@cols=\count293
+\LT@rows=\count294
+\c@LT@tables=\count295
+\c@LT@chunks=\count296
+\LT@p@ftn=\toks21
+)
+(/usr/share/texlive/texmf-dist/tex/latex/multirow/multirow.sty
+Package: multirow 2021/03/15 v2.8 Span multiple rows of a table
+\multirow@colwidth=\skip57
+\multirow@cntb=\count297
+\multirow@dima=\skip58
+\bigstrutjot=\dimen170
+)
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/rotating.sty
+Package: rotating 2016/08/11 v2.16d rotated objects in LaTeX
+
+(/usr/share/texlive/texmf-dist/tex/latex/base/ifthen.sty
+Package: ifthen 2020/11/24 v1.1c Standard LaTeX ifthen package (DPC)
+)
+\c@r@tfl@t=\count298
+\rotFPtop=\skip59
+\rotFPbot=\skip60
+\rot@float@box=\box62
+\rot@mess@toks=\toks22
+)
+(/usr/share/texlive/texmf-dist/tex/latex/fancyhdr/fancyhdr.sty
+Package: fancyhdr 2021/01/28 v4.0.1 Extensive control of page headers and foote
+rs
+\f@nch@headwidth=\skip61
+\f@nch@O@elh=\skip62
+\f@nch@O@erh=\skip63
+\f@nch@O@olh=\skip64
+\f@nch@O@orh=\skip65
+\f@nch@O@elf=\skip66
+\f@nch@O@erf=\skip67
+\f@nch@O@olf=\skip68
+\f@nch@O@orf=\skip69
+)
+(/usr/share/texlive/texmf-dist/tex/latex/lastpage/lastpage.sty
+Package: lastpage 2021/09/03 v1.2n Refers to last page's name (HMM; JPG)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/xcolor/xcolor.sty
+Package: xcolor 2021/10/31 v2.13 LaTeX color extensions (UK)
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics-cfg/color.cfg
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package xcolor Info: Driver file: xetex.def on input line 227.
+Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1352.
+Package xcolor Info: Model `RGB' extended on input line 1368.
+Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1370.
+Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1371.
+Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1372.
+Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1373.
+Package xcolor Info: Model `Gray' substituted by `gray' on input line 1374.
+Package xcolor Info: Model `wave' substituted by `hsb' on input line 1375.
+)
+(/usr/share/texlive/texmf-dist/tex/latex/titlesec/titlesec.sty
+Package: titlesec 2021/07/05 v2.14 Sectioning titles
+\ttl@box=\box63
+\beforetitleunit=\skip70
+\aftertitleunit=\skip71
+\ttl@plus=\dimen171
+\ttl@minus=\dimen172
+\ttl@toksa=\toks23
+\titlewidth=\dimen173
+\titlewidthlast=\dimen174
+\titlewidthfirst=\dimen175
+)
+(/usr/share/texlive/texmf-dist/tex/latex/mdwtools/mdwlist.sty
+Package: mdwlist 1996/05/02 1.1 Various list-related things
+)
+(/usr/share/texlive/texmf-dist/tex/latex/xifthen/xifthen.sty
+Package: xifthen 2015/11/05 v1.4.0 Extended ifthen features
+
+(/usr/share/texlive/texmf-dist/tex/latex/tools/calc.sty
+Package: calc 2017/05/25 v4.3 Infix arithmetic (KKT,FJ)
+\calc@Acount=\count299
+\calc@Bcount=\count300
+\calc@Adimen=\dimen176
+\calc@Bdimen=\dimen177
+\calc@Askip=\skip72
+\calc@Bskip=\skip73
+LaTeX Info: Redefining \setlength on input line 80.
+LaTeX Info: Redefining \addtolength on input line 81.
+\calc@Ccount=\count301
+\calc@Cskip=\skip74
+)
+(/usr/share/texlive/texmf-dist/tex/latex/ifmtarg/ifmtarg.sty
+Package: ifmtarg 2018/04/16 v1.2b check for an empty argument
+))
+(/usr/share/texlive/texmf-dist/tex/latex/fontspec/fontspec.sty
+(/usr/share/texlive/texmf-dist/tex/latex/l3packages/xparse/xparse.sty
+(/usr/share/texlive/texmf-dist/tex/latex/l3kernel/expl3.sty
+Package: expl3 2022-01-21 L3 programming layer (loader) 
+
+(/usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-xetex.def
+File: l3backend-xetex.def 2022-01-12 L3 backend support: XeTeX
+
+(|extractbb --version)
+\c__kernel_sys_dvipdfmx_version_int=\count302
+\l__color_backend_stack_int=\count303
+\g__color_backend_stack_int=\count304
+\g__graphics_track_int=\count305
+\l__pdf_internal_box=\box64
+\g__pdf_backend_object_int=\count306
+\g__pdf_backend_annotation_int=\count307
+\g__pdf_backend_link_int=\count308
+))
+Package: xparse 2022-01-12 L3 Experimental document command parser
+)
+Package: fontspec 2022/01/15 v2.8a Font selection for XeLaTeX and LuaLaTeX
+
+(/usr/share/texlive/texmf-dist/tex/latex/fontspec/fontspec-xetex.sty
+Package: fontspec-xetex 2022/01/15 v2.8a Font selection for XeLaTeX and LuaLaTe
+X
+\l__fontspec_script_int=\count309
+\l__fontspec_language_int=\count310
+\l__fontspec_strnum_int=\count311
+\l__fontspec_tmp_int=\count312
+\l__fontspec_tmpa_int=\count313
+\l__fontspec_tmpb_int=\count314
+\l__fontspec_tmpc_int=\count315
+\l__fontspec_em_int=\count316
+\l__fontspec_emdef_int=\count317
+\l__fontspec_strong_int=\count318
+\l__fontspec_strongdef_int=\count319
+\l__fontspec_tmpa_dim=\dimen178
+\l__fontspec_tmpb_dim=\dimen179
+\l__fontspec_tmpc_dim=\dimen180
+
+(/usr/share/texlive/texmf-dist/tex/latex/base/fontenc.sty
+Package: fontenc 2021/04/29 v2.0v Standard LaTeX package
+)
+(/usr/share/texlive/texmf-dist/tex/latex/fontspec/fontspec.cfg)))
+(/usr/share/texlive/texmf-dist/tex/xelatex/xltxtra/xltxtra.sty
+Package: xltxtra 2018/12/31 v0.7 Improvements for the "XeLaTeX" format
+
+(/usr/share/texlive/texmf-dist/tex/generic/iftex/ifluatex.sty
+Package: ifluatex 2019/10/25 v1.5 ifluatex legacy package. Use iftex instead.
+)
+(/usr/share/texlive/texmf-dist/tex/generic/iftex/ifxetex.sty
+Package: ifxetex 2019/10/25 v0.7 ifxetex legacy package. Use iftex instead.
+)
+(/usr/share/texlive/texmf-dist/tex/latex/realscripts/realscripts.sty
+Package: realscripts 2016/02/13 v0.3d Access OpenType subscripts and superscrip
+ts
+\subsupersep=\dimen181
+)
+(/usr/share/texlive/texmf-dist/tex/latex/metalogo/metalogo.sty
+Package: metalogo 2010/05/29 v0.12 Extended TeX logo macros
+\xl@everylogo=\toks24
+\xl@@everylogo=\toks25
+LaTeX Info: Redefining \TeX on input line 193.
+LaTeX Info: Redefining \LaTeX on input line 202.
+LaTeX Info: Redefining \LaTeXe on input line 219.
+)
+\l__xetex_show_hyphens_wrapping_box=\box65
+\l__xetex_show_hyphens_temp_box=\box66
+\l__xetex_show_hyphens_final_box=\box67
+\g__xetex_show_hyphens_word_box=\box68
+)
+(/usr/share/texlive/texmf-dist/tex/latex/tools/tabularx.sty
+Package: tabularx 2020/01/15 v2.11c `tabularx' package (DPC)
+\TX@col@width=\dimen182
+\TX@old@table=\dimen183
+\TX@old@col=\dimen184
+\TX@target=\dimen185
+\TX@delta=\dimen186
+\TX@cols=\count320
+\TX@ftn=\toks26
+)
+(/usr/share/texlive/texmf-dist/tex/latex/ltablex/ltablex.sty
+Package: ltablex 2014/08/13 v1.1 Modified tabularx
+)
+(/usr/share/texlive/texmf-dist/tex/latex/underscore/underscore.sty
+Package: underscore 2006/09/13
+LaTeX Info: Redefining \_ on input line 42.
+)
+(/usr/share/texlive/texmf-dist/tex/generic/xstring/xstring.sty
+(/usr/share/texlive/texmf-dist/tex/generic/xstring/xstring.tex
+\integerpart=\count321
+\decimalpart=\count322
+)
+Package: xstring 2021/07/21 v1.84 String manipulations (CT)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/enumitem/enumitem.sty
+Package: enumitem 2019/06/20 v3.9 Customized lists
+\labelindent=\skip75
+\enit@outerparindent=\dimen187
+\enit@toks=\toks27
+\enit@inbox=\box69
+\enit@count@id=\count323
+\enitdp@description=\count324
+)
+(/usr/share/texlive/texmf-dist/tex/latex/float/float.sty
+Package: float 2001/11/08 v1.3d Float enhancements (AL)
+\c@float@type=\count325
+\float@exts=\toks28
+\float@box=\box70
+\@float@everytoks=\toks29
+\@floatcapt=\box71
+)
+(/usr/share/texlive/texmf-dist/tex/latex/ellipsis/ellipsis.sty
+Package: ellipsis 2020/05/22 v1.8 fixes spacing around ellipses (three dots)
+
+(/usr/share/texlive/texmf-dist/tex/latex/tools/xspace.sty
+Package: xspace 2014/10/28 v1.13 Space after command names (DPC,MH)
+)
+LaTeX Info: Redefining \textellipsis on input line 77.
+)
+
+Package fontspec Info: Font family 'LiberationSans(0)' created for font
+(fontspec)             'Liberation Sans' with options
+(fontspec)             [Ligatures=TeX,Mapping=tex-text].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.: <->"Liberation
+(fontspec)             Sans/OT:script=latn;language=dflt;mapping=tex-text;"
+(fontspec)             - 'small caps'  (m/sc) with NFSS spec.: 
+(fontspec)             - 'bold' (b/n) with NFSS spec.: <->"Liberation
+(fontspec)             Sans/B/OT:script=latn;language=dflt;mapping=tex-text;"
+(fontspec)             - 'bold small caps'  (b/sc) with NFSS spec.: 
+(fontspec)             - 'italic' (m/it) with NFSS spec.: <->"Liberation
+(fontspec)             Sans/I/OT:script=latn;language=dflt;mapping=tex-text;"
+(fontspec)             - 'italic small caps'  (m/scit) with NFSS spec.: 
+(fontspec)             - 'bold italic' (b/it) with NFSS spec.: <->"Liberation
+(fontspec)             Sans/BI/OT:script=latn;language=dflt;mapping=tex-text;"
+(fontspec)             - 'bold italic small caps'  (b/scit) with NFSS spec.: 
+
+
+Package fontspec Info: Font family 'LiberationMono(0)' created for font
+(fontspec)             'Liberation Mono' with options
+(fontspec)             [WordSpace={1,0,0},HyphenChar=None,PunctuationSpace=Word
+Space].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.: <->"Liberation
+(fontspec)             Mono/OT:script=latn;language=dflt;"
+(fontspec)             - 'small caps'  (m/sc) with NFSS spec.: 
+(fontspec)             and font adjustment code:
+(fontspec)             \fontdimen 2\font =1\fontdimen 2\font \fontdimen 3\font
+(fontspec)             =0\fontdimen 3\font \fontdimen 4\font =0\fontdimen
+(fontspec)             4\font \fontdimen 7\font =0\fontdimen 2\font
+(fontspec)             \tex_hyphenchar:D \font =-1\scan_stop: 
+(fontspec)             - 'bold' (b/n) with NFSS spec.: <->"Liberation
+(fontspec)             Mono/B/OT:script=latn;language=dflt;"
+(fontspec)             - 'bold small caps'  (b/sc) with NFSS spec.: 
+(fontspec)             and font adjustment code:
+(fontspec)             \fontdimen 2\font =1\fontdimen 2\font \fontdimen 3\font
+(fontspec)             =0\fontdimen 3\font \fontdimen 4\font =0\fontdimen
+(fontspec)             4\font \fontdimen 7\font =0\fontdimen 2\font
+(fontspec)             \tex_hyphenchar:D \font =-1\scan_stop: 
+(fontspec)             - 'italic' (m/it) with NFSS spec.: <->"Liberation
+(fontspec)             Mono/I/OT:script=latn;language=dflt;"
+(fontspec)             - 'italic small caps'  (m/scit) with NFSS spec.: 
+(fontspec)             and font adjustment code:
+(fontspec)             \fontdimen 2\font =1\fontdimen 2\font \fontdimen 3\font
+(fontspec)             =0\fontdimen 3\font \fontdimen 4\font =0\fontdimen
+(fontspec)             4\font \fontdimen 7\font =0\fontdimen 2\font
+(fontspec)             \tex_hyphenchar:D \font =-1\scan_stop: 
+(fontspec)             - 'bold italic' (b/it) with NFSS spec.: <->"Liberation
+(fontspec)             Mono/BI/OT:script=latn;language=dflt;"
+(fontspec)             - 'bold italic small caps'  (b/scit) with NFSS spec.: 
+(fontspec)             and font adjustment code:
+(fontspec)             \fontdimen 2\font =1\fontdimen 2\font \fontdimen 3\font
+(fontspec)             =0\fontdimen 3\font \fontdimen 4\font =0\fontdimen
+(fontspec)             4\font \fontdimen 7\font =0\fontdimen 2\font
+(fontspec)             \tex_hyphenchar:D \font =-1\scan_stop: 
+
+ (./specvars.tex
+(./setup-generated.tex)
+Package hyperref Info: Option `colorlinks' set `true' on input line 24.
+) (./commands.tex
+\c@clausecounter=\count326
+) (./commands-pdf.tex) (./listings.tex) (./main.tex (./virtio-v1.3-csd01.aux)
+\openout1 = `virtio-v1.3-csd01.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 4.
+LaTeX Font Info:    ... okay on input line 4.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 4.
+LaTeX Font Info:    ... okay on input line 4.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 4.
+LaTeX Font Info:    ... okay on input line 4.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 4.
+LaTeX Font Info:    ... okay on input line 4.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 4.
+LaTeX Font Info:    Trying to load font information for TS1+cmr on input line 4
+.
+
+(/usr/share/texlive/texmf-dist/tex/latex/base/ts1cmr.fd
+File: ts1cmr.fd 2019/12/16 v2.5j Standard LaTeX font definitions
+)
+LaTeX Font Info:    ... okay on input line 4.
+LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 4.
+LaTeX Font Info:    ... okay on input line 4.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 4.
+LaTeX Font Info:    ... okay on input line 4.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 4.
+LaTeX Font Info:    ... okay on input line 4.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 4.
+LaTeX Font Info:    ... okay on input line 4.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 4.
+LaTeX Font Info:    ... okay on input line 4.
+
+*geometry* driver: auto-detecting
+*geometry* detected driver: xetex
+*geometry* verbose mode - [ preamble ] result:
+* driver: xetex
+* paper: custom
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: 
+* h-part:(L,W,R)=(72.26999pt, 469.75502pt, 72.26999pt)
+* v-part:(T,H,B)=(72.26999pt, 686.565pt, 36.135pt)
+* \paperwidth=614.295pt
+* \paperheight=794.96999pt
+* \textwidth=469.75502pt
+* \textheight=686.565pt
+* \oddsidemargin=0.0pt
+* \evensidemargin=0.0pt
+* \topmargin=-37.0pt
+* \headheight=0.0pt
+* \headsep=10.0pt
+* \topskip=10.0pt
+* \footskip=30.0pt
+* \marginparwidth=65.0pt
+* \marginparsep=11.0pt
+* \columnsep=10.0pt
+* \skip\footins=9.0pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidefalse
+* \@mparswitchfalse
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+Package hyperref Info: Link coloring ON on input line 4.
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
+Package: nameref 2021-04-02 v2.47 Cross-referencing by name of section
+
+(/usr/share/texlive/texmf-dist/tex/latex/refcount/refcount.sty
+Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/generic/gettitlestring/gettitlestring.sty
+Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
+)
+\c@section@level=\count327
+)
+LaTeX Info: Redefining \ref on input line 4.
+LaTeX Info: Redefining \pageref on input line 4.
+LaTeX Info: Redefining \nameref on input line 4.
+
+(./virtio-v1.3-csd01.out) (./virtio-v1.3-csd01.out)
+\@outlinefile=\write4
+\openout4 = `virtio-v1.3-csd01.out'.
+
+\c@lstlisting=\count328
+Package lastpage Info: Please have a look at the pageslts package at
+(lastpage)             https://www.ctan.org/pkg/pageslts
+(lastpage)             ! on input line 4.
+LaTeX Info: Redefining \dots on input line 4.
+ (./title.tex
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 4.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 4.
+File: images/oasis.png Graphic file (type bmp)
+<images/oasis.png>
+
+Package fontspec Info: Font family 'LiberationSans(1)' created for font
+(fontspec)             'Liberation Sans' with options [Color=446CAA].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.: <->"Liberation
+(fontspec)             Sans/OT:script=latn;language=dflt;color=446CAAFF ;"
+(fontspec)             - 'small caps'  (m/sc) with NFSS spec.: 
+(fontspec)             - 'bold' (b/n) with NFSS spec.: <->"Liberation
+(fontspec)             Sans/B/OT:script=latn;language=dflt;color=446CAAFF ;"
+(fontspec)             - 'bold small caps'  (b/sc) with NFSS spec.: 
+(fontspec)             - 'italic' (m/it) with NFSS spec.: <->"Liberation
+(fontspec)             Sans/I/OT:script=latn;language=dflt;color=446CAAFF ;"
+(fontspec)             - 'italic small caps'  (m/scit) with NFSS spec.: 
+(fontspec)             - 'bold italic' (b/it) with NFSS spec.: <->"Liberation
+(fontspec)             Sans/BI/OT:script=latn;language=dflt;color=446CAAFF ;"
+(fontspec)             - 'bold italic small caps'  (b/scit) with NFSS spec.: 
+
+ [1
+
+]
+(./abstract.tex) (./ipr.tex)
+Underfull \hbox (badness 10000) in paragraph at lines 115--116
+
+ []
+
+[2]
+Underfull \hbox (badness 10000) in paragraph at lines 195--202
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 195--202
+
+ []
+
+[3]) (./virtio-v1.3-csd01.toc [4
+
+] [5] [6] [7]
+Overfull \hbox (1.18454pt too wide) detected at line 230
+ []\TU/LiberationSans(0)/m/n/10 102
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 231
+ []\TU/LiberationSans(0)/m/n/10 102
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 232
+ []\TU/LiberationSans(0)/m/n/10 102
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 233
+ []\TU/LiberationSans(0)/m/n/10 103
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 234
+ []\TU/LiberationSans(0)/m/n/10 103
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 235
+ []\TU/LiberationSans(0)/m/n/10 103
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 236
+ []\TU/LiberationSans(0)/m/n/10 103
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 237
+ []\TU/LiberationSans(0)/m/n/10 103
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 238
+ []\TU/LiberationSans(0)/m/n/10 103
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 239
+ []\TU/LiberationSans(0)/m/n/10 104
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 240
+ []\TU/LiberationSans(0)/m/n/10 104
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 241
+ []\TU/LiberationSans(0)/m/n/10 104
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 242
+ []\TU/LiberationSans(0)/m/n/10 104
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 243
+ []\TU/LiberationSans(0)/m/n/10 105
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 244
+ []\TU/LiberationSans(0)/m/n/10 105
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 245
+ []\TU/LiberationSans(0)/m/n/10 105
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 246
+ []\TU/LiberationSans(0)/m/n/10 105
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 247
+ []\TU/LiberationSans(0)/m/n/10 106
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 248
+ []\TU/LiberationSans(0)/m/n/10 106
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 249
+ []\TU/LiberationSans(0)/m/n/10 106
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 250
+ []\TU/LiberationSans(0)/m/n/10 106
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 251
+ []\TU/LiberationSans(0)/m/n/10 106
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 252
+ []\TU/LiberationSans(0)/m/n/10 107
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 253
+ []\TU/LiberationSans(0)/m/n/10 107
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 255
+ []\TU/LiberationSans(0)/m/n/10 107
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 256
+ []\TU/LiberationSans(0)/m/n/10 107
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 257
+ []\TU/LiberationSans(0)/m/n/10 107
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 258
+ []\TU/LiberationSans(0)/m/n/10 107
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 259
+ []\TU/LiberationSans(0)/m/n/10 108
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 262
+ []\TU/LiberationSans(0)/m/n/10 108
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 263
+ []\TU/LiberationSans(0)/m/n/10 108
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 264
+ []\TU/LiberationSans(0)/m/n/10 109
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 265
+ []\TU/LiberationSans(0)/m/n/10 109
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 266
+ []\TU/LiberationSans(0)/m/n/10 109
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 267
+ []\TU/LiberationSans(0)/m/n/10 109
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 268
+ []\TU/LiberationSans(0)/m/n/10 109
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 269
+ []\TU/LiberationSans(0)/m/n/10 109
+ []
+
+
+Overfull \hbox (0.44235pt too wide) detected at line 274
+ []\TU/LiberationSans(0)/m/n/10 112
+ []
+
+
+Overfull \hbox (0.44235pt too wide) detected at line 275
+ []\TU/LiberationSans(0)/m/n/10 113
+ []
+
+
+Overfull \hbox (0.44235pt too wide) detected at line 276
+ []\TU/LiberationSans(0)/m/n/10 114
+ []
+
+
+Overfull \hbox (0.44235pt too wide) detected at line 277
+ []\TU/LiberationSans(0)/m/n/10 114
+ []
+
+
+Overfull \hbox (0.44235pt too wide) detected at line 278
+ []\TU/LiberationSans(0)/m/n/10 115
+ []
+
+
+Overfull \hbox (0.44235pt too wide) detected at line 279
+ []\TU/LiberationSans(0)/m/n/10 116
+ []
+
+
+Overfull \hbox (0.44235pt too wide) detected at line 280
+ []\TU/LiberationSans(0)/m/n/10 116
+ []
+
+
+Overfull \hbox (0.44235pt too wide) detected at line 281
+ []\TU/LiberationSans(0)/m/n/10 116
+ []
+
+
+Overfull \hbox (0.44235pt too wide) detected at line 282
+ []\TU/LiberationSans(0)/m/n/10 117
+ []
+
+
+Overfull \hbox (0.44235pt too wide) detected at line 283
+ []\TU/LiberationSans(0)/m/n/10 117
+ []
+
+
+Overfull \hbox (0.44235pt too wide) detected at line 284
+ []\TU/LiberationSans(0)/m/n/10 118
+ []
+
+
+Overfull \hbox (0.44235pt too wide) detected at line 285
+ []\TU/LiberationSans(0)/m/n/10 118
+ []
+
+
+Overfull \hbox (0.44235pt too wide) detected at line 286
+ []\TU/LiberationSans(0)/m/n/10 119
+ []
+
+
+Overfull \hbox (0.44235pt too wide) detected at line 287
+ []\TU/LiberationSans(0)/m/n/10 119
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 288
+ []\TU/LiberationSans(0)/m/n/10 120
+ []
+
+[8]
+Overfull \hbox (1.18454pt too wide) detected at line 289
+ []\TU/LiberationSans(0)/m/n/10 121
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 290
+ []\TU/LiberationSans(0)/m/n/10 124
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 291
+ []\TU/LiberationSans(0)/m/n/10 124
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 292
+ []\TU/LiberationSans(0)/m/n/10 124
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 293
+ []\TU/LiberationSans(0)/m/n/10 125
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 294
+ []\TU/LiberationSans(0)/m/n/10 125
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 295
+ []\TU/LiberationSans(0)/m/n/10 125
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 296
+ []\TU/LiberationSans(0)/m/n/10 126
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 297
+ []\TU/LiberationSans(0)/m/n/10 128
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 298
+ []\TU/LiberationSans(0)/m/n/10 129
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 303
+ []\TU/LiberationSans(0)/m/n/10 132
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 309
+ []\TU/LiberationSans(0)/m/n/10 133
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 310
+ []\TU/LiberationSans(0)/m/n/10 133
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 311
+ []\TU/LiberationSans(0)/m/n/10 134
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 314
+ []\TU/LiberationSans(0)/m/n/10 135
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 318
+ []\TU/LiberationSans(0)/m/n/10 136
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 321
+ []\TU/LiberationSans(0)/m/n/10 136
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 324
+ []\TU/LiberationSans(0)/m/n/10 137
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 325
+ []\TU/LiberationSans(0)/m/n/10 137
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 330
+ []\TU/LiberationSans(0)/m/n/10 139
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 334
+ []\TU/LiberationSans(0)/m/n/10 140
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 339
+ []\TU/LiberationSans(0)/m/n/10 141
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 343
+ []\TU/LiberationSans(0)/m/n/10 142
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 350
+ []\TU/LiberationSans(0)/m/n/10 144
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 364
+ []\TU/LiberationSans(0)/m/n/10 150
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 365
+ []\TU/LiberationSans(0)/m/n/10 151
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 366
+ []\TU/LiberationSans(0)/m/n/10 151
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 370
+ []\TU/LiberationSans(0)/m/n/10 154
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 374
+ []\TU/LiberationSans(0)/m/n/10 156
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 375
+ []\TU/LiberationSans(0)/m/n/10 157
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 376
+ []\TU/LiberationSans(0)/m/n/10 158
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 377
+ []\TU/LiberationSans(0)/m/n/10 158
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 378
+ []\TU/LiberationSans(0)/m/n/10 159
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 379
+ []\TU/LiberationSans(0)/m/n/10 159
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 380
+ []\TU/LiberationSans(0)/m/n/10 159
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 381
+ []\TU/LiberationSans(0)/m/n/10 160
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 382
+ []\TU/LiberationSans(0)/m/n/10 160
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 383
+ []\TU/LiberationSans(0)/m/n/10 160
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 384
+ []\TU/LiberationSans(0)/m/n/10 160
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 385
+ []\TU/LiberationSans(0)/m/n/10 161
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 386
+ []\TU/LiberationSans(0)/m/n/10 161
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 387
+ []\TU/LiberationSans(0)/m/n/10 161
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 388
+ []\TU/LiberationSans(0)/m/n/10 161
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 389
+ []\TU/LiberationSans(0)/m/n/10 163
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 390
+ []\TU/LiberationSans(0)/m/n/10 163
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 391
+ []\TU/LiberationSans(0)/m/n/10 164
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 392
+ []\TU/LiberationSans(0)/m/n/10 164
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 393
+ []\TU/LiberationSans(0)/m/n/10 165
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 394
+ []\TU/LiberationSans(0)/m/n/10 166
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 395
+ []\TU/LiberationSans(0)/m/n/10 171
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 396
+ []\TU/LiberationSans(0)/m/n/10 172
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 397
+ []\TU/LiberationSans(0)/m/n/10 175
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 398
+ []\TU/LiberationSans(0)/m/n/10 176
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 399
+ []\TU/LiberationSans(0)/m/n/10 176
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 400
+ []\TU/LiberationSans(0)/m/n/10 176
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 401
+ []\TU/LiberationSans(0)/m/n/10 176
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 402
+ []\TU/LiberationSans(0)/m/n/10 177
+ []
+
+[9]
+Overfull \hbox (1.18454pt too wide) detected at line 403
+ []\TU/LiberationSans(0)/m/n/10 177
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 404
+ []\TU/LiberationSans(0)/m/n/10 177
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 405
+ []\TU/LiberationSans(0)/m/n/10 177
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 406
+ []\TU/LiberationSans(0)/m/n/10 177
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 407
+ []\TU/LiberationSans(0)/m/n/10 177
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 408
+ []\TU/LiberationSans(0)/m/n/10 178
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 409
+ []\TU/LiberationSans(0)/m/n/10 178
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 410
+ []\TU/LiberationSans(0)/m/n/10 179
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 411
+ []\TU/LiberationSans(0)/m/n/10 179
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 412
+ []\TU/LiberationSans(0)/m/n/10 179
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 413
+ []\TU/LiberationSans(0)/m/n/10 179
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 414
+ []\TU/LiberationSans(0)/m/n/10 179
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 415
+ []\TU/LiberationSans(0)/m/n/10 179
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 416
+ []\TU/LiberationSans(0)/m/n/10 179
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 417
+ []\TU/LiberationSans(0)/m/n/10 179
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 418
+ []\TU/LiberationSans(0)/m/n/10 179
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 419
+ []\TU/LiberationSans(0)/m/n/10 179
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 420
+ []\TU/LiberationSans(0)/m/n/10 180
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 421
+ []\TU/LiberationSans(0)/m/n/10 180
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 422
+ []\TU/LiberationSans(0)/m/n/10 180
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 423
+ []\TU/LiberationSans(0)/m/n/10 180
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 424
+ []\TU/LiberationSans(0)/m/n/10 180
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 425
+ []\TU/LiberationSans(0)/m/n/10 180
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 426
+ []\TU/LiberationSans(0)/m/n/10 180
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 427
+ []\TU/LiberationSans(0)/m/n/10 181
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 428
+ []\TU/LiberationSans(0)/m/n/10 181
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 430
+ []\TU/LiberationSans(0)/m/n/10 181
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 432
+ []\TU/LiberationSans(0)/m/n/10 181
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 433
+ []\TU/LiberationSans(0)/m/n/10 182
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 434
+ []\TU/LiberationSans(0)/m/n/10 182
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 435
+ []\TU/LiberationSans(0)/m/n/10 183
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 436
+ []\TU/LiberationSans(0)/m/n/10 183
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 437
+ []\TU/LiberationSans(0)/m/n/10 183
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 438
+ []\TU/LiberationSans(0)/m/n/10 184
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 439
+ []\TU/LiberationSans(0)/m/n/10 184
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 440
+ []\TU/LiberationSans(0)/m/n/10 184
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 441
+ []\TU/LiberationSans(0)/m/n/10 184
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 442
+ []\TU/LiberationSans(0)/m/n/10 185
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 443
+ []\TU/LiberationSans(0)/m/n/10 185
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 444
+ []\TU/LiberationSans(0)/m/n/10 186
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 445
+ []\TU/LiberationSans(0)/m/n/10 186
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 446
+ []\TU/LiberationSans(0)/m/n/10 186
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 447
+ []\TU/LiberationSans(0)/m/n/10 187
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 448
+ []\TU/LiberationSans(0)/m/n/10 187
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 449
+ []\TU/LiberationSans(0)/m/n/10 187
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 450
+ []\TU/LiberationSans(0)/m/n/10 187
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 451
+ []\TU/LiberationSans(0)/m/n/10 187
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 452
+ []\TU/LiberationSans(0)/m/n/10 188
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 453
+ []\TU/LiberationSans(0)/m/n/10 188
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 454
+ []\TU/LiberationSans(0)/m/n/10 188
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 455
+ []\TU/LiberationSans(0)/m/n/10 188
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 456
+ []\TU/LiberationSans(0)/m/n/10 188
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 457
+ []\TU/LiberationSans(0)/m/n/10 189
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 458
+ []\TU/LiberationSans(0)/m/n/10 189
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 459
+ []\TU/LiberationSans(0)/m/n/10 189
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 460
+ []\TU/LiberationSans(0)/m/n/10 189
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 461
+ []\TU/LiberationSans(0)/m/n/10 189
+ []
+
+[10]
+Overfull \hbox (1.18454pt too wide) detected at line 462
+ []\TU/LiberationSans(0)/m/n/10 189
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 463
+ []\TU/LiberationSans(0)/m/n/10 190
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 464
+ []\TU/LiberationSans(0)/m/n/10 191
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 465
+ []\TU/LiberationSans(0)/m/n/10 192
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 466
+ []\TU/LiberationSans(0)/m/n/10 192
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 467
+ []\TU/LiberationSans(0)/m/n/10 192
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 468
+ []\TU/LiberationSans(0)/m/n/10 194
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 469
+ []\TU/LiberationSans(0)/m/n/10 194
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 470
+ []\TU/LiberationSans(0)/m/n/10 195
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 471
+ []\TU/LiberationSans(0)/m/n/10 196
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 472
+ []\TU/LiberationSans(0)/m/n/10 196
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 473
+ []\TU/LiberationSans(0)/m/n/10 196
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 474
+ []\TU/LiberationSans(0)/m/n/10 196
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 475
+ []\TU/LiberationSans(0)/m/n/10 196
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 476
+ []\TU/LiberationSans(0)/m/n/10 196
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 477
+ []\TU/LiberationSans(0)/m/n/10 196
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 478
+ []\TU/LiberationSans(0)/m/n/10 197
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 479
+ []\TU/LiberationSans(0)/m/n/10 197
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 480
+ []\TU/LiberationSans(0)/m/n/10 197
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 481
+ []\TU/LiberationSans(0)/m/n/10 197
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 482
+ []\TU/LiberationSans(0)/m/n/10 198
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 483
+ []\TU/LiberationSans(0)/m/n/10 198
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 484
+ []\TU/LiberationSans(0)/m/n/10 198
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 485
+ []\TU/LiberationSans(0)/m/n/10 198
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 486
+ []\TU/LiberationSans(0)/m/n/10 198
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 487
+ []\TU/LiberationSans(0)/m/n/10 198
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 488
+ []\TU/LiberationSans(0)/m/n/10 198
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 489
+ []\TU/LiberationSans(0)/m/n/10 199
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 490
+ []\TU/LiberationSans(0)/m/n/10 200
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 491
+ []\TU/LiberationSans(0)/m/n/10 205
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 492
+ []\TU/LiberationSans(0)/m/n/10 206
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 493
+ []\TU/LiberationSans(0)/m/n/10 206
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 494
+ []\TU/LiberationSans(0)/m/n/10 206
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 495
+ []\TU/LiberationSans(0)/m/n/10 207
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 496
+ []\TU/LiberationSans(0)/m/n/10 207
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 497
+ []\TU/LiberationSans(0)/m/n/10 207
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 498
+ []\TU/LiberationSans(0)/m/n/10 207
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 499
+ []\TU/LiberationSans(0)/m/n/10 208
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 500
+ []\TU/LiberationSans(0)/m/n/10 208
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 501
+ []\TU/LiberationSans(0)/m/n/10 208
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 502
+ []\TU/LiberationSans(0)/m/n/10 208
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 503
+ []\TU/LiberationSans(0)/m/n/10 209
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 504
+ []\TU/LiberationSans(0)/m/n/10 209
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 505
+ []\TU/LiberationSans(0)/m/n/10 209
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 506
+ []\TU/LiberationSans(0)/m/n/10 209
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 507
+ []\TU/LiberationSans(0)/m/n/10 209
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 508
+ []\TU/LiberationSans(0)/m/n/10 209
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 509
+ []\TU/LiberationSans(0)/m/n/10 210
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 510
+ []\TU/LiberationSans(0)/m/n/10 210
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 511
+ []\TU/LiberationSans(0)/m/n/10 210
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 512
+ []\TU/LiberationSans(0)/m/n/10 210
+ []
+
+
+Overfull \hbox (0.44235pt too wide) detected at line 513
+ []\TU/LiberationSans(0)/m/n/10 211
+ []
+
+
+Overfull \hbox (0.44235pt too wide) detected at line 514
+ []\TU/LiberationSans(0)/m/n/10 211
+ []
+
+
+Overfull \hbox (0.44235pt too wide) detected at line 515
+ []\TU/LiberationSans(0)/m/n/10 211
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 516
+ []\TU/LiberationSans(0)/m/n/10 212
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 517
+ []\TU/LiberationSans(0)/m/n/10 212
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 518
+ []\TU/LiberationSans(0)/m/n/10 213
+ []
+
+[11]
+Overfull \hbox (1.18454pt too wide) detected at line 519
+ []\TU/LiberationSans(0)/m/n/10 213
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 520
+ []\TU/LiberationSans(0)/m/n/10 213
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 521
+ []\TU/LiberationSans(0)/m/n/10 213
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 522
+ []\TU/LiberationSans(0)/m/n/10 213
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 523
+ []\TU/LiberationSans(0)/m/n/10 214
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 524
+ []\TU/LiberationSans(0)/m/n/10 214
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 525
+ []\TU/LiberationSans(0)/m/n/10 214
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 526
+ []\TU/LiberationSans(0)/m/n/10 216
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 536
+ []\TU/LiberationSans(0)/m/n/10 221
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 537
+ []\TU/LiberationSans(0)/m/n/10 223
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 538
+ []\TU/LiberationSans(0)/m/n/10 224
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 539
+ []\TU/LiberationSans(0)/m/n/10 224
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 540
+ []\TU/LiberationSans(0)/m/n/10 225
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 541
+ []\TU/LiberationSans(0)/m/n/10 225
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 542
+ []\TU/LiberationSans(0)/m/n/10 226
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 543
+ []\TU/LiberationSans(0)/m/n/10 226
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 544
+ []\TU/LiberationSans(0)/m/n/10 229
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 545
+ []\TU/LiberationSans(0)/m/n/10 230
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 546
+ []\TU/LiberationSans(0)/m/n/10 230
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 547
+ []\TU/LiberationSans(0)/m/n/10 232
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 548
+ []\TU/LiberationSans(0)/m/n/10 232
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 549
+ []\TU/LiberationSans(0)/m/n/10 232
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 550
+ []\TU/LiberationSans(0)/m/n/10 233
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 551
+ []\TU/LiberationSans(0)/m/n/10 233
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 552
+ []\TU/LiberationSans(0)/m/n/10 234
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 553
+ []\TU/LiberationSans(0)/m/n/10 234
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 556
+ []\TU/LiberationSans(0)/m/n/10 236
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 559
+ []\TU/LiberationSans(0)/m/n/10 238
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 560
+ []\TU/LiberationSans(0)/m/n/10 238
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 561
+ []\TU/LiberationSans(0)/m/n/10 239
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 562
+ []\TU/LiberationSans(0)/m/n/10 240
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 563
+ []\TU/LiberationSans(0)/m/n/10 240
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 564
+ []\TU/LiberationSans(0)/m/n/10 240
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 565
+ []\TU/LiberationSans(0)/m/n/10 240
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 566
+ []\TU/LiberationSans(0)/m/n/10 240
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 567
+ []\TU/LiberationSans(0)/m/n/10 240
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 568
+ []\TU/LiberationSans(0)/m/n/10 240
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 569
+ []\TU/LiberationSans(0)/m/n/10 241
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 570
+ []\TU/LiberationSans(0)/m/n/10 241
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 571
+ []\TU/LiberationSans(0)/m/n/10 241
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 572
+ []\TU/LiberationSans(0)/m/n/10 242
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 573
+ []\TU/LiberationSans(0)/m/n/10 242
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 574
+ []\TU/LiberationSans(0)/m/n/10 242
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 575
+ []\TU/LiberationSans(0)/m/n/10 242
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 576
+ []\TU/LiberationSans(0)/m/n/10 242
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 577
+ []\TU/LiberationSans(0)/m/n/10 243
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 578
+ []\TU/LiberationSans(0)/m/n/10 243
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 579
+ []\TU/LiberationSans(0)/m/n/10 243
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 580
+ []\TU/LiberationSans(0)/m/n/10 243
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 581
+ []\TU/LiberationSans(0)/m/n/10 243
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 582
+ []\TU/LiberationSans(0)/m/n/10 244
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 583
+ []\TU/LiberationSans(0)/m/n/10 244
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 584
+ []\TU/LiberationSans(0)/m/n/10 244
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 585
+ []\TU/LiberationSans(0)/m/n/10 244
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 586
+ []\TU/LiberationSans(0)/m/n/10 244
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 587
+ []\TU/LiberationSans(0)/m/n/10 245
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 588
+ []\TU/LiberationSans(0)/m/n/10 245
+ []
+
+[12]
+Overfull \hbox (1.18454pt too wide) detected at line 589
+ []\TU/LiberationSans(0)/m/n/10 245
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 590
+ []\TU/LiberationSans(0)/m/n/10 245
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 591
+ []\TU/LiberationSans(0)/m/n/10 245
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 592
+ []\TU/LiberationSans(0)/m/n/10 245
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 593
+ []\TU/LiberationSans(0)/m/n/10 245
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 594
+ []\TU/LiberationSans(0)/m/n/10 246
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 595
+ []\TU/LiberationSans(0)/m/n/10 246
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 596
+ []\TU/LiberationSans(0)/m/n/10 247
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 597
+ []\TU/LiberationSans(0)/m/n/10 247
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 598
+ []\TU/LiberationSans(0)/m/n/10 247
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 599
+ []\TU/LiberationSans(0)/m/n/10 247
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 600
+ []\TU/LiberationSans(0)/m/n/10 247
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 601
+ []\TU/LiberationSans(0)/m/n/10 247
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 602
+ []\TU/LiberationSans(0)/m/n/10 248
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 603
+ []\TU/LiberationSans(0)/m/n/10 248
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 604
+ []\TU/LiberationSans(0)/m/n/10 248
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 605
+ []\TU/LiberationSans(0)/m/n/10 249
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 606
+ []\TU/LiberationSans(0)/m/n/10 249
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 607
+ []\TU/LiberationSans(0)/m/n/10 249
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 608
+ []\TU/LiberationSans(0)/m/n/10 249
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 609
+ []\TU/LiberationSans(0)/m/n/10 249
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 610
+ []\TU/LiberationSans(0)/m/n/10 249
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 611
+ []\TU/LiberationSans(0)/m/n/10 250
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 612
+ []\TU/LiberationSans(0)/m/n/10 250
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 613
+ []\TU/LiberationSans(0)/m/n/10 250
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 614
+ []\TU/LiberationSans(0)/m/n/10 251
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 615
+ []\TU/LiberationSans(0)/m/n/10 251
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 616
+ []\TU/LiberationSans(0)/m/n/10 252
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 617
+ []\TU/LiberationSans(0)/m/n/10 252
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 618
+ []\TU/LiberationSans(0)/m/n/10 252
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 619
+ []\TU/LiberationSans(0)/m/n/10 253
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 620
+ []\TU/LiberationSans(0)/m/n/10 253
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 621
+ []\TU/LiberationSans(0)/m/n/10 253
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 622
+ []\TU/LiberationSans(0)/m/n/10 253
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 623
+ []\TU/LiberationSans(0)/m/n/10 253
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 624
+ []\TU/LiberationSans(0)/m/n/10 253
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 625
+ []\TU/LiberationSans(0)/m/n/10 254
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 626
+ []\TU/LiberationSans(0)/m/n/10 254
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 627
+ []\TU/LiberationSans(0)/m/n/10 254
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 628
+ []\TU/LiberationSans(0)/m/n/10 254
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 629
+ []\TU/LiberationSans(0)/m/n/10 254
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 630
+ []\TU/LiberationSans(0)/m/n/10 255
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 631
+ []\TU/LiberationSans(0)/m/n/10 255
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 632
+ []\TU/LiberationSans(0)/m/n/10 255
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 633
+ []\TU/LiberationSans(0)/m/n/10 256
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 634
+ []\TU/LiberationSans(0)/m/n/10 256
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 635
+ []\TU/LiberationSans(0)/m/n/10 257
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 636
+ []\TU/LiberationSans(0)/m/n/10 257
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 637
+ []\TU/LiberationSans(0)/m/n/10 257
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 638
+ []\TU/LiberationSans(0)/m/n/10 258
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 639
+ []\TU/LiberationSans(0)/m/n/10 258
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 640
+ []\TU/LiberationSans(0)/m/n/10 258
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 641
+ []\TU/LiberationSans(0)/m/n/10 258
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 642
+ []\TU/LiberationSans(0)/m/n/10 259
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 643
+ []\TU/LiberationSans(0)/m/n/10 259
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 644
+ []\TU/LiberationSans(0)/m/n/10 260
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 645
+ []\TU/LiberationSans(0)/m/n/10 260
+ []
+
+[13]
+Overfull \hbox (1.18454pt too wide) detected at line 646
+ []\TU/LiberationSans(0)/m/n/10 260
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 647
+ []\TU/LiberationSans(0)/m/n/10 261
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 648
+ []\TU/LiberationSans(0)/m/n/10 261
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 649
+ []\TU/LiberationSans(0)/m/n/10 262
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 650
+ []\TU/LiberationSans(0)/m/n/10 262
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 651
+ []\TU/LiberationSans(0)/m/n/10 262
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 654
+ []\TU/LiberationSans(0)/m/n/10 263
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 655
+ []\TU/LiberationSans(0)/m/n/10 263
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 656
+ []\TU/LiberationSans(0)/m/n/10 264
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 657
+ []\TU/LiberationSans(0)/m/n/10 264
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 658
+ []\TU/LiberationSans(0)/m/n/10 264
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 659
+ []\TU/LiberationSans(0)/m/n/10 264
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 660
+ []\TU/LiberationSans(0)/m/n/10 264
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 661
+ []\TU/LiberationSans(0)/m/n/10 265
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 662
+ []\TU/LiberationSans(0)/m/n/10 265
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 663
+ []\TU/LiberationSans(0)/m/n/10 265
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 664
+ []\TU/LiberationSans(0)/m/n/10 265
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 665
+ []\TU/LiberationSans(0)/m/n/10 267
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 666
+ []\TU/LiberationSans(0)/m/n/10 267
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 667
+ []\TU/LiberationSans(0)/m/n/10 267
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 668
+ []\TU/LiberationSans(0)/m/n/10 267
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 669
+ []\TU/LiberationSans(0)/m/n/10 268
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 671
+ []\TU/LiberationSans(0)/m/n/10 268
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 672
+ []\TU/LiberationSans(0)/m/n/10 268
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 673
+ []\TU/LiberationSans(0)/m/n/10 269
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 674
+ []\TU/LiberationSans(0)/m/n/10 269
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 675
+ []\TU/LiberationSans(0)/m/n/10 269
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 677
+ []\TU/LiberationSans(0)/m/n/10 271
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 680
+ []\TU/LiberationSans(0)/m/n/10 272
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 681
+ []\TU/LiberationSans(0)/m/n/10 272
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 683
+ []\TU/LiberationSans(0)/m/n/10 272
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 684
+ []\TU/LiberationSans(0)/m/n/10 272
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 685
+ []\TU/LiberationSans(0)/m/n/10 272
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 686
+ []\TU/LiberationSans(0)/m/n/10 273
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 687
+ []\TU/LiberationSans(0)/m/n/10 273
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 690
+ []\TU/LiberationSans(0)/m/n/10 273
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 693
+ []\TU/LiberationSans(0)/m/n/10 274
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 694
+ []\TU/LiberationSans(0)/m/n/10 274
+ []
+
+
+Overfull \hbox (0.70404pt too wide) detected at line 696
+\TU/LiberationSans(0)/m/n/10 5.14.6.10 
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 696
+ []\TU/LiberationSans(0)/m/n/10 275
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 697
+ []\TU/LiberationSans(0)/m/n/10 275
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 699
+ []\TU/LiberationSans(0)/m/n/10 277
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 701
+ []\TU/LiberationSans(0)/m/n/10 278
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 704
+ []\TU/LiberationSans(0)/m/n/10 279
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 706
+ []\TU/LiberationSans(0)/m/n/10 280
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 707
+ []\TU/LiberationSans(0)/m/n/10 280
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 708
+ []\TU/LiberationSans(0)/m/n/10 280
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 709
+ []\TU/LiberationSans(0)/m/n/10 280
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 710
+ []\TU/LiberationSans(0)/m/n/10 280
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 711
+ []\TU/LiberationSans(0)/m/n/10 281
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 712
+ []\TU/LiberationSans(0)/m/n/10 281
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 713
+ []\TU/LiberationSans(0)/m/n/10 282
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 714
+ []\TU/LiberationSans(0)/m/n/10 282
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 715
+ []\TU/LiberationSans(0)/m/n/10 282
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 716
+ []\TU/LiberationSans(0)/m/n/10 282
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 717
+ []\TU/LiberationSans(0)/m/n/10 283
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 718
+ []\TU/LiberationSans(0)/m/n/10 283
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 719
+ []\TU/LiberationSans(0)/m/n/10 284
+ []
+
+[14]
+Overfull \hbox (1.18454pt too wide) detected at line 720
+ []\TU/LiberationSans(0)/m/n/10 284
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 721
+ []\TU/LiberationSans(0)/m/n/10 284
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 722
+ []\TU/LiberationSans(0)/m/n/10 284
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 723
+ []\TU/LiberationSans(0)/m/n/10 284
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 724
+ []\TU/LiberationSans(0)/m/n/10 285
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 725
+ []\TU/LiberationSans(0)/m/n/10 285
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 726
+ []\TU/LiberationSans(0)/m/n/10 285
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 727
+ []\TU/LiberationSans(0)/m/n/10 285
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 728
+ []\TU/LiberationSans(0)/m/n/10 285
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 729
+ []\TU/LiberationSans(0)/m/n/10 286
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 730
+ []\TU/LiberationSans(0)/m/n/10 286
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 731
+ []\TU/LiberationSans(0)/m/n/10 286
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 732
+ []\TU/LiberationSans(0)/m/n/10 286
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 733
+ []\TU/LiberationSans(0)/m/n/10 286
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 734
+ []\TU/LiberationSans(0)/m/n/10 286
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 735
+ []\TU/LiberationSans(0)/m/n/10 287
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 736
+ []\TU/LiberationSans(0)/m/n/10 287
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 737
+ []\TU/LiberationSans(0)/m/n/10 287
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 738
+ []\TU/LiberationSans(0)/m/n/10 287
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 739
+ []\TU/LiberationSans(0)/m/n/10 288
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 740
+ []\TU/LiberationSans(0)/m/n/10 288
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 741
+ []\TU/LiberationSans(0)/m/n/10 288
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 742
+ []\TU/LiberationSans(0)/m/n/10 289
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 743
+ []\TU/LiberationSans(0)/m/n/10 289
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 744
+ []\TU/LiberationSans(0)/m/n/10 289
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 745
+ []\TU/LiberationSans(0)/m/n/10 289
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 746
+ []\TU/LiberationSans(0)/m/n/10 289
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 747
+ []\TU/LiberationSans(0)/m/n/10 289
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 748
+ []\TU/LiberationSans(0)/m/n/10 289
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 749
+ []\TU/LiberationSans(0)/m/n/10 290
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 750
+ []\TU/LiberationSans(0)/m/n/10 290
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 751
+ []\TU/LiberationSans(0)/m/n/10 290
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 752
+ []\TU/LiberationSans(0)/m/n/10 291
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 753
+ []\TU/LiberationSans(0)/m/n/10 291
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 754
+ []\TU/LiberationSans(0)/m/n/10 291
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 755
+ []\TU/LiberationSans(0)/m/n/10 291
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 756
+ []\TU/LiberationSans(0)/m/n/10 291
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 757
+ []\TU/LiberationSans(0)/m/n/10 291
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 758
+ []\TU/LiberationSans(0)/m/n/10 292
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 759
+ []\TU/LiberationSans(0)/m/n/10 292
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 760
+ []\TU/LiberationSans(0)/m/n/10 292
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 761
+ []\TU/LiberationSans(0)/m/n/10 292
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 762
+ []\TU/LiberationSans(0)/m/n/10 292
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 763
+ []\TU/LiberationSans(0)/m/n/10 292
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 764
+ []\TU/LiberationSans(0)/m/n/10 293
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 765
+ []\TU/LiberationSans(0)/m/n/10 293
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 766
+ []\TU/LiberationSans(0)/m/n/10 294
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 767
+ []\TU/LiberationSans(0)/m/n/10 294
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 768
+ []\TU/LiberationSans(0)/m/n/10 295
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 769
+ []\TU/LiberationSans(0)/m/n/10 295
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 770
+ []\TU/LiberationSans(0)/m/n/10 295
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 771
+ []\TU/LiberationSans(0)/m/n/10 295
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 772
+ []\TU/LiberationSans(0)/m/n/10 296
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 773
+ []\TU/LiberationSans(0)/m/n/10 296
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 774
+ []\TU/LiberationSans(0)/m/n/10 297
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 775
+ []\TU/LiberationSans(0)/m/n/10 297
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 776
+ []\TU/LiberationSans(0)/m/n/10 298
+ []
+
+[15]
+Overfull \hbox (1.18454pt too wide) detected at line 777
+ []\TU/LiberationSans(0)/m/n/10 298
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 778
+ []\TU/LiberationSans(0)/m/n/10 299
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 779
+ []\TU/LiberationSans(0)/m/n/10 299
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 780
+ []\TU/LiberationSans(0)/m/n/10 299
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 781
+ []\TU/LiberationSans(0)/m/n/10 299
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 782
+ []\TU/LiberationSans(0)/m/n/10 299
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 783
+ []\TU/LiberationSans(0)/m/n/10 299
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 784
+ []\TU/LiberationSans(0)/m/n/10 299
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 785
+ []\TU/LiberationSans(0)/m/n/10 300
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 786
+ []\TU/LiberationSans(0)/m/n/10 300
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 787
+ []\TU/LiberationSans(0)/m/n/10 300
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 788
+ []\TU/LiberationSans(0)/m/n/10 300
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 789
+ []\TU/LiberationSans(0)/m/n/10 300
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 790
+ []\TU/LiberationSans(0)/m/n/10 300
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 791
+ []\TU/LiberationSans(0)/m/n/10 300
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 792
+ []\TU/LiberationSans(0)/m/n/10 300
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 793
+ []\TU/LiberationSans(0)/m/n/10 301
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 794
+ []\TU/LiberationSans(0)/m/n/10 301
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 795
+ []\TU/LiberationSans(0)/m/n/10 301
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 796
+ []\TU/LiberationSans(0)/m/n/10 301
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 797
+ []\TU/LiberationSans(0)/m/n/10 301
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 798
+ []\TU/LiberationSans(0)/m/n/10 301
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 799
+ []\TU/LiberationSans(0)/m/n/10 301
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 800
+ []\TU/LiberationSans(0)/m/n/10 301
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 801
+ []\TU/LiberationSans(0)/m/n/10 301
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 802
+ []\TU/LiberationSans(0)/m/n/10 302
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 803
+ []\TU/LiberationSans(0)/m/n/10 302
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 804
+ []\TU/LiberationSans(0)/m/n/10 302
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 805
+ []\TU/LiberationSans(0)/m/n/10 302
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 806
+ []\TU/LiberationSans(0)/m/n/10 302
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 807
+ []\TU/LiberationSans(0)/m/n/10 303
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 808
+ []\TU/LiberationSans(0)/m/n/10 304
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 809
+ []\TU/LiberationSans(0)/m/n/10 304
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 810
+ []\TU/LiberationSans(0)/m/n/10 304
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 811
+ []\TU/LiberationSans(0)/m/n/10 304
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 812
+ []\TU/LiberationSans(0)/m/n/10 304
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 813
+ []\TU/LiberationSans(0)/m/n/10 304
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 814
+ []\TU/LiberationSans(0)/m/n/10 305
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 815
+ []\TU/LiberationSans(0)/m/n/10 306
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 816
+ []\TU/LiberationSans(0)/m/n/10 306
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 817
+ []\TU/LiberationSans(0)/m/n/10 306
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 818
+ []\TU/LiberationSans(0)/m/n/10 307
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 819
+ []\TU/LiberationSans(0)/m/n/10 307
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 820
+ []\TU/LiberationSans(0)/m/n/10 308
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 821
+ []\TU/LiberationSans(0)/m/n/10 308
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 822
+ []\TU/LiberationSans(0)/m/n/10 308
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 823
+ []\TU/LiberationSans(0)/m/n/10 308
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 824
+ []\TU/LiberationSans(0)/m/n/10 308
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 825
+ []\TU/LiberationSans(0)/m/n/10 308
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 826
+ []\TU/LiberationSans(0)/m/n/10 309
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 827
+ []\TU/LiberationSans(0)/m/n/10 309
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 828
+ []\TU/LiberationSans(0)/m/n/10 309
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 829
+ []\TU/LiberationSans(0)/m/n/10 309
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 830
+ []\TU/LiberationSans(0)/m/n/10 310
+ []
+
+
+Overfull \hbox (2.0756pt too wide) in paragraph at lines 830--830
+ [][] [][][]\TU/LiberationSans(0)/m/n/10 Driver Requirements: Device Operation:
+ Command Virtqueue: Ses- 
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 831
+ []\TU/LiberationSans(0)/m/n/10 310
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 833
+ []\TU/LiberationSans(0)/m/n/10 310
+ []
+
+[16]
+Overfull \hbox (1.18454pt too wide) detected at line 835
+ []\TU/LiberationSans(0)/m/n/10 310
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 844
+ []\TU/LiberationSans(0)/m/n/10 313
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 846
+ []\TU/LiberationSans(0)/m/n/10 313
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 848
+ []\TU/LiberationSans(0)/m/n/10 314
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 854
+ []\TU/LiberationSans(0)/m/n/10 315
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 855
+ []\TU/LiberationSans(0)/m/n/10 315
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 856
+ []\TU/LiberationSans(0)/m/n/10 315
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 859
+ []\TU/LiberationSans(0)/m/n/10 315
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 861
+ []\TU/LiberationSans(0)/m/n/10 316
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 862
+ []\TU/LiberationSans(0)/m/n/10 316
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 863
+ []\TU/LiberationSans(0)/m/n/10 316
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 864
+ []\TU/LiberationSans(0)/m/n/10 316
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 865
+ []\TU/LiberationSans(0)/m/n/10 316
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 866
+ []\TU/LiberationSans(0)/m/n/10 316
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 867
+ []\TU/LiberationSans(0)/m/n/10 317
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 868
+ []\TU/LiberationSans(0)/m/n/10 317
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 869
+ []\TU/LiberationSans(0)/m/n/10 317
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 870
+ []\TU/LiberationSans(0)/m/n/10 318
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 871
+ []\TU/LiberationSans(0)/m/n/10 318
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 872
+ []\TU/LiberationSans(0)/m/n/10 319
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 873
+ []\TU/LiberationSans(0)/m/n/10 319
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 874
+ []\TU/LiberationSans(0)/m/n/10 319
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 875
+ []\TU/LiberationSans(0)/m/n/10 320
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 876
+ []\TU/LiberationSans(0)/m/n/10 320
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 877
+ []\TU/LiberationSans(0)/m/n/10 321
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 878
+ []\TU/LiberationSans(0)/m/n/10 321
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 879
+ []\TU/LiberationSans(0)/m/n/10 323
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 880
+ []\TU/LiberationSans(0)/m/n/10 324
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 881
+ []\TU/LiberationSans(0)/m/n/10 324
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 882
+ []\TU/LiberationSans(0)/m/n/10 325
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 883
+ []\TU/LiberationSans(0)/m/n/10 326
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 884
+ []\TU/LiberationSans(0)/m/n/10 327
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 887
+ []\TU/LiberationSans(0)/m/n/10 329
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 891
+ []\TU/LiberationSans(0)/m/n/10 331
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 892
+ []\TU/LiberationSans(0)/m/n/10 331
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 893
+ []\TU/LiberationSans(0)/m/n/10 332
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 895
+ []\TU/LiberationSans(0)/m/n/10 333
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 896
+ []\TU/LiberationSans(0)/m/n/10 333
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 897
+ []\TU/LiberationSans(0)/m/n/10 334
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 898
+ []\TU/LiberationSans(0)/m/n/10 334
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 899
+ []\TU/LiberationSans(0)/m/n/10 334
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 900
+ []\TU/LiberationSans(0)/m/n/10 335
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 901
+ []\TU/LiberationSans(0)/m/n/10 335
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 902
+ []\TU/LiberationSans(0)/m/n/10 335
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 903
+ []\TU/LiberationSans(0)/m/n/10 335
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 904
+ []\TU/LiberationSans(0)/m/n/10 335
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 905
+ []\TU/LiberationSans(0)/m/n/10 336
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 906
+ []\TU/LiberationSans(0)/m/n/10 336
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 907
+ []\TU/LiberationSans(0)/m/n/10 336
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 908
+ []\TU/LiberationSans(0)/m/n/10 336
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 909
+ []\TU/LiberationSans(0)/m/n/10 336
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 910
+ []\TU/LiberationSans(0)/m/n/10 337
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 911
+ []\TU/LiberationSans(0)/m/n/10 337
+ []
+
+[17]
+Overfull \hbox (1.18454pt too wide) detected at line 912
+ []\TU/LiberationSans(0)/m/n/10 337
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 913
+ []\TU/LiberationSans(0)/m/n/10 337
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 914
+ []\TU/LiberationSans(0)/m/n/10 338
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 915
+ []\TU/LiberationSans(0)/m/n/10 338
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 916
+ []\TU/LiberationSans(0)/m/n/10 338
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 917
+ []\TU/LiberationSans(0)/m/n/10 338
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 918
+ []\TU/LiberationSans(0)/m/n/10 338
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 919
+ []\TU/LiberationSans(0)/m/n/10 338
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 920
+ []\TU/LiberationSans(0)/m/n/10 338
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 921
+ []\TU/LiberationSans(0)/m/n/10 338
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 922
+ []\TU/LiberationSans(0)/m/n/10 339
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 923
+ []\TU/LiberationSans(0)/m/n/10 339
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 924
+ []\TU/LiberationSans(0)/m/n/10 340
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 925
+ []\TU/LiberationSans(0)/m/n/10 340
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 926
+ []\TU/LiberationSans(0)/m/n/10 340
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 927
+ []\TU/LiberationSans(0)/m/n/10 340
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 928
+ []\TU/LiberationSans(0)/m/n/10 341
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 929
+ []\TU/LiberationSans(0)/m/n/10 341
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 930
+ []\TU/LiberationSans(0)/m/n/10 341
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 931
+ []\TU/LiberationSans(0)/m/n/10 341
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 932
+ []\TU/LiberationSans(0)/m/n/10 341
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 933
+ []\TU/LiberationSans(0)/m/n/10 341
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 934
+ []\TU/LiberationSans(0)/m/n/10 341
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 935
+ []\TU/LiberationSans(0)/m/n/10 342
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 936
+ []\TU/LiberationSans(0)/m/n/10 342
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 937
+ []\TU/LiberationSans(0)/m/n/10 342
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 938
+ []\TU/LiberationSans(0)/m/n/10 342
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 939
+ []\TU/LiberationSans(0)/m/n/10 343
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 940
+ []\TU/LiberationSans(0)/m/n/10 343
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 941
+ []\TU/LiberationSans(0)/m/n/10 343
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 942
+ []\TU/LiberationSans(0)/m/n/10 343
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 943
+ []\TU/LiberationSans(0)/m/n/10 343
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 944
+ []\TU/LiberationSans(0)/m/n/10 344
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 945
+ []\TU/LiberationSans(0)/m/n/10 344
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 946
+ []\TU/LiberationSans(0)/m/n/10 344
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 947
+ []\TU/LiberationSans(0)/m/n/10 344
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 948
+ []\TU/LiberationSans(0)/m/n/10 344
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 949
+ []\TU/LiberationSans(0)/m/n/10 344
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 952
+ []\TU/LiberationSans(0)/m/n/10 349
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 953
+ []\TU/LiberationSans(0)/m/n/10 349
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 954
+ []\TU/LiberationSans(0)/m/n/10 349
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 955
+ []\TU/LiberationSans(0)/m/n/10 349
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 956
+ []\TU/LiberationSans(0)/m/n/10 349
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 957
+ []\TU/LiberationSans(0)/m/n/10 350
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 958
+ []\TU/LiberationSans(0)/m/n/10 350
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 959
+ []\TU/LiberationSans(0)/m/n/10 350
+ []
+
+
+Overfull \hbox (1.18454pt too wide) detected at line 960
+ []\TU/LiberationSans(0)/m/n/10 350
+ []
+
+)
+\tf@toc=\write5
+\openout5 = `virtio-v1.3-csd01.toc'.
+
+ [18] (./introduction.tex
+Chapter 1.
+(./abstract.tex)
+
+Package fontspec Info: Font family 'LiberationSans(2)' created for font
+(fontspec)             'Liberation Sans' with options
+(fontspec)             [Ligatures=TeX,Mapping=tex-text,VerticalPosition=Superio
+r].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.: <->"Liberation
+(fontspec)             Sans/OT:script=latn;language=dflt;+sups;mapping=tex-text
+;"
+(fontspec)             - 'small caps'  (m/sc) with NFSS spec.: 
+(fontspec)             - 'bold' (b/n) with NFSS spec.: <->"Liberation
+(fontspec)             Sans/B/OT:script=latn;language=dflt;+sups;mapping=tex-te
+xt;"
+(fontspec)             - 'bold small caps'  (b/sc) with NFSS spec.: 
+(fontspec)             - 'italic' (m/it) with NFSS spec.: <->"Liberation
+(fontspec)             Sans/I/OT:script=latn;language=dflt;+sups;mapping=tex-te
+xt;"
+(fontspec)             - 'italic small caps'  (m/scit) with NFSS spec.: 
+(fontspec)             - 'bold italic' (b/it) with NFSS spec.: <->"Liberation
+(fontspec)             Sans/BI/OT:script=latn;language=dflt;+sups;mapping=tex-t
+ext;"
+(fontspec)             - 'bold italic small caps'  (b/scit) with NFSS spec.: 
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 47--48
+[][]$[][][][][] [] [] [] [][][] [] [][][] [] [][][] [] [][][][] [] [][] [] [][]
+[][][][] [] [][] [] [] [] [] [] [][][] [] [][][] [] [][][] [] [][][][][][][] []
+ [][][][][] [] [][][] []
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 49--50
+[][]$[][][][][] [] [] [] [][][] [] [][][] [] [][][] [] [][][][][][][][][] [] []
+[][][][][][][][][][][] [] [][][][][][][][][][][][][][][][][] [] [][][][][] []
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 67--70
+[][]$[][][][][] [] [] [] [][][] [] [][][][] [] [][][] [] [][][][][][][][][][][]
+ [] [][][][][][][][][][][][][][][][][][] [] [][][][][][][][][][][][][][][][][][
+] [] [][][][][]$[][]\TU/LiberationSans(0)/m/n/10 ,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 81--83
+[][]$[][][][][] [] [] [] [][][] [] [][][][][][] [] [][][] [] [][][] [] [][][] [
+] [][][][][] [] [][][][][][] [] [][][] [] [][][][][][][][] [] [][][][][] [] [][
+][] [] [][][][] [] [][][][][][][] [] [][][][] []
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 84--86
+[][]$[][][][][] [] [] [] [][][] [] [][][][][][] [] [][][] [] [][][] [] [][][] [
+] [][][][][] [] [][][][][][] [] [][][] [] [][][][][][][][] [] [][][][][] [] [][
+][] [] [][][][] [] [][][][][][][] [] [][][][] []
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 90--92
+[][]$[][][][][] [] [] [] [][][] [] [][][][][] [] [][][] [] [][][][][][][] [] []
+[][] [] [][][] [] [][][][][][] [] [][] [] [][] [] [][][][][][][][][] []
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 102--104
+[][]$[][][][][] [] [] [] [][][][] [] [][][][] [] [][][] [] [][][][] [] [][][][]
+[] [] [][][][][][][][][][][][] [] [][][][] [] [][][] [] [] [] [][][][][][][] []
+ [][][][][][][][][][][][] []
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 184--186
+[][]$[][][][][] [] [] [] [][][][] [] [][][][][][][][][] [] [][][] [] [][][][][]
+[][][][][] [] [][][][][][][][][][] [] [][][][][][][][] [] [][] [] [][][][][][] 
+[] [][][][] []
+ []
+
+
+Overfull \hbox (36.15651pt too wide) in alignment at lines 39--189
+ [] [] 
+ []
+
+[19
+
+] [20] [21] [22]
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 300.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 300.
+ [23]) (./content.tex
+Chapter 2.
+[24
+
+] [25] [26] [27]
+Overfull \hbox (8.02582pt too wide) in paragraph at lines 393--400
+[]\TU/LiberationSans(0)/m/n/10 Two formats are supported: Split Virtqueues (see
+ [][]2.7[][] [][]Split Virtqueues[][]) and Packed Virtqueues (see [][]2.8[][] [
+][]Packed
+ []
+
+[28] (./split-ring.tex [29] [30] [31] [32] [33] [34] [35] [36] [37])
+(./packed-ring.tex [38] [39] [40] [41] [42] [43] [44] [45] [46])
+Overfull \hbox (1.95604pt too wide) in paragraph at lines 454--458
+[]\TU/LiberationSans(0)/m/n/10 When VIRTIO_-F_-NOTIFICATION_-DATA has not been 
+negotiated, this notification contains either a virtqueue
+ []
+
+(./shared-mem.tex [47]) (./admin.tex [48]
+Underfull \hbox (badness 4266) in paragraph at lines 166--166
+[]|\TU/LiberationSans(0)/m/n/10 Command Descrip-
+ []
+
+
+Underfull \hbox (badness 3098) in paragraph at lines 166--166
+\TU/LiberationSans(0)/m/n/10 of commands sup-
+ []
+
+
+Underfull \hbox (badness 3724) in paragraph at lines 166--166
+[]|\TU/LiberationSans(0)/m/n/10 Provides to device
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 166--166
+\TU/LiberationSans(0)/m/n/10 list of commands
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 166--166
+[]|\TU/LiberationSans(0)/m/n/10 Writes into the
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 166--166
+\TU/LiberationSans(0)/m/n/10 legacy common
+ []
+
+
+Underfull \hbox (badness 7851) in paragraph at lines 166--166
+\TU/LiberationSans(0)/m/n/10 configuration struc-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 166--166
+[]|\TU/LiberationSans(0)/m/n/10 Reads from the
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 166--166
+\TU/LiberationSans(0)/m/n/10 legacy common
+ []
+
+
+Underfull \hbox (badness 7851) in paragraph at lines 166--166
+\TU/LiberationSans(0)/m/n/10 configuration struc-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 166--166
+[]|\TU/LiberationSans(0)/m/n/10 Writes into the
+ []
+
+
+Underfull \hbox (badness 2538) in paragraph at lines 166--166
+\TU/LiberationSans(0)/m/n/10 legacy device con-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 166--166
+[]|\TU/LiberationSans(0)/m/n/10 Reads into the
+ []
+
+
+Underfull \hbox (badness 2538) in paragraph at lines 166--166
+\TU/LiberationSans(0)/m/n/10 legacy device con-
+ []
+
+
+Underfull \hbox (badness 3724) in paragraph at lines 166--166
+[]|\TU/LiberationSans(0)/m/n/10 Query the notifica-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 166--166
+\TU/LiberationSans(0)/m/n/10 device capabilities
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 166--166
+[]|\TU/LiberationSans(0)/m/n/10 Commands using
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 166--166
+\TU/LiberationSans(0)/m/n/10 using a different
+ []
+
+[49] [50]
+Underfull \hbox (badness 10000) in paragraph at lines 231--231
+[]|\TU/LiberationSans(0)/m/n/10 used with VIRTIO_-ADMIN_-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 231--231
+[]|\TU/LiberationSans(0)/m/n/10 unsupported or invalid field
+ []
+
+[51] (./admin-cmds-legacy-interface.tex [52] [53] [54]
+Overfull \hbox (20.32149pt too wide) in paragraph at lines 247--253
+[]\TU/LiberationSans(0)/m/n/10 For VIRTIO_-ADMIN_-CMD_-LEGACY_-COMMON_-CFG_-WRI
+TE, VIRTIO_-ADMIN_-CMD_-LEGACY_-COMMON_-
+ []
+
+[55]
+Overfull \hbox (10.33125pt too wide) in paragraph at lines 284--290
+\TU/LiberationSans(0)/m/n/10 CFG_-READ, VIRTIO_-ADMIN_-CMD_-LEGACY_-COMMON_-CFG
+_-WRITE, VIRTIO_-ADMIN_-CMD_-LEGACY_-
+ []
+
+
+Overfull \hbox (26.11322pt too wide) in paragraph at lines 284--290
+\TU/LiberationSans(0)/m/n/10 DEV_-CFG_-READ, VIRTIO_-ADMIN_-CMD_-LEGACY_-DEV_-C
+FG_-WRITE and VIRTIO_-ADMIN_-CMD_-LEGACY_-
+ []
+
+
+Overfull \hbox (8.1177pt too wide) in paragraph at lines 307--311
+\TU/LiberationSans(0)/m/n/10 TIO_-ADMIN_-CMD_-LEGACY_-COMMON_-CFG_-READ, VIRTIO
+_-ADMIN_-CMD_-LEGACY_-DEV_-CFG_-
+ []
+
+
+Overfull \hbox (20.32149pt too wide) in paragraph at lines 331--337
+[]\TU/LiberationSans(0)/m/n/10 For VIRTIO_-ADMIN_-CMD_-LEGACY_-COMMON_-CFG_-WRI
+TE, VIRTIO_-ADMIN_-CMD_-LEGACY_-COMMON_-
+ []
+
+[56]) (./admin-cmds-capabilities.tex [57] [58] [59]
+Overfull \hbox (1.10835pt too wide) in paragraph at lines 212--216
+\TU/LiberationSans(0)/m/n/10 ADMIN_-CMD_-DRIVER_-CAP_-GET, VIRTIO_-ADMIN_-CMD_-
+DRIVER_-CAP_-SET with \TU/LiberationSans(0)/m/it/10 status \TU/LiberationSans(0
+)/m/n/10 set to VIRTIO_-
+ []
+
+) (./admin-cmds-resource-objects.tex [60]
+Underfull \hbox (badness 10000) in paragraph at lines 77--77
+[]|\TU/LiberationSans(0)/m/n/10 VIRTIO_-RESOURCE_-OBJ_-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 77--77
+[]|\TU/LiberationSans(0)/m/n/10 Device parts object, see
+ []
+
+[61] [62]
+Overfull \hbox (3.69136pt too wide) in paragraph at lines 233--237
+\TU/LiberationSans(0)/m/n/10 TIO_-ADMIN_-CMD_-RESOURCE_-OBJ_-DESTROY commands w
+ith \TU/LiberationSans(0)/m/it/10 status \TU/LiberationSans(0)/m/n/10 set to VI
+RTIO_-ADMIN_-STATUS_-
+ []
+
+
+Overfull \hbox (2.81319pt too wide) in paragraph at lines 247--250
+[]\TU/LiberationSans(0)/m/n/10 The device MAY fail the command VIRTIO_-ADMIN_-C
+MD_-RESOURCE_-OBJ_-CREATE even if the resources
+ []
+
+
+Overfull \hbox (10.95445pt too wide) in paragraph at lines 257--261
+[]\TU/LiberationSans(0)/m/n/10 The device MUST complete the command VIRTIO_-ADM
+IN_-CMD_-RESOURCE_-OBJ_-QUERY with \TU/LiberationSans(0)/m/it/10 resource_-
+ []
+
+
+Overfull \hbox (25.64867pt too wide) in paragraph at lines 257--261
+\TU/LiberationSans(0)/m/it/10 obj_-specific_-data \TU/LiberationSans(0)/m/n/10 
+which is matching the \TU/LiberationSans(0)/m/it/10 resource_-obj_-specific_-da
+ta \TU/LiberationSans(0)/m/n/10 of last VIRTIO_-ADMIN_-CMD_-RESOURCE_-
+ []
+
+) (./admin-cmds-device-parts.tex [63]
+Overfull \hbox (1.69754pt too wide) in paragraph at lines 59--69
+\TU/LiberationSans(0)/m/n/10 OBJ_-DEV_-PARTS using the administration command [
+][]VIRTIO_-ADMIN_-CMD_-RESOURCE_-OBJ_-CREATE[][].
+ []
+
+[64] [65] [66]
+Underfull \hbox (badness 10000) in paragraph at lines 320--320
+[]|\TU/LiberationSans(0)/m/n/10 VIRTIO_-DEV_-PART_-DEV_-FEATURES,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 320--320
+\TU/LiberationSans(0)/m/n/10 VIRTIO_-DEV_-PART_-DRV_-FEATURES,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 320--320
+[]|\TU/LiberationSans(0)/m/n/10 VIRTIO_-DEV_-PART_-DEV_-FEATURES,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 320--320
+\TU/LiberationSans(0)/m/n/10 VIRTIO_-DEV_-PART_-DRV_-FEATURES,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 320--320
+\TU/LiberationSans(0)/m/n/10 VIRTIO_-DEV_-PART_-PCI_-COMMON_-CFG,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 320--320
+[]|\TU/LiberationSans(0)/m/n/10 VIRTIO_-DEV_-PART_-DEV_-FEATURES,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 320--320
+\TU/LiberationSans(0)/m/n/10 VIRTIO_-DEV_-PART_-DRV_-FEATURES,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 320--320
+\TU/LiberationSans(0)/m/n/10 VIRTIO_-DEV_-PART_-PCI_-COMMON_-CFG,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 320--320
+\TU/LiberationSans(0)/m/n/10 VIRTIO_-DEV_-PART_-DEVICE_-STATUS,
+ []
+
+[67]
+Overfull \hbox (13.86641pt too wide) in paragraph at lines 325--333
+\TU/LiberationSans(0)/m/n/10 CMD_-RESOURCE_-OBJ_-CREATE, VIRTIO_-ADMIN_-CMD_-RE
+SOURCE_-OBJ_-DESTROY, VIRTIO_-ADMIN_-
+ []
+
+[68]
+Overfull \hbox (2.60738pt too wide) in paragraph at lines 426--428
+[]\TU/LiberationSans(0)/m/n/10 VIRTIO_-DEV_-PART_-PCI_-COMMON_-CFG, it MUST be 
+preceded by VIRTIO_-DEV_-PART_-DEV_-FEA-
+ []
+
+
+Overfull \hbox (2.60738pt too wide) in paragraph at lines 429--431
+[]\TU/LiberationSans(0)/m/n/10 VIRTIO_-DEV_-PART_-PCI_-COMMON_-CFG, it MUST be 
+preceded by VIRTIO_-DEV_-PART_-DEV_-FEA-
+ []
+
+
+Overfull \hbox (0.96278pt too wide) in paragraph at lines 434--436
+[]\TU/LiberationSans(0)/m/n/10 VIRTIO_-DEV_-PART_-DRV_-CFG, it be preceded by V
+IRTIO_-DEV_-PART_-DEV_-FEATURES, VIRTIO_-
+ []
+
+
+Overfull \hbox (5.58192pt too wide) in paragraph at lines 437--439
+[]\TU/LiberationSans(0)/m/n/10 VIRTIO_-DEV_-PART_-DEVICE_-STAtUS, it is precede
+d by VIRTIO_-DEV_-PART_-DEV_-FEATURES, VIR-
+ []
+
+
+Overfull \hbox (4.82904pt too wide) in paragraph at lines 441--448
+\TU/LiberationSans(0)/m/n/10 TIO_-DEV_-PART_-DEV_-FEATURES, VIRTIO_-DEV_-PART_-
+PCI_-COMMON_-CFG and VIRTIO_-DEV_-PART_-
+ []
+
+[69])
+Overfull \hbox (10.7516pt too wide) in paragraph at lines 350--352
+[]\TU/LiberationSans(0)/m/n/10 if \TU/LiberationSans(0)/m/it/10 group_-type \TU
+/LiberationSans(0)/m/n/10 is invalid, \TU/LiberationSans(0)/m/it/10 status_-qua
+lifier \TU/LiberationSans(0)/m/n/10 MUST be set to VIRTIO_-ADMIN_-STATUS_-Q_-IN
+VALID_-GROUP; 
+ []
+
+
+Overfull \hbox (5.01561pt too wide) in paragraph at lines 352--355
+[]\TU/LiberationSans(0)/m/n/10 otherwise, if \TU/LiberationSans(0)/m/it/10 opco
+de \TU/LiberationSans(0)/m/n/10 is invalid, \TU/LiberationSans(0)/m/it/10 statu
+s_-qualifier \TU/LiberationSans(0)/m/n/10 MUST be set to VIRTIO_-ADMIN_-STATUS_
+-Q_-INVALID_-
+ []
+
+[70] [71]
+Overfull \hbox (14.57649pt too wide) in paragraph at lines 493--497
+[]\TU/LiberationSans(0)/m/n/10 If VIRTIO_-F_-ADMIN_-VQ has been negotiated, an 
+owner device exposes one or more administration virtqueues.
+ []
+
+[72]
+Overfull \hbox (8.15915pt too wide) in paragraph at lines 607--610
+[]\TU/LiberationSans(0)/m/n/10 If the device sets \TU/LiberationSans(0)/m/it/10
+ status \TU/LiberationSans(0)/m/n/10 to either VIRTIO_-ADMIN_-STATUS_-EAGAIN or
+ VIRTIO_-ADMIN_-STATUS_-ENOMEM,
+ []
+
+) (./device-parts.tex [73]
+Underfull \hbox (badness 10000) in paragraph at lines 112--112
+[]|\TU/LiberationSans(0)/m/n/10 PCI common configuration, see
+ []
+
+
+Overfull \hbox (6.16533pt too wide) in paragraph at lines 128--130
+[]\TU/LiberationSans(0)/m/n/10 The VIRTIO_-DEV_-PART_-DEV_-FEATURES part is opt
+ional for which the VIRTIO_-DEV_-PART_-F_-OPTIONAL
+ []
+
+[74]
+Overfull \hbox (1.41092pt too wide) in paragraph at lines 168--173
+\TU/LiberationSans(0)/m/n/10 For VIRTIO_-DEV_-PART_-DEVICE_-STATUS, \TU/Liberat
+ionSans(0)/m/it/10 part_-type \TU/LiberationSans(0)/m/n/10 is set to 0x103. The
+ VIRTIO_-DEV_-PART_-DEVICE_-
+ []
+
+[75]) [76]
+Chapter 3.
+[77
+
+] [78] [79]
+Chapter 4.
+(./transport-pci.tex [80
+
+] [81] [82] [83] [84]
+Overfull \hbox (3.97108pt too wide) in paragraph at lines 500--503
+[]\TU/LiberationSans(0)/m/n/10 The driver MUST NOT write to \TU/LiberationSans(
+0)/m/it/10 device_-feature\TU/LiberationSans(0)/m/n/10 , \TU/LiberationSans(0)/
+m/it/10 num_-queues\TU/LiberationSans(0)/m/n/10 , \TU/LiberationSans(0)/m/it/10
+ config_-generation\TU/LiberationSans(0)/m/n/10 , \TU/LiberationSans(0)/m/it/10
+ queue_-notify_-off \TU/LiberationSans(0)/m/n/10 or \TU/LiberationSans(0)/m/it/
+10 queue_-
+ []
+
+[85] [86] [87] [88]
+Overfull \hbox (8.06354pt too wide) in paragraph at lines 801--806
+[]\TU/LiberationSans(0)/m/n/10 The driver MUST NOT read or write \TU/Liberation
+Sans(0)/m/it/10 pci_-cfg_-data \TU/LiberationSans(0)/m/n/10 unless \TU/Liberati
+onSans(0)/m/it/10 cap.bar\TU/LiberationSans(0)/m/n/10 , \TU/LiberationSans(0)/m
+/it/10 cap.length \TU/LiberationSans(0)/m/n/10 and \TU/LiberationSans(0)/m/it/1
+0 cap.offset \TU/LiberationSans(0)/m/n/10 address \TU/LiberationSans(0)/m/it/10
+ cap.length
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 839--839
+[]|\TU/LiberationSans(0)/m/n/10 Read /
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 839--839
+[]|\TU/LiberationSans(0)/m/n/10 Device
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 839--839
+\TU/LiberationSans(0)/m/n/10 Features
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 839--839
+[]|\TU/LiberationSans(0)/m/n/10 Driver
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 839--839
+\TU/LiberationSans(0)/m/n/10 Features
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 839--839
+[]|\TU/LiberationSans(0)/m/n/10 Queue
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 839--839
+[]|\TU/LiberationSans(0)/m/it/10 queue_-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 839--839
+[]|\TU/LiberationSans(0)/m/it/10 queue_-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 839--839
+[]|\TU/LiberationSans(0)/m/n/10 Queue
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 839--839
+[]|\TU/LiberationSans(0)/m/n/10 Device
+ []
+
+[89] [90] [91]
+Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on i
+nput line 1084.
+ (./notifications-data-le.c) [92] [93]) (./transport-mmio.tex
+Underfull \hbox (badness 1448) in paragraph at lines 118--119
+\TU/LiberationSans(0)/m/n/10 Writing to this register selects the virtqueue tha
+t the following oper-
+ []
+
+
+Underfull \hbox (badness 1158) in paragraph at lines 118--119
+\TU/LiberationSans(0)/m/n/10 ations on \TU/LiberationSans(0)/m/it/10 QueueSizeM
+ax\TU/LiberationSans(0)/m/n/10 , \TU/LiberationSans(0)/m/it/10 QueueSize\TU/Lib
+erationSans(0)/m/n/10 , \TU/LiberationSans(0)/m/it/10 QueueReady\TU/LiberationS
+ans(0)/m/n/10 , \TU/LiberationSans(0)/m/it/10 QueueDescLow\TU/LiberationSans(0)
+/m/n/10 ,
+ []
+
+
+Underfull \hbox (badness 1117) in paragraph at lines 161--161
+[]\TU/LiberationSans(0)/m/n/10 When VIRTIO_-F_-NOTIFICATION_-DATA has not been 
+negotiated, the
+ []
+
+(./notifications-le.c)
+Underfull \hbox (badness 6204) in paragraph at lines 196--197
+\TU/LiberationSans(0)/m/n/10 Writing to these two registers (lower 32 bits of t
+he address to
+ []
+
+[94] [95] [96] [97]
+Overfull \hbox (3.74323pt too wide) in paragraph at lines 321--324
+[]\TU/LiberationSans(0)/m/n/10 When \TU/LiberationSans(0)/m/it/10 QueueReady \T
+U/LiberationSans(0)/m/n/10 is not zero, the driver MUST NOT access \TU/Liberati
+onSans(0)/m/it/10 QueueSize\TU/LiberationSans(0)/m/n/10 , \TU/LiberationSans(0)
+/m/it/10 QueueDescLow\TU/LiberationSans(0)/m/n/10 , \TU/LiberationSans(0)/m/it/
+10 QueueDescHigh\TU/LiberationSans(0)/m/n/10 ,
+ []
+
+[98]
+Overfull \hbox (63.0588pt too wide) in paragraph at lines 381--386
+\TU/LiberationSans(0)/m/n/10 the \TU/LiberationSans(0)/m/it/10 QueueDescLow\TU/
+LiberationSans(0)/m/n/10 /\TU/LiberationSans(0)/m/it/10 QueueDescHigh\TU/Libera
+tionSans(0)/m/n/10 , \TU/LiberationSans(0)/m/it/10 QueueDriverLow\TU/Liberation
+Sans(0)/m/n/10 /\TU/LiberationSans(0)/m/it/10 QueueDriverHigh \TU/LiberationSan
+s(0)/m/n/10 and \TU/LiberationSans(0)/m/it/10 QueueDeviceLow\TU/LiberationSans(
+0)/m/n/10 /\TU/LiberationSans(0)/m/it/10 QueueDeviceHigh
+ []
+
+(./notifications-le.c) [99] [100] [101]) (./transport-ccw.tex [102] [103]
+[104] [105] [106] [107]
+Overfull \hbox (4.74413pt too wide) in paragraph at lines 547--549
+[]\TU/LiberationSans(0)/m/n/10 When VIRTIO_-F_-NOTIFICATION_-DATA has not been 
+negotiated, the \TU/LiberationSans(0)/m/it/10 Notification data \TU/LiberationS
+ans(0)/m/n/10 contains the virtqueue
+ []
+
+(./notifications-be.c) [108]) [109]
+Chapter 5.
+[110
+
+] (./device-types/net/description.tex [111] [112]
+Overfull \hbox (13.89246pt too wide) in paragraph at lines 159--160
+[]\TU/LiberationSans(0)/m/n/10 Requires VIRTIO_-NET_-F_-GUEST_-TSO4 or VIRTIO_-
+NET_-F_-GUEST_-TSO6. 
+ []
+
+
+Overfull \hbox (2.76746pt too wide) in paragraph at lines 163--165
+[]\TU/LiberationSans(0)/m/n/10 Requires VIRTIO_-NET_-F_-GUEST_-TSO4, VIRTIO_-NE
+T_-
+ []
+
+
+Overfull \hbox (14.80228pt too wide) in paragraph at lines 165--166
+[]\TU/LiberationSans(0)/m/n/10 Requires VIRTIO_-NET_-F_-GUEST_-UDP_-TUNNEL_-
+ []
+
+
+Overfull \hbox (1.09753pt too wide) in paragraph at lines 172--174
+[]\TU/LiberationSans(0)/m/n/10 Requires VIRTIO_-NET_-F_-HOST_-TSO4, VIRTIO_-NET
+_-F_-
+ []
+
+
+Overfull \hbox (1.46243pt too wide) in paragraph at lines 174--175
+[]\TU/LiberationSans(0)/m/n/10 Requires VIRTIO_-NET_-F_-HOST_-UDP_-TUNNEL_-
+ []
+
+[113] [114] [115] [116]
+Overfull \hbox (3.69623pt too wide) in paragraph at lines 436--452
+\TU/LiberationSans(0)/m/n/10 VIRTIO_-NET_-F_-GUEST_-USO6 VIRTIO_-NET_-F_-GUEST_
+-UDP_-TUNNEL_-GSO and VIRTIO_-
+ []
+
+[117]
+Underfull \hbox (badness 10000) in paragraph at lines 512--512
+[]|\TU/LiberationSans(0)/m/n/10 Represents device configuration
+ []
+
+
+Underfull \hbox (badness 4608) in paragraph at lines 512--512
+\TU/LiberationSans(0)/m/n/10 done through a control virtqueue
+ []
+
+[118] [119]
+Overfull \hbox (4.10483pt too wide) in paragraph at lines 666--670
+[]\TU/LiberationSans(0)/m/n/10 When VIRTIO_-NET_-F_-OUT_-NET_-HEADER is negotia
+ted, the driver MAY optionally provide the \TU/LiberationSans(0)/m/it/10 outer_
+-
+ []
+
+
+Overfull \hbox (3.04007pt too wide) in paragraph at lines 710--723
+[]\TU/LiberationSans(0)/m/n/10 If the VIRTIO_-NET_-F_-GUEST_-HDRLEN feature has
+ been negotiated, \TU/LiberationSans(0)/m/it/10 hdr_-len \TU/LiberationSans(0)/
+m/n/10 indicates the header
+ []
+
+[120] [121] [122]
+Overfull \hbox (2.24696pt too wide) in paragraph at lines 947--954
+[]\TU/LiberationSans(0)/m/n/10 If the VIRTIO_-NET_-HDR_-GSO_-UDP_-TUNNEL_-IPV4 
+bit or the VIRTIO_-NET_-HDR_-GSO_-UDP_-TUNNEL_-
+ []
+
+
+Overfull \hbox (3.40948pt too wide) in paragraph at lines 971--974
+[]\TU/LiberationSans(0)/m/n/10 If the VIRTIO_-NET_-F_-HOST_-UDP_-TUNNEL_-GSO_-C
+SUM option has not been negotiated, the driver MUST
+ []
+
+
+LaTeX Warning: Hyper reference `par:Device Types / Network Device / Device Oper
+ation / IPsec Operation' on page 123 undefined on input line 985.
+
+
+LaTeX Warning: Hyper reference `par:Device Types / Crypto Device / Device Opera
+tion / IPsec Service Operation / Resource objects / VIRTIO-CRYPTO-RESOURCE-OBJ-
+IPSEC-ENC-SA' on page 123 undefined on input line 989.
+
+[123]
+Overfull \hbox (8.88531pt too wide) in paragraph at lines 1074--1086
+[]\TU/LiberationSans(0)/m/n/10 If the VIRTIO_-NET_-F_-GUEST_-TSO4, VIRTIO_-NET_
+-F_-GUEST_-TSO6, VIRTIO_-NET_-F_-GUEST_-UFO, VIR-
+ []
+
+[124]
+Overfull \hbox (6.09761pt too wide) in paragraph at lines 1092--1096
+\TU/LiberationSans(0)/m/n/10 UFO, VIRTIO_-NET_-F_-GUEST_-USO4 or VIRTIO_-NET_-F
+_-GUEST_-USO6 are negotiated, the driver
+ []
+
+
+Overfull \hbox (4.63795pt too wide) in paragraph at lines 1157--1165
+[]\TU/LiberationSans(0)/m/n/10 If the VIRTIO_-NET_-F_-GUEST_-CSUM feature was n
+egotiated, the VIRTIO_-NET_-HDR_-F_-DATA_-VALID
+ []
+
+[125]
+Overfull \hbox (0.34557pt too wide) in paragraph at lines 1202--1208
+\TU/LiberationSans(0)/m/n/10 TIO_-NET_-HDR_-GSO_-NONE, the VIRTIO_-NET_-HDR_-GS
+O_-UDP_-TUNNEL_-IPV4 bit or the VIRTIO_-
+ []
+
+
+Overfull \hbox (2.94484pt too wide) in paragraph at lines 1208--1215
+\TU/LiberationSans(0)/m/n/10 TIO_-NET_-HDR_-GSO_-UDP_-TUNNEL_-IPV4 bit or the V
+IRTIO_-NET_-HDR_-GSO_-UDP_-TUNNEL_-IPV6
+ []
+
+[126] [127]
+Overfull \hbox (3.35048pt too wide) in paragraph at lines 1353--1359
+\TU/LiberationSans(0)/m/n/10 VIRTIO_-NET_-HDR_-GSO_-UDP_-TUNNEL_-IPV4 bit is se
+t or the VIRTIO_-NET_-HDR_-GSO_-UDP_-TUNNEL_-
+ []
+
+[128]
+Overfull \hbox (2.24696pt too wide) in paragraph at lines 1412--1415
+[]\TU/LiberationSans(0)/m/n/10 If the VIRTIO_-NET_-HDR_-GSO_-UDP_-TUNNEL_-IPV4 
+bit or the VIRTIO_-NET_-HDR_-GSO_-UDP_-TUNNEL_-
+ []
+
+
+Overfull \hbox (14.81966pt too wide) in paragraph at lines 1471--1473
+[]\TU/LiberationSans(0)/m/n/10 Otherwise the device MUST support VIRTIO_-NET_-C
+TRL_-MQ_-HASH_-CONFIG command per [][]5.1.9.5.6.4[][]. 
+ []
+
+[129] [130] [131]
+Overfull \hbox (7.16632pt too wide) in paragraph at lines 1625--1628
+[]\TU/LiberationSans(0)/m/n/10 If VIRTIO_-NET_-F_-HASH_-TUNNEL is negotiated an
+d a received encapsulated packet’s outer header matches
+ []
+
+[132] [133]
+Overfull \hbox (19.11037pt too wide) in paragraph at lines 1741--1743
+[]\TU/LiberationSans(0)/m/n/10 The command VIRTIO_-NET_-CTRL_-STATS_-QUERY and 
+VIRTIO_-NET_-CTRL_-STATS_-GET contain \TU/LiberationSans(0)/m/it/10 command-
+ []
+
+
+Overfull \hbox (4.14912pt too wide) in paragraph at lines 1747--1750
+[]\TU/LiberationSans(0)/m/n/10 If the VIRTIO_-NET_-F_-CTRL_-RX and VIRTIO_-NET_
+-F_-CTRL_-RX_-EXTRA features are negotiated, the driver
+ []
+
+[134] [135] [136] [137] [138] [139] [140] [141]
+Overfull \hbox (4.40877pt too wide) in paragraph at lines 2355--2356
+[]\TU/LiberationSans(0)/m/n/10 For commands VIRTIO_-NET_-CTRL_-NOTF_-COAL_-TX_-
+SET and VIRTIO_-NET_-CTRL_-NOTF_-COAL_-
+ []
+
+
+Overfull \hbox (1.50117pt too wide) in paragraph at lines 2365--2367
+[]\TU/LiberationSans(0)/m/n/10 VIRTIO_-NET_-CTRL_-NOTF_-COAL_-VQ_-SET: use the 
+structure virtio_-net_-ctrl_-coal_-vq to set the \TU/LiberationSans(0)/m/it/10 
+max_-
+ []
+
+
+Overfull \hbox (3.1711pt too wide) in paragraph at lines 2367--2369
+[]\TU/LiberationSans(0)/m/n/10 VIRTIO_-NET_-CTRL_-NOTF_-COAL_-VQ_-GET: use the 
+structure virtio_-net_-ctrl_-coal_-vq to get the \TU/LiberationSans(0)/m/it/10 
+max_-
+ []
+
+[142] [143]
+Overfull \hbox (11.88055pt too wide) in paragraph at lines 2449--2451
+[]\TU/LiberationSans(0)/m/n/10 The device MUST respond to VIRTIO_-NET_-CTRL_-NO
+TF_-COAL_-VQ_-SET and VIRTIO_-NET_-CTRL_-NOTF_-
+ []
+
+[144] [145] [146] [147]
+Overfull \hbox (10.57478pt too wide) in paragraph at lines 2809--2812
+[]\TU/LiberationSans(0)/m/n/10 If one or more of the VIRTIO_-NET_-F_-HOST_-TSO4
+, VIRTIO_-NET_-F_-HOST_-TSO6, VIRTIO_-NET_-F_-HOST_-
+ []
+
+[148] [149] [150] [151] [152]
+Underfull \hbox (badness 10000) in paragraph at lines 3213--3213
+[]|\TU/LiberationSans(0)/m/n/10 VIRTIO_-NET_-FF_-ACTION_-DIRECT_-RX_-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3213--3213
+[]|\TU/LiberationSans(0)/m/n/10 VIRTIO_-NET_-FF_-ACTION_-IPSEC_-RE-
+ []
+
+
+Underfull \hbox (badness 1102) in paragraph at lines 3213--3213
+\TU/LiberationSans(0)/m/n/10 cessing, followed by the flow filter rules
+ []
+
+[153] [154] [155]
+Overfull \hbox (1.40349pt too wide) in paragraph at lines 3380--3386
+\TU/LiberationSans(0)/m/n/10 CREATE, VIRTIO_-ADMIN_-CMD_-RESOURCE_-OBJ_-MODIFY,
+ VIRTIO_-ADMIN_-CMD_-RESOURCE_-
+ []
+
+
+Overfull \hbox (7.05562pt too wide) in paragraph at lines 3397--3401
+\TU/LiberationSans(0)/m/n/10 CMD_-RESOURCE_-OBJ_-CREATE when the resource \TU/L
+iberationSans(0)/m/it/10 type \TU/LiberationSans(0)/m/n/10 is VIRTIO_-NET_-RESO
+URCE_-OBJ_-FF_-GROUP,
+ []
+
+[156]
+Overfull \hbox (10.76079pt too wide) in paragraph at lines 3493--3497
+[]\TU/LiberationSans(0)/m/n/10 The driver SHOULD NOT remove a flow filter group
+ using the command VIRTIO_-ADMIN_-CMD_-RESOURCE_-
+ []
+
+[157]
+Overfull \hbox (14.08905pt too wide) in paragraph at lines 3513--3515
+[]\TU/LiberationSans(0)/m/it/10 selectors[1].type \TU/LiberationSans(0)/m/n/10 
+to VIRTIO_-NET_-FF_-MASK_-TYPE_-IPV4 or VIRTIO_-NET_-FF_-MASK_-TYPE_-IPV6 when
+ []
+
+
+Overfull \hbox (1.64906pt too wide) in paragraph at lines 3515--3517
+[]\TU/LiberationSans(0)/m/it/10 selectors[2].type \TU/LiberationSans(0)/m/n/10 
+VIRTIO_-NET_-FF_-MASK_-TYPE_-UDP or VIRTIO_-NET_-FF_-MASK_-TYPE_-TCP when
+ []
+
+
+Overfull \hbox (3.02008pt too wide) in paragraph at lines 3536--3542
+\TU/LiberationSans(0)/m/n/10 and the \TU/LiberationSans(0)/m/it/10 selector[1].
+type \TU/LiberationSans(0)/m/n/10 is either VIRTIO_-NET_-FF_-MASK_-TYPE_-IPV4 o
+r VIRTIO_-NET_-FF_-MASK_-TYPE_-
+ []
+
+[158]
+Overfull \hbox (1.40349pt too wide) in paragraph at lines 3608--3613
+\TU/LiberationSans(0)/m/n/10 CREATE, VIRTIO_-ADMIN_-CMD_-RESOURCE_-OBJ_-MODIFY,
+ VIRTIO_-ADMIN_-CMD_-RESOURCE_-
+ []
+
+
+Overfull \hbox (17.38203pt too wide) in paragraph at lines 3615--3622
+\TU/LiberationSans(0)/m/n/10 mands VIRTIO_-ADMIN_-CMD_-RESOURCE_-OBJ_-CREATE, V
+IRTIO_-ADMIN_-CMD_-RESOURCE_-OBJ_-MOD-
+ []
+
+[159]
+Overfull \hbox (9.27534pt too wide) in paragraph at lines 3664--3671
+\TU/LiberationSans(0)/m/n/10 in VIRTIO_-ADMIN_-CMD_-CAP_-ID_-LIST_-QUERY comman
+d result, using VIRTION_-ADMIN_-CMD_-DEVICE_-
+ []
+
+
+Overfull \hbox (13.00359pt too wide) in paragraph at lines 3664--3671
+\TU/LiberationSans(0)/m/n/10 IPSEC_-RESOURCE_-CAP and VIRTIO_-NET_-IPSEC_-SA_-C
+AP using VIRTIO_-ADMIN_-CMD_-DEVICE_-CAP_-
+ []
+
+
+Overfull \hbox (8.6847pt too wide) in paragraph at lines 3672--3678
+\TU/LiberationSans(0)/m/it/10 resource_-obj_-ipsec_-sa \TU/LiberationSans(0)/m/
+n/10 with relevant values. And when create a resource object VIRTIO_-NET_-RESOU
+RCE_-
+ []
+
+
+Overfull \hbox (16.49701pt too wide) in paragraph at lines 3703--3710
+[]\TU/LiberationSans(0)/m/n/10 for the VIRTIO_-NET_-CTRL_-MAC_-TABLE_-SET comma
+nd use exactly two descriptors including command-
+ []
+
+) (./device-types/blk/description.tex [160]
+Overfull \hbox (11.55362pt too wide) in paragraph at lines 42--44
+[]\TU/LiberationSans(0)/m/n/10 Device can toggle its cache between writeback an
+d writethrough modes. 
+ []
+
+[161] [162] [163] [164] [165] [166]
+Overfull \hbox (3.90782pt too wide) in paragraph at lines 567--574
+\TU/LiberationSans(0)/m/n/10 VIRTIO_-BLK_-T_-ZONE_-FINISH, VIRTIO_-BLK_-T_-ZONE
+_-APPEND, VIRTIO_-BLK_-T_-ZONE_-RESET or VIR-
+ []
+
+
+Overfull \hbox (4.33565pt too wide) in paragraph at lines 567--574
+\TU/LiberationSans(0)/m/n/10 BLK_-S_-IOERR or VIRTIO_-BLK_-S_-UNSUPP \TU/Libera
+tionSans(0)/m/it/10 status\TU/LiberationSans(0)/m/n/10 , or, additionally, with
+ VIRTIO_-BLK_-S_-ZONE_-INVALID_-
+ []
+
+
+Overfull \hbox (3.72227pt too wide) in paragraph at lines 567--574
+\TU/LiberationSans(0)/m/n/10 CMD, VIRTIO_-BLK_-S_-ZONE_-UNALIGNED_-WP, VIRTIO_-
+BLK_-S_-ZONE_-OPEN_-RESOURCE or VIRTIO_-
+ []
+
+[167]
+Overfull \hbox (2.09702pt too wide) in paragraph at lines 598--602
+\TU/LiberationSans(0)/m/n/10 BLK_-T_-ZONE_-FINISH, VIRTIO_-BLK_-T_-ZONE_-RESET 
+and VIRTIO_-BLK_-T_-ZONE_-RESET_-ALL are non-
+ []
+
+[168]
+Overfull \hbox (3.71939pt too wide) in paragraph at lines 734--736
+[]\TU/LiberationSans(0)/m/n/10 VIRTIO_-BLK_-ZS_-IOPEN when a successful VIRTIO_
+-BLK_-T_-OUT request or VIRTIO_-BLK_-T_-ZONE_-
+ []
+
+
+Overfull \hbox (0.58463pt too wide) in paragraph at lines 750--752
+[]\TU/LiberationSans(0)/m/n/10 VIRTIO_-BLK_-ZS_-EMPTY when a successful VIRTIO_
+-BLK_-T_-ZONE_-RESET_-ALL request is received
+ []
+
+[169]
+Overfull \hbox (0.58463pt too wide) in paragraph at lines 777--779
+[]\TU/LiberationSans(0)/m/n/10 VIRTIO_-BLK_-ZS_-EMPTY when a successful VIRTIO_
+-BLK_-T_-ZONE_-RESET_-ALL request is received
+ []
+
+
+Overfull \hbox (0.58463pt too wide) in paragraph at lines 806--808
+[]\TU/LiberationSans(0)/m/n/10 VIRTIO_-BLK_-ZS_-EMPTY when a successful VIRTIO_
+-BLK_-T_-ZONE_-RESET_-ALL request is received
+ []
+
+
+Overfull \hbox (3.71939pt too wide) in paragraph at lines 809--811
+[]\TU/LiberationSans(0)/m/n/10 VIRTIO_-BLK_-ZS_-IOPEN when a successful VIRTIO_
+-BLK_-T_-OUT request or VIRTIO_-BLK_-T_-ZONE_-
+ []
+
+[170] [171]
+Overfull \hbox (9.67117pt too wide) in paragraph at lines 924--927
+[]\TU/LiberationSans(0)/m/n/10 In VIRTIO_-BLK_-T_-ZONE_-OPEN, VIRTIO_-BLK_-T_-Z
+ONE_-CLOSE, VIRTIO_-BLK_-T_-ZONE_-FINISH and VIR-
+ []
+
+[172]
+Overfull \hbox (10.61774pt too wide) in paragraph at lines 1062--1066
+[]\TU/LiberationSans(0)/m/n/10 If a request of type VIRTIO_-BLK_-T_-ZONE_-OPEN,
+ VIRTIO_-BLK_-T_-ZONE_-CLOSE, VIRTIO_-BLK_-T_-ZONE_-
+ []
+
+
+Overfull \hbox (3.57002pt too wide) in paragraph at lines 1062--1066
+\TU/LiberationSans(0)/m/n/10 FINISH or VIRTIO_-BLK_-T_-ZONE_-RESET is issued fo
+r a Conventional zone (type VIRTIO_-BLK_-ZT_-CONV),
+ []
+
+[173] [174] [175]) (./device-types/console/description.tex [176] [177]
+Overfull \hbox (2.82315pt too wide) in paragraph at lines 168--172
+[]\TU/LiberationSans(0)/m/n/10 Sent by the driver in response to the device’s V
+IRTIO_-CONSOLE_-
+ []
+
+[178]) (./device-types/entropy/description.tex [179])
+(./device-types/balloon/description.tex
+Overfull \hbox (6.22609pt too wide) in paragraph at lines 49--51
+[]\TU/LiberationSans(0)/m/n/10 The device has support for free page reporting. 
+A virtqueue
+ []
+
+[180] [181] [182] [183] [184] [185] [186]) (./device-types/scsi/description.tex
+[187] [188]
+
+Package hyperref Warning: Difference (2) between bookmark levels is greater 
+(hyperref)                than one, level fixed on input line 148.
+
+[189] [190] [191] [192] [193] [194] [195]) (./device-types/gpu/description.tex
+[196] [197] [198] [199]
+Overfull \hbox (4.69344pt too wide) in paragraph at lines 308--313
+\TU/LiberationSans(0)/m/n/10 bare \TU/LiberationSans(0)/m/it/10 struct virtio_-
+gpu_-ctrl_-hdr\TU/LiberationSans(0)/m/n/10 ). Response type is VIRTIO_-GPU_-RES
+P_-OK_-DISPLAY_-INFO, response
+ []
+
+[200]
+Overfull \hbox (7.69347pt too wide) in paragraph at lines 405--408
+[]\TU/LiberationSans(0)/m/n/10 Destroy a resource. Request data is \TU/Liberati
+onSans(0)/m/it/10 struct virtio_-gpu_-resource_-
+ []
+
+[201]
+Overfull \hbox (2.32237pt too wide) in paragraph at lines 477--482
+[]\TU/LiberationSans(0)/m/n/10 Assign backing pages to a resource. Request data
+
+ []
+
+[202]
+Overfull \hbox (22.89656pt too wide) in paragraph at lines 580--586
+\TU/LiberationSans(0)/m/n/10 data is \TU/LiberationSans(0)/m/it/10 struct virti
+o_-gpu_-resource_-assign_-uuid\TU/LiberationSans(0)/m/n/10 . Response type is V
+IRTIO_-GPU_-RESP_-OK_-RESOURCE_-
+ []
+
+[203]
+Overfull \hbox (16.497pt too wide) in paragraph at lines 656--660
+[]\TU/LiberationSans(0)/m/it/10 blob_-mem \TU/LiberationSans(0)/m/n/10 can only
+ be VIRTIO_-GPU_-BLOB_-MEM_-HOST3D and VIRTIO_-GPU_-BLOB_-MEM_-HOST3D_-
+ []
+
+
+Overfull \hbox (8.49731pt too wide) in paragraph at lines 661--665
+[]\TU/LiberationSans(0)/m/n/10 For VIRTIO_-GPU_-BLOB_-MEM_-HOST3D and VIRTIO_-G
+PU_-BLOB_-MEM_-HOST3D_-GUEST, the virtio-
+ []
+
+[204] [205]) (./device-types/input/description.tex [206] [207] [208])
+(./device-types/crypto/description.tex
+Overfull \hbox (0.62009pt too wide) in paragraph at lines 38--40
+[]\TU/LiberationSans(0)/m/n/10 VIRTIO_-CRYPTO_-F_-HASH_-STATELESS_-MODE (2) sta
+teless mode requests are supported by the HASH
+ []
+
+[209] [210] [211] [212]
+Underfull \hbox (badness 2269) in paragraph at lines 351--351
+[]|\TU/LiberationSans(0)/m/n/10 IPsec outbound SA re-
+ []
+
+
+Underfull \hbox (badness 7944) in paragraph at lines 351--351
+[]|\TU/LiberationSans(0)/m/n/10 IPsec inbound SA re-
+ []
+
+[213]
+Overfull \hbox (4.93742pt too wide) in paragraph at lines 359--368
+[]\TU/LiberationSans(0)/m/n/10 If VIRTIO_-CRYPTO_-F_-REVISION_-1 is negotiated 
+the device may support both session mode (See [][]5.9.9.2.1[][])
+ []
+
+[214]
+Overfull \hbox (3.01646pt too wide) in paragraph at lines 495--500
+\TU/LiberationSans(0)/m/n/10 virtio_-crypto_-akcipher_-create_-session_-flf if 
+VIRTIO_-CRYPTO_-F_-REVISION_-1 is negotiated and struct
+ []
+
+
+Overfull \hbox (9.78383pt too wide) in paragraph at lines 500--505
+\TU/LiberationSans(0)/m/n/10 HASH_-DESTROY_-SESSION or VIRTIO_-CRYPTO_-MAC_-DES
+TROY_-SESSION or VIRTIO_-CRYPTO_-
+ []
+
+
+Overfull \hbox (11.80624pt too wide) in paragraph at lines 500--505
+\TU/LiberationSans(0)/m/n/10 AEAD_-DESTROY_-SESSION then \TU/LiberationSans(0)/
+m/it/10 op_-flf \TU/LiberationSans(0)/m/n/10 is struct virtio_-crypto_-destroy_
+-session_-flf if VIRTIO_-CRYPTO_-
+ []
+
+[215] [216] [217] [218] [219] [220] [221]
+Overfull \hbox (7.0674pt too wide) in paragraph at lines 1021--1023
+[]\TU/LiberationSans(0)/m/n/10 For VIRTIO_-CRYPTO_-IPSEC_-OUTBOUND and VIRTIO_-
+CRYPTO_-IPSEC_-INBOUND opcodes, \TU/LiberationSans(0)/m/it/10 algo
+ []
+
+
+Overfull \hbox (2.90523pt too wide) in paragraph at lines 1028--1031
+\TU/LiberationSans(0)/m/n/10 objects \TU/LiberationSans(0)/m/it/10 id \TU/Liber
+ationSans(0)/m/n/10 created using VIRTIO_-CRYPTO_-RESOURCE_-OBJ_-IPSEC_-INBOUND
+_-SA resource type. 
+ []
+
+[222]
+Overfull \hbox (5.90619pt too wide) in paragraph at lines 1065--1068
+[]\TU/LiberationSans(0)/m/n/10 If the the opcode (in \TU/LiberationSans(0)/m/it
+/10 header\TU/LiberationSans(0)/m/n/10 ) is VIRTIO_-CRYPTO_-CIPHER_-ENCRYPT or 
+VIRTIO_-CRYPTO_-CIPHER_-
+ []
+
+
+Overfull \hbox (6.02905pt too wide) in paragraph at lines 1091--1095
+[]\TU/LiberationSans(0)/m/n/10 If VIRTIO_-CRYPTO_-F_-MAC_-STATELESS_-MODE is NO
+T negotiated, \TU/LiberationSans(0)/m/it/10 op_-flf \TU/LiberationSans(0)/m/n/1
+0 is struct virtio_-crypto_-
+ []
+
+
+Overfull \hbox (7.75931pt too wide) in paragraph at lines 1107--1110
+[]\TU/LiberationSans(0)/m/n/10 If the opcode (in \TU/LiberationSans(0)/m/it/10 
+header\TU/LiberationSans(0)/m/n/10 ) is VIRTIO_-CRYPTO_-AKCIPHER_-ENCRYPT, VIRT
+IO_-CRYPTO_-AKCIPHER_-
+ []
+
+
+Overfull \hbox (11.97072pt too wide) in paragraph at lines 1110--1113
+[]\TU/LiberationSans(0)/m/n/10 If VIRTIO_-CRYPTO_-F_-AKCIPHER_-STATELESS_-MODE 
+is negotiated, \TU/LiberationSans(0)/m/it/10 op_-flf \TU/LiberationSans(0)/m/n/
+10 is struct virtio_-crypto_-
+ []
+
+[223] [224]
+Overfull \hbox (1.87827pt too wide) in paragraph at lines 1310--1313
+[]\TU/LiberationSans(0)/m/n/10 If the VIRTIO_-CRYPTO_-F_-MAC_-STATELESS_-MODE f
+eature bit is negotiated, the device MUST parse
+ []
+
+[225] [226] [227] [228] [229]
+Overfull \hbox (1.70047pt too wide) in paragraph at lines 1621--1623
+[]\TU/LiberationSans(0)/m/n/10 The driver MUST set the \TU/LiberationSans(0)/m/
+it/10 opcode \TU/LiberationSans(0)/m/n/10 field in struct virtio_-crypto_-op_-h
+eader to VIRTIO_-CRYPTO_-CIPHER_-
+ []
+
+[230] [231]
+Overfull \hbox (2.34627pt too wide) in paragraph at lines 1825--1827
+[]\TU/LiberationSans(0)/m/n/10 Each data request uses the virtio_-crypto_-akcip
+her_-flf structure and the virtio_-crypto_-akcipher_-data_-vlf struc-
+ []
+
+[232]
+Overfull \hbox (3.91368pt too wide) in paragraph at lines 1918--1921
+[]\TU/LiberationSans(0)/m/n/10 If the VIRTIO_-CRYPTO_-F_-AKCIPHER_-STATELESS_-M
+ODE feature bit is negotiated, the device MUST
+ []
+
+[233]
+Overfull \hbox (5.75969pt too wide) in paragraph at lines 1958--1959
+[]\TU/LiberationSans(0)/m/n/10 Creating outbound SAs using the VIRTIO_-CRYPTO_-
+RESOURCE_-OBJ_-IPSEC_-OUTBOUND_-SA com-
+ []
+
+
+LaTeX Warning: Reference `sec:Device Types / Crypto Device / Device Operation /
+ IPsec Service Operation / Resource objects' on page 234 undefined on input lin
+e 1965.
+
+
+Overfull \hbox (13.22752pt too wide) in paragraph at lines 1968--1974
+[]\TU/LiberationSans(0)/m/n/10 The device and the driver indicate IPsec SA reso
+urce limits using the VIRTIO_-CRYPTO_-IPSEC_-RESOURCE_-
+ []
+
+[234]
+Underfull \hbox (badness 10000) in paragraph at lines 2066--2066
+[]|\TU/LiberationSans(0)/m/n/10 VIRTIO_-CRYPTO_-IPSEC_-MODE_-ESP_-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2066--2066
+[]|\TU/LiberationSans(0)/m/n/10 VIRTIO_-CRYPTO_-IPSEC_-MODE_-ESP_-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2066--2066
+[]|\TU/LiberationSans(0)/m/n/10 VIRTIO_-CRYPTO_-IPSEC_-MODE_-AH_-TUN-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2066--2066
+[]|\TU/LiberationSans(0)/m/n/10 VIRTIO_-CRYPTO_-IPSEC_-MODE_-AH_-
+ []
+
+[235] [236] [237]
+Overfull \hbox (2.35808pt too wide) in paragraph at lines 2232--2236
+[]\TU/LiberationSans(0)/m/n/10 A driver can have inbound SAs between 0 and \TU/
+LiberationSans(0)/m/it/10 inb_-sa_-limit\TU/LiberationSans(0)/m/n/10 , as speci
+fied by the capability VIRTIO_-CRYPTO_-
+ []
+
+
+Overfull \hbox (9.29811pt too wide) in paragraph at lines 2283--2285
+\TU/LiberationSans(0)/m/n/10 CAP capability in the \TU/LiberationSans(0)/m/it/1
+0 supported_-caps \TU/LiberationSans(0)/m/n/10 in the command VIRTIO_-ADMIN_-CM
+D_-CAP_-SUPPORT_-QUERY. 
+ []
+
+
+Overfull \hbox (1.40349pt too wide) in paragraph at lines 2285--2290
+\TU/LiberationSans(0)/m/n/10 CREATE, VIRTIO_-ADMIN_-CMD_-RESOURCE_-OBJ_-MODIFY,
+ VIRTIO_-ADMIN_-CMD_-RESOURCE_-
+ []
+
+
+Overfull \hbox (12.94356pt too wide) in paragraph at lines 2292--2299
+\TU/LiberationSans(0)/m/n/10 commands VIRTIO_-ADMIN_-CMD_-RESOURCE_-OBJ_-CREATE
+, VIRTIO_-ADMIN_-CMD_-RESOURCE_-OBJ_-
+ []
+
+
+Overfull \hbox (4.29591pt too wide) in paragraph at lines 2292--2299
+\TU/LiberationSans(0)/m/n/10 OBJ_-DESTROY for the resource types VIRTIO_-CRYPTO
+_-RESOURCE_-OBJ_-IPSEC_-OUTBOUND_-SA and
+ []
+
+[238]
+Overfull \hbox (11.32808pt too wide) in paragraph at lines 2300--2304
+\TU/LiberationSans(0)/m/n/10 CMD_-RESOURCE_-OBJ_-CREATE when the resource \TU/L
+iberationSans(0)/m/it/10 type \TU/LiberationSans(0)/m/n/10 is VIRTIO_-CRYPTO_-R
+ESOURCE_-OBJ_-IPSEC_-
+ []
+
+
+Overfull \hbox (3.71342pt too wide) in paragraph at lines 2305--2309
+\TU/LiberationSans(0)/m/n/10 to VIRTIO_-ADMIN_-STATUS_-EINVAL, for the VIRTIO_-
+CRYPTO_-RESOURCE_-OBJ_-IPSEC_-OUTBOUND_-
+ []
+
+
+Overfull \hbox (0.93419pt too wide) in paragraph at lines 2331--2335
+\TU/LiberationSans(0)/m/n/10 to VIRTIO_-ADMIN_-STATUS_-EINVAL for the VIRTIO_-C
+RYPTO_-RESOURCE_-OBJ_-IPSEC_-OUTBOUND_-
+ []
+
+[239]) (./device-types/vsock/description.tex
+Overfull \hbox (7.18097pt too wide) in paragraph at lines 2370--1
+[]\TU/LiberationSans(0)/m/n/10 The driver MUST set \TU/LiberationSans(0)/m/it/1
+0 session_-id \TU/LiberationSans(0)/m/n/10 in struct virtio_-crypto_-op_-header
+ to a valid VIRTIO_-CRYPTO_-RESOURCE_-
+ []
+
+
+Overfull \hbox (12.85927pt too wide) in paragraph at lines 2370--1
+\TU/LiberationSans(0)/m/n/10 OBJ_-IPSEC_-OUTBOUND_-SA or VIRTIO_-CRYPTO_-RESOUR
+CE_-OBJ_-IPSEC_-INBOUND_-SA \TU/LiberationSans(0)/m/it/10 id\TU/LiberationSans(
+0)/m/n/10 . The driver
+ []
+
+
+Overfull \hbox (17.4915pt too wide) in paragraph at lines 33--36
+[]\TU/LiberationSans(0)/m/n/10 If VIRTIO_-VSOCK_-F_-SEQPACKET has been negotiat
+ed, but not VIRTIO_-VSOCK_-F_-NO_-IMPLIED_-STREAM,
+ []
+
+
+Overfull \hbox (17.4915pt too wide) in paragraph at lines 44--47
+[]\TU/LiberationSans(0)/m/n/10 If VIRTIO_-VSOCK_-F_-SEQPACKET has been negotiat
+ed, but not VIRTIO_-VSOCK_-F_-NO_-IMPLIED_-STREAM,
+ []
+
+[240] [241] [242] [243]) (./device-types/fs/description.tex
+Overfull \hbox (3.9574pt too wide) in paragraph at lines 335--1
+[]\TU/LiberationSans(0)/m/n/10 Listen connections MUST remain operational with 
+the current CID when a VIRTIO_-VSOCK_-EVENT_-TRANS-
+ []
+
+[244] [245] [246] [247] [248]) (./device-types/rpmb/description.tex [249]
+[250] [251] [252]) (./device-types/iommu/description.tex
+Overfull \hbox (8.31917pt too wide) in paragraph at lines 17--21
+\TU/LiberationMono(0)/m/n/10 map(domain = 1, virt_-start = 0x1000, virt_-end = 
+0x1fff, phys = 0xa000, flags
+ []
+
+[253]
+Overfull \hbox (0.36455pt too wide) in paragraph at lines 81--84
+\TU/LiberationSans(0)/m/n/10 The driver SHOULD accept any of the VIRTIO_-IOMMU_
+-F_-INPUT_-RANGE, VIRTIO_-IOMMU_-F_-DOMAIN_-
+ []
+
+
+Overfull \hbox (1.88472pt too wide) in paragraph at lines 89--93
+[]\TU/LiberationSans(0)/m/n/10 The VIRTIO_-IOMMU_-F_-BYPASS_-CONFIG feature sup
+ersedes VIRTIO_-IOMMU_-F_-BYPASS. New devices
+ []
+
+[254] [255] [256] [257]
+Overfull \hbox (0.46634pt too wide) in paragraph at lines 454--464
+\OT1/cmr/m/n/10 [\OML/cmm/m/it/10 virt[]start\OT1/cmr/m/n/10 ; \OML/cmm/m/it/10
+ virt[]end\OT1/cmr/m/n/10 ]$ \TU/LiberationSans(0)/m/n/10 (inclusive). For exam
+ple, if an endpoint accesses address $\OML/cmm/m/it/10 VA \OMS/cmsy/m/n/10 2 \O
+T1/cmr/m/n/10 [\OML/cmm/m/it/10 virt[]start\OT1/cmr/m/n/10 ; \OML/cmm/m/it/10 v
+irt[]end\OT1/cmr/m/n/10 ]$\TU/LiberationSans(0)/m/n/10 ,
+ []
+
+[258] [259] [260] [261] [262] [263]) (./device-types/sound/description.tex
+[264] [265] [266] [267] [268] [269] [270]
+Overfull \hbox (1.12143pt too wide) in paragraph at lines 535--537
+[]\TU/LiberationSans(0)/m/n/10 VIRTIO_-SND_-PCM_-F_-EVT_-SHMEM_-PERIODS - suppo
+rts elapsed period notifications for shared
+ []
+
+
+Overfull \hbox (4.84703pt too wide) in paragraph at lines 589--591
+[]\TU/LiberationSans(0)/m/n/10 VIRTIO_-SND_-PCM_-F_-MSG_-POLLING - suppress ava
+ilable buffer notifications for tx and rx queues
+ []
+
+[271] [272] [273] [274] [275] [276] [277] [278])
+(./device-types/mem/description.tex [279] [280]
+Overfull \hbox (2.76854pt too wide) in paragraph at lines 139--142
+[]\TU/LiberationSans(0)/m/n/10 The device MUST send a configuration update noti
+fication when changing \TU/LiberationSans(0)/m/it/10 usable_-region_-size \TU/L
+iberationSans(0)/m/n/10 or \TU/LiberationSans(0)/m/it/10 requested_-
+ []
+
+[281] [282] [283] [284] [285]) (./device-types/i2c/description.tex [286]
+[287]) (./device-types/scmi/description.tex [288]
+Overfull \hbox (4.66435pt too wide) in paragraph at lines 42--44
+[]\TU/LiberationSans(0)/m/n/10 Device implements some SCMI notifications, or de
+layed responses. 
+ []
+
+[289] [290] [291]) (./device-types/gpio/description.tex [292] [293] [294]
+[295]
+Underfull \hbox (badness 10000) in paragraph at lines 348--348
+[]|\TU/LiberationSans(0)/m/it/10 VIRTIO_-GPIO_-MSG_-SET_-
+ []
+
+
+Overfull \hbox (12.50705pt too wide) in paragraph at lines 361--365
+[]\TU/LiberationSans(0)/m/n/10 The driver enqueues \TU/LiberationSans(0)/m/it/1
+0 struct virtio_-gpio_-request \TU/LiberationSans(0)/m/n/10 and \TU/LiberationS
+ans(0)/m/it/10 virtio_-gpio_-response \TU/LiberationSans(0)/m/n/10 buffers to t
+he \TU/LiberationSans(0)/m/it/10 requestq \TU/LiberationSans(0)/m/n/10 virtqueu
+e,
+ []
+
+[296] [297] [298]
+Overfull \hbox (1.5634pt too wide) in paragraph at lines 586--590
+[]\TU/LiberationSans(0)/m/n/10 On receiving \TU/LiberationSans(0)/m/it/10 VIRTI
+O_-GPIO_-MSG_-SET_-IRQ_-TYPE \TU/LiberationSans(0)/m/n/10 message, with \TU/Lib
+erationSans(0)/m/it/10 VIRTIO_-GPIO_-IRQ_-TYPE_-NONE
+ []
+
+) (./device-types/pmem/description.tex [299] [300])
+(./device-types/can/description.tex [301] [302] [303])
+(./device-types/spi/description.tex [304] [305] [306] [307])
+(./device-types/media/description.tex [308]
+Overfull \hbox (1.78546pt too wide) in paragraph at lines 116--118
+[]\TU/LiberationSans(0)/m/n/10 A response consists of a response header \TU/Lib
+erationSans(0)/m/it/10 virtio_-media_-resp_-header \TU/LiberationSans(0)/m/n/10
+ containing the following device-writable
+ []
+
+[309] [310] [311] [312]
+Overfull \hbox (4.27477pt too wide) in paragraph at lines 424--425
+[]\TU/LiberationSans(0)/b/n/10 VIRTIO_-MEDIA_-CMD_-MUNMAP \TU/LiberationSans(0)
+/m/n/10 unmaps a MMAP buffer previously mapped using \TU/LiberationSans(0)/m/it
+/10 VIRTIO_-MEDIA_-CMD_-
+ []
+
+[313] [314] [315]
+Overfull \hbox (1.8177pt too wide) in paragraph at lines 625--629
+\TU/LiberationSans(0)/m/it/10 SCRIBE_-EVENT \TU/LiberationSans(0)/m/n/10 ioctl)
+ is signaled, the device queues a \TU/LiberationSans(0)/m/it/10 struct virtio_-
+media_-event_-event \TU/LiberationSans(0)/m/n/10 event on the eventq.
+ []
+
+) (./device-types/rtc/description.tex [316] [317] [318] [319]
+Overfull \hbox (6.83574pt too wide) in paragraph at lines 319--324
+\TU/LiberationSans(0)/m/n/10 smearing variants are not recommended and are rese
+rved for experimental implementations. Implementation-
+ []
+
+
+Overfull \hbox (2.95699pt too wide) in paragraph at lines 332--334
+[]\TU/LiberationSans(0)/m/n/10 any clock of type VIRTIO_-RTC_-CLOCK_-UTC_-MAYBE
+_-SMEARED at any time when the clock is smear-
+ []
+
+
+Overfull \hbox (6.8455pt too wide) in paragraph at lines 350--355
+\TU/LiberationSans(0)/m/n/10 counter identifiers are not recommended and are re
+served for experimental implementations. Implementation-
+ []
+
+[320]
+Overfull \hbox (3.71544pt too wide) in paragraph at lines 409--412
+[]\TU/LiberationSans(0)/m/n/10 Clocks of type VIRTIO_-RTC_-CLOCK_-UTC_-SMEARED 
+indicate the \TU/LiberationSans(0)/m/it/10 smearing variant \TU/LiberationSans(
+0)/m/n/10 through the \TU/LiberationSans(0)/m/it/10 leap_-
+ []
+
+[321]
+Overfull \hbox (0.78864pt too wide) in paragraph at lines 534--537
+[]\TU/LiberationSans(0)/m/n/10 For VIRTIO_-RTC_-REQ_-CLOCK_-CAP, and clock type
+s other than VIRTIO_-RTC_-CLOCK_-UTC_-SMEARED,
+ []
+
+[322]
+Overfull \hbox (5.70076pt too wide) in paragraph at lines 617--621
+[]\TU/LiberationSans(0)/m/n/10 returns a cross-timestamp for the clock identifi
+ed by the \TU/LiberationSans(0)/m/it/10 clock_-id \TU/LiberationSans(0)/m/n/10 
+field.[][][][][]
+ []
+
+[323] [324] [325]
+Overfull \hbox (18.17793pt too wide) in paragraph at lines 857--861
+\TU/LiberationSans(0)/m/n/10 RTC_-REQ_-READ_-ALARM, VIRTIO_-RTC_-REQ_-SET_-ALAR
+M, VIRTIO_-RTC_-REQ_-SET_-ALARM_-ENABLED,
+ []
+
+
+Overfull \hbox (14.76306pt too wide) in paragraph at lines 900--902
+[]\TU/LiberationSans(0)/m/n/10 The device MAY ignore whether VIRTIO_-RTC_-F_-AL
+ARM has been negotiated when executing implementation-
+ []
+
+[326]
+Overfull \hbox (3.18121pt too wide) in paragraph at lines 908--912
+[]\TU/LiberationSans(0)/m/n/10 If the driver successfully requests VIRTIO_-RTC_
+-REQ_-SET_-ALARM, or VIRTIO_-RTC_-REQ_-SET_-ALARM_-
+ []
+
+[327]
+Overfull \hbox (2.80522pt too wide) in paragraph at lines 1021--1024
+\TU/LiberationSans(0)/m/n/10 for VIRTIO_-RTC_-REQ_-READ_-ALARM, VIRTIO_-RTC_-RE
+Q_-SET_-ALARM, and VIRTIO_-RTC_-REQ_-SET_-
+ []
+
+
+Overfull \hbox (29.29773pt too wide) in paragraph at lines 1025--1028
+\TU/LiberationSans(0)/m/n/10 VIRTIO_-RTC_-REQ_-READ_-ALARM, VIRTIO_-RTC_-REQ_-S
+ET_-ALARM, and VIRTIO_-RTC_-REQ_-SET_-ALARM_-
+ []
+
+
+Overfull \hbox (2.0719pt too wide) in paragraph at lines 1032--1035
+[]\TU/LiberationSans(0)/m/n/10 For VIRTIO_-RTC_-REQ_-READ_-ALARM, the device MU
+ST set the VIRTIO_-RTC_-FLAG_-ALARM_-ENABLED
+ []
+
+[328]) [329]
+Chapter 6.
+[330
+
+]
+Overfull \hbox (22.50415pt too wide) in paragraph at lines 931--942
+[]\TU/LiberationSans(0)/m/n/10 This feature indicates that the device exposes o
+ne or more administration virtqueues.
+ []
+
+[331]) (./conformance.tex [332]
+Chapter 7.
+[333
+
+] [334] (./device-types/net/driver-conformance.tex)
+(./device-types/blk/driver-conformance.tex)
+(./device-types/console/driver-conformance.tex)
+(./device-types/entropy/driver-conformance.tex)
+(./device-types/balloon/driver-conformance.tex [335])
+(./device-types/scsi/driver-conformance.tex)
+(./device-types/input/driver-conformance.tex)
+(./device-types/crypto/driver-conformance.tex)
+(./device-types/vsock/driver-conformance.tex)
+(./device-types/fs/driver-conformance.tex)
+(./device-types/rpmb/driver-conformance.tex [336])
+(./device-types/iommu/driver-conformance.tex)
+(./device-types/sound/driver-conformance.tex)
+(./device-types/mem/driver-conformance.tex)
+(./device-types/i2c/driver-conformance.tex [337])
+(./device-types/scmi/driver-conformance.tex)
+(./device-types/gpio/driver-conformance.tex)
+(./device-types/pmem/driver-conformance.tex)
+(./device-types/can/driver-conformance.tex)
+(./device-types/spi/driver-conformance.tex)
+(./device-types/media/driver-conformance.tex)
+(./device-types/rtc/driver-conformance.tex) [338] [339]
+(./device-types/net/device-conformance.tex)
+(./device-types/blk/device-conformance.tex)
+(./device-types/console/device-conformance.tex [340])
+(./device-types/entropy/device-conformance.tex)
+(./device-types/balloon/device-conformance.tex)
+(./device-types/scsi/device-conformance.tex)
+(./device-types/gpu/device-conformance.tex)
+(./device-types/input/device-conformance.tex)
+(./device-types/crypto/device-conformance.tex [341])
+(./device-types/vsock/device-conformance.tex)
+(./device-types/fs/device-conformance.tex)
+(./device-types/rpmb/device-conformance.tex)
+(./device-types/iommu/device-conformance.tex)
+(./device-types/sound/device-conformance.tex [342])
+(./device-types/mem/device-conformance.tex)
+(./device-types/i2c/device-conformance.tex)
+(./device-types/scmi/device-conformance.tex)
+(./device-types/gpio/device-conformance.tex)
+(./device-types/pmem/device-conformance.tex [343])
+(./device-types/can/device-conformance.tex)
+(./device-types/spi/device-conformance.tex)
+(./device-types/media/device-conformance.tex)
+(./device-types/rtc/device-conformance.tex) [344] [345]) (./headerfile.tex
+[346]
+Appendix A.
+(./virtio-queue.h [347
+
+])) (./newdevice.tex [348]
+Appendix B.
+[349
+
+]) (./newtransport.tex [350]
+Appendix C.
+
+Overfull \hbox (1.00331pt too wide) in paragraph at lines 20--22
+[]\TU/LiberationSans(0)/m/n/10 A transport provides a mechanism for the driver 
+to read the device’s FEATURES_-OK and DEVICE_-NEEDS_-
+ []
+
+) (./acknowledgements.tex [351
+
+]
+Appendix D.
+
+Underfull \hbox (badness 10000) in paragraph at lines 9--39
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 44--54
+
+ []
+
+[352
+
+]
+Underfull \hbox (badness 10000) in paragraph at lines 60--148
+
+ []
+
+[353])
+Underfull \hbox (badness 10000) in paragraph at lines 154--49
+
+ []
+
+[354] [355] (./changelog.tex [356]
+Appendix E.
+
+Overfull \hbox (49.99994pt too wide) in alignment at lines 6--10
+ [] [] [] [] 
+ []
+
+(./cl-os.tex
+Underfull \hbox (badness 10000) in paragraph at lines 1--1
+[]|\TU/LiberationSans(0)/m/n/10 13
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1--1
+\TU/LiberationSans(0)/m/n/10 Jun
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 19--19
+[]|\TU/LiberationSans(0)/m/n/10 13
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 19--19
+\TU/LiberationSans(0)/m/n/10 Jun
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 19--19
+[]|\TU/LiberationSans(0)/m/n/10 Laura
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 34--34
+[]|\TU/LiberationSans(0)/m/n/10 13
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 34--34
+\TU/LiberationSans(0)/m/n/10 Jun
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 34--34
+[]|\TU/LiberationSans(0)/m/n/10 Xuan
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 55--55
+[]|\TU/LiberationSans(0)/m/n/10 24
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 55--55
+\TU/LiberationSans(0)/m/n/10 Jun
+ []
+
+
+Underfull \hbox (badness 7433) in paragraph at lines 55--55
+[]|\TU/LiberationSans(0)/m/n/10 Yuri Ben-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 75--75
+[]|\TU/LiberationSans(0)/m/n/10 24
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 75--75
+\TU/LiberationSans(0)/m/n/10 Jun
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 75--75
+[]|\TU/LiberationSans(0)/m/n/10 Anton
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 98--98
+[]|\TU/LiberationSans(0)/m/n/10 11
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 98--98
+\TU/LiberationSans(0)/m/n/10 Jul
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 98--98
+[]|\TU/LiberationSans(0)/m/n/10 Alvaro
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 145--145
+[]|\TU/LiberationSans(0)/m/n/10 03
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 145--145
+\TU/LiberationSans(0)/m/n/10 Aug
+ []
+
+
+Underfull \hbox (badness 2409) in paragraph at lines 164--177
+[]\TU/LiberationSans(0)/m/n/10 See [][]1.1[][], [][]5.9[][], [][]5.9.3[][], [][
+]5.9.3.1[][], [][]5.9.4[][], [][]5.9.4.5[][], [][]5.9.5[][], [][]5.9.9.1[][], [
+][]5.9.9.2[][],
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 178--178
+[]|\TU/LiberationSans(0)/m/n/10 03
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 178--178
+\TU/LiberationSans(0)/m/n/10 Aug
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 178--178
+[]|\TU/LiberationSans(0)/m/n/10 Stefano
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 213--213
+[]|\TU/LiberationSans(0)/m/n/10 14
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 213--213
+\TU/LiberationSans(0)/m/n/10 Nov
+ []
+
+
+Overfull \hbox (3.0314pt too wide) in paragraph at lines 213--213
+[]|\TU/LiberationSans(0)/m/n/10 Hrishivarya
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 213--213
+\TU/LiberationSans(0)/m/n/10 Bhageer-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 224--225
+[]\TU/LiberationSans(0)/m/n/10 Signed-off-by: Hrishivarya Bhageeradhan <hrishiv
+-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 231--231
+[]|\TU/LiberationSans(0)/m/n/10 05
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 231--231
+\TU/LiberationSans(0)/m/n/10 Dec
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 231--231
+[]|\TU/LiberationSans(0)/m/n/10 Dmitry
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 298--298
+[]|\TU/LiberationSans(0)/m/n/10 07
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 298--298
+\TU/LiberationSans(0)/m/n/10 Dec
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 298--298
+[]|\TU/LiberationSans(0)/m/n/10 Xuan
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 334--334
+[]|\TU/LiberationSans(0)/m/n/10 30
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 334--334
+\TU/LiberationSans(0)/m/n/10 Jan
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 334--334
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 357--357
+[]|\TU/LiberationSans(0)/m/n/10 30
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 357--357
+\TU/LiberationSans(0)/m/n/10 Jan
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 357--357
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 372--372
+[]|\TU/LiberationSans(0)/m/n/10 30
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 372--372
+\TU/LiberationSans(0)/m/n/10 Jan
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 372--372
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 395--395
+[]|\TU/LiberationSans(0)/m/n/10 30
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 395--395
+\TU/LiberationSans(0)/m/n/10 Jan
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 395--395
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 418--418
+[]|\TU/LiberationSans(0)/m/n/10 30
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 418--418
+\TU/LiberationSans(0)/m/n/10 Jan
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 418--418
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 441--441
+[]|\TU/LiberationSans(0)/m/n/10 30
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 441--441
+\TU/LiberationSans(0)/m/n/10 Jan
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 441--441
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 464--464
+[]|\TU/LiberationSans(0)/m/n/10 30
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 464--464
+\TU/LiberationSans(0)/m/n/10 Jan
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 464--464
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 487--487
+[]|\TU/LiberationSans(0)/m/n/10 30
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 487--487
+\TU/LiberationSans(0)/m/n/10 Jan
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 487--487
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 508--508
+[]|\TU/LiberationSans(0)/m/n/10 30
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 508--508
+\TU/LiberationSans(0)/m/n/10 Jan
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 508--508
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 530--530
+[]|\TU/LiberationSans(0)/m/n/10 30
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 530--530
+\TU/LiberationSans(0)/m/n/10 Jan
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 530--530
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 552--552
+[]|\TU/LiberationSans(0)/m/n/10 30
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 552--552
+\TU/LiberationSans(0)/m/n/10 Jan
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 552--552
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 574--574
+[]|\TU/LiberationSans(0)/m/n/10 30
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 574--574
+\TU/LiberationSans(0)/m/n/10 Jan
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 574--574
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 594--594
+[]|\TU/LiberationSans(0)/m/n/10 30
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 594--594
+\TU/LiberationSans(0)/m/n/10 Jan
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 594--594
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 614--614
+[]|\TU/LiberationSans(0)/m/n/10 30
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 614--614
+\TU/LiberationSans(0)/m/n/10 Jan
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 614--614
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 634--634
+[]|\TU/LiberationSans(0)/m/n/10 30
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 634--634
+\TU/LiberationSans(0)/m/n/10 Jan
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 634--634
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 654--654
+[]|\TU/LiberationSans(0)/m/n/10 30
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 654--654
+\TU/LiberationSans(0)/m/n/10 Jan
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 654--654
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 674--674
+[]|\TU/LiberationSans(0)/m/n/10 30
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 674--674
+\TU/LiberationSans(0)/m/n/10 Jan
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 674--674
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 694--694
+[]|\TU/LiberationSans(0)/m/n/10 30
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 694--694
+\TU/LiberationSans(0)/m/n/10 Jan
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 694--694
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 714--714
+[]|\TU/LiberationSans(0)/m/n/10 30
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 714--714
+\TU/LiberationSans(0)/m/n/10 Jan
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 714--714
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 734--734
+[]|\TU/LiberationSans(0)/m/n/10 30
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 734--734
+\TU/LiberationSans(0)/m/n/10 Jan
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 734--734
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 754--754
+[]|\TU/LiberationSans(0)/m/n/10 02
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 754--754
+\TU/LiberationSans(0)/m/n/10 Feb
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 754--754
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 782--782
+[]|\TU/LiberationSans(0)/m/n/10 02
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 782--782
+\TU/LiberationSans(0)/m/n/10 Feb
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 782--782
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 790--792
+[]\TU/LiberationSans(0)/m/n/10 [1] [][]$[][][][][] [] [] [] [][][][][] [] [][][
+][][][][][][][][] [] [][][] [] [][][][][][][][] [] [][][][][][][][][][][] [] []
+[][][][][] [] [][][][][][][][] [] [][][][]$[][]
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 809--809
+[]|\TU/LiberationSans(0)/m/n/10 09
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 809--809
+\TU/LiberationSans(0)/m/n/10 Feb
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 825--825
+[]|\TU/LiberationSans(0)/m/n/10 14
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 825--825
+\TU/LiberationSans(0)/m/n/10 Feb
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 825--825
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 853--853
+[]|\TU/LiberationSans(0)/m/n/10 15
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 853--853
+\TU/LiberationSans(0)/m/n/10 Feb
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 853--853
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 872--872
+[]|\TU/LiberationSans(0)/m/n/10 20
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 872--872
+\TU/LiberationSans(0)/m/n/10 Feb
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 872--872
+[]|\TU/LiberationSans(0)/m/n/10 Alvaro
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 889--889
+[]|\TU/LiberationSans(0)/m/n/10 01
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 889--889
+\TU/LiberationSans(0)/m/n/10 Mar
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 889--889
+[]|\TU/LiberationSans(0)/m/n/10 Alvaro
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 929--929
+[]|\TU/LiberationSans(0)/m/n/10 01
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 929--929
+\TU/LiberationSans(0)/m/n/10 Mar
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 929--929
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 956--956
+[]|\TU/LiberationSans(0)/m/n/10 10
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 956--956
+\TU/LiberationSans(0)/m/n/10 Mar
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 956--956
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 971--971
+[]|\TU/LiberationSans(0)/m/n/10 10
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 971--971
+\TU/LiberationSans(0)/m/n/10 Mar
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 971--971
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 986--986
+[]|\TU/LiberationSans(0)/m/n/10 10
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 986--986
+\TU/LiberationSans(0)/m/n/10 Mar
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 986--986
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1002--1002
+[]|\TU/LiberationSans(0)/m/n/10 10
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1002--1002
+\TU/LiberationSans(0)/m/n/10 Mar
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1002--1002
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1021--1021
+[]|\TU/LiberationSans(0)/m/n/10 10
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1021--1021
+\TU/LiberationSans(0)/m/n/10 Mar
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1021--1021
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1039--1039
+[]|\TU/LiberationSans(0)/m/n/10 10
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1039--1039
+\TU/LiberationSans(0)/m/n/10 Mar
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1039--1039
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1059--1059
+[]|\TU/LiberationSans(0)/m/n/10 15
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1059--1059
+\TU/LiberationSans(0)/m/n/10 Mar
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1059--1059
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1080--1080
+[]|\TU/LiberationSans(0)/m/n/10 15
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1080--1080
+\TU/LiberationSans(0)/m/n/10 Mar
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1080--1080
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1105--1105
+[]|\TU/LiberationSans(0)/m/n/10 15
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1105--1105
+\TU/LiberationSans(0)/m/n/10 Mar
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1105--1105
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1123--1123
+[]|\TU/LiberationSans(0)/m/n/10 15
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1123--1123
+\TU/LiberationSans(0)/m/n/10 Mar
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1123--1123
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1143--1143
+[]|\TU/LiberationSans(0)/m/n/10 15
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1143--1143
+\TU/LiberationSans(0)/m/n/10 Mar
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1143--1143
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1164--1164
+[]|\TU/LiberationSans(0)/m/n/10 04
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1164--1164
+\TU/LiberationSans(0)/m/n/10 Apr
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1164--1164
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1178--1178
+[]|\TU/LiberationSans(0)/m/n/10 11
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1178--1178
+\TU/LiberationSans(0)/m/n/10 Apr
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1207--1207
+[]|\TU/LiberationSans(0)/m/n/10 11
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1207--1207
+\TU/LiberationSans(0)/m/n/10 Apr
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1207--1207
+[]|\TU/LiberationSans(0)/m/n/10 Alvaro
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1231--1231
+[]|\TU/LiberationSans(0)/m/n/10 21
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1231--1231
+\TU/LiberationSans(0)/m/n/10 Apr
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1231--1231
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1255--1255
+[]|\TU/LiberationSans(0)/m/n/10 19
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1255--1255
+\TU/LiberationSans(0)/m/n/10 May
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1274--1274
+[]|\TU/LiberationSans(0)/m/n/10 19
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1274--1274
+\TU/LiberationSans(0)/m/n/10 May
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1309--1309
+[]|\TU/LiberationSans(0)/m/n/10 19
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1309--1309
+\TU/LiberationSans(0)/m/n/10 May
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1343--1343
+[]|\TU/LiberationSans(0)/m/n/10 19
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1343--1343
+\TU/LiberationSans(0)/m/n/10 May
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1378--1378
+[]|\TU/LiberationSans(0)/m/n/10 19
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1378--1378
+\TU/LiberationSans(0)/m/n/10 May
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1398--1398
+[]|\TU/LiberationSans(0)/m/n/10 19
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1398--1398
+\TU/LiberationSans(0)/m/n/10 May
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1418--1418
+[]|\TU/LiberationSans(0)/m/n/10 19
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1418--1418
+\TU/LiberationSans(0)/m/n/10 May
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1443--1443
+[]|\TU/LiberationSans(0)/m/n/10 19
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1443--1443
+\TU/LiberationSans(0)/m/n/10 May
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1470--1470
+[]|\TU/LiberationSans(0)/m/n/10 19
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1470--1470
+\TU/LiberationSans(0)/m/n/10 May
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1487--1487
+[]|\TU/LiberationSans(0)/m/n/10 19
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1487--1487
+\TU/LiberationSans(0)/m/n/10 May
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1504--1504
+[]|\TU/LiberationSans(0)/m/n/10 19
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1504--1504
+\TU/LiberationSans(0)/m/n/10 May
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1504--1504
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1534--1534
+[]|\TU/LiberationSans(0)/m/n/10 19
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1534--1534
+\TU/LiberationSans(0)/m/n/10 May
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1534--1534
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1556--1556
+[]|\TU/LiberationSans(0)/m/n/10 19
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1556--1556
+\TU/LiberationSans(0)/m/n/10 May
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1556--1556
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1581--1581
+[]|\TU/LiberationSans(0)/m/n/10 19
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1581--1581
+\TU/LiberationSans(0)/m/n/10 May
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1581--1581
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1601--1601
+[]|\TU/LiberationSans(0)/m/n/10 19
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1601--1601
+\TU/LiberationSans(0)/m/n/10 May
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1601--1601
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1621--1621
+[]|\TU/LiberationSans(0)/m/n/10 19
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1621--1621
+\TU/LiberationSans(0)/m/n/10 May
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1621--1621
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1678--1678
+[]|\TU/LiberationSans(0)/m/n/10 19
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1678--1678
+\TU/LiberationSans(0)/m/n/10 May
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1678--1678
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1698--1698
+[]|\TU/LiberationSans(0)/m/n/10 19
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1698--1698
+\TU/LiberationSans(0)/m/n/10 May
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1698--1698
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 2384) in paragraph at lines 1704--1707
+[]\TU/LiberationSans(0)/m/n/10 To bring consistency between pci and mmio transp
+ort, rename the
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1725--1725
+[]|\TU/LiberationSans(0)/m/n/10 19
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1725--1725
+\TU/LiberationSans(0)/m/n/10 May
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1725--1725
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1746--1746
+[]|\TU/LiberationSans(0)/m/n/10 19
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1746--1746
+\TU/LiberationSans(0)/m/n/10 May
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1746--1746
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1766--1766
+[]|\TU/LiberationSans(0)/m/n/10 19
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1766--1766
+\TU/LiberationSans(0)/m/n/10 May
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1766--1766
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1786--1786
+[]|\TU/LiberationSans(0)/m/n/10 19
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1786--1786
+\TU/LiberationSans(0)/m/n/10 May
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1786--1786
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1807--1807
+[]|\TU/LiberationSans(0)/m/n/10 19
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1807--1807
+\TU/LiberationSans(0)/m/n/10 May
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1807--1807
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1835--1835
+[]|\TU/LiberationSans(0)/m/n/10 19
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1835--1835
+\TU/LiberationSans(0)/m/n/10 May
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1835--1835
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1852--1852
+[]|\TU/LiberationSans(0)/m/n/10 19
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1852--1852
+\TU/LiberationSans(0)/m/n/10 May
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1852--1852
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 1803) in paragraph at lines 1858--1860
+[]\TU/LiberationSans(0)/m/n/10 PCI transport and individual devices description
+ also refers to it as
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1879--1879
+[]|\TU/LiberationSans(0)/m/n/10 07
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1879--1879
+\TU/LiberationSans(0)/m/n/10 Jul
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1879--1879
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1897--1897
+[]|\TU/LiberationSans(0)/m/n/10 07
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1897--1897
+\TU/LiberationSans(0)/m/n/10 Jul
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1897--1897
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1913--1913
+[]|\TU/LiberationSans(0)/m/n/10 14
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1913--1913
+\TU/LiberationSans(0)/m/n/10 Jul
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1973--1973
+[]|\TU/LiberationSans(0)/m/n/10 17
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1973--1973
+\TU/LiberationSans(0)/m/n/10 Jul
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1986--1986
+[]|\TU/LiberationSans(0)/m/n/10 21
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1986--1986
+\TU/LiberationSans(0)/m/n/10 Jul
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1986--1986
+[]|\TU/LiberationSans(0)/m/n/10 Parav
+ []
+
+)
+Overfull \hbox (49.99994pt too wide) in alignment at lines 10--16
+ [] [] [] [] 
+ []
+
+[357
+
+] [358] [359] [360] [361] [362] [363] [364] [365] [366] [367] [368]
+[369] [370] [371] [372] [373] [374] [375] [376] [377] [378] [379] [380])
+
+AED: lastpage setting LastPage
+[381] (./virtio-v1.3-csd01.aux)
+
+LaTeX Warning: There were undefined references.
+
+Package rerunfilecheck Info: File `virtio-v1.3-csd01.out' has not changed.
+(rerunfilecheck)             Checksum: D0032984818C824935CFF78F5DB21CDC;189386.
+
+ ) ) 
+Here is how much of TeX's memory you used:
+ 18836 strings out of 476191
+ 430000 string characters out of 5812073
+ 1497642 words of memory out of 5000000
+ 38981 multiletter control sequences out of 15000+600000
+ 476279 words of font info for 81 fonts, out of 8000000 for 9000
+ 1348 hyphenation exceptions out of 8191
+ 73i,12n,90p,1212b,1825s stack positions out of 5000i,500n,10000p,200000b,80000s
+
+Output written on virtio-v1.3-csd01.pdf (381 pages).

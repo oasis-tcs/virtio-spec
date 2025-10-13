@@ -18,10 +18,11 @@ cd "${cur}/old"
 git checkout $oldrev
 while read -r rev; do
 	echo "Applying $rev"
-	git cherry-pick --keep-redundant-commits --allow-empty `git rev-list -1 -F --grep "$rev" $newrev` || exit 1
+	git cherry-pick --keep-redundant-commits --allow-empty `git rev-list -1 --grep "^$rev" $newrev` || exit 1
 done << 'EOF'
-content.tex Fix Driver notifications label
-editorial: update "Computer Language Definitions" URL
+editorial: allow for longer device id table: makediff 1.3
+admin: Prepare table for multipage listing
+admin: switch to tabularx
 EOF
 
 #mv specvars.tex specvars-orig.tex

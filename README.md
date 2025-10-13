@@ -110,6 +110,21 @@ git format-patch -o proposal1/ HEAD~1..<br>
 git send-email --to=virtio-comment@lists.linux.dev proposal1/0001-*
 </code>
 
+<dl>Optionally, you can use <a
+href="https://github.com/stefanha/git-publish">git-publish</a> to submit a
+patch. This project already contains a <em>git-publish</em> profile that will
+configure some fields, e.g., <em>To</em> field with the right address. After you have
+installed <em>git-publish</em>, the procedure is the following:
+
+<code>
+<p>
+git checkout master -b my-feature<br>
+# work on new commits, add your 'Signed-off-by' lines to each<br>
+git publish<br>
+# more work, rebase on master, ...<br>
+git publish # will send a v2<br>
+</code>
+</dl>
 <dl>
 <dt>When to use the virtio-comment mailing list:</dt>
 <dd>
@@ -206,7 +221,13 @@ The mail requesting the vote should include the following, on a line by itself:<
 <code>
 Fixes: https://github.com/oasis-tcs/virtio-spec/issues/NNN
 </code>
-(NNN is the issue number)</li>
+(NNN is the issue number)<br>
+For example, you can use the following template when requesting the TC vote:<br>
+<code>
+Could please open a voting ballot for these changes?<br>
+<br>
+Fixes: https://github.com/oasis-tcs/virtio-spec/issues/NNN<br>
+</code></li>
 <li>Please make sure to allow time for review between posting a comment
 and asking for a vote. </li>
 </ol>

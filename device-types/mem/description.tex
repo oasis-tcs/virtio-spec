@@ -60,6 +60,8 @@ configuration is valid and corresponds to an ACPI PXM.
 access unplugged memory. \footnote{On platforms with memory properties that
 might get modified implicitly on memory access, this feature is expected to
 be offered by the device.}
+\item[VIRTIO_MEM_F_PERSISTENT_SUSPEND (2)] The driver can allow the guest
+to enter suspended state (deep sleep, suspend-to-RAM).
 \end{description}
 
 \subsection{Device configuration layout}\label{sec:Device Types / Memory Device / Device configuration layout}
@@ -174,6 +176,9 @@ The device MUST NOT change the state of memory blocks during device reset.
 The device MUST NOT modify memory or memory properties of plugged memory
 blocks during device reset.
 
+The device SHOULD offer VIRTIO_MEM_F_PERSISTENT_SUSPEND if the platform
+supports suspending (deep sleep, suspend-to-RAM) with plugged memory blocks.
+
 \subsection{Device Operation}\label{sec:Device Types / Memory Device / Device Operation}
 
 The device notifies the driver about the amount of memory the device wants
@@ -268,6 +273,9 @@ device configuration), for example, because it cannot free up any plugged
 memory blocks to unplug them, or it would not be able to make use of
 unplugged memory blocks after plugging them (e.g., alignment).
 
+If VIRTIO_MEM_F_PERSISTENT_SUSPEND has not been negotiated, the driver MUST NOT
+allow the guest to enter a suspended state (deep sleep, suspend-to-RAM).
+
 \devicenormative{\subsubsection}{Device Operation}{Device Types / Memory Device / Device Operation}
 
 The device MUST provide the exact same memory properties with the exact same
@@ -292,6 +300,10 @@ copy such memory to another location before starting DMA.}
 The device MAY change the state of memory blocks during system resets.
 
 The device SHOULD unplug all memory blocks during system resets.
+
+If VIRTIO_MEM_F_PERSISTENT_SUSPEND has been negotiated, the device MUST NOT not
+change the state of memory blocks when suspending or when waking up from
+suspended state (deep sleep, suspend-to-RAM).
 
 \subsubsection{PLUG request}\label{sec:Device Types / Memory Device / Device Operation / PLUG request}
 

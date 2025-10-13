@@ -17,10 +17,10 @@ forwards them to the group owner device (PF) using group administration commands
 The following commands support such a legacy interface functionality:
 
 \begin{enumerate}
-\item Legacy Common Configuration Write Command
-\item Legacy Common Configuration Read Command
-\item Legacy Device Configuration Write Command
-\item Legacy Device Configuration Read Command
+\item VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE
+\item VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ
+\item VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE
+\item VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ
 \end{enumerate}
 
 These commands are currently only defined for the SR-IOV group type and
@@ -29,8 +29,8 @@ interface listed in section \ref{sec:Virtio Transport Options / Virtio Over PCI
 Bus / PCI Device Layout / Legacy Interfaces: A Note on PCI Device Layout} except
 that little-endian format is assumed unconditionally.
 
-\paragraph{Legacy Common Configuration Write Command}\label{par:Basic Facilities of a Virtio Device / Device groups / Group
-administration commands / Legacy Interface / Legacy Common Configuration Write Command}
+\paragraph{VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE}
+\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface / VIRTIO-ADMIN-CMD-LEGACY-COMMON-CFG-WRITE}
 
 This command has the same effect as writing into the virtio common configuration
 structure through the legacy interface. The \field{command_specific_data} is in
@@ -59,7 +59,8 @@ configuration structure, excluding the device-specific configuration.
 
 This command has no command specific result.
 
-\paragraph{Legacy Common Configuration Read Command}\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface / Legacy Common Configuration Read Command}
+\paragraph{VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ}
+\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface / VIRTIO-ADMIN-CMD-LEGACY-COMMON-CFG-READ}
 
 This command has the same effect as reading from the virtio common configuration
 structure through the legacy interface. The \field{command_specific_data} is in
@@ -94,7 +95,8 @@ is in the format \field{struct virtio_admin_cmd_legacy_common_cfg_rd_result}
 returned by the device. The length of the data read is simply the length of
 \field{data}.
 
-\paragraph{Legacy Device Configuration Write Command}\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface / Legacy Device Configuration Write Command}
+\paragraph{VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE}
+\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface / VIRTIO-ADMIN-CMD-LEGACY-DEV-CFG-WRITE}
 
 This command has the same effect as writing into the virtio device-specific
 configuration through the legacy interface. The \field{command_specific_data} is in
@@ -123,7 +125,8 @@ configuration.
 
 This command has no command specific result.
 
-\paragraph{Legacy Device Configuration Read Command}\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface / Legacy Device Configuration Read Command}
+\paragraph{VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ}
+\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface / VIRTIO-ADMIN-CMD-LEGACY-DEV-CFG-READ}
 
 This command has the same effect as reading from the virtio device-specific
 configuration through the legacy interface. The \field{command_specific_data} is in
@@ -159,7 +162,8 @@ returned by the device.
 
 The length of the data read is simply the length of \field{data}.
 
-\paragraph{Legacy Driver Notification}\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface / Legacy Driver Notifications}
+\paragraph{VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO}
+\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface / VIRTIO-ADMIN-CMD-LEGACY-NOTIFY-INFO}
 
 The driver of the owner device can send a driver notification to the member
 device operated using the legacy interface by executing

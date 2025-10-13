@@ -1,0 +1,43 @@
+\chapter{Creating New Transports}\label{sec:Creating New Transports}
+
+Devices and drivers utilize various transport methods to facilitate
+communication, such as PCI, MMIO, or Channel I/O. These transport
+methods determine aspects of the interaction between the device and the
+driver, including device discovery, capability exchange, interrupt
+handling, and data transfer. For instance, in a host/guest architecture,
+the host might expose a device to the guest via a virtual PCI bus, and
+the guest would use a PCI device driver to interface with the device.
+
+This section outlines the mandatory requirements that a transport method
+implements.
+
+A transport provides a mechanism to implement configuration space for
+the device.
+
+A transport provides a mechanism for the driver to identify the device
+type.
+
+A transport provides a mechanism for the driver to read the device's
+FEATURES_OK and DEVICE_NEEDS_RESET status bits.
+
+A transport provides a mechanism for the driver to modify the device's
+status.
+
+A transport provides a mechanism for the driver to read and modify the
+device's feature bits.
+
+A transport allows one or more virtqueues to be implemented by the
+device. The number of virtqueues is device specific and not specified by
+the transport.
+
+A transport provides a mechanism for the driver to communicate virtqueue
+configuration and memory location to the device.
+
+A transport provides a mechanism for the device to send device
+notifications to the driver, such as used buffer notifications.
+
+A transport provides a mechanism for the driver to send driver
+notifications to the device, such as available buffer notifications.
+
+A transport provides a mechanism for the driver to initiate a device
+reset.
