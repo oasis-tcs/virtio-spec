@@ -923,13 +923,6 @@ In particular, a common Fixes: (hash) "subject" pattern
 we started using implies that fixups are picked up
 instead of the commit.
 
-For now, just switch to using regexp (dropping -F)
-and add "^" in front to only look for the string at
-beginning of the line.
-
-We'll worry about more elaborate logic later, if it's ever
-needed.
-
 Message-Id: <1130700f4ae71a93d9887af35cf105731219f057.1721062136.git.mst@redhat.com>
 Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 
