@@ -1,4 +1,12 @@
 %% diffpreable.tex start
+% latexdiff tends to leave empty itemize/enumerate lists around
+% instead of deleting lists.
+% this makes latex stop with an error:
+%    Something's wrong--perhaps a missing \item
+% suppress the error.
+\makeatletter
+\let\@noitemerr\relax
+\makeatother
 
 %DIF FONTSTRIKE PREAMBLE
 \RequirePackage[normalem]{ulem}
