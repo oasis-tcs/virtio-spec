@@ -2083,3 +2083,155 @@ Signed-off-by: Parav Pandit <parav@nvidia.com>
 
  } \\
 \hline
+9f903b2 & 28 Oct 2025 & Parav Pandit & { edit: add changelog for 1.4
+
+
+Add the changelog for 1.4.
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+Message-Id: <20251027174756.56284-3-parav@nvidia.com>
+
+ } \\
+\hline
+b4899d2 & 28 Oct 2025 & Parav Pandit & { edit: Remove annotation of special character
+
+
+PDF generation parsing complains when special character
+annotation is listed in it. Remove such annotation in changelog.
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+Message-Id: <20251027174756.56284-4-parav@nvidia.com>
+
+ } \\
+\hline
+5e4a575 & 28 Oct 2025 & Michael S. Tsirkin & { drop generated files
+
+
+Generated files:
+    virtio-v1.3-csd01.aux
+    virtio-v1.3-csd01.log
+    virtio-v1.3-csd01.out
+    virtio-v1.3-csd01.pdf
+    virtio-v1.3-csd01.toc
+
+have no business being in tree. Drop them.
+
+Fixes: 63aaa4b ("Merge branch 'virtio-1.4'")
+Cc: "Parav Pandit" <parav@nvidia.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+ } \\
+\hline
+21e81fa & 06 Nov 2025 & Michael S. Tsirkin & { virtio-html: add missing makeatother
+
+
+A workaround for F21 added \textbackslash makeatletter but not \textbackslash makeatother
+
+I see no specific issues around this but theoretically can interfere
+with some packages.
+
+Fix this up.
+
+Fixes: 86e51b4 ("html: work around bug in html generation")
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+ } \\
+\hline
+563b6c8 & 07 Nov 2025 & Michael S. Tsirkin & { editorial: suppress noitem errors in diff
+
+
+latexdiff tends to leave empty itemize/enumerate lists around
+instead of deleting lists.
+
+For example:
+
+\textbackslash begin\{itemize\}\%DIFAUXCMD
+\%DIFDELCMD <   \textbackslash item rx_usecs: Maximum number of usecs to delay a RX notification.
+\%DIFDELCMD <
+\%DIFDELCMD <   \textbackslash item rx_max_packets: Maximum number of packets to receive before a RX notification.
+\textbackslash end\{itemize\}\%DIFAUXCMD
+
+this makes latex stop with an error:
+    Something's wrong--perhaps a missing \textbackslash item
+to fix, suppress the error.
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+ } \\
+\hline
+f9abfd5 & 07 Nov 2025 & Sergio Lopez & { virtio-gpu: support blob alignment information
+
+
+There's an increasing number of machines supporting multiple page sizes
+and, on these machines, the host and a guest can be running with
+different pages sizes. In addition to this, there might be physical
+devices that require to operate their memory at a specific granularity.
+
+In these cases, if they are to use Shared Memory Regions, the device
+and the driver must operate with the same granularity, as otherwise
+the former might not be able to fulfill the requests sent by the
+latter.
+
+For the GPU device, this has an impact on blob creation and mapping. To
+address the problem, allow the device to require certain alignment
+constrains for blob resources by extending the device configuration
+with the field "blob_alignment" and introducing the
+VIRTIO_GPU_F_BLOB_ALIGNMENT feature.
+
+Signed-off-by: Sergio Lopez <slp@redhat.com>
+
+ } \\
+\hline
+b2741ed & 07 Nov 2025 & Parav Pandit & { virtio-gpu: Fix missing driver conformance file
+
+
+Cited patch in the fixes tag missed to include the driver-conformance
+file. Add it.
+
+Fixes: f52fb20cbe38 ("virtio-gpu: support blob alignment information")
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+Reviewed-by: Matias Ezequiel Vara Larsen <mvaralar@redhat.com>
+Link: \url{https://lore.kernel.org/r/20250614181302.277794-1-parav@nvidia.com}
+
+ } \\
+\hline
+8494bb9 & 07 Nov 2025 & Parav Pandit & { virtio-crypto: editorial: fix broken label link
+
+
+Fix broken link to resource objects.
+
+Fixes: c7553a71b7eb ("virtio-crypto: Add IPsec service operation and Capabilities")
+Reported-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+ } \\
+\hline
+e8557d8 & 07 Nov 2025 & Parav Pandit & { changelog: Add changelog for 1.2 and 1.3
+
+
+Add the changelog from version 1.2 to v1.3 for bookkeeping purpose.
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+ } \\
+\hline
+521d5cc & 07 Nov 2025 & Parav Pandit & { gitlog: Add executable permision to script
+
+
+gitlog.pl is the script to generate the changelog.
+Make it executable.
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+ } \\
+\hline
+4e2a6b9 & 07 Nov 2025 & Parav Pandit & { acknowledgements: update for 1.4
+
+
+Move some names to the section for previous versions, add names of new
+contributors, etc.
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+ } \\
+\hline
