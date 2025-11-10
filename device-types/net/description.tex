@@ -982,11 +982,11 @@ The driver MUST NOT set the VIRTIO_NET_HDR_F_DATA_VALID bit in \field{flags}
 together with the VIRTIO_NET_HDR_F_GSO_UDP_TUNNEL_IPV4 bit or the
 VIRTIO_NET_HDR_F_GSO_UDP_TUNNEL_IPV6 bit in \field{gso_type}.
 
-If the device supports \hyperref[par:Device Types / Network Device / Device Operation / IPsec Operation]{IPsec Operation},
+If the device supports \hyperref[sec:Device Types / Network Device / Device Operation / IPsec Operation]{IPsec Operation},
 the driver may set VIRTIO_NET_HDR_F_SECURITY bit in \field{flags}, if so:
 \begin{enumerate}
 \item the driver MUST create IPsec Outbound resource object
-\hyperref[par:Device Types / Crypto Device / Device Operation / IPsec Service Operation / Resource objects / VIRTIO-CRYPTO-RESOURCE-OBJ-IPSEC-ENC-SA]{VIRTIO_NET_RESOURCE_OBJ_IPSEC_OUTB_SA}
+\hyperref[par:Device Types / Crypto Device / Device Operation / IPsec Service Operation / Resource objects / VIRTIO-CRYPTO-RESOURCE-OBJ-IPSEC-OUTBOUND-SA]{VIRTIO_NET_RESOURCE_OBJ_IPSEC_OUTB_SA}
 \item the driver MUST set \field{resource_id} to a valid IPsec outbound
       resource object ID.
 \end{enumerate}
