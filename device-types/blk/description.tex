@@ -66,6 +66,13 @@ device except where noted.
 	(ZNS). For brevity, these standard documents are referred as "ZBD standards"
 	from this point on in the text.
 
+\item[VIRTIO_BLK_F_REQ_FLAGS (18)] Device can interpret the \field{flags}
+    bitfield in the \field{virtio_blk_req} structure.
+
+\item[VIRTIO_BLK_F_REQ_FLAGS_OUT_FUA (19)] Device supports the
+    VIRTIO_BLK_REQ_FLAG_OUT_FUA flag in the \field{flags} bitfield of the
+    \field{virtio_blk_req} structure for VIRTIO_BLK_T_OUT requests.
+
 \end{description}
 
 \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Block Device / Feature bits / Legacy Interface: Feature bits}
@@ -317,6 +324,9 @@ If the VIRTIO_BLK_F_ZONED feature is negotiated, then
     driver SHOULD ignore all other fields in \field{zoned}.
 \end{itemize}
 
+The driver MUST NOT negotiate VIRTIO_BLK_F_REQ_FLAGS_OUT_FUA without
+VIRTIO_BLK_F_REQ_FLAGS.
+
 \devicenormative{\subsubsection}{Device Initialization}{Device Types / Block Device / Device Initialization}
 
 Devices SHOULD always offer VIRTIO_BLK_F_FLUSH, and MUST offer it
@@ -402,6 +412,9 @@ field in \field{zoned} struct is VIRTIO_BLK_Z_HM or VIRTIO_BLK_Z_HA,
 \item the device MUST initialize padding bytes \field{unused2} to 0.
 \end{itemize}
 
+The device MUST NOT acknowledge FEATURES_OK if the driver sets
+VIRTIO_BLK_F_REQ_FLAGS_OUT_FUA without VIRTIO_BLK_F_REQ_FLAGS.
+
 \subsubsection{Legacy Interface: Device Initialization}\label{sec:Device Types / Block Device / Device Initialization / Legacy Interface: Device Initialization}
 
 Because legacy devices do not have FEATURES_OK, transitional devices
@@ -434,7 +447,7 @@ VIRTIO_BLK_T_ZONE_APPEND is of form:
 \begin{lstlisting}
 struct virtio_blk_req {
         le32 type;
-        le32 reserved;
+        le32 flags;
         le64 sector;
         u8 data[];
         u8 status;
@@ -458,6 +471,16 @@ string command (VIRTIO_BLK_T_GET_ID), a secure erase
 #define VIRTIO_BLK_T_WRITE_ZEROES 13
 #define VIRTIO_BLK_T_SECURE_ERASE   14
 \end{lstlisting}
+
+The \field{flags} bitfield is ignored by the device unless
+VIRTIO_BLK_F_REQ_FLAGS is negotiated, in which case each bit's meaning depends
+on the request type. The following flags are currently defined (the numeric
+value is the bit index in the \field{flags} bitfield):
+
+\begin{description}
+\item[VIRTIO_BLK_REQ_FLAG_OUT_FUA (0) for VIRTIO_BLK_T_OUT requests] Force Unit
+    Access (FUA) flag.
+\end{description}
 
 The \field{sector} number indicates the offset (multiplied by 512) where
 the read or write is to occur. This field is unused and set to 0 for
@@ -873,6 +896,11 @@ beyond \field{capacity}.
 
 A driver SHOULD accept the VIRTIO_BLK_F_RO feature if offered.
 
+If VIRTIO_BLK_F_REQ_FLAGS is negotiated, a driver MUST NOT set a bit in
+\field{flags} (e.g., VIRTIO_BLK_REQ_FLAG_OUT_FUA) unless the corresponding
+feature (e.g., VIRTIO_BLK_F_REQ_FLAGS_OUT_FUA) for the request type in question
+(e.g., VIRTIO_BLK_T_OUT) is negotiated.
+
 A driver MUST set \field{sector} to 0 for a VIRTIO_BLK_T_FLUSH request.
 A driver SHOULD NOT include any data in a VIRTIO_BLK_T_FLUSH request.
 
@@ -1000,14 +1028,21 @@ once it is completed and one or more of the following conditions is true:
   \field{writeback} field in configuration space was 0 \textbf{all the time between
   the submission of the write and its completion};
 
-\item\label{item:flush3} a VIRTIO_BLK_T_FLUSH request is sent \textbf{after the write is
+\item\label{item:flush3} the VIRTIO_BLK_F_REQ_FLAGS_OUT_FUA feature was
+  negotiated and the VIRTIO_BLK_REQ_FLAG_OUT_FUA bit in \field{flags} was set in
+  the write request (regardless of whether the VIRTIO_BLK_F_FLUSH or
+  VIRTIO_BLK_F_CONFIG_WCE features were negotiated, and regardless of the
+  current cache mode as expressed by the value of the \field{writeback} field in
+  configuration space).
+
+\item\label{item:flush4} a VIRTIO_BLK_T_FLUSH request is sent \textbf{after the write is
   completed} and is completed itself.
 \end{enumerate}
 
 If the device is backed by persistent storage, the device MUST ensure that
 stable writes are committed to it, before reporting completion of the write
-(cases~\ref{item:flush1} and~\ref{item:flush2}) or the flush
-(case~\ref{item:flush3}).  Failure to do so can cause data loss
+(cases~\ref{item:flush1}, \ref{item:flush2} and~\ref{item:flush3}) or the flush
+(case~\ref{item:flush4}).  Failure to do so can cause data loss
 in case of a crash.
 
 If the driver changes \field{writeback} between the submission of the write
