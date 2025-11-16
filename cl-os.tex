@@ -2275,3 +2275,70 @@ Signed-off-by: Parav Pandit <parav@nvidia.com>
 
  } \\
 \hline
+7672c71 & 13 Nov 2025 & Parav Pandit & { REVISION: update to 1.4
+
+
+Update the revision to 1.4 working draft and date.
+Since 1.3 was never released, keep the last version of 1.2 for diff generation.
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+ } \\
+\hline
+f6c548f & 16 Nov 2025 & Parav Pandit & { editorial: Remove hyperlink with hash tag
+
+
+The new hyperlink contains the hash letter.
+The new replaced link breaks the diff generation.
+
+This is because diff operation generates DIFadd, DIFdel
+commands inside the href.
+
+This causes deep recursive macro expansion resulting into
+below error.
+Avoid this small change in the diff generation.
+
+Remove the other patches which already exists now in the
+master branch.
+
+! TeX capacity exceeded, sorry [input stack size=10000].
+
+\textbackslash @setfontsize \#1\#2\#3->\textbackslash @nomath \#1 \textbackslash ifx \textbackslash protect
+
+\textbackslash @typeset@protect \textbackslash let \textbackslash @curr... l.577 ...delines/tc-process\#wpComponentsCompLang\}.
+
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+ } \\
+\hline
+92a4614 & 16 Nov 2025 & Parav Pandit & { editorial: Avoid logtable keyword as diff
+
+
+Commit X started using longtable.
+Diff generation is sneaking logtable between DIFaddbegin
+and DIFaddend. This makes LaTeX unhappy breaking the
+diff generation.
+
+Using SAFEENV or PICTUREENV or appending texcmd or appending
+text cmd is not helpful either to resolve to generate the
+desired result. It deletes the whole table and adds as
+new table showing big delta, which is undesired.
+
+Until diff infrastructure improved, workaround to remove those
+weird diffs with simpler perl script.
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+ } \\
+\hline
+267ced1 & 16 Nov 2025 & Parav Pandit & { editorial: Update diff version to 1.2
+
+
+Update the previous version to 1.2 so that 1.4 spec
+diff can be with previously release version 1.2.
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+ } \\
+\hline
