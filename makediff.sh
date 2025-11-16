@@ -52,3 +52,10 @@ ln -fs ./latexdiff/dist/latexdiff-fast ./latexdiff-fast
  --exclude-textcmd=chapter \
 --ignore-warnings -p diffpreamble.tex old/flat.tex \
 new/flat.tex > virtio-diff.tex
+
+cp virtio-diff.tex backup-diff.tex
+
+perl -pi -e 's/\\DIFaddbegin\s*(\\begin\{longtable\})\s*\\DIFaddend/$1/g' virtio-diff.tex
+perl -pi -e 's/\\DIFaddbegin\s*(\\end\{longtable\})\s*\\DIFaddend/$1/g'   virtio-diff.tex
+perl -pi -e 's/\\DIFdelbegin\s*\\begin\{tabular\}.*?\\DIFdelend//g'       virtio-diff.tex
+
