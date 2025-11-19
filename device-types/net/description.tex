@@ -3055,6 +3055,7 @@ struct virtio_net_ff_cap_data {
         le32 rules_per_group_limit;
         u8 last_rule_priority;
         u8 selectors_per_classifier_limit;
+        u8 reserved[2];
 };
 \end{lstlisting}
 
@@ -3070,6 +3071,8 @@ flow filter rule.
 
 \field{selectors_per_classifier_limit} is the maximum number of selectors
 that a classifier can have.
+
+\field{reserved} is reserved and set to zero.
 
 \subparagraph{VIRTIO_NET_FF_SELECTOR_CAP}
 \label{par:Device Types / Network Device / Device Operation / Flow filter / Device and driver capabilities / VIRTIO-NET-FF-SELECTOR-CAP}
