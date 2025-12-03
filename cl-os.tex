@@ -2342,3 +2342,80 @@ Signed-off-by: Parav Pandit <parav@nvidia.com>
 
  } \\
 \hline
+fc3c135 & 16 Nov 2025 & Parav Pandit & { editorial: Advance the date with fixes for diff generation
+
+
+Advance the date for editorial fixes addition for
+diff generation.
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+ } \\
+\hline
+7cdd452 & 18 Nov 2025 & Parav Pandit & { editorial: Update revision to csd01
+
+
+Update the revision to v1.4-csd01 and its new date.
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+ } \\
+\hline
+75e8068 & 18 Nov 2025 & Parav Pandit & { editorial: Prepare public review draft
+
+
+Prepare public review draft version 1.4-csprd01.
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+ } \\
+\hline
+26c96dd & 19 Nov 2025 & Parav Pandit & { editorial: Restore back the previous stage links
+
+
+Restore back the link to the previous version 1.2.
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+ } \\
+\hline
+defdc1b & 19 Nov 2025 & Parav Pandit & { Revert "editorial: Prepare public review draft"
+
+
+This reverts commit 75e806852781ae98035df6f97c7af748eff1e9c1.
+Few issues were found in the draft.
+Hence, revert to restart the process.
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+ } \\
+\hline
+5833db4 & 19 Nov 2025 & Parav Pandit & { Revert "editorial: Update revision to csd01"
+
+
+This reverts commit 7cdd4521c657e893489b7722fb693d936743cb36.
+Few issues were found in the draft.
+Hence, revert to restart the process.
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+ } \\
+\hline
+2132a93 & 03 Dec 2025 & Michael S. Tsirkin & { net: pad virtio_net_ff_cap_data
+
+
+struct virtio_net_ff_cap_data has 4 byte fields but the size is not a
+multiple of 4.  drivers can easily get it wrong since compilers tend to
+add padding to align such structures.
+
+Since we are always allowed to pad or truncate admin commands, let's do
+just that here.
+
+Fixes: 899bb0ca24d8 ("virtio-net: Add flow filter capability")
+Fixes: \url{https://github.com/oasis-tcs/virtio-spec/issues/236}
+Cc: Parav Pandit <parav@nvidia.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Reviewed-by: Parav Pandit <parav@nvidia.com>
+
+ } \\
+\hline
