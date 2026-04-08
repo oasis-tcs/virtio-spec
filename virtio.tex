@@ -98,6 +98,25 @@
 \patchcmd{\contentsline}{\hyper@linkstart{link}{\Hy@tocdestname}{#2}}{\process@contentsline#2}{}{}
 % report style: add dotted lines between chapter names and page numbers
 \patchcmd{\l@chapter}{\hfil}{\leaders\hbox{\normalfont$\m@th\mkern \@dotsep mu\hbox{.}\mkern \@dotsep mu$}\hfill}{}{}
+% Deep headings (e.g. 5.14.6.10): widen the number box so long numbers do not touch the title.
+% Default \numberline is left-aligned in that box, so a wide box adds a huge gap for short numbers.
+% While reading the .toc only, right-align numbers in the box (\hfil#1) so only the longest
+% entry sets the needed width and shorter entries stay close to the title text.
+\renewcommand*\l@subsubsection{\@dottedtocline{3}{7.0em}{5.1em}}
+\renewcommand*\l@paragraph{\@dottedtocline{4}{10em}{6em}}
+\let\virtio@orig@starttoc\@starttoc
+\def\virtio@tocsuffix{toc}
+\def\@starttoc#1{%
+  \def\virtio@tmptocarg{#1}%
+  \ifx\virtio@tmptocarg\virtio@tocsuffix
+    \let\virtio@saved@numberline\numberline
+    \def\numberline##1{\hb@xt@\@tempdima{\hfil##1}\space\space}%
+  \fi
+  \virtio@orig@starttoc{#1}%
+  \ifx\virtio@tmptocarg\virtio@tocsuffix
+    \let\numberline\virtio@saved@numberline
+  \fi
+}
 \makeatother
 
 % main document
