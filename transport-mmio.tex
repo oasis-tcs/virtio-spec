@@ -64,7 +64,8 @@ All register values are organized as Little Endian.
   }
   \hline
   \mmioreg{Version}{Device version number}{0x004}{R}{%
-    0x2.
+    0x2 or 0x3. With version 0x3, the driver waits until it reads zero from the
+    \field{Status} register before considering a reset complete.
     \begin{note}
       Legacy devices (see \ref{sec:Virtio Transport Options / Virtio Over MMIO / Legacy interface}~\nameref{sec:Virtio Transport Options / Virtio Over MMIO / Legacy interface}) used 0x1.
     \end{note}
@@ -185,6 +186,11 @@ All register values are organized as Little Endian.
     Writing non-zero values to this register sets the status flags,
     indicating the driver progress. Writing zero (0x0) to this
     register triggers a device reset.
+
+    Starting with \field{Version} 0x3, the device reset need not
+    complete before the write returns, and the driver waits until it
+    reads back zero before considering a reset complete.
+
     See also p. \ref{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Device Initialization}~\nameref{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Device Initialization}.
   }
   \hline
@@ -262,12 +268,30 @@ All register values are organized as Little Endian.
 
 The device MUST return 0x74726976 in \field{MagicValue}.
 
-The device MUST return value 0x2 in \field{Version}.
+The device MUST return value 0x2 or 0x3 in \field{Version}.
 
 The device MUST present each event by setting the corresponding bit in \field{InterruptStatus} from the
 moment it takes place, until the driver acknowledges the interrupt
 by writing a corresponding bit mask to the \field{InterruptACK} register.  Bits which
 do not represent events which took place MUST be zero.
+
+The device MUST reset when zero is written to \field{Status}.
+
+The device MUST present zero in \field{Status} once it has finished the reset.
+
+For \field{Version} 0x2, the device MUST finish a reset before the driver's
+write of zero to \field{Status} has completed.
+
+For \field{Version} 0x3, if \field{Status} is non-zero before a reset, the
+device MAY continue with the reset after the driver's write of zero to
+\field{Status} has completed.
+
+For \field{Version} 0x3, if \field{Status} is zero before a reset, the device
+MUST finish the reset before the driver's write of zero to \field{Status} has
+completed.
+
+For \field{Version} 0x3, the device MUST change \field{Status} to zero as the
+last step of the reset.
 
 Upon reset, the device MUST clear all bits in \field{InterruptStatus} and ready bits in the
 \field{QueueReady} register for all queues in the device.
@@ -305,7 +329,7 @@ aligned accesses for 32 and 64 bit wide fields.
 The driver MUST ignore a device with \field{MagicValue} which is not 0x74726976,
 although it MAY report an error.
 
-The driver MUST ignore a device with \field{Version} which is not 0x2,
+The driver MUST ignore a device whose \field{Version} is neither 0x2 nor 0x3,
 although it MAY report an error.
 
 The driver MUST ignore a device with \field{DeviceID} 0x0,
@@ -330,6 +354,9 @@ The driver MUST ignore undefined bits in \field{InterruptStatus}.
 
 The driver MUST write a value with a bit mask describing events it handled into \field{InterruptACK} when
 it finishes handling an interrupt and MUST NOT set any of the undefined bits in the value.
+
+For \field{Version} 0x3, the driver MUST NOT consider a reset complete before
+reading back zero in \field{Status}.
 
 If VIRTIO_F_RING_RESET has been negotiated, after the driver writes 1 to
 \field{QueueReset} to reset the queue, the driver MUST NOT consider queue
