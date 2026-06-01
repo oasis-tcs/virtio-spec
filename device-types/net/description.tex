@@ -2279,8 +2279,8 @@ le64 offloads;
 #define VIRTIO_NET_F_GUEST_TSO6       8
 #define VIRTIO_NET_F_GUEST_ECN        9
 #define VIRTIO_NET_F_GUEST_UFO        10
-#define VIRTIO_NET_F_GUEST_UDP_TUNNEL_GSO_MAPPED  46
-#define VIRTIO_NET_F_GUEST_UDP_TUNNEL_GSO_CSUM_MAPPED 47
+#define VIRTIO_NET_F_GUEST_UDP_TUNNEL_GSO  46
+#define VIRTIO_NET_F_GUEST_UDP_TUNNEL_GSO_CSUM 47
 #define VIRTIO_NET_F_GUEST_USO4       54
 #define VIRTIO_NET_F_GUEST_USO6       55
 
@@ -2297,9 +2297,6 @@ offloads to be enabled, bits cleared - offloads to be disabled.
 There is a corresponding device feature for each offload. Upon feature
 negotiation corresponding offload gets enabled to preserve backward
 compatibility.
-
-Note that device features bits in the [65 to 66] range correspond to
-offload bits in the [46 to 47] range.
 
 \drivernormative{\subparagraph}{Setting Offloads State}{Device Types / Network Device / Device Operation / Control Virtqueue / Offloads State Configuration / Setting Offloads State}
 
